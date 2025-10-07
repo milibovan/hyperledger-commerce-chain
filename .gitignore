@@ -1,9 +1,9 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
-#
+# -----------------------------------------------------------------------------
+# Go Language Standard Ignores
+# -----------------------------------------------------------------------------
+
 # Binaries for programs and plugins
 *.exe
-*.exe~
 *.dll
 *.so
 *.dylib
@@ -17,16 +17,63 @@ coverage.*
 *.coverprofile
 profile.cov
 
-# Dependency directories (remove the comment below to include it)
-# vendor/
+# Go build cache
+# Includes the build output for 'go install'
+/pkg/
 
 # Go workspace file
 go.work
 go.work.sum
 
-# env file
-.env
+# Dependency directories
+# Uncomment to ignore the 'vendor' directory if using Go Modules without vendoring.
+# vendor/
 
-# Editor/IDE
-# .idea/
-# .vscode/
+# -----------------------------------------------------------------------------
+# Operating System, Editor, and IDE Ignores (Common)
+# -----------------------------------------------------------------------------
+
+# macOS
+.DS_Store
+
+# IDEs (VS Code, IntelliJ/GoLand)
+.idea/
+.vscode/
+
+# Editor backup/artifact files
+*~
+*#
+.#*
+.*.sw[a-p] # Vim swap files
+.project
+.classpath
+.settings/
+
+# -----------------------------------------------------------------------------
+# Project-Specific Ignores (Hyperledger Fabric / Environment)
+# -----------------------------------------------------------------------------
+
+# Environment file
+.env
+# Optional: Secrets/config files that shouldn't be committed
+# *.yml.sample is usually committed, but the secrets file itself shouldn't be.
+# secrets.yaml
+# config/key.pem
+
+# Build output directories (if not handled by Go standard ignores)
+# e.g., for non-Go components or complex build systems
+build/
+target/
+
+# Node.js dependencies (common in Fabric client apps)
+node_modules/
+package-lock.json
+
+# Ignore installed Fabric binaries and scripts specific to the user's setup.
+# NOTE: Adjust 'milibovan' to your GitHub username if this is a personal repo.
+go/src/github.com/milibovan/bin/
+go/src/github.com/milibovan/install-fabric.sh
+
+# IMPORTANT: Keep this at the end to ensure it overrides general folder ignores.
+# Override the ignore of all 'config/' folders for this specific path.
+!full-stack-asset-transfer-guide/infrastructure/sample-network/config
