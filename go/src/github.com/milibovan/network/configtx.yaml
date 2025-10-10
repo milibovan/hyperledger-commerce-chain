@@ -18,7 +18,7 @@ Organizations:
     # in production but may be used as a template for other definitions
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment
-    Name: OrdrerOrg
+    Name: OrdererOrg
     # ID to load the MSP definition as
     ID: OrdererOrgMSP
     # MSPDir is the filesystem path which contains the MSP configuration
