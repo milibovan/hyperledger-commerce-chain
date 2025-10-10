@@ -6,7 +6,9 @@
 version: '3.7'
 
 volumes:
-  orderer.example.com:
+  raft0.example.com:
+  raft1.example.com:
+  raft2.example.com:
   peer0.org1.example.com:
   peer0.org2.example.com:
   peer0.org3.example.com:
@@ -25,6 +27,10 @@ volumes:
   couchdb_data6:
   couchdb_data7:
   couchdb_data8:
+  fabric-ca-orderer-data:
+  fabric-ca-org1data:
+  fabric-ca-org2data:
+  fabric-ca-org3data:
 
 networks:
   test:
@@ -32,8 +38,8 @@ networks:
 
 services:
 
-  orderer.example.com:
-    container_name: orderer.example.com
+  raft0.example.com:
+    container_name: raft0.example.com
     image: hyperledger/fabric-orderer:latest
     labels:
       service: hyperledger-fabric
@@ -52,6 +58,8 @@ services:
       - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
       - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
       - ORDERER_GENERAL_BOOTSTRAPMETHOD=etcdraft
+      - ORDERER_GENERAL_ORDERERTYPE=etcdraft
+      - ORDERER_GENERAL_CLUSTER_AUTORETRIEVE=true
       - ORDERER_CHANNELPARTICIPATION_ENABLED=true
       - ORDERER_ADMIN_TLS_ENABLED=true
       - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
@@ -59,18 +67,106 @@ services:
       - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
       - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
       - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7053
-      - ORDERER_OPERATIONS_LISTENADDRESS=orderer.example.com:9443
+      - ORDERER_OPERATIONS_LISTENADDRESS=raft0.example.com:9443
       - ORDERER_METRICS_PROVIDER=prometheus
     working_dir: /root
     command: orderer
     volumes:
-      - ../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp:/var/hyperledger/orderer/msp
-      - ../organizations/ordererOrganizations/example.com/orderers/orderer.example.com/tls/:/var/hyperledger/orderer/tls
-      - orderer.example.com:/var/hyperledger/production/orderer
+      - ./organizations/ordererOrganizations/example.com/orderers/raft0.example.com/msp:/var/hyperledger/orderer/msp
+      - ./organizations/ordererOrganizations/example.com/orderers/raft0.example.com/tls/:/var/hyperledger/orderer/tls
+      - raft0.example.com:/var/hyperledger/production/orderer
     ports:
       - 7050:7050
       - 7053:7053
       - 9443:9443
+    networks:
+      - test
+
+  raft1.example.com:
+    container_name: raft1.example.com
+    image: hyperledger/fabric-orderer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7051
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=etcdraft
+      - ORDERER_GENERAL_ORDERERTYPE=etcdraft
+      - ORDERER_GENERAL_CLUSTER_AUTORETRIEVE=true
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7054
+      - ORDERER_OPERATIONS_LISTENADDRESS=raft1.example.com:9444
+      - ORDERER_METRICS_PROVIDER=prometheus
+    working_dir: /root
+    command: orderer
+    volumes:
+      - ./organizations/ordererOrganizations/example.com/orderers/raft1.example.com/msp:/var/hyperledger/orderer/msp
+      - ./organizations/ordererOrganizations/example.com/orderers/raft1.example.com/tls/:/var/hyperledger/orderer/tls
+      - raft1.example.com:/var/hyperledger/production/orderer
+    ports:
+      - 7051:7051
+      - 7054:7054
+      - 9444:9444
+    networks:
+      - test
+
+  raft2.example.com:
+    container_name: raft2.example.com
+    image: hyperledger/fabric-orderer:latest
+    labels:
+      service: hyperledger-fabric
+    environment:
+      - FABRIC_LOGGING_SPEC=INFO
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_LISTENPORT=7052
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      # enabled TLS
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_CLUSTER_CLIENTCERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_CLUSTER_CLIENTPRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_CLUSTER_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_GENERAL_BOOTSTRAPMETHOD=etcdraft
+      - ORDERER_GENERAL_ORDERERTYPE=etcdraft
+      - ORDERER_GENERAL_CLUSTER_AUTORETRIEVE=true
+      - ORDERER_CHANNELPARTICIPATION_ENABLED=true
+      - ORDERER_ADMIN_TLS_ENABLED=true
+      - ORDERER_ADMIN_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_ADMIN_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_ADMIN_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_ADMIN_TLS_CLIENTROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_ADMIN_LISTENADDRESS=0.0.0.0:7055
+      - ORDERER_OPERATIONS_LISTENADDRESS=raft2.example.com:9445
+      - ORDERER_METRICS_PROVIDER=prometheus
+    working_dir: /root
+    command: orderer
+    volumes:
+      - ./organizations/ordererOrganizations/example.com/orderers/raft2.example.com/msp:/var/hyperledger/orderer/msp
+      - ./organizations/ordererOrganizations/example.com/orderers/raft2.example.com/tls/:/var/hyperledger/orderer/tls
+      - raft2.example.com:/var/hyperledger/production/orderer
+    ports:
+      - 7052:7052
+      - 7055:7055
+      - 9445:9445
     networks:
       - test
 
@@ -107,7 +203,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com:/etc/hyperledger/fabric
       - peer0.org1.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -152,7 +248,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com:/etc/hyperledger/fabric
       - peer0.org2.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -197,7 +293,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0rg3"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com:/etc/hyperledger/fabric
       - peer0.org3.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -242,7 +338,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com:/etc/hyperledger/fabric
       - peer1.org1.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -287,7 +383,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org2.example.com/peers/peer1.org2.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org2.example.com/peers/peer1.org2.example.com:/etc/hyperledger/fabric
       - peer1.org2.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -332,7 +428,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org3"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org3.example.com/peers/peer1.org3.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org3.example.com/peers/peer1.org3.example.com:/etc/hyperledger/fabric
       - peer1.org3.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -377,7 +473,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com:/etc/hyperledger/fabric
       - peer2.org1.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -422,7 +518,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org2.example.com/peers/peer2.org2.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org2.example.com/peers/peer2.org2.example.com:/etc/hyperledger/fabric
       - peer2.org2.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -467,7 +563,7 @@ services:
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org3"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
     volumes:
-      - ../organizations/peerOrganizations/org3.example.com/peers/peer2.org3.example.com:/etc/hyperledger/fabric
+      - ./organizations/peerOrganizations/org3.example.com/peers/peer2.org3.example.com:/etc/hyperledger/fabric
       - peer2.org3.example.com:/var/hyperledger/production
     working_dir: /root
     command: peer node start
@@ -580,6 +676,7 @@ services:
 
   ca.orderer.example.com:
     image: hyperledger/fabric-ca:latest
+    container_name: ca.orderer.example.com
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=OrdererCA
@@ -588,15 +685,15 @@ services:
     ports:
       - "7054:7054"
     volumes:
-      - ./fabric-ca-server-orderer.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+      - ./fabric-ca-server-orderer.yaml:/etc/hyperledger/fabric-ca-server-config.yaml
       - fabric-ca-orderer-data:/etc/hyperledger/fabric-ca-server
-    command: sh -c 'fabric-ca-server start -b admin:adminpw'
-    container_name: ca.orderer.com
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -c /etc/hyperledger/fabric-ca-server-config.yaml'
     networks:
       - test
 
   ca.org1.example.com:
     image: hyperledger/fabric-ca:latest
+    container_name: ca.org1.example.com
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=Org1CA
@@ -605,15 +702,15 @@ services:
     ports:
       - "7055:7055"
     volumes:
-      - ./fabric-ca-server-org1.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+      - ./fabric-ca-server-org1.yaml:/etc/hyperledger/fabric-ca-server-config.yaml
       - fabric-ca-org1-data:/etc/hyperledger/fabric-ca-server
-    command: sh -c 'fabric-ca-server start -b admin:adminpw'
-    container_name: ca.org1.com
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -c /etc/hyperledger/fabric-ca-server-config.yaml'
     networks:
       - test
 
   ca.org2.example.com:
     image: hyperledger/fabric-ca:latest
+    container_name: ca.org2.example.com
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=Org2CA
@@ -622,15 +719,15 @@ services:
     ports:
       - "7056:7056"
     volumes:
-      - ./fabric-ca-server-org2.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+      - ./fabric-ca-server-org2.yaml:/etc/hyperledger/fabric-ca-server-config.yaml
       - fabric-ca-org2-data:/etc/hyperledger/fabric-ca-server
-    command: sh -c 'fabric-ca-server start -b admin:adminpw'
-    container_name: ca.org2.com
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -c /etc/hyperledger/fabric-ca-server-config.yaml'
     networks:
       - test
 
   ca.org3.example.com:
     image: hyperledger/fabric-ca:latest
+    container_name: ca.org3.example.com
     environment:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=Org3CA
@@ -639,9 +736,8 @@ services:
     ports:
       - "7057:7057"
     volumes:
-      - ./fabric-ca-server-org3.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
+      - ./fabric-ca-server-org3.yaml:/etc/hyperledger/fabric-ca-server-config.yaml
       - fabric-ca-org3-data:/etc/hyperledger/fabric-ca-server
-    command: sh -c 'fabric-ca-server start -b admin:adminpw'
-    container_name: ca.org3.com
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -c /etc/hyperledger/fabric-ca-server-config.yaml'
     networks:
       - test
