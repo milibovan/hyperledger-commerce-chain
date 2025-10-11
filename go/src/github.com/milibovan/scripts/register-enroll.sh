@@ -294,7 +294,7 @@ function createOrderer() {
   cp "${PWD}/organizations/fabric-ca/ordererOrg/ca-cert.pem" "${PWD}/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem"
 
 # Loop through each orderer (orderer, orderer2, orderer3, orderer4) to register and generate artifacts
-  for ORDERER in orderer orderer2 orderer3 orderer4; do
+  for ORDERER in raft0 raft1 raft2; do
     infoln "Registering ${ORDERER}"
     set -x
     fabric-ca-client register --caname OrdererCA --id.name ${ORDERER} --id.secret ${ORDERER}pw --id.type orderer --tls.certfiles "${PWD}/organizations/fabric-ca/ordererOrg/ca-cert.pem"

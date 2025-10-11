@@ -109,6 +109,66 @@ function checkPrereqs() {
 # Calling script for registering crypto materials
 . ../scripts/register-enroll.sh
 
+function createOrgs() {
+  if [ -d "organizations/peerOrganizations" ]; then
+    rm -Rf organizations/peerOrganizations && rm -Rf organizations/ordererOrganizations
+  fi
+
+  # Create crypto material using Cryptogen or CFSSL (keep these sections unchanged if you want to support them)
+
+  if [ "$CRYPTO" == "cryptogen" ]; then
+    # ... Original Cryptogen logic remains here ...
+  fi
+
+  if [ "$CRYPTO" == "cfssl" ]; then
+    # ... Original CFSSL logic remains here ...
+  fi
+
+  # Create crypto material using Fabric CA
+  if [ "$CRYPTO" == "Certificate Authorities" ]; then
+    infoln "Generating certificates using Fabric CA"
+
+    # 1. Bring up the CA containers defined in compose-ca.yaml
+    COMPOSE_CA_FILES="-f compose/${COMPOSE_FILE_CA} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_CA}"
+    ${CONTAINER_CLI_COMPOSE} ${COMPOSE_CA_FILES} up -d 2>&1
+
+    # NOTE: You already source register-enroll.sh, so createOrg1/2/3 and createOrderer are available
+
+    # 2. Make sure Orderer CA service is initialized and can accept requests
+    #    We check the Orderer CA (port 7054) as the central point.
+    export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/ordererOrganizations/example.com/
+    COUNTER=0
+    rc=1
+    while [[ $rc -ne 0 && $COUNTER -lt $MAX_RETRY ]]; do
+      sleep 1
+      set -x
+      # Check OrdererCA (port 7054)
+      fabric-ca-client getcainfo -u https://admin:adminpw@localhost:7054 --caname OrdererCA --tls.certfiles "${PWD}/organizations/fabric-ca/ordererOrg/ca-cert.pem"
+      res=$?
+      { set +x; } 2>/dev/null
+      rc=$res
+      COUNTER=$((COUNTER + 1))
+    done
+    verifyResult $rc "Orderer CA failed to start or respond." # <-- Add this line (or equivalent)
+
+    # 3. Call the modular functions from register-enroll.sh
+    infoln "Creating Org1 Identities"
+    createOrg1
+
+    infoln "Creating Org2 Identities"
+    createOrg2
+
+    infoln "Creating Org3 Identities" # <-- ADDED ORG3
+    createOrg3
+
+    infoln "Creating Orderer Org Identities"
+    createOrderer
+  fi
+
+  infoln "Generating CCP files for all three Orgs" # <-- Updated message
+  ./organizations/ccp-generate.sh
+}
+
 function networkUp() {
 
   checkPrereqs
