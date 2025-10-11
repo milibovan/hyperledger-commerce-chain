@@ -1,0 +1,132 @@
+version: '3.7'
+
+volumes:
+  raft0.example.com:
+  raft1.example.com:
+  raft2.example.com:
+  peer0.org1.example.com:
+  peer0.org2.example.com:
+  peer0.org3.example.com:
+  peer1.org1.example.com:
+  peer1.org2.example.com:
+  peer1.org3.example.com:
+  peer2.org1.example.com:
+  peer2.org2.example.com:
+  peer2.org3.example.com:
+  couchdb_data0:
+  couchdb_data1:
+  couchdb_data2:
+  couchdb_data3:
+  couchdb_data4:
+  couchdb_data5:
+  couchdb_data6:
+  couchdb_data7:
+  couchdb_data8:
+  fabric-ca-orderer-data:
+  fabric-ca-org1data:
+  fabric-ca-org2data:
+  fabric-ca-org3data:
+
+networks:
+  test:
+    name: hyperledger-commerce-chain
+
+services:
+  couchdb0:
+    image: couchdb:latest
+    container_name: couchdb0
+    ports:
+      - "5984:5984"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data0:/opt/couchdb/data
+
+  couchdb1:
+    image: couchdb:latest
+    container_name: couchdb1
+    ports:
+      - "5985:5985"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data1:/opt/couchdb/data
+
+  couchdb2:
+    image: couchdb:latest
+    container_name: couchdb2
+    ports:
+      - "5986:5986"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data2:/opt/couchdb/data
+
+  couchdb3:
+    image: couchdb:latest
+    container_name: couchdb3
+    ports:
+      - "5987:5987"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data3:/opt/couchdb/data
+
+  couchdb4:
+    image: couchdb:latest
+    container_name: couchdb4
+    ports:
+      - "5988:5988"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data4:/opt/couchdb/data
+
+  couchdb5:
+    image: couchdb:latest
+    container_name: couchdb5
+    ports:
+      - "5989:5989"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data5:/opt/couchdb/data
+
+  couchdb6:
+    image: couchdb:latest
+    container_name: couchdb6
+    ports:
+      - "5990:5990"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data6:/opt/couchdb/data
+
+  couchdb7:
+    image: couchdb:latest
+    container_name: couchdb7
+    ports:
+      - "5991:5991"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data7:/opt/couchdb/data
+
+  couchdb8:
+    image: couchdb:latest
+    container_name: couchdb8
+    ports:
+      - "5992:5992"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data8:/opt/couchdb/data
