@@ -29,18 +29,17 @@ Organizations:
     Policies:
       Readers:
         Type: Signature
-        Rule: "OR('Org3MSP.member')"
+        Rule: "OR('OrdererOrgMSP.member')"
       Writers:
         Type: Signature
-        Rule: "OR('Org3MSP.member')"
+        Rule: "OR('OrdererOrgMSP.member')"
       Admins:
         Type: Signature
-        Rule: "OR('Org3MSP.admin')"
+        Rule: "OR('OrdererOrgMSP.admin')"
     OrdererEndpoints:
-      - orderer.example.com:7050
-      - orderer2.example.com:7052
-      - orderer3.example.com:7056
-      - orderer4.example.com:7058
+      - raft0.example.com:7050
+      - raft1.example.com:7051
+      - raft2.example.com:7052
   - &Org1
     # DefaultOrg defines the organization which is used in the sampleconfig
     # of the fabric.git development environment

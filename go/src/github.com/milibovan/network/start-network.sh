@@ -105,3 +105,138 @@ function checkPrereqs() {
     fi
   fi
 }
+
+# Calling script for registering crypto materials
+. ../scripts/register-enroll.sh
+
+function networkUp() {
+
+  checkPrereqs
+
+  # generate artifacts if they don't exist
+  if [ ! -d "organizations/peerOrganizations" ]; then
+    createOrgs
+  fi
+
+  COMPOSE_FILES="-f compose/${COMPOSE_FILE_BASE} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_BASE}"
+
+  if [ "${DATABASE}" == "couchdb" ]; then
+    COMPOSE_FILES="${COMPOSE_FILES} -f compose/${COMPOSE_FILE_COUCH} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_COUCH}"
+  fi
+
+  DOCKER_SOCK="${DOCKER_SOCK}" ${CONTAINER_CLI_COMPOSE} ${COMPOSE_FILES} up -d 2>&1
+
+  $CONTAINER_CLI ps -a
+  if [ $? -ne 0 ]; then
+    fatalln "Unable to start network"
+  fi
+}
+
+function createChannel() {
+  # Bring up the network if it is not already up.
+  bringUpNetwork="false"
+
+  local bft_true=$1
+
+  if ! $CONTAINER_CLI info > /dev/null 2>&1 ; then
+    fatalln "$CONTAINER_CLI network is required to be running to create a channel"
+  fi
+
+  # check if all containers are present
+  CONTAINERS=($($CONTAINER_CLI ps | grep hyperledger/ | awk '{print $2}'))
+  len=$(echo ${#CONTAINERS[@]})
+
+  if [[ $len -ge 4 ]] && [[ ! -d "organizations/peerOrganizations" ]]; then
+    echo "Bringing network down to sync certs with containers"
+    networkDown
+  fi
+
+  [[ $len -lt 4 ]] || [[ ! -d "organizations/peerOrganizations" ]] && bringUpNetwork="true" || echo "Network Running Already"
+
+  if [ $bringUpNetwork == "true"  ]; then
+    infoln "Bringing up network"
+    networkUp
+  fi
+
+  # now run the script that creates a channel. This script uses configtxgen once
+  # to create the channel creation transaction and the anchor peer updates.
+  scripts/createChannel.sh $CHANNEL_NAME $CLI_DELAY $MAX_RETRY $VERBOSE $bft_true
+}
+
+## Call the script to deploy a chaincode to the channel
+function deployCC() {
+  scripts/deployCC.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
+
+  if [ $? -ne 0 ]; then
+    fatalln "Deploying chaincode failed"
+  fi
+}
+
+## Call the script to deploy a chaincode to the channel
+function deployCCAAS() {
+  scripts/deployCCAAS.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CCAAS_DOCKER_RUN $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE $CCAAS_DOCKER_RUN
+
+  if [ $? -ne 0 ]; then
+    fatalln "Deploying chaincode-as-a-service failed"
+  fi
+}
+
+## Call the script to package the chaincode
+function packageChaincode() {
+
+  infoln "Packaging chaincode"
+
+  scripts/packageCC.sh $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION true
+
+  if [ $? -ne 0 ]; then
+    fatalln "Packaging the chaincode failed"
+  fi
+
+}
+
+## Call the script to list installed and committed chaincode on a peer
+function listChaincode() {
+
+  export FABRIC_CFG_PATH=${PWD}
+
+  . scripts/envVar.sh
+  . scripts/ccutils.sh
+
+  setGlobals $ORG
+
+  println
+  queryInstalledOnPeer
+  println
+
+  listAllCommitted
+
+}
+
+## Call the script to invoke
+function invokeChaincode() {
+
+  export FABRIC_CFG_PATH=${PWD}
+
+  . scripts/envVar.sh
+  . scripts/ccutils.sh
+
+  setGlobals $ORG
+
+  chaincodeInvoke $ORG $CHANNEL_NAME $CC_NAME $CC_INVOKE_CONSTRUCTOR
+
+}
+
+## Call the script to query chaincode
+function queryChaincode() {
+
+  export FABRIC_CFG_PATH=${PWD}
+
+  . scripts/envVar.sh
+  . scripts/ccutils.sh
+
+  setGlobals $ORG
+
+  chaincodeQuery $ORG $CHANNEL_NAME $CC_NAME $CC_QUERY_CONSTRUCTOR
+
+}
+

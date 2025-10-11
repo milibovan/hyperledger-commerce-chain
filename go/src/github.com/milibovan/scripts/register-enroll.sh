@@ -338,7 +338,3 @@ function createOrderer() {
 
   cp "${PWD}/organizations/ordererOrganizations/example.com/msp/config.yaml" "${PWD}/organizations/ordererOrganizations/example.com/users/Admin@example.com/msp/config.yaml"
 }
-
-# Calling script for registering crypto materials
-. ../scripts/register-enroll.sh
-
