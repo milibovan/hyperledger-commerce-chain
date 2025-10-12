@@ -33,7 +33,7 @@ services:
     image: couchdb:latest
     container_name: couchdb1
     ports:
-      - "5985:5984"  # FIXED: Maps host 5985 to container 5984
+      - "5985:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
@@ -46,7 +46,7 @@ services:
     image: couchdb:latest
     container_name: couchdb2
     ports:
-      - "5986:5984"  # FIXED: Maps host 5986 to container 5984
+      - "5986:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
@@ -59,7 +59,7 @@ services:
     image: couchdb:latest
     container_name: couchdb3
     ports:
-      - "5987:5984"  # FIXED: Maps host 5987 to container 5984
+      - "5987:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
@@ -72,7 +72,7 @@ services:
     image: couchdb:latest
     container_name: couchdb4
     ports:
-      - "5988:5984"  # FIXED: Maps host 5988 to container 5984
+      - "5988:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
@@ -85,7 +85,7 @@ services:
     image: couchdb:latest
     container_name: couchdb5
     ports:
-      - "5989:5984"  # FIXED: Maps host 5989 to container 5984
+      - "5989:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
@@ -98,7 +98,7 @@ services:
     image: couchdb:latest
     container_name: couchdb6
     ports:
-      - "5990:5984"  # FIXED: Maps host 5990 to container 5984
+      - "5990:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
@@ -111,7 +111,7 @@ services:
     image: couchdb:latest
     container_name: couchdb7
     ports:
-      - "5991:5984"  # FIXED: Maps host 5991 to container 5984
+      - "5991:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
@@ -124,7 +124,7 @@ services:
     image: couchdb:latest
     container_name: couchdb8
     ports:
-      - "5992:5984"  # FIXED: Maps host 5992 to container 5984
+      - "5992:5984"
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password

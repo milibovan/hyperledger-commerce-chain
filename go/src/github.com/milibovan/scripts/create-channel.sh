@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Set TEST_NETWORK_HOME to parent directory (network folder)
+export TEST_NETWORK_HOME="$(dirname "$SCRIPT_DIR")"
+
+# Add Fabric binaries to PATH
+export PATH=${TEST_NETWORK_HOME}/../bin:${TEST_NETWORK_HOME}/bin:$PATH
+
 # imports
-. scripts/envVar.sh
+. ${SCRIPT_DIR}/env-var.sh
+. ${SCRIPT_DIR}/utils.sh
 
 CHANNEL_NAME="$1"
 DELAY="$2"
@@ -28,20 +37,27 @@ fi
 
 createChannelGenesisBlock() {
   setGlobals 1
-	which configtxgen
-	if [ "$?" -ne 0 ]; then
-		fatalln "configtxgen tool not found."
-	fi
-	local bft_true=$1
-	set -x
+  which configtxgen
+  if [ "$?" -ne 0 ]; then
+    fatalln "configtxgen tool not found."
+  fi
+  local bft_true=$1
 
-	if [ $bft_true -eq 1 ]; then
-		configtxgen -profile ChannelUsingBFT -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
-	else
-		configtxgen -profile ChannelUsingRaft -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
-	fi
-	res=$?
-	{ set +x; } 2>/dev/null
+  # Set FABRIC_CFG_PATH to network root (where configtx.yaml is)
+  if [ $bft_true -eq 1 ]; then
+    export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}/bft-config
+  else
+    export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}
+  fi
+
+  set -x
+  if [ $bft_true -eq 1 ]; then
+    configtxgen -profile ChannelUsingBFT -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
+  else
+    configtxgen -profile ChannelUsingRaft -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
+  fi
+  res=$?
+  { set +x; } 2>/dev/null
   verifyResult $res "Failed to generate channel configuration transaction..."
 }
 
@@ -71,7 +87,7 @@ createChannel() {
 # joinChannel ORG
 joinChannel() {
   ORG=$1
-  FABRIC_CFG_PATH=${PWD}
+  export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}/config
   setGlobals $ORG
 	local rc=1
 	local COUNTER=1
@@ -91,17 +107,18 @@ joinChannel() {
 
 setAnchorPeer() {
   ORG=$1
-  . scripts/setAnchorPeer.sh $ORG $CHANNEL_NAME
+  . ${SCRIPT_DIR}/set-anchor-peer.sh $ORG $CHANNEL_NAME
 }
 
 ## Create channel genesis block
-FABRIC_CFG_PATH=${PWD}
 BLOCKFILE="./channel-artifacts/${CHANNEL_NAME}.block"
 
 infoln "Generating channel genesis block '${CHANNEL_NAME}.block'"
-FABRIC_CFG_PATH=${PWD}
+# Set FABRIC_CFG_PATH for configtxgen
 if [ $BFT -eq 1 ]; then
-  FABRIC_CFG_PATH=${PWD}/bft-config
+  export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}/bft-config
+else
+  export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}
 fi
 createChannelGenesisBlock $BFT
 
