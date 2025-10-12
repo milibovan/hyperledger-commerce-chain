@@ -161,7 +161,7 @@ go/src/github.com/milibovan/install-fabric.sh
 /go/src/github.com/milibovan/network/organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com/msp/config.yaml
 /go/src/github.com/milibovan/network/organizations/peerOrganizations/org3.example.com/users/Admin@org3.example.com/msp/config.yaml
 /go/src/github.com/milibovan/network/organizations/peerOrganizations/org3.example.com/users/User1@org3.example.com/msp/config.yaml
-/go/src/github.com/milibovan/network/organizations/peerOrganizations/org1.example.com/core.yaml
+/go/src/github.com/milibovan/network/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/core.yaml
 /go/src/github.com/milibovan/network/organizations/ordererOrganizations/example.com/orderers/raft0.example.com/tls/keystore/dbb738439e437b11a905687c3f3849b07c393ba60f379c48f261c4d188a74ee6_sk
 /go/src/github.com/milibovan/network/organizations/ordererOrganizations/example.com/users/Admin@example.com/msp/keystore/e56640024e38ad94e946d6dd0af3332231bcc29b60c52c73cd89230c1ca3be9e_sk
 /go/src/github.com/milibovan/network/organizations/peerOrganizations/org3.example.com/users/User1@org3.example.com/msp/keystore/f37ae9a0a3cc618590a0cc4e4d53c71211db352a4be28e8dec3ce352df1a6c4a_sk

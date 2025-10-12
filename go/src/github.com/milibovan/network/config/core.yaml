@@ -1,0 +1,116 @@
+###############################################################################
+# This is a generic core.yaml template for all peers in your network.
+# Most peer-specific values are set via environment variables in the Docker Compose file.
+###############################################################################
+peer:
+
+  # NOTE: 'id' is overridden by CORE_PEER_ID
+  id: placeholder_id
+
+  # NOTE: 'networkId' is overridden by CORE_PEER_NETWORKID in a standard setup,
+  # but we set a specific value here for consistency.
+  networkId: hyperledger-commerce-chain
+
+  # NOTE: 'listenAddress' is overridden by CORE_PEER_LISTENADDRESS
+  listenAddress: 0.0.0.0:7051
+
+  # NOTE: 'address' is overridden by CORE_PEER_ADDRESS
+  address: placeholder_address:7051
+
+  # addressAutoDetect should be false when using CORE_PEER_ADDRESS
+  addressAutoDetect: false
+
+  # Gossip related configuration
+  gossip:
+    # NOTE: 'bootstrap' is overridden by CORE_PEER_GOSSIP_BOOTSTRAP
+    bootstrap: placeholder_bootstrap:7051
+
+    # Setting useLeaderElection to false and orgLeader to true means every
+    # peer will pull blocks from the Orderer directly. This is safer.
+    useLeaderElection: false
+    orgLeader: true
+
+    # NOTE: 'externalEndpoint' is overridden by CORE_PEER_GOSSIP_EXTERNALENDPOINT
+    externalEndpoint: placeholder_external_endpoint:7051
+
+    pvtData:
+      # Set reconciliation to true, good practice for stable pvt data sync
+      reconciliationEnabled: true
+
+    # Disable state transfer by default (block pulling is more efficient)
+    state:
+      enabled: false
+
+  # TLS Settings
+  tls:
+    # NOTE: 'enabled' is overridden by CORE_PEER_TLS_ENABLED=true
+    enabled:  true
+    # Set to true for mutual TLS, which is standard security practice.
+    clientAuthRequired: true
+    # File paths are set by CORE_PEER_TLS_... environment variables
+    cert:
+      file: tls/server.crt
+    key:
+      file: tls/server.key
+    rootcert:
+      file: tls/ca.crt
+    clientRootCAs:
+      files:
+        - tls/ca.crt
+
+  # Path on the file system where peer will store data (eg ledger)
+  # NOTE: This path is NOT typically overridden by env vars and must be set correctly.
+  fileSystemPath: /var/hyperledger/production
+
+  # NOTE: 'mspConfigPath' is overridden by CORE_PEER_MSPCONFIGPATH
+  mspConfigPath: /etc/hyperledger/fabric/msp
+
+  # NOTE: 'localMspId' is overridden by CORE_PEER_LOCALMSPID
+  localMspId: placeholder_OrgMSP
+
+  # Operations section
+  # NOTE: 'listenAddress' is overridden by CORE_OPERATIONS_LISTENADDRESS
+  operations:
+    listenAddress: 0.0.0.0:9443
+    tls:
+      enabled: true # Enable TLS for operations endpoint for security
+      clientAuthRequired: true
+
+  # Metrics section
+  # NOTE: 'provider' is overridden by CORE_METRICS_PROVIDER=prometheus
+  metrics:
+    provider: prometheus
+
+###############################################################################
+# Chaincode, VM, and Ledger are already well-handled by environment variables.
+# We include them here mostly unchanged as a complete config.
+###############################################################################
+vm:
+  endpoint: unix:///var/run/docker.sock
+
+chaincode:
+  # Set exec timeout to match your environment variable for consistency
+  executetimeout: 300s
+  mode: net
+  system:
+    _lifecycle: enable
+    cscc: enable
+    lscc: enable
+    qscc: enable
+  externalBuilders:
+    - name: ccaas_builder
+      path: /opt/hyperledger/ccaas_builder
+      propagateEnvironment:
+        - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG
+
+ledger:
+  state:
+    # NOTE: 'stateDatabase' is overridden by CORE_LEDGER_STATE_STATEDATABASE=CouchDB
+    stateDatabase: CouchDB
+    couchDBConfig:
+      # NOTE: Address, username, and password are all overridden by CORE_LEDGER_STATE_COUCHDBCONFIG_...
+      couchDBAddress: 127.0.0.1:5984
+      username: admin
+      password: password
+  history:
+    enableHistoryDatabase: true
