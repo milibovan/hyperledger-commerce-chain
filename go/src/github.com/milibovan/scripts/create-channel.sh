@@ -1,12 +1,23 @@
 #!/usr/bin/env bash
 
-# Get the directory where the script is located
+# Get the directory where the script is located (scripts folder)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# Set TEST_NETWORK_HOME to parent directory (network folder)
-export TEST_NETWORK_HOME="$(dirname "$SCRIPT_DIR")"
+# Get the root directory (parent of scripts folder)
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+# Set TEST_NETWORK_HOME to network folder
+export TEST_NETWORK_HOME="${ROOT_DIR}/network"
 
 # Add Fabric binaries to PATH
-export PATH=${TEST_NETWORK_HOME}/../bin:${TEST_NETWORK_HOME}/bin:$PATH
+export PATH=${ROOT_DIR}/bin:$PATH
+export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}
+
+# Verify configtxgen is available
+if ! command -v configtxgen &> /dev/null; then
+    echo "ERROR: configtxgen not found in PATH"
+    echo "Current PATH: $PATH"
+    echo "Expected location: ${ROOT_DIR}/bin"
+    exit 1
+fi
 
 # imports
 . ${SCRIPT_DIR}/env-var.sh
@@ -17,7 +28,7 @@ DELAY="$2"
 MAX_RETRY="$3"
 VERBOSE="$4"
 BFT="$5"
-: ${CHANNEL_NAME:="ChannelA"}
+: ${CHANNEL_NAME:="channel-a"}
 : ${DELAY:="3"}
 : ${MAX_RETRY:="5"}
 : ${VERBOSE:="false"}
@@ -31,16 +42,16 @@ else
 fi
 infoln "Using ${CONTAINER_CLI} and ${CONTAINER_CLI_COMPOSE}"
 
+# Change to network directory for channel artifacts
+cd ${TEST_NETWORK_HOME}
+
 if [ ! -d "channel-artifacts" ]; then
 	mkdir channel-artifacts
 fi
 
 createChannelGenesisBlock() {
   setGlobals 1
-  which configtxgen
-  if [ "$?" -ne 0 ]; then
-    fatalln "configtxgen tool not found."
-  fi
+
   local bft_true=$1
 
   # Set FABRIC_CFG_PATH to network root (where configtx.yaml is)
@@ -54,7 +65,7 @@ createChannelGenesisBlock() {
   if [ $bft_true -eq 1 ]; then
     configtxgen -profile ChannelUsingBFT -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
   else
-    configtxgen -profile ChannelUsingRaft -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
+    configtxgen -profile channel-a -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
   fi
   res=$?
   { set +x; } 2>/dev/null
@@ -66,22 +77,29 @@ createChannel() {
 	local rc=1
 	local COUNTER=1
 	local bft_true=$1
-	infoln "Adding orderers"
+	infoln "Adding orderers to channel"
 	while [ $rc -ne 0 -a $COUNTER -lt $MAX_RETRY ] ; do
 		sleep $DELAY
 		set -x
 
-    . scripts/raft0.sh ${CHANNEL_NAME}> /dev/null 2>&1
-    . scripts/raft1.sh ${CHANNEL_NAME}> /dev/null 2>&1
-    . scripts/raft2.sh ${CHANNEL_NAME}> /dev/null 2>&1
+    # Execute and check each orderer join individually
+    . ${SCRIPT_DIR}/raft0.sh ${CHANNEL_NAME}
+    rc=$?
+    verifyResult $rc "Orderer raft0.example.com failed to join channel '$CHANNEL_NAME'"
 
-		res=$?
-		{ set +x; } 2>/dev/null
-		let rc=$res
-		COUNTER=$(expr $COUNTER + 1)
+    . ${SCRIPT_DIR}/raft1.sh ${CHANNEL_NAME}
+    rc=$?
+    verifyResult $rc "Orderer raft1.example.com failed to join channel '$CHANNEL_NAME'"
+
+    . ${SCRIPT_DIR}/raft2.sh ${CHANNEL_NAME}
+    rc=$?
+    verifyResult $rc "Orderer raft2.example.com failed to join channel '$CHANNEL_NAME'"
+
+    # If all above succeeded, rc is 0, loop breaks. Otherwise, counter increments and retry.
+		let COUNTER=$(expr $COUNTER + 1)
 	done
 	cat log.txt
-	verifyResult $res "Channel creation failed"
+	verifyResult $rc "Orderer channel creation/join failed after $MAX_RETRY attempts"
 }
 
 # joinChannel ORG
@@ -98,11 +116,21 @@ joinChannel() {
     peer channel join -b $BLOCKFILE >&log.txt
     res=$?
     { set +x; } 2>/dev/null
+
+    if [ $res -eq 0 ] || grep -q "already exists" log.txt; then
+            infoln "Peer0 Org${ORG} successfully joined channel '$CHANNEL_NAME'."
+            JOIN_SUCCESS=0 # Set the success flag
+            break        # Exit the loop immediately
+          fi
+
+          rc=$res # Update rc with actual result code only on genuine failure
+          COUNTER=$(expr $COUNTER + 1)
+
 		let rc=$res
 		COUNTER=$(expr $COUNTER + 1)
 	done
 	cat log.txt
-	verifyResult $res "After $MAX_RETRY attempts, peer0.org${ORG} has failed to join channel '$CHANNEL_NAME' "
+	verifyResult $JOIN_SUCCESS "After $MAX_RETRY attempts, peer0.org${ORG} has failed to join channel '$CHANNEL_NAME' "
 }
 
 setAnchorPeer() {
@@ -114,12 +142,6 @@ setAnchorPeer() {
 BLOCKFILE="./channel-artifacts/${CHANNEL_NAME}.block"
 
 infoln "Generating channel genesis block '${CHANNEL_NAME}.block'"
-# Set FABRIC_CFG_PATH for configtxgen
-if [ $BFT -eq 1 ]; then
-  export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}/bft-config
-else
-  export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}
-fi
 createChannelGenesisBlock $BFT
 
 
@@ -135,6 +157,9 @@ infoln "Joining org2 peer to the channel..."
 joinChannel 2
 infoln "Joining org3 peer to the channel..."
 joinChannel 3
+
+infoln "Waiting for channel updates to stabilize on the Orderer..."
+sleep 5
 
 ## Set the anchor peers for each org in the channel
 infoln "Setting anchor peer for org1..."

@@ -7,15 +7,14 @@
 
 # This is a collection of bash functions used by different scripts
 
-# imports
-# test network home var targets to test-network folder
-# the reason we use a var here is to accommodate scenarios
-# where execution occurs from folders outside of default as $PWD, such as the test-network/addOrg3 folder.
-# For setting environment variables, simple relative paths like ".." could lead to unintended references
-# due to how they interact with FABRIC_CFG_PATH. It's advised to specify paths more explicitly,
-# such as using "../${PWD}", to ensure that Fabric's environment variables are pointing to the correct paths.
-TEST_NETWORK_HOME=${TEST_NETWORK_HOME:-${PWD}}
-. ${TEST_NETWORK_HOME}/scripts/utils.sh
+# Get the directory where the script is located (scripts folder)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Get the root directory (parent of scripts folder)
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
+# Set TEST_NETWORK_HOME to network folder
+TEST_NETWORK_HOME=${TEST_NETWORK_HOME:-${ROOT_DIR}/network}
+
+. ${SCRIPT_DIR}/utils.sh
 
 export CORE_PEER_TLS_ENABLED=true
 export ORDERER_CA=${TEST_NETWORK_HOME}/organizations/ordererOrganizations/example.com/tlsca/tlsca.example.com-cert.pem

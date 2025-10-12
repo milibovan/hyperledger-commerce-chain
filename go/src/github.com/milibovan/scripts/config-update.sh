@@ -11,8 +11,10 @@
 # when invoking this for org3 as test-network/scripts/org3-scripts
 # the value is changed from default as $PWD(test-network)
 # to .. as relative path to make the import works
-TEST_NETWORK_HOME=${TEST_NETWORK_HOME:-${PWD}}
-. ${TEST_NETWORK_HOME}/scripts/env-var.sh
+#TEST_NETWORK_HOME=${TEST_NETWORK_HOME:-${ROOT_DIR}/network} # (If this line is missing, add it to config-update.sh)
+
+# Change the import line to use the sibling path:
+. ${SCRIPT_DIR}/env-var.sh
 
 # fetchChannelConfig <org> <channel_id> <output_json>
 # Writes the current channel config for a given channel to a JSON file
@@ -21,6 +23,8 @@ fetchChannelConfig() {
   ORG=$1
   CHANNEL=$2
   OUTPUT=$3
+
+  export FABRIC_CFG_PATH=${TEST_NETWORK_HOME}/config
 
   setGlobals $ORG
 
@@ -48,14 +52,25 @@ createConfigUpdate() {
   MODIFIED=$3
   OUTPUT=$4
 
+  infoln "Encoding original and modified configuration..."
   set -x
   configtxlator proto_encode --input "${ORIGINAL}" --type common.Config --output ${TEST_NETWORK_HOME}/channel-artifacts/original_config.pb
   configtxlator proto_encode --input "${MODIFIED}" --type common.Config --output ${TEST_NETWORK_HOME}/channel-artifacts/modified_config.pb
+
+  infoln "Computing configuration update and decoding to JSON..."
   configtxlator compute_update --channel_id "${CHANNEL}" --original ${TEST_NETWORK_HOME}/channel-artifacts/original_config.pb --updated ${TEST_NETWORK_HOME}/channel-artifacts/modified_config.pb --output ${TEST_NETWORK_HOME}/channel-artifacts/config_update.pb
+
   configtxlator proto_decode --input ${TEST_NETWORK_HOME}/channel-artifacts/config_update.pb --type common.ConfigUpdate --output ${TEST_NETWORK_HOME}/channel-artifacts/config_update.json
-  echo '{"payload":{"header":{"channel_header":{"channel_id":"'$CHANNEL'", "type":2}},"data":{"config_update":'$(cat ${TEST_NETWORK_HOME}/channel-artifacts/config_update.json)'}}}' | jq . > ${TEST_NETWORK_HOME}/channel-artifacts/config_update_in_envelope.json
+
+  # into the required Envelope structure without any intermediate file issues.
+  infoln "Creating configuration update envelope..."
+  # This uses double quotes around the shell command output to preserve the structure
+  echo '{"payload":{"header":{"channel_header":{"channel_id":"'${CHANNEL}'", "type":2}},"data":{"config_update":'$(cat ${TEST_NETWORK_HOME}/channel-artifacts/config_update.json)'}}}' > ${TEST_NETWORK_HOME}/channel-artifacts/config_update_in_envelope.json
+  infoln "Encoding final configuration transaction..."
   configtxlator proto_encode --input ${TEST_NETWORK_HOME}/channel-artifacts/config_update_in_envelope.json --type common.Envelope --output "${OUTPUT}"
+  res=$?
   { set +x; } 2>/dev/null
+  verifyResult $res "Final configtx encoding failed"
 }
 
 # signConfigtxAsPeerOrg <org> <configtx.pb>

@@ -24,10 +24,6 @@ Organizations:
       Admins:
         Type: Signature
         Rule: "OR('OrdererMSP.admin')"
-    OrdererEndpoints:
-      - raft0.example.com:7050
-      - raft1.example.com:11111
-      - raft2.example.com:7052
   - &Org1
     Name: Org1
     ID: Org1MSP
@@ -88,7 +84,7 @@ Organizations:
 ################################################################################
 Capabilities:
   Channel: &ChannelCapabilities
-    V3_0: true
+    V2_0: true
   Orderer: &OrdererCapabilities
     V2_0: true
   Application: &ApplicationCapabilities
@@ -124,6 +120,11 @@ Application: &ApplicationDefaults
 #
 ################################################################################
 Orderer: &OrdererDefaults
+  OrdererType: etcdraft
+  Addresses:
+    - raft0.example.com:7050
+    - raft1.example.com:11111
+    - raft2.example.com:7052
   EtcdRaft:
     Consenters:
       - Host: raft0.example.com
@@ -189,7 +190,7 @@ Channel: &ChannelDefaults
 #
 ################################################################################
 Profiles:
-  ChannelA:
+  channel-a:
     <<: *ChannelDefaults
     Orderer:
       <<: *OrdererDefaults

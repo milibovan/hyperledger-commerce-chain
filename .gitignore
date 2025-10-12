@@ -79,3 +79,4 @@ go/src/github.com/milibovan/install-fabric.sh
 !full-stack-asset-transfer-guide/infrastructure/sample-network/config
 /go/src/github.com/milibovan/network/.lh/.lhignore
 /go/src/github.com/milibovan/network/organizations/
+/go/src/github.com/milibovan/network/channel-artifacts/
