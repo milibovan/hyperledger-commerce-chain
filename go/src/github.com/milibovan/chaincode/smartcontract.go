@@ -27,7 +27,7 @@ func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 			return err
 		}
 
-		err = ctx.GetStub().PutState(user.Id, userJSON)
+		err = ctx.GetStub().PutState("USER_"+user.Id, userJSON)
 		if err != nil {
 			return fmt.Errorf("failed to put user in world state %v", err)
 		}
@@ -53,7 +53,7 @@ func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 		if err != nil {
 			return err
 		}
-		err = ctx.GetStub().PutState(product.Id, productJSON)
+		err = ctx.GetStub().PutState("PRODUCT_"+product.Id, productJSON)
 		if err != nil {
 			return fmt.Errorf("Failed to put product in world state %v", err)
 		}
@@ -71,11 +71,88 @@ func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error 
 		if err != nil {
 			return err
 		}
-		err = ctx.GetStub().PutState(trader.Id, traderJSON)
+		err = ctx.GetStub().PutState("TRADER_"+trader.Id, traderJSON)
 		if err != nil {
 			return fmt.Errorf("failed put trader in world state %v", err)
 		}
 	}
 
 	return nil
+}
+
+func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, id string, name string, surname string, email string, balance float64) error {
+	exists, err := s.AssetExists(ctx, id, "user")
+	if err != nil {
+		return err
+	}
+	if exists {
+		return fmt.Errorf("User %s already exists", id)
+	}
+
+	user := structs.User{
+		Id:          id,
+		Name:        name,
+		Surname:     surname,
+		Email:       email,
+		ReceiptsIDs: []string{},
+		Balance:     balance,
+	}
+
+	userJSON, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+
+	return ctx.GetStub().PutState("USER_"+user.Id, userJSON)
+}
+
+func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id string, traderTypeStr string, vat string, balance float64) error {
+	exists, err := s.AssetExists(ctx, id, "trader")
+	if err != nil {
+		return err
+	}
+	if exists {
+		return fmt.Errorf("Trader %s already exists", id)
+	}
+
+	traderType, err := structs.GetTraderTypeFromString(traderTypeStr)
+	if err != nil {
+		return err
+	}
+
+	trader := structs.Trader{
+		Id:                   id,
+		TraderType:           traderType,
+		VAT:                  vat,
+		ProductsAvailableIDs: []string{},
+		ReceiptsIDs:          []string{},
+		Balance:              balance,
+	}
+
+	traderJSON, err := json.Marshal(trader)
+	if err != nil {
+		return err
+	}
+
+	return ctx.GetStub().PutState("TRADER_"+trader.Id, traderJSON)
+}
+
+func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface, id string, assetType string) (bool, error) {
+	var key string
+	if assetType == "user" {
+		key = "USER_" + id
+	} else if assetType == "trader" {
+		key = "TRADER_" + id
+	} else if assetType == "product" { // Added check for product
+		key = "PRODUCT_" + id
+	} else {
+		return false, fmt.Errorf("unsupported asset type: %s", assetType)
+	}
+
+	assetJSON, err := ctx.GetStub().GetState(key)
+	if err != nil {
+		return false, fmt.Errorf("failed to read from world state: %v", err)
+	}
+
+	return assetJSON != nil, nil
 }

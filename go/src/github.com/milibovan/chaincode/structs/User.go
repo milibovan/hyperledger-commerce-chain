@@ -6,5 +6,5 @@ type User struct {
 	Surname     string   `json:"surname"`
 	Email       string   `json:"email"`
 	ReceiptsIDs []string `json:"receipts-ids"`
-	Balance     int      `json:"balance"`
+	Balance     float64  `json:"balance"`
 }
