@@ -226,7 +226,6 @@ function networkUp() {
   fi
 
   COMPOSE_FILES="-f compose/${COMPOSE_FILE_BASE}"
-  COMPOSE_NON_CA_FILES="-f compose/${COMPOSE_FILE_BASE}"
 
   if [ "${DATABASE}" == "couchdb" ]; then
     COMPOSE_FILES="${COMPOSE_FILES} -f compose/${COMPOSE_FILE_COUCH}"

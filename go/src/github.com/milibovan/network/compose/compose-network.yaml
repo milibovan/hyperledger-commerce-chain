@@ -170,7 +170,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      - FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb0:5984
@@ -196,6 +196,12 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+
+      - CORE_PEER_BCCSP_DEFAULT=SW
+
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com:/etc/hyperledger/fabric
@@ -216,7 +222,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      - FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb1:5985
@@ -242,6 +248,12 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+
+      - CORE_PEER_BCCSP_DEFAULT=SW
+
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com:/etc/hyperledger/fabric
@@ -262,7 +274,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      -  FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb2:5986
@@ -288,6 +300,12 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0rg3"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+
+      - CORE_PEER_BCCSP_DEFAULT=SW
+
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org3.example.com/peers/peer0.org3.example.com:/etc/hyperledger/fabric
@@ -308,7 +326,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      -  FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb3:5987
@@ -334,6 +352,12 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+
+      - CORE_PEER_BCCSP_DEFAULT=SW
+
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org1.example.com/peers/peer1.org1.example.com:/etc/hyperledger/fabric
@@ -354,7 +378,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      -  FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb4:5988
@@ -380,6 +404,12 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+
+      - CORE_PEER_BCCSP_DEFAULT=SW
+
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org2.example.com/peers/peer1.org2.example.com:/etc/hyperledger/fabric
@@ -400,7 +430,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      -  FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb5:5989
@@ -426,6 +456,12 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org3"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+
+      - CORE_PEER_BCCSP_DEFAULT=SW
+
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org3.example.com/peers/peer1.org3.example.com:/etc/hyperledger/fabric
@@ -446,7 +482,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      -  FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb6:5990
@@ -472,6 +508,12 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+
+      - CORE_PEER_BCCSP_DEFAULT=SW
+
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org1.example.com/peers/peer2.org1.example.com:/etc/hyperledger/fabric
@@ -492,7 +534,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      -  FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb7:5991
@@ -518,6 +560,12 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+
+      - CORE_PEER_BCCSP_DEFAULT=SW
+
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org2.example.com/peers/peer2.org2.example.com:/etc/hyperledger/fabric
@@ -538,7 +586,7 @@ services:
     labels:
       service: hyperledger-fabric
     environment:
-      -  FABRIC_CFG_PATH=/etc/hyperledger/fabric
+      -  FABRIC_CFG_PATH=/etc/hyperledger/config
       - FABRIC_LOGGING_SPEC=INFO
       - CORE_LEDGER_STATE_STATEDATABASE=CouchDB
       - CORE_LEDGER_STATE_COUCHDBCONFIG_COUCHDBADDRESS=couchdb8:5992
@@ -564,6 +612,9 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org3"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
+      - CORE_PEER_BCCSP_DEFAULT=SW
+      - CORE_PEER_BCCSP_SW_HASH=SHA2
+      - CORE_PEER_BCCSP_SW_SECURITY=256
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org3.example.com/peers/peer2.org3.example.com:/etc/hyperledger/fabric
