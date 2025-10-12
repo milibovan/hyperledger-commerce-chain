@@ -3,6 +3,14 @@ export PATH=${ROOTDIR}/../bin:${PWD}/../bin:$PATH
 export FABRIC_CFG_PATH=${PWD}/configtx
 export VERBOSE=true
 
+# use this as the default docker-compose yaml definition
+export COMPOSE_FILE_BASE=compose-network.yaml
+# docker-compose.yaml file if you are using couchdb
+export COMPOSE_FILE_COUCH=compose-couchdb.yaml
+# certificate authorities compose file
+export COMPOSE_FILE_CA=compose-ca.yaml
+export COMPOSE_FILE_NON_CA=compose-network.yaml
+
 pushd ${ROOTDIR} > /dev/null
 trap "popd > /dev/null" EXIT
 
@@ -110,63 +118,102 @@ function checkPrereqs() {
 . ../scripts/register-enroll.sh
 
 function createOrgs() {
+  # Remove existing organizations if they exist
   if [ -d "organizations/peerOrganizations" ]; then
     rm -Rf organizations/peerOrganizations && rm -Rf organizations/ordererOrganizations
-  fi
-
-  # Create crypto material using Cryptogen or CFSSL (keep these sections unchanged if you want to support them)
-
-  if [ "$CRYPTO" == "cryptogen" ]; then
-    # ... Original Cryptogen logic remains here ...
-  fi
-
-  if [ "$CRYPTO" == "cfssl" ]; then
-    # ... Original CFSSL logic remains here ...
   fi
 
   # Create crypto material using Fabric CA
   if [ "$CRYPTO" == "Certificate Authorities" ]; then
     infoln "Generating certificates using Fabric CA"
 
+    # Create ALL necessary directories BEFORE starting CAs to avoid permission issues
+    infoln "Creating directory structure..."
+    mkdir -p organizations/fabric-ca/{org1,org2,org3,ordererOrg}
+    mkdir -p organizations/ordererOrganizations/example.com
+    mkdir -p organizations/peerOrganizations/{org1,org2,org3}.example.com
+
     # 1. Bring up the CA containers defined in compose-ca.yaml
-    COMPOSE_CA_FILES="-f compose/${COMPOSE_FILE_CA} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_CA}"
+    infoln "Starting CA containers..."
+    COMPOSE_CA_FILES="-f compose/${COMPOSE_FILE_CA}"
     ${CONTAINER_CLI_COMPOSE} ${COMPOSE_CA_FILES} up -d 2>&1
 
-    # NOTE: You already source register-enroll.sh, so createOrg1/2/3 and createOrderer are available
+    # 2. Wait for CA certificates to be generated
+    infoln "Waiting for CA certificates to be generated..."
 
-    # 2. Make sure Orderer CA service is initialized and can accept requests
-    #    We check the Orderer CA (port 7054) as the central point.
-    export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/ordererOrganizations/example.com/
     COUNTER=0
-    rc=1
-    while [[ $rc -ne 0 && $COUNTER -lt $MAX_RETRY ]]; do
+    MAX_WAIT=30
+
+    # Wait for Orderer CA cert
+    while [ ! -f "organizations/fabric-ca/ordererOrg/ca-cert.pem" ] && [ $COUNTER -lt $MAX_WAIT ]; do
       sleep 1
+      COUNTER=$((COUNTER + 1))
+      if [ $COUNTER -eq $MAX_WAIT ]; then
+        errorln "Timeout waiting for Orderer CA certificate generation"
+        errorln "Check: docker logs ca.orderer.example.com"
+        exit 1
+      fi
+    done
+    successln "Orderer CA certificate generated"
+
+    # Wait for Org CAs certs
+    for ORG in org1 org2 org3; do
+      COUNTER=0
+      while [ ! -f "organizations/fabric-ca/${ORG}/ca-cert.pem" ] && [ $COUNTER -lt $MAX_WAIT ]; do
+        sleep 1
+        COUNTER=$((COUNTER + 1))
+        if [ $COUNTER -eq $MAX_WAIT ]; then
+          errorln "Timeout waiting for ${ORG} CA certificate generation"
+          errorln "Check: docker logs ca.${ORG}.example.com"
+          exit 1
+        fi
+      done
+      successln "${ORG} CA certificate generated"
+    done
+
+    # 3. Wait a bit more for CAs to fully initialize
+    infoln "Waiting for all CAs to fully initialize..."
+    sleep 3
+
+    # 4. Test connection to Orderer CA
+    # Set the FABRIC_CA_CLIENT_HOME to an already-created directory
+    export FABRIC_CA_CLIENT_HOME=${PWD}/organizations/ordererOrganizations/example.com/
+
+    COUNTER=0
+    MAX_RETRY=5
+    rc=1
+    infoln "Testing connection to Orderer CA..."
+    while [[ $rc -ne 0 && $COUNTER -lt $MAX_RETRY ]]; do
+      sleep 2
       set -x
-      # Check OrdererCA (port 7054)
-      fabric-ca-client getcainfo -u https://admin:adminpw@localhost:7054 --caname OrdererCA --tls.certfiles "${PWD}/organizations/fabric-ca/ordererOrg/ca-cert.pem"
+      fabric-ca-client getcainfo -u https://localhost:7054 --caname OrdererCA --tls.certfiles "${PWD}/organizations/fabric-ca/ordererOrg/ca-cert.pem"
       res=$?
       { set +x; } 2>/dev/null
       rc=$res
       COUNTER=$((COUNTER + 1))
     done
-    verifyResult $rc "Orderer CA failed to start or respond." # <-- Add this line (or equivalent)
 
-    # 3. Call the modular functions from register-enroll.sh
+    if [ $rc -ne 0 ]; then
+      fatalln "Orderer CA failed to start or respond. Check logs: docker logs ca.orderer.example.com"
+    fi
+    successln "Orderer CA is ready and responding"
+
+    # 5. Call the modular functions from register-enroll.sh (in parent directory)
     infoln "Creating Org1 Identities"
     createOrg1
 
     infoln "Creating Org2 Identities"
     createOrg2
 
-    infoln "Creating Org3 Identities" # <-- ADDED ORG3
+    infoln "Creating Org3 Identities"
     createOrg3
 
     infoln "Creating Orderer Org Identities"
     createOrderer
   fi
 
-  infoln "Generating CCP files for all three Orgs" # <-- Updated message
-  ./organizations/ccp-generate.sh
+  infoln "Generating CCP files for all three Orgs"
+  ../scripts/ccp-generate.sh
 }
 
 function networkUp() {
@@ -178,11 +225,14 @@ function networkUp() {
     createOrgs
   fi
 
-  COMPOSE_FILES="-f compose/${COMPOSE_FILE_BASE} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_BASE}"
+  COMPOSE_FILES="-f compose/${COMPOSE_FILE_BASE}"
+  COMPOSE_NON_CA_FILES="-f compose/${COMPOSE_FILE_BASE}"
 
   if [ "${DATABASE}" == "couchdb" ]; then
-    COMPOSE_FILES="${COMPOSE_FILES} -f compose/${COMPOSE_FILE_COUCH} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_COUCH}"
+    COMPOSE_FILES="${COMPOSE_FILES} -f compose/${COMPOSE_FILE_COUCH}"
   fi
+
+  COMPOSE_FILES="${COMPOSE_FILES} -f compose/${COMPOSE_FILE_CA}"
 
   DOCKER_SOCK="${DOCKER_SOCK}" ${CONTAINER_CLI_COMPOSE} ${COMPOSE_FILES} up -d 2>&1
 
@@ -304,9 +354,9 @@ function queryChaincode() {
 function networkDown() {
 #  local temp_compose=$COMPOSE_FILE_BASE
 #  COMPOSE_FILE_BASE=compose-bft-test-net.yaml
-  COMPOSE_BASE_FILES="-f compose/${COMPOSE_FILE_BASE} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_BASE}"
-  COMPOSE_COUCH_FILES="-f compose/${COMPOSE_FILE_COUCH} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_COUCH}"
-  COMPOSE_CA_FILES="-f compose/${COMPOSE_FILE_CA} -f compose/${CONTAINER_CLI}/${CONTAINER_CLI}-${COMPOSE_FILE_CA}"
+  COMPOSE_BASE_FILES="-f compose/${COMPOSE_FILE_BASE}"
+  COMPOSE_COUCH_FILES="-f compose/${COMPOSE_FILE_COUCH}"
+  COMPOSE_CA_FILES="-f compose/${COMPOSE_FILE_CA}"
   COMPOSE_FILES="${COMPOSE_BASE_FILES} ${COMPOSE_COUCH_FILES} ${COMPOSE_CA_FILES}"
 
   # stop org3 containers also in addition to org1 and org2, in case we were running sample to add org3
@@ -347,13 +397,6 @@ function networkDown() {
 }
 
 . ./network.config
-
-# use this as the default docker-compose yaml definition
-COMPOSE_FILE_BASE=compose-network.yaml
-# docker-compose.yaml file if you are using couchdb
-COMPOSE_FILE_COUCH=compose-couchdb.yaml
-# certificate authorities compose file
-COMPOSE_FILE_CA=compose-ca.yaml
 
 # Get docker sock path from environment variable
 SOCK="${DOCKER_HOST:-/var/run/docker.sock}"

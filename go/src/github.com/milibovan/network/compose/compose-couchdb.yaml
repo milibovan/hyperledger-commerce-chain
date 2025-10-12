@@ -1,18 +1,6 @@
 version: '3.7'
 
 volumes:
-  raft0.example.com:
-  raft1.example.com:
-  raft2.example.com:
-  peer0.org1.example.com:
-  peer0.org2.example.com:
-  peer0.org3.example.com:
-  peer1.org1.example.com:
-  peer1.org2.example.com:
-  peer1.org3.example.com:
-  peer2.org1.example.com:
-  peer2.org2.example.com:
-  peer2.org3.example.com:
   couchdb_data0:
   couchdb_data1:
   couchdb_data2:
@@ -22,10 +10,6 @@ volumes:
   couchdb_data6:
   couchdb_data7:
   couchdb_data8:
-  fabric-ca-orderer-data:
-  fabric-ca-org1data:
-  fabric-ca-org2data:
-  fabric-ca-org3data:
 
 networks:
   test:
@@ -36,97 +20,115 @@ services:
     image: couchdb:latest
     container_name: couchdb0
     ports:
-      - "5984:5984"
+      - "5984:5984"  # FIXED: Maps host 5984 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data0:/opt/couchdb/data
+    networks:
+      - test
 
   couchdb1:
     image: couchdb:latest
     container_name: couchdb1
     ports:
-      - "5985:5985"
+      - "5985:5984"  # FIXED: Maps host 5985 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data1:/opt/couchdb/data
+    networks:
+      - test
 
   couchdb2:
     image: couchdb:latest
     container_name: couchdb2
     ports:
-      - "5986:5986"
+      - "5986:5984"  # FIXED: Maps host 5986 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data2:/opt/couchdb/data
+    networks:
+      - test
 
   couchdb3:
     image: couchdb:latest
     container_name: couchdb3
     ports:
-      - "5987:5987"
+      - "5987:5984"  # FIXED: Maps host 5987 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data3:/opt/couchdb/data
+    networks:
+      - test
 
   couchdb4:
     image: couchdb:latest
     container_name: couchdb4
     ports:
-      - "5988:5988"
+      - "5988:5984"  # FIXED: Maps host 5988 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data4:/opt/couchdb/data
+    networks:
+      - test
 
   couchdb5:
     image: couchdb:latest
     container_name: couchdb5
     ports:
-      - "5989:5989"
+      - "5989:5984"  # FIXED: Maps host 5989 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data5:/opt/couchdb/data
+    networks:
+      - test
 
   couchdb6:
     image: couchdb:latest
     container_name: couchdb6
     ports:
-      - "5990:5990"
+      - "5990:5984"  # FIXED: Maps host 5990 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data6:/opt/couchdb/data
+    networks:
+      - test
 
   couchdb7:
     image: couchdb:latest
     container_name: couchdb7
     ports:
-      - "5991:5991"
+      - "5991:5984"  # FIXED: Maps host 5991 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data7:/opt/couchdb/data
+    networks:
+      - test
 
   couchdb8:
     image: couchdb:latest
     container_name: couchdb8
     ports:
-      - "5992:5992"
+      - "5992:5984"  # FIXED: Maps host 5992 to container 5984
     environment:
       COUCHDB_USER: admin
       COUCHDB_PASSWORD: password
     volumes:
       - couchdb_data8:/opt/couchdb/data
+    networks:
+      - test

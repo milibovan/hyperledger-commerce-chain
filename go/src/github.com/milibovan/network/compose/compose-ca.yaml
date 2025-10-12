@@ -1,31 +1,10 @@
 version: '3.7'
 
 volumes:
-  raft0.example.com:
-  raft1.example.com:
-  raft2.example.com:
-  peer0.org1.example.com:
-  peer0.org2.example.com:
-  peer0.org3.example.com:
-  peer1.org1.example.com:
-  peer1.org2.example.com:
-  peer1.org3.example.com:
-  peer2.org1.example.com:
-  peer2.org2.example.com:
-  peer2.org3.example.com:
-  couchdb_data0:
-  couchdb_data1:
-  couchdb_data2:
-  couchdb_data3:
-  couchdb_data4:
-  couchdb_data5:
-  couchdb_data6:
-  couchdb_data7:
-  couchdb_data8:
   fabric-ca-orderer-data:
-  fabric-ca-org1data:
-  fabric-ca-org2data:
-  fabric-ca-org3data:
+  fabric-ca-org1-data:
+  fabric-ca-org2-data:
+  fabric-ca-org3-data:
 
 networks:
   test:
@@ -43,9 +22,8 @@ services:
     ports:
       - "7054:7054"
     volumes:
-      - ../fabric-ca-server-orderer.yaml:/etc/hyperledger/fabric-ca-server-config.yaml
-      - fabric-ca-orderer-data:/etc/hyperledger/fabric-ca-server
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -c /etc/hyperledger/fabric-ca-server-config.yaml'
+      - ../organizations/fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     networks:
       - test
 
@@ -60,9 +38,8 @@ services:
     ports:
       - "7055:7055"
     volumes:
-      - ../fabric-ca-server-org1.yaml:/etc/hyperledger/fabric-ca-server-config.yaml
-      - fabric-ca-org1-data:/etc/hyperledger/fabric-ca-server
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -c /etc/hyperledger/fabric-ca-server-config.yaml'
+      - ../organizations/fabric-ca/org1:/etc/hyperledger/fabric-ca-server
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     networks:
       - test
 
@@ -77,9 +54,8 @@ services:
     ports:
       - "7056:7056"
     volumes:
-      - ../fabric-ca-server-org2.yaml:/etc/hyperledger/fabric-ca-server-config.yaml
-      - fabric-ca-org2-data:/etc/hyperledger/fabric-ca-server
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -c /etc/hyperledger/fabric-ca-server-config.yaml'
+      - ../organizations/fabric-ca/org2:/etc/hyperledger/fabric-ca-server
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     networks:
       - test
 
@@ -94,8 +70,7 @@ services:
     ports:
       - "7057:7057"
     volumes:
-      - ../fabric-ca-server-org3.yaml:/etc/hyperledger/fabric-ca-server-config.yaml
-      - fabric-ca-org3-data:/etc/hyperledger/fabric-ca-server
-    command: sh -c 'fabric-ca-server start -b admin:adminpw -c /etc/hyperledger/fabric-ca-server-config.yaml'
+      - ../organizations/fabric-ca/org3:/etc/hyperledger/fabric-ca-server
+    command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     networks:
       - test
