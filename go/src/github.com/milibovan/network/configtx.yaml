@@ -204,3 +204,18 @@ Profiles:
         - <<: *Org1
         - <<: *Org2
         - <<: *Org3
+
+  channel-b:
+    <<: *ChannelDefaults
+    Orderer:
+      <<: *OrdererDefaults
+      Capabilities: *OrdererCapabilities
+      OrdererType: etcdraft
+      Organizations:
+        - <<: *OrdererOrg
+    Application:
+      <<: *ApplicationDefaults
+      Organizations:
+        - <<: *Org1
+        - <<: *Org2
+        - <<: *Org3

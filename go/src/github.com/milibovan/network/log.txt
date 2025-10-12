@@ -1,2 +1,2 @@
-[34m2025-10-12 17:11:24.112 CEST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
-Error: proposal failed (err: bad proposal response 500: cannot create ledger from genesis block: ledger [channel-a] already exists with state [ACTIVE])
+[34m2025-10-12 19:11:40.187 CEST 0001 INFO[0m [channelCmd] [34;1mInitCmdFactory[0m -> Endorser and orderer connections initialized
+[34m2025-10-12 19:11:40.440 CEST 0002 INFO[0m [channelCmd] [34;1mexecuteJoin[0m -> Successfully submitted proposal to join channel

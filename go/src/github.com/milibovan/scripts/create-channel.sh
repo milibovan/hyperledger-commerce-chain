@@ -64,6 +64,8 @@ createChannelGenesisBlock() {
   set -x
   if [ $bft_true -eq 1 ]; then
     configtxgen -profile ChannelUsingBFT -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
+  elif [ "$CHANNEL_NAME_B" == "channel-b" ]; then
+    configtxgen -profile channel-b -outputBlock ./channel-artifacts/${CHANNEL_NAME_B}.block -channelID $CHANNEL_NAME_B
   else
     configtxgen -profile channel-a -outputBlock ./channel-artifacts/${CHANNEL_NAME}.block -channelID $CHANNEL_NAME
   fi
