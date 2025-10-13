@@ -156,3 +156,83 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 
 	return assetJSON != nil, nil
 }
+
+func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterface, id string, name string, expiryDate time.Time, price float64, quantity int) error {
+	exists, err := s.AssetExists(ctx, id, "product")
+	if err != nil {
+		return err
+	}
+	if exists {
+		return fmt.Errorf("Product %s already exists", id)
+	}
+
+	product := structs.Product{
+		Id:         id,
+		Name:       name,
+		Price:      price,
+		ExpiryDate: expiryDate,
+		Quantity:   quantity,
+	}
+
+	productJSON, err := json.Marshal(product)
+	if err != nil {
+		return err
+	}
+
+	return ctx.GetStub().PutState("PRODUCT_"+product.Id, productJSON)
+}
+
+func (s *SmartContract) AddProductToTrader(ctx contractapi.TransactionContextInterface, id string, traderId string) error {
+	exists, err := s.AssetExists(ctx, traderId, "trader")
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("Trader %s does not exists", traderId)
+	}
+
+	exists, err = s.AssetExists(ctx, id, "product")
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("Product %s must be created using CreateProduct before adding it to a trader", id)
+	}
+
+	trader, err := s.ReadTrader(ctx, traderId)
+	if err != nil {
+		return err
+	}
+
+	for _, existingID := range trader.ProductsAvailableIDs {
+		if existingID == id {
+			return fmt.Errorf("Product %s is already available for Trader %s", id, traderId)
+		}
+	}
+
+	trader.ProductsAvailableIDs = append(trader.ProductsAvailableIDs, id)
+
+	traderJSON, err := json.Marshal(trader)
+	if err != nil {
+		return err
+	}
+
+	return ctx.GetStub().PutState("TRADER_"+trader.Id, traderJSON)
+}
+
+func (s *SmartContract) ReadTrader(ctx contractapi.TransactionContextInterface, id string) (*structs.Trader, error) {
+	traderJSON, err := ctx.GetStub().GetState("TRADER_" + id)
+	if err != nil {
+		return nil, err
+	}
+	if traderJSON == nil {
+		return nil, fmt.Errorf("trader %s does not exists", id)
+	}
+
+	var trader *structs.Trader
+	err = json.Unmarshal(traderJSON, &trader)
+	if err != nil {
+		return nil, err
+	}
+	return trader, nil
+}
