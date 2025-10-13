@@ -1,0 +1,14 @@
+{
+  "index": {
+    "fields": [
+      "doc-type",
+      "surname",
+      "email",
+      "receipts-ids",
+      "balance"
+    ]
+  },
+  "ddoc": "indexUserDoc",
+  "name": "indexUser",
+  "type": "json"
+}

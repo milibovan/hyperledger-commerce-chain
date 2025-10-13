@@ -1,0 +1,14 @@
+{
+  "index": {
+    "fields": [
+      "doc-type",
+      "expiry-date",
+      "quantity",
+      "price",
+      "trader-type"
+    ]
+  },
+  "ddoc": "indexProductDoc",
+  "name": "indexProduct",
+  "type": "json"
+}

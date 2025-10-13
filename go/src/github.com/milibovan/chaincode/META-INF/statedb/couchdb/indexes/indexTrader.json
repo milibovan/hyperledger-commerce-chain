@@ -1,0 +1,15 @@
+{
+  "index": {
+    "fields": [
+      "doc-type",
+      "trader-type",
+      "vat",
+      "products-available-ids",
+      "receipts-ids",
+      "balance"
+    ]
+  },
+  "ddoc": "indexTraderDoc",
+  "name": "indexTrader",
+  "type": "json"
+}
