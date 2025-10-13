@@ -236,3 +236,70 @@ func (s *SmartContract) ReadTrader(ctx contractapi.TransactionContextInterface, 
 	}
 	return trader, nil
 }
+
+func (s *SmartContract) ReadUser(ctx contractapi.TransactionContextInterface, id string) (*structs.User, error) {
+	userJSON, err := ctx.GetStub().GetState("USER_" + id)
+	if err != nil {
+		return nil, err
+	}
+	if userJSON == nil {
+		return nil, fmt.Errorf("user %s does not exists", id)
+	}
+
+	var user *structs.User
+	err = json.Unmarshal(userJSON, &user)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+//func (s *SmartContract) BuyProduct(ctx contractapi.TransactionContextInterface, userId string, productId string, quantity int) error {}
+
+func (s *SmartContract) DepositMoney(ctx contractapi.TransactionContextInterface, id string, amount float64, userType string) error {
+	var key string
+	if userType == "user" {
+		key = "USER_" + id
+	} else if userType == "trader" {
+		key = "TRADER_" + id
+	} else {
+		return fmt.Errorf("unsupported user type: %s", userType)
+	}
+
+	exists, err := s.AssetExists(ctx, id, userType)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("Asset type %s with ID %s does not exist", userType, id)
+	}
+
+	if amount <= 0 {
+		return fmt.Errorf("deposit amount must be positive")
+	}
+
+	if userType == "user" {
+		user, err := s.ReadUser(ctx, id)
+		if err != nil {
+			return err
+		}
+		user.Balance += amount
+
+		userJSON, err := json.Marshal(user)
+		if err != nil {
+			return err
+		}
+		return ctx.GetStub().PutState(key, userJSON)
+	}
+	trader, err := s.ReadTrader(ctx, id)
+	if err != nil {
+		return err
+	}
+	trader.Balance += amount
+
+	traderJSON, err := json.Marshal(trader)
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(key, traderJSON)
+}
