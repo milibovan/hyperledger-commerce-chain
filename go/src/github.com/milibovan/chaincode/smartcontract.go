@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
 )
 
@@ -143,7 +144,7 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 		key = "USER_" + id
 	} else if assetType == "trader" {
 		key = "TRADER_" + id
-	} else if assetType == "product" { // Added check for product
+	} else if assetType == "product" {
 		key = "PRODUCT_" + id
 	} else {
 		return false, fmt.Errorf("unsupported asset type: %s", assetType)
@@ -180,6 +181,25 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 	}
 
 	return ctx.GetStub().PutState("PRODUCT_"+product.Id, productJSON)
+}
+
+func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, traderId string, userId string, productIds []string) (string, error) {
+	id := uuid.New().String()
+
+	receipt := structs.Receipt{
+		Id:         id,
+		TraderId:   traderId,
+		UserId:     userId,
+		ProductIDs: productIds,
+		Date:       time.Now(),
+	}
+
+	receiptJSON, err := json.Marshal(receipt)
+	if err != nil {
+		return "", err
+	}
+
+	return id, ctx.GetStub().PutState("RECEIPT_"+receipt.Id, receiptJSON)
 }
 
 func (s *SmartContract) AddProductToTrader(ctx contractapi.TransactionContextInterface, id string, traderId string) error {
@@ -254,7 +274,104 @@ func (s *SmartContract) ReadUser(ctx contractapi.TransactionContextInterface, id
 	return user, nil
 }
 
-//func (s *SmartContract) BuyProduct(ctx contractapi.TransactionContextInterface, userId string, productId string, quantity int) error {}
+func (s *SmartContract) ReadProduct(ctx contractapi.TransactionContextInterface, id string) (*structs.Product, error) {
+	productJSON, err := ctx.GetStub().GetState("PRODUCT_" + id)
+	if err != nil {
+		return nil, err
+	}
+	if productJSON == nil {
+		return nil, fmt.Errorf("product %s does not exists", id)
+	}
+
+	var product *structs.Product
+	err = json.Unmarshal(productJSON, &product)
+	if err != nil {
+		return nil, err
+	}
+	return product, nil
+}
+
+func (s *SmartContract) BuyProduct(ctx contractapi.TransactionContextInterface, userId string, productId string, traderId string, quantity int) error {
+	if exists, err := s.AssetExists(ctx, userId, "user"); err != nil || !exists {
+		return fmt.Errorf("Asset type user with ID %s does not exist", userId)
+	}
+	if exists, err := s.AssetExists(ctx, traderId, "trader"); err != nil || !exists {
+		return fmt.Errorf("Asset type trader with ID %s does not exist", traderId)
+	}
+	if exists, err := s.AssetExists(ctx, productId, "product"); err != nil || !exists {
+		return fmt.Errorf("Asset type product with ID %s does not exist", productId)
+	}
+
+	product, err := s.ReadProduct(ctx, productId)
+	if err != nil {
+		return err
+	}
+	user, err := s.ReadUser(ctx, userId)
+	if err != nil {
+		return err
+	}
+	trader, err := s.ReadTrader(ctx, traderId)
+	if err != nil {
+		return err
+	}
+
+	if !trader.ContainsProduct(product.Id) {
+		return fmt.Errorf("Product %s does not exist, at trader", product.Id)
+	}
+
+	if product.Quantity < quantity {
+		return fmt.Errorf("Not enough of product %s quantity %d", productId, quantity)
+	}
+
+	if user.Balance < product.Price*float64(quantity) {
+		return fmt.Errorf("Not enough credits of user %s balance %.2f, needed for transaction %.2f", userId, user.Balance, product.Price*float64(quantity))
+	}
+
+	user.Balance -= product.Price * float64(quantity)
+	trader.Balance += product.Price * float64(quantity)
+	product.Quantity -= quantity
+
+	if product.Quantity == 0 {
+		trader.ProductsAvailableIDs = trader.RemoveProductId(product.Id)
+	}
+
+	receiptId, err := s.CreateReceipt(ctx, traderId, userId, []string{productId})
+	if err != nil {
+		return err
+	}
+
+	user.ReceiptsIDs = append(user.ReceiptsIDs, receiptId)
+	trader.ReceiptsIDs = append(trader.ReceiptsIDs, receiptId)
+
+	userJSON, err := json.Marshal(user)
+	if err != nil {
+		return err
+	}
+	err = ctx.GetStub().PutState("USER_"+userId, userJSON)
+	if err != nil {
+		return err
+	}
+
+	traderJSON, err := json.Marshal(trader)
+	if err != nil {
+		return err
+	}
+	err = ctx.GetStub().PutState("TRADER_"+traderId, traderJSON)
+	if err != nil {
+		return err
+	}
+
+	productJSON, err := json.Marshal(product)
+	if err != nil {
+		return err
+	}
+	err = ctx.GetStub().PutState("PRODUCT_"+product.Id, productJSON)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func (s *SmartContract) DepositMoney(ctx contractapi.TransactionContextInterface, id string, amount float64, userType string) error {
 	var key string

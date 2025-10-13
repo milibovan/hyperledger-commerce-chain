@@ -4,8 +4,8 @@ import "time"
 
 type Receipt struct {
 	Id         string    `json:"id"`
-	Trader     Trader    `json:"trader"`
-	User       User      `json:"user"`
+	TraderId   string    `json:"trader-id"`
+	UserId     string    `json:"user-id"`
 	ProductIDs []string  `json:"products-ids"`
 	Date       time.Time `json:"date"`
 }

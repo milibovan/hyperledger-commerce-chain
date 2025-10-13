@@ -31,3 +31,23 @@ func GetTraderTypeFromString(input string) (TraderType, error) {
 		return "", fmt.Errorf("invalid or unsupported trader type: %s", input)
 	}
 }
+
+func (t *Trader) RemoveProductId(id string) []string {
+	for i, item := range t.ProductsAvailableIDs {
+		if item == id {
+			return append(t.ProductsAvailableIDs[:i], t.ProductsAvailableIDs[i+1:]...)
+		}
+	}
+	return t.ProductsAvailableIDs
+}
+
+func (t *Trader) ContainsProduct(id string) bool {
+	isAvailable := false
+	for _, productId := range t.ProductsAvailableIDs {
+		if productId == id {
+			isAvailable = true
+			break
+		}
+	}
+	return isAvailable
+}
