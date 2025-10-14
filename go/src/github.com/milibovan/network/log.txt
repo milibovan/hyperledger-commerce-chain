@@ -1,2 +1,1 @@
-Committed chaincode definition for chaincode 'commerce' on channel 'channel-b':
-Version: 1.0, Sequence: 1, Endorsement Plugin: escc, Validation Plugin: vscc, Approvals: [Org1MSP: true, Org2MSP: true, Org3MSP: true]
+[34m2025-10-14 16:46:36.464 CEST 0001 INFO[0m [chaincodeCmd] [34;1mchaincodeInvokeOrQuery[0m -> Chaincode invoke successful. result: status:200 
