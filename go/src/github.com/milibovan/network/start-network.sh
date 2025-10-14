@@ -11,6 +11,7 @@ export COMPOSE_FILE_COUCH=compose-couchdb.yaml
 # certificate authorities compose file
 export COMPOSE_FILE_CA=compose-ca.yaml
 export COMPOSE_FILE_NON_CA=compose-network.yaml
+export CORE_CHAINCODE_ID_NAME=commerce-chain
 
 pushd ${ROOTDIR} > /dev/null
 trap "popd > /dev/null" EXIT
@@ -283,7 +284,9 @@ function deployCC() {
     fatalln "Deploying chaincode failed CHANNEL_NAME"
   fi
 
-  ../scripts/deployCC.sh $CHANNEL_NAME_B $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
+  export CHANNEL_NAME_B="channel-b"
+  export CC_SEQUENCE_B=1
+  ../scripts/deployCC.sh $CHANNEL_NAME_B $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE_B $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
 
   if [ $? -ne 0 ]; then
     fatalln "Deploying chaincode failed $CHANNEL_NAME_B"
@@ -317,7 +320,7 @@ function listChaincode() {
 
   export FABRIC_CFG_PATH=${PWD}
 
-  . ../scripts/envVar.sh
+  . ../scripts/env-var.sh
   . ../scripts/ccutils.sh
 
   setGlobals $ORG
@@ -335,7 +338,7 @@ function invokeChaincode() {
 
   export FABRIC_CFG_PATH=${PWD}
 
-  . ../scripts/envVar.sh
+  . ../scripts/env-var.sh
   . ../scripts/ccutils.sh
 
   setGlobals $ORG
@@ -349,7 +352,7 @@ function queryChaincode() {
 
   export FABRIC_CFG_PATH=${PWD}
 
-  . ../scripts/envVar.sh
+  . ../scripts/env-var.sh
   . ../scripts/ccutils.sh
 
   setGlobals $ORG

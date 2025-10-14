@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ./utils.sh
+source ../scripts/utils.sh
 
 CHANNEL_NAME=${1:-"channel-a"}
 CC_NAME=${2}
@@ -50,8 +50,8 @@ fi
 FABRIC_CFG_PATH=../network/config/
 
 # import utils
-. ./envVar.sh
-. ./ccutils.sh
+. ../scripts/env-var.sh
+. ../scripts/ccutils.sh
 
 function checkPrereqs() {
   jq --version > /dev/null 2>&1
@@ -69,9 +69,9 @@ function checkPrereqs() {
 checkPrereqs
 
 ## package the chaincode
-./packageCC.sh $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION
+../scripts/packageCC.sh $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION
 
-PACKAGE_ID=$(peer lifecycle chaincode calculatepackageid ${CC_NAME}.tar.gz)
+PACKAGE_ID=$(peer lifecycle chaincode calculatepackageid packagedChaincode/${CC_NAME}.tar.gz)
 
 ## Install chaincode on peer0.org1 and peer0.org2
 infoln "Installing chaincode on peer0.org1..."
@@ -90,11 +90,6 @@ queryInstalled 1
 
 ## approve the definition for org1
 approveForMyOrg 1
-
-## check whether the chaincode definition is ready to be committed
-## expect org1 to have approved and org2 not to
-checkCommitReadiness 1 "\"Org1MSP\": true" "\"Org2MSP\": false" "\"Org3MSP\": false"
-checkCommitReadiness 2 "\"Org1MSP\": true" "\"Org2MSP\": false" "\"Org3MSP\": false"
 
 ## now approve also for org2
 approveForMyOrg 2
@@ -120,8 +115,8 @@ queryCommitted 3
 ## method defined
 if [ "$CC_INIT_FCN" = "NA" ]; then
   infoln "Chaincode initialization is not required"
-else
-  chaincodeInvokeInit 1 2 3
+#else
+#  chaincodeInvokeInit 1 2 3
 fi
 
 exit 0

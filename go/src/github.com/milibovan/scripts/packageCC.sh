@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source ./utils.sh
+source ../scripts/utils.sh
 
 CC_NAME=${1}
 CC_SRC_PATH=${2}
@@ -41,6 +41,7 @@ if [ "$CC_SRC_LANGUAGE" = "go" ]; then
 
   infoln "Vendoring Go dependencies at $CC_SRC_PATH"
   pushd $CC_SRC_PATH
+  GO111MODULE=on go mod tidy
   GO111MODULE=on go mod vendor
   popd
   successln "Finished vendoring Go dependencies"
@@ -85,12 +86,12 @@ packageChaincode() {
     mkdir -p packagedChaincode
     peer lifecycle chaincode package packagedChaincode/${CC_NAME}_${CC_VERSION}.tar.gz --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} --label ${CC_NAME}_${CC_VERSION} >&log.txt
   else
-    peer lifecycle chaincode package ${CC_NAME}.tar.gz --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} --label ${CC_NAME}_${CC_VERSION} >&log.txt
+    peer lifecycle chaincode package packagedChaincode/${CC_NAME}.tar.gz --path ${CC_SRC_PATH} --lang ${CC_RUNTIME_LANGUAGE} --label ${CC_NAME}_${CC_VERSION} >&log.txt
   fi
   res=$?
   { set +x; } 2>/dev/null
   cat log.txt
-  PACKAGE_ID=$(peer lifecycle chaincode calculatepackageid ${CC_NAME}.tar.gz)
+  PACKAGE_ID=$(peer lifecycle chaincode calculatepackageid packagedChaincode/${CC_NAME}.tar.gz)
   verifyResult $res "Chaincode packaging has failed"
   successln "Chaincode is packaged"
 }

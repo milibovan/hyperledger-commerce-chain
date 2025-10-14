@@ -13,7 +13,7 @@ type SmartContract struct {
 	contractapi.Contract
 }
 
-func (s *SmartContract) Init(ctx contractapi.TransactionContextInterface) error {
+func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
 	// Users
 	users := []structs.User{
 		{DocType: "user", Id: "1", Name: "Alice", Surname: "Smith", Email: "alice@example.com", ReceiptsIDs: []string{}, Balance: 1000.0},
