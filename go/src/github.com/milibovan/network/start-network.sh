@@ -2,6 +2,7 @@ ROOTDIR=$(cd "$(dirname "$0")" && pwd)
 export PATH=${ROOTDIR}/../bin:${PWD}/../bin:$PATH
 export FABRIC_CFG_PATH=${PWD}
 export VERBOSE=true
+export CC_SRC_PATH="../chaincode"
 
 # use this as the default docker-compose yaml definition
 export COMPOSE_FILE_BASE=compose-network.yaml
@@ -276,28 +277,34 @@ function createChannel() {
 
 ## Call the script to deploy a chaincode to the channel
 function deployCC() {
-  scripts/deployCC.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
+  ../scripts/deployCC.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
 
   if [ $? -ne 0 ]; then
-    fatalln "Deploying chaincode failed"
+    fatalln "Deploying chaincode failed CHANNEL_NAME"
+  fi
+
+  ../scripts/deployCC.sh $CHANNEL_NAME_B $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
+
+  if [ $? -ne 0 ]; then
+    fatalln "Deploying chaincode failed $CHANNEL_NAME_B"
   fi
 }
 
 ## Call the script to deploy a chaincode to the channel
-function deployCCAAS() {
-  scripts/deployCCAAS.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CCAAS_DOCKER_RUN $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE $CCAAS_DOCKER_RUN
-
-  if [ $? -ne 0 ]; then
-    fatalln "Deploying chaincode-as-a-service failed"
-  fi
-}
+#function deployCCAAS() {
+#  ../scripts/deployCCAAS.sh $CHANNEL_NAME $CC_NAME $CC_SRC_PATH $CCAAS_DOCKER_RUN $CC_VERSION $CC_SEQUENCE $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE $CCAAS_DOCKER_RUN
+#
+#  if [ $? -ne 0 ]; then
+#    fatalln "Deploying chaincode-as-a-service failed"
+#  fi
+#}
 
 ## Call the script to package the chaincode
 function packageChaincode() {
 
   infoln "Packaging chaincode"
 
-  scripts/packageCC.sh $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION true
+  ../scripts/packageCC.sh $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION true
 
   if [ $? -ne 0 ]; then
     fatalln "Packaging the chaincode failed"
@@ -310,8 +317,8 @@ function listChaincode() {
 
   export FABRIC_CFG_PATH=${PWD}
 
-  . scripts/envVar.sh
-  . scripts/ccutils.sh
+  . ../scripts/envVar.sh
+  . ../scripts/ccutils.sh
 
   setGlobals $ORG
 
@@ -328,8 +335,8 @@ function invokeChaincode() {
 
   export FABRIC_CFG_PATH=${PWD}
 
-  . scripts/envVar.sh
-  . scripts/ccutils.sh
+  . ../scripts/envVar.sh
+  . ../scripts/ccutils.sh
 
   setGlobals $ORG
 
@@ -342,8 +349,8 @@ function queryChaincode() {
 
   export FABRIC_CFG_PATH=${PWD}
 
-  . scripts/envVar.sh
-  . scripts/ccutils.sh
+  . ../scripts/envVar.sh
+  . ../scripts/ccutils.sh
 
   setGlobals $ORG
 
