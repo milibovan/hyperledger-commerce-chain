@@ -3,6 +3,8 @@ package main
 import (
 	"chaincode/structs"
 	"encoding/json"
+	"time"
+
 	"github.com/hyperledger/fabric-chaincode-go/v2/shim"
 )
 
@@ -80,4 +82,64 @@ func constructReceiptQueryResponseFromIterator(resultsIterator shim.StateQueryIt
 	}
 
 	return receipts, nil
+}
+
+// HistoryProductQueryResult structure used for returning result of history query
+type HistoryProductQueryResult struct {
+	Record    *structs.Product `json:"record"`
+	TxId      string           `json:"tx-id"`
+	Timestamp time.Time        `json:"timestamp"`
+	IsDelete  bool             `json:"is-delete"`
+}
+
+// PaginatedProductQueryResult structure used for returning paginated query results and metadata
+type PaginatedProductQueryResult struct {
+	Records             []*structs.Product `json:"records"`
+	FetchedRecordsCount int32              `json:"fetched-records-count"`
+	Bookmark            string             `json:"bookmark"`
+}
+
+// HistoryUserQueryResult structure used for returning result of history query
+type HistoryUserQueryResult struct {
+	Record    *structs.User `json:"record"`
+	TxId      string        `json:"tx-id"`
+	Timestamp time.Time     `json:"timestamp"`
+	IsDelete  bool          `json:"is-delete"`
+}
+
+// PaginatedUserQueryResult structure used for returning paginated query results and metadata
+type PaginatedUserQueryResult struct {
+	Records             []*structs.User `json:"records"`
+	FetchedRecordsCount int32           `json:"fetched-records-count"`
+	Bookmark            string          `json:"bookmark"`
+}
+
+// HistoryTraderQueryResult structure used for returning result of history query
+type HistoryTraderQueryResult struct {
+	Record    *structs.Trader `json:"record"`
+	TxId      string          `json:"tx-id"`
+	Timestamp time.Time       `json:"timestamp"`
+	IsDelete  bool            `json:"is-delete"`
+}
+
+// PaginatedTraderQueryResult structure used for returning paginated query results and metadata
+type PaginatedTraderQueryResult struct {
+	Records             []*structs.Trader `json:"records"`
+	FetchedRecordsCount int32             `json:"fetched-records-count"`
+	Bookmark            string            `json:"bookmark"`
+}
+
+// HistoryReceiptQueryResult structure used for returning result of history query
+type HistoryReceiptQueryResult struct {
+	Record    *structs.Receipt `json:"record"`
+	TxId      string           `json:"tx-id"`
+	Timestamp time.Time        `json:"timestamp"`
+	IsDelete  bool             `json:"is-delete"`
+}
+
+// PaginatedReceiptQueryResult structure used for returning paginated query results and metadata
+type PaginatedReceiptQueryResult struct {
+	Records             []*structs.Receipt `json:"records"`
+	FetchedRecordsCount int32              `json:"fetched-records-count"`
+	Bookmark            string             `json:"bookmark"`
 }
