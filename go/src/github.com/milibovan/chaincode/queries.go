@@ -27,11 +27,11 @@ func (s *SmartContract) GetProductsByMultipleCategories(ctx contractapi.Transact
 	}
 
 	if price != "" {
-		price, err := strconv.ParseFloat(price, 64)
+		priceFl, err := strconv.ParseFloat(price, 64)
 		if err != nil {
 			return nil, fmt.Errorf("invalid price format: %w", err)
 		}
-		selector["price"] = map[string]float64{"$lte": price}
+		selector["price"] = map[string]float64{"$lte": priceFl}
 	}
 
 	queryMap := map[string]interface{}{
@@ -65,17 +65,142 @@ func (s *SmartContract) GetProductsByMultipleCategoriesPriceRange(ctx contractap
 	}
 
 	if minPrice != "" && maxPrice != "" {
-		minPrice, err := strconv.ParseFloat(minPrice, 64)
+		minPriceFl, err := strconv.ParseFloat(minPrice, 64)
 
 		if err != nil {
 			return nil, fmt.Errorf("invalid price format: %w", err)
 		}
-		maxPrice, err := strconv.ParseFloat(maxPrice, 64)
+		maxPriceFl, err := strconv.ParseFloat(maxPrice, 64)
 		if err != nil {
 			return nil, fmt.Errorf("invalid price format: %w", err)
 		}
 
-		selector["price"] = map[string]float64{"$lte": maxPrice, "$gte": minPrice}
+		selector["price"] = map[string]float64{"$lte": maxPriceFl, "$gte": minPriceFl}
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) QueryProductsByName(ctx contractapi.TransactionContextInterface, name string) ([]*structs.Product, error) {
+	selector := map[string]interface{}{
+		"doc-type": "product",
+	}
+
+	if name != "" {
+		selector["name"] = map[string]string{"$eq": name}
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) QueryProductsById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Product, error) {
+	selector := map[string]interface{}{
+		"doc-type": "product",
+	}
+
+	if id != "" {
+		selector["id"] = map[string]string{"$eq": id}
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) QueryProductsByTraderType(ctx contractapi.TransactionContextInterface, traderType string) ([]*structs.Product, error) {
+	selector := map[string]interface{}{
+		"doc-type": "product",
+	}
+
+	if traderType != "" {
+		selector["trader-type"] = map[string]string{"$eq": traderType}
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) QueryProductsByPrice(ctx contractapi.TransactionContextInterface, price string) ([]*structs.Product, error) {
+	selector := map[string]interface{}{
+		"doc-type": "product",
+	}
+	if price != "" {
+		priceFl, err := strconv.ParseFloat(price, 64)
+
+		if err != nil {
+			return nil, fmt.Errorf("invalid price format: %w", err)
+		}
+
+		selector["price"] = map[string]float64{"$lte": priceFl}
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) QueryProductsByPriceRange(ctx contractapi.TransactionContextInterface, minPrice string, maxPrice string) ([]*structs.Product, error) {
+	selector := map[string]interface{}{
+		"doc-type": "product",
+	}
+
+	if minPrice != "" && maxPrice != "" {
+		minPriceFl, err := strconv.ParseFloat(minPrice, 64)
+
+		if err != nil {
+			return nil, fmt.Errorf("invalid price format: %w", err)
+		}
+		maxPriceFl, err := strconv.ParseFloat(maxPrice, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid price format: %w", err)
+		}
+
+		selector["price"] = map[string]float64{"$lte": maxPriceFl, "$gte": minPriceFl}
 	}
 
 	queryMap := map[string]interface{}{
