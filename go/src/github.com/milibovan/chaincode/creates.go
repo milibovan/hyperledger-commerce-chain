@@ -7,12 +7,11 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
 )
 
 func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, id, name, surname, email, balance string) error {
-	exists, err := s.AssetExists(ctx, id, "user")
+	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -44,7 +43,7 @@ func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, 
 }
 
 func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id, traderTypeStr, vat, balance string) error {
-	exists, err := s.AssetExists(ctx, id, "trader")
+	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -81,7 +80,7 @@ func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface
 }
 
 func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterface, id, name, expiryDate, price, quantity, traderTypeStr string) error {
-	exists, err := s.AssetExists(ctx, id, "product")
+	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -98,6 +97,9 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 	}
 
 	quantityInt, err := strconv.Atoi(quantity)
+	if err != nil {
+		return fmt.Errorf("invalid quantity format: %w", err)
+	}
 
 	if exists {
 		return fmt.Errorf("Product %s already exists", id)
@@ -126,9 +128,7 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().PutState(product.Id, productJSON)
 }
 
-func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, traderId string, userId string, productIds []string) (string, error) {
-	id := uuid.New().String()
-
+func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, id, traderId, userId string, productIds []string) (string, error) {
 	receipt := structs.Receipt{
 		DocType:    "receipt",
 		Id:         id,

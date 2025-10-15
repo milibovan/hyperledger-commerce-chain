@@ -9,7 +9,7 @@ import (
 )
 
 func (s *SmartContract) ReadTrader(ctx contractapi.TransactionContextInterface, id string) (*structs.Trader, error) {
-	traderJSON, err := ctx.GetStub().GetState("TRADER_" + id)
+	traderJSON, err := ctx.GetStub().GetState(id)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (s *SmartContract) ReadTrader(ctx contractapi.TransactionContextInterface, 
 }
 
 func (s *SmartContract) ReadUser(ctx contractapi.TransactionContextInterface, id string) (*structs.User, error) {
-	userJSON, err := ctx.GetStub().GetState("USER_" + id)
+	userJSON, err := ctx.GetStub().GetState(id)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +43,7 @@ func (s *SmartContract) ReadUser(ctx contractapi.TransactionContextInterface, id
 }
 
 func (s *SmartContract) ReadProduct(ctx contractapi.TransactionContextInterface, id string) (*structs.Product, error) {
-	productJSON, err := ctx.GetStub().GetState("PRODUCT_" + id)
+	productJSON, err := ctx.GetStub().GetState(id)
 	if err != nil {
 		return nil, err
 	}
