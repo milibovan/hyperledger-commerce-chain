@@ -34,10 +34,12 @@ func handleMenu() error {
 			activeConn = nil
 		}
 
-		fmt.Println("\n--- MAIN MENU ---")
-		fmt.Println("1. Connect/Login (Select Org & User)")
-		fmt.Println("2. Exit")
-		fmt.Print("\nEnter command: ")
+		printHeader("╔════════════════════════════════╗")
+		printHeader("║        MAIN MENU               ║")
+		printHeader("╔════════════════════════════════╗")
+		fmt.Println(Cyan + "1." + Reset + " Connect/Login (Select Org & User)")
+		fmt.Println(Cyan + "2." + Reset + " Exit")
+		fmt.Print(Yellow + "\nEnter command: " + Reset)
 
 		var command int
 		_, err := fmt.Scanln(&command)
@@ -52,17 +54,17 @@ func handleMenu() error {
 		switch command {
 		case 1:
 			if err = connectClient(); err != nil {
-				fmt.Printf("Connection failed: %v\n", err)
+				printError(fmt.Sprintf("Connection failed: %v\n", err))
 				continue
 			}
 			if err = handleChannelAndActionMenu(); err != nil {
 				return err
 			}
 		case 2:
-			fmt.Println("Exiting application.")
+			printInfo("Exiting application.")
 			return nil
 		default:
-			fmt.Println("Invalid command. Please try again.")
+			printWarning("Invalid command. Please try again.")
 		}
 	}
 }
@@ -71,11 +73,11 @@ func connectClient() error {
 	var orgName, userID string
 
 	for {
-		fmt.Println("\nSelect Organization:")
-		fmt.Println("1. Org1")
-		fmt.Println("2. Org2")
-		fmt.Println("3. Org3")
-		fmt.Print("Enter option: ")
+		printSubHeader("\nSelect Organization:")
+		fmt.Println(Cyan + "1." + Reset + "Org1")
+		fmt.Println(Cyan + "2." + Reset + "Org2")
+		fmt.Println(Cyan + "3." + Reset + "Org3")
+		fmt.Print(Yellow + "Enter option: " + Reset)
 		var orgNameInput int
 		_, err := fmt.Scanln(&orgNameInput)
 		if err != nil {
@@ -91,18 +93,18 @@ func connectClient() error {
 		case 3:
 			orgName = "org3"
 		default:
-			fmt.Println("Invalid organization option.")
+			printWarning("Invalid organization option.")
 			continue
 		}
 		break
 	}
 
 	for {
-		fmt.Println("\nSelect User ID:")
-		fmt.Println("1. User1")
-		fmt.Println("2. Admin")
-		fmt.Println("3. [Create User - Placeholder]")
-		fmt.Print("Enter option: ")
+		printSubHeader("\nSelect User ID:")
+		fmt.Println(Cyan + "1." + Reset + "User1")
+		fmt.Println(Cyan + "2." + Reset + "Admin")
+		//fmt.Println("3. [Create User - Placeholder]")
+		fmt.Print(Yellow + "Enter option: " + Reset)
 		var userIDInput int
 		_, err := fmt.Scanln(&userIDInput)
 		if err != nil {
@@ -119,13 +121,13 @@ func connectClient() error {
 			// NOTE: Real enrollment logic should go here, but for now, we use a known test user.
 			userID = "User1" // Using an existing enrolled identity for simplicity
 		default:
-			fmt.Println("Invalid user option.")
+			printWarning("Invalid user option.")
 			continue
 		}
 		break
 	}
 
-	fmt.Printf("\nAttempting to connect as %s from %s...\n", userID, orgName)
+	printInfo(fmt.Sprintf("\nAttempting to connect as %s from %s...\n", userID, orgName))
 
 	gw, conn, err := client.ConnectGateway(orgName, userID)
 	if err != nil {
@@ -134,7 +136,7 @@ func connectClient() error {
 
 	activeGW = gw
 	activeConn = conn
-	fmt.Println("✅ Successfully connected to Fabric Gateway.")
+	printSuccess("✅ Successfully connected to Fabric Gateway.")
 
 	return nil
 }
@@ -145,16 +147,16 @@ func handleChannelAndActionMenu() error {
 	channelName = channelSelectionMenu(channelName)
 
 	for {
-		fmt.Printf("\n--- ACTION MENU (User: %s on Channel: %s) ---\n", activeGW.Identity(), channelName)
-		fmt.Println("1. Invoke (Create Merchant, Buy Product, etc.)")
-		fmt.Println("2. Query (Read Product, Rich Queries)")
-		fmt.Println("0. Disconnect/Logout")
-		fmt.Print("Enter command: ")
+		printSubHeader(fmt.Sprintf("\n--- ACTION MENU (User: %s on Channel: %s) ---\n", activeGW.Identity(), channelName))
+		fmt.Println(Cyan + "1." + Reset + "Invoke (Create Merchant, Buy Product, etc.)")
+		fmt.Println(Cyan + "2." + Reset + "Query (Read Product, Rich Queries)")
+		fmt.Println(Cyan + "0." + Reset + "Disconnect/Logout")
+		fmt.Print(Yellow + "\nEnter command: " + Reset)
 
 		var command int
 		_, err := fmt.Scanln(&command)
 		if err != nil {
-			fmt.Println("Error reading command.")
+			printWarning("Error reading command.")
 			fmt.Scanln()
 			continue
 		}
@@ -171,10 +173,10 @@ func handleChannelAndActionMenu() error {
 				return err
 			}
 		case 0:
-			fmt.Println("Disconnecting...")
+			printInfo("Disconnecting...")
 			return nil
 		default:
-			fmt.Println("Invalid action command.")
+			printWarning("Invalid action command.")
 		}
 
 	}
@@ -182,15 +184,15 @@ func handleChannelAndActionMenu() error {
 
 func channelSelectionMenu(channelName string) string {
 	for {
-		fmt.Println("\nSelect Channel:")
-		fmt.Println("1. channel-a")
-		fmt.Println("2. channel-b")
-		fmt.Print("Enter option: ")
+		printSubHeader("\nSelect Channel:")
+		fmt.Println(Cyan + "1." + Reset + "channel-a")
+		fmt.Println(Cyan + "2." + Reset + "channel-b")
+		fmt.Print(Yellow + "\nEnter option: " + Reset)
 		var channelInput int
 
 		_, err := fmt.Scanln(&channelInput)
 		if err != nil {
-			fmt.Println("❌ Invalid input. Please enter a number (1 or 2).")
+			printWarning("Invalid input. Please enter a number (1 or 2).")
 			fmt.Scanln()
 			continue
 		}
@@ -203,7 +205,7 @@ func channelSelectionMenu(channelName string) string {
 			channelName = client.Channel_b
 			break
 		default:
-			fmt.Println("❌ Invalid channel option. Please enter 1 or 2.")
+			printWarning("Invalid channel option. Please enter 1 or 2.")
 			continue
 		}
 		break

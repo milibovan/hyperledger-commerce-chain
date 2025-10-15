@@ -35,7 +35,7 @@ func printError(message string) {
 }
 
 func printWarning(message string) {
-	fmt.Println(Yellow + "⚠️ " + message + Reset)
+	fmt.Println(BoldYellow + "⚠️ " + message + Reset)
 }
 
 func printInfo(message string) {

@@ -11,20 +11,20 @@ func handleQueryMenu() error {
 
 	for {
 
-		fmt.Printf("\n--- QUERY MENU ---\n")
-		fmt.Println("1. Get Products by Multiple Categories")
-		fmt.Println("2. Get Products by Multiple Categories with Price Range")
-		fmt.Println("3. Query Products by Name")
-		fmt.Println("4. Query Products by ID")
-		fmt.Println("5. Query Products by Trader Type")
-		fmt.Println("6. Query Products by Price Range")
-		fmt.Println("0. Back to Main Menu")
-		fmt.Print("Enter command: ")
+		printSubHeader("\n--- QUERY MENU ---\n")
+		fmt.Println(Cyan + "1." + Reset + "Get Products by Multiple Categories")
+		fmt.Println(Cyan + "2." + Reset + "Get Products by Multiple Categories with Price Range")
+		fmt.Println(Cyan + "3." + Reset + "Query Products by Name")
+		fmt.Println(Cyan + "4." + Reset + "Query Products by ID")
+		fmt.Println(Cyan + "5." + Reset + "Query Products by Trader Type")
+		fmt.Println(Cyan + "6." + Reset + "Query Products by Price Range")
+		fmt.Println(Cyan + "0." + Reset + "Back to Main Menu")
+		fmt.Print(Yellow + "\nEnter command: " + Reset)
 
 		var command int
 		_, err := fmt.Scanln(&command)
 		if err != nil {
-			fmt.Println("Error reading command.")
+			printWarning("Error reading command.")
 			fmt.Scanln()
 			continue
 		}
@@ -61,10 +61,10 @@ func handleQueryMenu() error {
 				return err
 			}
 		case 0:
-			fmt.Println("Returning to main menu...")
+			printInfo("Returning to main menu...")
 			return nil
 		default:
-			fmt.Println("Invalid action command.")
+			printWarning("Invalid action command.")
 		}
 	}
 }
@@ -74,13 +74,13 @@ func handleGetProductsByMultipleCategories() error {
 
 	channelName = channelSelectionMenu(channelName)
 
-	fmt.Print("Enter product's name: ")
+	fmt.Print(Yellow + "\nEnter product's name: " + Reset)
 	fmt.Scanln(&name)
 
-	fmt.Print("Enter product ID: ")
+	fmt.Print(Yellow + "\nEnter product ID: " + Reset)
 	fmt.Scanln(&productId)
 
-	fmt.Println("Enter correct min Price: ")
+	fmt.Println(Yellow + "\nEnter correct min Price: " + Reset)
 	fmt.Scanln(&price)
 
 	traderType := traderTypeMenu(traderTypeStr)
@@ -93,16 +93,16 @@ func handleGetProductsByMultipleCategoriesPriceRange() error {
 
 	channelName = channelSelectionMenu(channelName)
 
-	fmt.Print("Enter product's name: ")
+	fmt.Print(Yellow + "\nEnter product's name: " + Reset)
 	fmt.Scanln(&name)
 
-	fmt.Print("Enter product ID: ")
+	fmt.Print(Yellow + "\nEnter product ID: " + Reset)
 	fmt.Scanln(&productId)
 
-	fmt.Println("Enter correct min Price: ")
+	fmt.Println(Yellow + "\nEnter correct min Price: " + Reset)
 	fmt.Scanln(&minPrice)
 
-	fmt.Println("Enter correct max Price: ")
+	fmt.Println(Yellow + "\nEnter correct max Price: " + Reset)
 	fmt.Scanln(&maxPrice)
 
 	traderType := traderTypeMenu(traderTypeStr)
@@ -115,7 +115,7 @@ func handleQueryProductsByName() error {
 
 	channelName = channelSelectionMenu(channelName)
 
-	fmt.Print("Enter product's name: ")
+	fmt.Print(Yellow + "\nEnter product's name: " + Reset)
 	fmt.Scanln(&name)
 
 	return client.QueryProductsByName(activeGW, channelName, name)
@@ -127,10 +127,10 @@ func handleQueryProductsById() error {
 	channelName = channelSelectionMenu(channelName)
 
 	for {
-		fmt.Print("Enter product ID: ")
+		fmt.Print(Yellow + "\nEnter product ID: " + Reset)
 		fmt.Scanln(&productId)
 		if productId == "" || !strings.HasPrefix(productId, "PRODUCT_") {
-			fmt.Println("❌ Invalid id for product. Please enter a valid id which starts with PRODUCT_.")
+			printWarning("Invalid id for product. Please enter a valid id which starts with PRODUCT_.")
 			fmt.Scanln()
 			continue
 		}
@@ -156,11 +156,11 @@ func handleQueryProductsByPriceRange() error {
 	channelName = channelSelectionMenu(channelName)
 
 	for {
-		fmt.Println("Enter correct min Price: ")
+		fmt.Println(Yellow + "\nEnter correct min Price: " + Reset)
 		fmt.Scanln(&minPrice)
 		minPriceFl, err := strconv.ParseFloat(minPrice, 64)
 		if minPriceFl < 0 || err != nil {
-			fmt.Println("❌ Invalid input for min Price. Please enter a positive number.")
+			printWarning("Invalid input for min Price. Please enter a positive number.")
 			fmt.Scanln()
 			continue
 		}
@@ -168,11 +168,11 @@ func handleQueryProductsByPriceRange() error {
 	}
 
 	for {
-		fmt.Println("Enter correct max Price: ")
+		fmt.Println(Yellow + "\nEnter correct max Price: " + Reset)
 		fmt.Scanln(&maxPrice)
 		maxPriceFl, err := strconv.ParseFloat(maxPrice, 64)
 		if maxPriceFl < 0 || err != nil {
-			fmt.Println("❌ Invalid input for max Price. Please enter a positive number.")
+			printWarning("Invalid input for max Price. Please enter a positive number.")
 			fmt.Scanln()
 			continue
 		}
