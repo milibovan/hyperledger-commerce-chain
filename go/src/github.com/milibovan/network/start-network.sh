@@ -285,7 +285,7 @@ function deployCC() {
   fi
 
   export CHANNEL_NAME_B="channel-b"
-  export CC_SEQUENCE_B=2
+  export CC_SEQUENCE_B=3
   ../scripts/deployCC.sh $CHANNEL_NAME_B $CC_NAME $CC_SRC_PATH $CC_SRC_LANGUAGE $CC_VERSION $CC_SEQUENCE_B $CC_INIT_FCN $CC_END_POLICY $CC_COLL_CONFIG $CLI_DELAY $MAX_RETRY $VERBOSE
 
   if [ $? -ne 0 ]; then
