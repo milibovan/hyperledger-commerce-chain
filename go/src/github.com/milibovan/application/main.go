@@ -191,6 +191,9 @@ func handleInvokeMenu() error {
 		fmt.Println("1. Create Trader")
 		fmt.Println("2. Create User")
 		fmt.Println("3. Create Product")
+		fmt.Println("4. Add Product to Trader")
+		fmt.Println("5. Buy Product")
+		fmt.Println("6. Deposit Money")
 		fmt.Println("0. Disconnect/Logout")
 		fmt.Print("Enter command: ")
 
@@ -204,20 +207,32 @@ func handleInvokeMenu() error {
 
 		switch command {
 		case 1:
-			fmt.Println("1. Create Trader")
 			err = handleCreateTrader()
 			if err != nil {
 				return err
 			}
 		case 2:
-			fmt.Println("2. Create User")
 			err = handleCreateUser()
 			if err != nil {
 				return err
 			}
 		case 3:
-			fmt.Println("3. Create Product")
 			err = handleCreateProduct()
+			if err != nil {
+				return err
+			}
+		case 4:
+			err = handleAddProductToTrader()
+			if err != nil {
+				return err
+			}
+		case 5:
+			err = handleBuyProduct()
+			if err != nil {
+				return err
+			}
+		case 6:
+			err = handleDepositMoney()
 			if err != nil {
 				return err
 			}
@@ -347,6 +362,130 @@ func handleCreateProduct() error {
 	blockNumber, ID := client.CreateProduct(activeGW, channelName, name, expiryDate, price, quantity, traderType)
 
 	fmt.Printf("\n✅ Product with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber)
+
+	return nil
+}
+
+func handleAddProductToTrader() error {
+	var channelName, productId, traderId string
+
+	channelName = channelSelectionMenu(channelName)
+
+	for {
+		fmt.Print("Enter product ID: ")
+		fmt.Scanln(&productId)
+		if productId == "" || !strings.HasPrefix(productId, "PRODUCT_") {
+			fmt.Println("❌ Invalid id for product. Please enter a valid id which starts with PRODUCT_.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	for {
+		fmt.Print("Enter trader ID: ")
+		fmt.Scanln(&traderId)
+		if traderId == "" || !strings.HasPrefix(traderId, "TRADER_") {
+			fmt.Println("❌ Invalid id for trader. Please enter a valid id which starts with TRADER_.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+	blockNumber := client.AddProductToTrader(activeGW, channelName, productId, traderId)
+
+	fmt.Printf("\n✅ Product with ID %s was added successfully to trader %s on channel %s. Block number: %d\n", productId, traderId, channelName, blockNumber)
+
+	return nil
+}
+
+func handleBuyProduct() error {
+	var channelName, userId, productId, traderId, quantity string
+
+	channelName = channelSelectionMenu(channelName)
+
+	for {
+		fmt.Print("Enter user ID: ")
+		fmt.Scanln(&userId)
+		if userId == "" || !strings.HasPrefix(userId, "USER_") {
+			fmt.Println("❌ Invalid id for user. Please enter a valid id which starts with USER_.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	for {
+		fmt.Print("Enter product ID: ")
+		fmt.Scanln(&productId)
+		if productId == "" || !strings.HasPrefix(productId, "PRODUCT_") {
+			fmt.Println("❌ Invalid id for product. Please enter a valid id which starts with PRODUCT_.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	for {
+		fmt.Print("Enter trader ID: ")
+		fmt.Scanln(&traderId)
+		if traderId == "" || !strings.HasPrefix(traderId, "TRADER_") {
+			fmt.Println("❌ Invalid id for trader. Please enter a valid id which starts with TRADER_.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	for {
+		fmt.Println("Enter quantity: ")
+		fmt.Scanln(&quantity)
+		quantityInt, err := strconv.Atoi(quantity)
+		if quantityInt < 0 || err != nil {
+			fmt.Println("❌ Invalid input for quantity. Please enter a positive integer number.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	blockNumber, ID := client.BuyProduct(activeGW, channelName, userId, productId, traderId, quantity)
+
+	fmt.Printf("\n✅ Product was bought successfully on channel %s. Block number: %d, Receipt number: %d\n", channelName, blockNumber, ID)
+
+	return nil
+}
+
+func handleDepositMoney() error {
+	var channelName, userId, amount string
+	channelName = channelSelectionMenu(channelName)
+
+	for {
+		fmt.Println("Enter network member (user or trader) id: ")
+		fmt.Scanln(&userId)
+		if userId == "" || !strings.HasPrefix(userId, "USER_") || !strings.HasPrefix(userId, "USER_") {
+			fmt.Println("❌ Invalid id for network member. Please enter a valid id which starts with TRADER_ or USER_.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	for {
+		fmt.Println("Enter amount to deposit: ")
+		fmt.Scanln(&amount)
+		amountFl, err := strconv.ParseFloat(amount, 64)
+		if amountFl < 0 || err != nil {
+			fmt.Println("❌ Invalid input for amount. Please enter a positive number.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	blockNumber := client.DepositMoney(activeGW, channelName, userId, amount)
+
+	fmt.Printf("\n✅ Money was deposited successfully to %s on channel %s. Block number: %d\n", userId, channelName, blockNumber)
 
 	return nil
 }
