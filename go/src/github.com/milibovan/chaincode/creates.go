@@ -85,7 +85,7 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 		return err
 	}
 
-	layout := "2006-01-02 15:04:05"
+	layout := "2006-01-02"
 	expiryDateTime, err := time.Parse(layout, expiryDate)
 	if err != nil {
 		return fmt.Errorf("invalid expiry date format: %w", err)
@@ -135,7 +135,7 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		TraderId:   traderId,
 		UserId:     userId,
 		ProductIDs: productIds,
-		Date:       time.Now(),
+		Date:       time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	receiptJSON, err := json.Marshal(receipt)

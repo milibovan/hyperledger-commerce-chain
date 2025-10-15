@@ -4,7 +4,10 @@ import (
 	"commerce-sdk/client"
 	"fmt"
 	"log"
+	"net/mail"
+	"strconv"
 	"strings"
+	"time"
 
 	fabricclient "github.com/hyperledger/fabric-gateway/pkg/client"
 
@@ -68,8 +71,7 @@ func handleMenu() error {
 }
 
 func connectClient() error {
-	var orgName string
-	var userID string
+	var orgName, userID string
 
 	for {
 		fmt.Println("\nSelect Organization:")
@@ -80,7 +82,6 @@ func connectClient() error {
 		var orgNameInput int
 		_, err := fmt.Scanln(&orgNameInput)
 		if err != nil {
-			// Clear input buffer for bad input
 			fmt.Scanln()
 			continue
 		}
@@ -144,36 +145,53 @@ func connectClient() error {
 func handleChannelAndActionMenu() error {
 	var channelName string
 
-	for {
-		fmt.Println("\nSelect Channel:")
-		fmt.Println("1. channel-a")
-		fmt.Println("2. channel-b")
-		fmt.Print("Enter option: ")
-		var channelInput int
-		_, err := fmt.Scanln(&channelInput)
-		if err != nil {
-			fmt.Println("Invalid input.")
-			fmt.Scanln()
-			continue
-		}
-
-		switch channelInput {
-		case 1:
-			channelName = client.Channel_a
-		case 2:
-			channelName = client.Channel_b
-		default:
-			fmt.Println("Invalid channel option.")
-			continue
-		}
-		break
-	}
+	channelName = channelSelectionMenu(channelName)
 
 	for {
 		fmt.Printf("\n--- ACTION MENU (User: %s on Channel: %s) ---\n", activeGW.Identity(), channelName)
 		fmt.Println("1. Invoke (Create Merchant, Buy Product, etc.)")
 		fmt.Println("2. Query (Read Product, Rich Queries)")
-		fmt.Println("3. Disconnect/Logout")
+		fmt.Println("0. Disconnect/Logout")
+		fmt.Print("Enter command: ")
+
+		var command int
+		_, err := fmt.Scanln(&command)
+		if err != nil {
+			fmt.Println("Error reading command.")
+			fmt.Scanln()
+			continue
+		}
+
+		switch command {
+		case 1:
+			err = handleInvokeMenu()
+			if err != nil {
+				return err
+			}
+		case 2:
+			//err = handleCreateUser()
+			//if err != nil {
+			//	return err
+			//}
+		case 0:
+			fmt.Println("Disconnecting...")
+			return nil
+		default:
+			fmt.Println("Invalid action command.")
+		}
+
+	}
+}
+
+func handleInvokeMenu() error {
+
+	for {
+
+		fmt.Printf("\n--- INVOKE MENU ---\n")
+		fmt.Println("1. Create Trader")
+		fmt.Println("2. Create User")
+		fmt.Println("3. Create Product")
+		fmt.Println("0. Disconnect/Logout")
 		fmt.Print("Enter command: ")
 
 		var command int
@@ -187,15 +205,22 @@ func handleChannelAndActionMenu() error {
 		switch command {
 		case 1:
 			fmt.Println("1. Create Trader")
-			err := handleCreateTrader()
+			err = handleCreateTrader()
 			if err != nil {
 				return err
 			}
 		case 2:
-			fmt.Println("[Query logic will go here]")
+			fmt.Println("2. Create User")
+			err = handleCreateUser()
+			if err != nil {
+				return err
+			}
 		case 3:
-			fmt.Println("Disconnecting...")
-			return nil
+			fmt.Println("3. Create Product")
+			err = handleCreateProduct()
+			if err != nil {
+				return err
+			}
 		default:
 			fmt.Println("Invalid action command.")
 		}
@@ -203,41 +228,130 @@ func handleChannelAndActionMenu() error {
 }
 
 func handleCreateTrader() error {
-	var channelName string
-	var traderType string
-	var vat string
-	var balance string
+	var channelName, traderType, vat, balance string
+
+	channelName = channelSelectionMenu(channelName)
+
+	traderType = traderTypeMenu(traderType)
+
+	fmt.Print("Enter VAT (PIB): ")
+	fmt.Scanln(&vat)
 
 	for {
-		fmt.Println("\nSelect Channel:")
-		fmt.Println("1. channel-a")
-		fmt.Println("2. channel-b")
-		fmt.Print("Enter option: ")
-		var channelInput int
+		fmt.Print("Enter initial balance: ")
+		fmt.Scanln(&balance)
 
-		_, err := fmt.Scanln(&channelInput)
-		if err != nil {
-			fmt.Println("Invalid input for channel. Please try again.")
-			// Clear the input buffer
+		balanceFl, err := strconv.ParseFloat(balance, 64)
+		if balanceFl < 0 || err != nil {
+			fmt.Println("❌ Invalid input for balance. Please enter a positive number.")
 			fmt.Scanln()
-			continue
-		}
-
-		switch channelInput {
-		case 1:
-			channelName = client.Channel_a
-			break
-		case 2:
-			channelName = client.Channel_b
-			break
-		default:
-			fmt.Println("Invalid channel option. Please try again.")
 			continue
 		}
 		break
 	}
 
-	// --- Trader Type Selection Loop ---
+	blockNumber, ID := client.CreateTrader(activeGW, channelName, traderType, vat, balance)
+
+	fmt.Printf("\n✅ Trader with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber)
+
+	return nil
+}
+
+func handleCreateUser() error {
+	var channelName, name, surname, email, balance string
+
+	channelName = channelSelectionMenu(channelName)
+
+	fmt.Print("Enter user's name: ")
+	fmt.Scanln(&name)
+	fmt.Print("Enter user's surname: ")
+	fmt.Scanln(&surname)
+
+	for {
+		fmt.Print("Enter email: ")
+		fmt.Scanln(&email)
+		_, err := mail.ParseAddress(email)
+		if err != nil {
+			fmt.Println("❌ Invalid input for email. Please valid email.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	for {
+		fmt.Print("Enter initial balance: ")
+		fmt.Scanln(&balance)
+
+		balanceFl, err := strconv.ParseFloat(balance, 64)
+		if balanceFl < 0 || err != nil {
+			fmt.Println("❌ Invalid input for balance. Please enter a positive number.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	blockNumber, ID := client.CreateUser(activeGW, channelName, name, surname, email, balance)
+
+	fmt.Printf("\n✅ User with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber)
+
+	return nil
+}
+
+func handleCreateProduct() error {
+	var channelName, name, expiryDate, price, quantity, traderTypeStr string
+
+	channelName = channelSelectionMenu(channelName)
+
+	fmt.Print("Enter product's name: ")
+	fmt.Scanln(&name)
+	for {
+		fmt.Println("Enter expiry date (YYYY-MM-DD): ")
+		fmt.Scanln(&expiryDate)
+		_, err := time.Parse("2006-01-02", expiryDate)
+		if err != nil {
+			fmt.Println("❌ Invalid input for date. Please enter a date in format YYYY-MM-DD.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	for {
+		fmt.Println("Enter price: ")
+		fmt.Scanln(&price)
+		priceFl, err := strconv.ParseFloat(price, 64)
+		if priceFl < 0 || err != nil {
+			fmt.Println("❌ Invalid input for price. Please enter a positive number.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	for {
+		fmt.Println("Enter quantity: ")
+		fmt.Scanln(&quantity)
+		quantityInt, err := strconv.Atoi(quantity)
+		if quantityInt < 0 || err != nil {
+			fmt.Println("❌ Invalid input for quantity. Please enter a positive integer number.")
+			fmt.Scanln()
+			continue
+		}
+		break
+	}
+
+	traderType := traderTypeMenu(traderTypeStr)
+
+	blockNumber, ID := client.CreateProduct(activeGW, channelName, name, expiryDate, price, quantity, traderType)
+
+	fmt.Printf("\n✅ Product with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber)
+
+	return nil
+}
+
+func traderTypeMenu(traderType string) string {
 	for {
 		fmt.Println("\nSelect trader type:")
 		fmt.Println("1. SUPERMARKET")
@@ -250,7 +364,7 @@ func handleCreateTrader() error {
 
 		_, err := fmt.Scanln(&command)
 		if err != nil {
-			fmt.Println("Invalid input for trader type. Please try again.")
+			fmt.Println("❌ Invalid input for trader type. Please enter a number (1-5).")
 			fmt.Scanln()
 			continue
 		}
@@ -267,21 +381,42 @@ func handleCreateTrader() error {
 		case 5:
 			traderType = "GAS_STATON"
 		default:
-			fmt.Println("Invalid trader type option. Please try again.")
+			fmt.Println("❌ Invalid trader type option. Please enter a number between 1 and 5.")
 			continue
 		}
 
 		break
 	}
+	return traderType
+}
 
-	fmt.Print("Enter VAT (PIB): ")
-	fmt.Scanln(&vat)
-	fmt.Print("Enter initial balance: ")
-	fmt.Scanln(&balance)
+func channelSelectionMenu(channelName string) string {
+	for {
+		fmt.Println("\nSelect Channel:")
+		fmt.Println("1. channel-a")
+		fmt.Println("2. channel-b")
+		fmt.Print("Enter option: ")
+		var channelInput int
 
-	blockNumber, ID := client.CreateTrader(activeGW, channelName, traderType, vat, balance)
+		_, err := fmt.Scanln(&channelInput)
+		if err != nil {
+			fmt.Println("❌ Invalid input. Please enter a number (1 or 2).")
+			fmt.Scanln()
+			continue
+		}
 
-	fmt.Printf("\n✅ Trader with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber)
-
-	return nil
+		switch channelInput {
+		case 1:
+			channelName = client.Channel_a
+			break
+		case 2:
+			channelName = client.Channel_b
+			break
+		default:
+			fmt.Println("❌ Invalid channel option. Please enter 1 or 2.")
+			continue
+		}
+		break
+	}
+	return channelName
 }
