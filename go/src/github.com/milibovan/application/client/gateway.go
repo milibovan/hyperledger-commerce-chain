@@ -21,8 +21,9 @@ const (
 )
 
 const (
-	Channel_a = "channel-a"
-	Channel_b = "channel-b"
+	ChaincodeName = "commerce"
+	Channel_a     = "channel-a"
+	Channel_b     = "channel-b"
 )
 
 type OrgConfig struct {

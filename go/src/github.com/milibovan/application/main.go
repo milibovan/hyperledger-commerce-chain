@@ -186,7 +186,11 @@ func handleChannelAndActionMenu() error {
 
 		switch command {
 		case 1:
-			fmt.Println("[Invoke logic will go here]")
+			fmt.Println("1. Create Trader")
+			err := handleCreateTrader()
+			if err != nil {
+				return err
+			}
 		case 2:
 			fmt.Println("[Query logic will go here]")
 		case 3:
@@ -196,4 +200,88 @@ func handleChannelAndActionMenu() error {
 			fmt.Println("Invalid action command.")
 		}
 	}
+}
+
+func handleCreateTrader() error {
+	var channelName string
+	var traderType string
+	var vat string
+	var balance string
+
+	for {
+		fmt.Println("\nSelect Channel:")
+		fmt.Println("1. channel-a")
+		fmt.Println("2. channel-b")
+		fmt.Print("Enter option: ")
+		var channelInput int
+
+		_, err := fmt.Scanln(&channelInput)
+		if err != nil {
+			fmt.Println("Invalid input for channel. Please try again.")
+			// Clear the input buffer
+			fmt.Scanln()
+			continue
+		}
+
+		switch channelInput {
+		case 1:
+			channelName = client.Channel_a
+			break
+		case 2:
+			channelName = client.Channel_b
+			break
+		default:
+			fmt.Println("Invalid channel option. Please try again.")
+			continue
+		}
+		break
+	}
+
+	// --- Trader Type Selection Loop ---
+	for {
+		fmt.Println("\nSelect trader type:")
+		fmt.Println("1. SUPERMARKET")
+		fmt.Println("2. CARDEALER")
+		fmt.Println("3. PHARMACY")
+		fmt.Println("4. GROCERY")
+		fmt.Println("5. GAS_STATON")
+		fmt.Print("Enter option: ")
+		var command int
+
+		_, err := fmt.Scanln(&command)
+		if err != nil {
+			fmt.Println("Invalid input for trader type. Please try again.")
+			fmt.Scanln()
+			continue
+		}
+
+		switch command {
+		case 1:
+			traderType = "SUPERMARKET"
+		case 2:
+			traderType = "CARDEALER"
+		case 3:
+			traderType = "PHARMACY"
+		case 4:
+			traderType = "GROCERY"
+		case 5:
+			traderType = "GAS_STATON"
+		default:
+			fmt.Println("Invalid trader type option. Please try again.")
+			continue
+		}
+
+		break
+	}
+
+	fmt.Print("Enter VAT (PIB): ")
+	fmt.Scanln(&vat)
+	fmt.Print("Enter initial balance: ")
+	fmt.Scanln(&balance)
+
+	blockNumber, ID := client.CreateTrader(activeGW, channelName, traderType, vat, balance)
+
+	fmt.Printf("\n✅ Trader with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber)
+
+	return nil
 }

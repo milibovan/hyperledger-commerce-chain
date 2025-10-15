@@ -4,6 +4,7 @@ import (
 	"chaincode/structs"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/google/uuid"
@@ -37,13 +38,18 @@ func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, 
 	return ctx.GetStub().PutState("USER_"+user.Id, userJSON)
 }
 
-func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id string, traderTypeStr string, vat string, balance float64) error {
+func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id, traderTypeStr, vat, balance string) error {
 	exists, err := s.AssetExists(ctx, id, "trader")
 	if err != nil {
 		return err
 	}
 	if exists {
 		return fmt.Errorf("Trader %s already exists", id)
+	}
+
+	balanceFl, err := strconv.ParseFloat(balance, 64)
+	if err != nil {
+		return fmt.Errorf("invalid balance format: %w", err)
 	}
 
 	traderType, err := structs.GetTraderTypeFromString(traderTypeStr)
@@ -58,7 +64,7 @@ func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface
 		VAT:                  vat,
 		ProductsAvailableIDs: []string{},
 		ReceiptsIDs:          []string{},
-		Balance:              balance,
+		Balance:              balanceFl,
 	}
 
 	traderJSON, err := json.Marshal(trader)
