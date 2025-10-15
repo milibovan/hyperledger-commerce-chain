@@ -9,7 +9,7 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
 )
 
-func (s *SmartContract) GetProductsByMultipleCategories(ctx contractapi.TransactionContextInterface, name string, id string, traderType string, price string) ([]*structs.Product, error) {
+func (s *SmartContract) GetProductsByMultipleCategories(ctx contractapi.TransactionContextInterface, name, id, traderType, price string) ([]*structs.Product, error) {
 	selector := map[string]interface{}{
 		"doc-type": "product",
 	}
@@ -47,7 +47,7 @@ func (s *SmartContract) GetProductsByMultipleCategories(ctx contractapi.Transact
 	return getQueryResultForQueryString(ctx, queryString)
 }
 
-func (s *SmartContract) GetProductsByMultipleCategoriesPriceRange(ctx contractapi.TransactionContextInterface, name string, id string, traderType string, minPrice string, maxPrice string) ([]*structs.Product, error) {
+func (s *SmartContract) GetProductsByMultipleCategoriesPriceRange(ctx contractapi.TransactionContextInterface, name, id, traderType, minPrice, maxPrice string) ([]*structs.Product, error) {
 	selector := map[string]interface{}{
 		"doc-type": "product",
 	}
@@ -184,7 +184,7 @@ func (t *SmartContract) QueryProductsByPrice(ctx contractapi.TransactionContextI
 	return getQueryResultForQueryString(ctx, queryString)
 }
 
-func (t *SmartContract) QueryProductsByPriceRange(ctx contractapi.TransactionContextInterface, minPrice string, maxPrice string) ([]*structs.Product, error) {
+func (t *SmartContract) QueryProductsByPriceRange(ctx contractapi.TransactionContextInterface, minPrice, maxPrice string) ([]*structs.Product, error) {
 	selector := map[string]interface{}{
 		"doc-type": "product",
 	}

@@ -1,12 +1,27 @@
 package client
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
 
 	fabricClient "github.com/hyperledger/fabric-gateway/pkg/client"
 )
+
+const (
+	Red   = "\033[31m"
+	Reset = "\033[0m"
+)
+
+func formatJSON(data []byte) string {
+	var result bytes.Buffer
+	if err := json.Indent(&result, data, "", "  "); err != nil {
+		panic(fmt.Errorf("failed to parse JSON: %w", err))
+	}
+	return result.String()
+}
 
 func CreateTrader(gw *fabricClient.Gateway, channel, traderType, vat, balance string) (uint64, string) {
 	var now = time.Now()
@@ -178,4 +193,118 @@ func DepositMoney(gw *fabricClient.Gateway, channel, id, amount string) uint64 {
 	fmt.Println("\n*** DepositMoney committed successfully")
 
 	return status.BlockNumber
+}
+
+func GetProductsByMultipleCategories(gw *fabricClient.Gateway, channel, name, id, traderType, price string) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetProductsByMultipleCategories from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetProductsByMultipleCategories", fabricClient.WithArguments(name, id, traderType, price))
+	if err != nil {
+		panic(err)
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No products found matching the criteria")
+		return
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+}
+
+func GetProductsByMultipleCategoriesPriceRange(gw *fabricClient.Gateway, channel, name, id, traderType, minPrice, maxPrice string) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetProductsByMultipleCategoriesPriceRange from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetProductsByMultipleCategoriesPriceRange", fabricClient.WithArguments(name, id, traderType, minPrice, maxPrice))
+	if err != nil {
+		panic(err)
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No products found matching the criteria")
+		return
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+}
+
+func QueryProductsByName(gw *fabricClient.Gateway, channel, name string) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: QueryProductsByName from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("QueryProductsByName", fabricClient.WithArguments(name))
+	if err != nil {
+		panic(err)
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No products found matching the criteria")
+		return
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+}
+
+func QueryProductsById(gw *fabricClient.Gateway, channel, id string) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: QueryProductsById from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("QueryProductsById", fabricClient.WithArguments(id))
+	if err != nil {
+		panic(err)
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No products found matching the criteria")
+		return
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+}
+
+func QueryProductsByTraderType(gw *fabricClient.Gateway, channel, traderType string) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: QueryProductsByTraderType from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("QueryProductsByTraderType", fabricClient.WithArguments(traderType))
+	if err != nil {
+		panic(err)
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No products found matching the criteria")
+		return
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+}
+
+func QueryProductsByPriceRange(gw *fabricClient.Gateway, channel, minPrice, maxPrice string) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: QueryProductsByPriceRange from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("QueryProductsByPriceRange", fabricClient.WithArguments(minPrice, maxPrice))
+	if err != nil {
+		panic(err)
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No products found matching the criteria")
+		return
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
 }
