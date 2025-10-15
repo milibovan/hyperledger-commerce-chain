@@ -20,7 +20,7 @@ func handleInvokeMenu() error {
 		fmt.Println("4. Add Product to Trader")
 		fmt.Println("5. Buy Product")
 		fmt.Println("6. Deposit Money")
-		fmt.Println("0. Disconnect/Logout")
+		fmt.Println("0. Back to Main Menu")
 		fmt.Print("Enter command: ")
 
 		var command int
@@ -62,6 +62,9 @@ func handleInvokeMenu() error {
 			if err != nil {
 				return err
 			}
+		case 0:
+			fmt.Println("Returning to main menu...")
+			return nil
 		default:
 			fmt.Println("Invalid action command.")
 		}
@@ -156,6 +159,7 @@ func handleCreateProduct() error {
 			fmt.Scanln()
 			continue
 		}
+		expiryDate = expiryDate + time.Now().Format(" 15:04:05")
 		break
 	}
 
@@ -289,7 +293,7 @@ func handleDepositMoney() error {
 	for {
 		fmt.Println("Enter network member (user or trader) id: ")
 		fmt.Scanln(&userId)
-		if userId == "" || !strings.HasPrefix(userId, "USER_") || !strings.HasPrefix(userId, "USER_") {
+		if userId == "" || !strings.HasPrefix(userId, "USER_") && !strings.HasPrefix(userId, "TRADER_") {
 			fmt.Println("❌ Invalid id for network member. Please enter a valid id which starts with TRADER_ or USER_.")
 			fmt.Scanln()
 			continue

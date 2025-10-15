@@ -195,7 +195,7 @@ func DepositMoney(gw *fabricClient.Gateway, channel, id, amount string) uint64 {
 	return status.BlockNumber
 }
 
-func GetProductsByMultipleCategories(gw *fabricClient.Gateway, channel, name, id, traderType, price string) {
+func GetProductsByMultipleCategories(gw *fabricClient.Gateway, channel, name, id, traderType, price string) error {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
@@ -203,18 +203,19 @@ func GetProductsByMultipleCategories(gw *fabricClient.Gateway, channel, name, id
 
 	resultBytes, err := ccContract.Evaluate("GetProductsByMultipleCategories", fabricClient.WithArguments(name, id, traderType, price))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
 		fmt.Println("*** No products found matching the criteria")
-		return
+		return nil
 	}
 
 	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+	return nil
 }
 
-func GetProductsByMultipleCategoriesPriceRange(gw *fabricClient.Gateway, channel, name, id, traderType, minPrice, maxPrice string) {
+func GetProductsByMultipleCategoriesPriceRange(gw *fabricClient.Gateway, channel, name, id, traderType, minPrice, maxPrice string) error {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
@@ -222,18 +223,19 @@ func GetProductsByMultipleCategoriesPriceRange(gw *fabricClient.Gateway, channel
 
 	resultBytes, err := ccContract.Evaluate("GetProductsByMultipleCategoriesPriceRange", fabricClient.WithArguments(name, id, traderType, minPrice, maxPrice))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
 		fmt.Println("*** No products found matching the criteria")
-		return
+		return nil
 	}
 
 	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+	return nil
 }
 
-func QueryProductsByName(gw *fabricClient.Gateway, channel, name string) {
+func QueryProductsByName(gw *fabricClient.Gateway, channel, name string) error {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
@@ -241,18 +243,19 @@ func QueryProductsByName(gw *fabricClient.Gateway, channel, name string) {
 
 	resultBytes, err := ccContract.Evaluate("QueryProductsByName", fabricClient.WithArguments(name))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
 		fmt.Println("*** No products found matching the criteria")
-		return
+		return nil
 	}
 
 	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+	return nil
 }
 
-func QueryProductsById(gw *fabricClient.Gateway, channel, id string) {
+func QueryProductsById(gw *fabricClient.Gateway, channel, id string) error {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
@@ -260,18 +263,19 @@ func QueryProductsById(gw *fabricClient.Gateway, channel, id string) {
 
 	resultBytes, err := ccContract.Evaluate("QueryProductsById", fabricClient.WithArguments(id))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
 		fmt.Println("*** No products found matching the criteria")
-		return
+		return nil
 	}
 
 	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+	return nil
 }
 
-func QueryProductsByTraderType(gw *fabricClient.Gateway, channel, traderType string) {
+func QueryProductsByTraderType(gw *fabricClient.Gateway, channel, traderType string) error {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
@@ -279,18 +283,19 @@ func QueryProductsByTraderType(gw *fabricClient.Gateway, channel, traderType str
 
 	resultBytes, err := ccContract.Evaluate("QueryProductsByTraderType", fabricClient.WithArguments(traderType))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
 		fmt.Println("*** No products found matching the criteria")
-		return
+		return nil
 	}
 
 	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+	return nil
 }
 
-func QueryProductsByPriceRange(gw *fabricClient.Gateway, channel, minPrice, maxPrice string) {
+func QueryProductsByPriceRange(gw *fabricClient.Gateway, channel, minPrice, maxPrice string) error {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
@@ -298,13 +303,14 @@ func QueryProductsByPriceRange(gw *fabricClient.Gateway, channel, minPrice, maxP
 
 	resultBytes, err := ccContract.Evaluate("QueryProductsByPriceRange", fabricClient.WithArguments(minPrice, maxPrice))
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
 		fmt.Println("*** No products found matching the criteria")
-		return
+		return nil
 	}
 
 	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+	return nil
 }
