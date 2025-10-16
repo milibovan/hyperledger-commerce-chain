@@ -88,6 +88,7 @@ func CreateProduct(gw *fabricClient.Gateway, channel, name, expiryDate, price, q
 
 	fmt.Printf("\n--> Submit transaction: CreateProduct, ID: %s on channel %s\n", ID, channel)
 
+	fmt.Printf("%s %s %s %s %s %s", ID, name, expiryDate, price, quantity, traderTypeStr)
 	_, commit, err := ccContract.SubmitAsync("CreateProduct", fabricClient.WithArguments(ID, name, expiryDate, price, quantity, traderTypeStr))
 	if err != nil {
 		panic(fmt.Errorf("failed to submit transaction: %w", err))

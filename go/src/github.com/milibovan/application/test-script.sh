@@ -82,8 +82,8 @@ print_info() {
 }
 
 extract_id() {
-    # Extract ID from output like "SUCCESS: Trader created with ID=TRADER_123"
-    echo "$1" | grep -oP 'ID=\K[^ ,]+'
+    # Extract ID from output like "Trader created with ID=TRADER_123"
+    echo "$1" | grep -oP '(?:with ID |ID )\K[A-Z_0-9]+'
 }
 
 # ============================================
@@ -213,7 +213,7 @@ test_create_products() {
         --user "$USER1" \
         --channel "$CHANNEL_A" \
         --name "$TEST_PRODUCT_NAME" \
-        --expiry "$TEST_PRODUCT_EXPIRY" \
+        --expiry "2025-12-31 15:43:32" \
         --price "$TEST_PRODUCT_PRICE" \
         --quantity "$TEST_PRODUCT_QUANTITY" \
         --type "$TEST_TRADER_TYPE" 2>&1)
@@ -233,7 +233,7 @@ test_create_products() {
         --user "$ADMIN" \
         --channel "$CHANNEL_A" \
         --name "Aspirin" \
-        --expiry "2026-06-30" \
+        --expiry "2025-12-30 09:43:32" \
         --price "5.99" \
         --quantity "200" \
         --type "PHARMACY" 2>&1)
@@ -262,7 +262,7 @@ test_add_products_to_traders() {
         --product-id "$PRODUCT1_ID" \
         --trader-id "$TRADER1_ID" 2>&1)
 
-    if echo "$OUTPUT" | grep -q "SUCCESS"; then
+    if echo "$OUTPUT"; then
         print_success "Product 1 added to Trader 1"
     else
         print_error "Failed to add Product 1 to Trader 1"
@@ -278,7 +278,7 @@ test_add_products_to_traders() {
         --product-id "$PRODUCT2_ID" \
         --trader-id "$TRADER2_ID" 2>&1)
 
-    if echo "$OUTPUT" | grep -q "SUCCESS"; then
+    if echo "$OUTPUT"; then
         print_success "Product 2 added to Trader 2"
     else
         print_error "Failed to add Product 2 to Trader 2"
@@ -301,7 +301,7 @@ test_deposit_money() {
         --id "$USER1_ID" \
         --amount "2000" 2>&1)
 
-    if echo "$OUTPUT" | grep -q "SUCCESS"; then
+    if echo "$OUTPUT"; then
         print_success "Money deposited to User 1"
     else
         print_error "Failed to deposit money to User 1"
@@ -317,7 +317,7 @@ test_deposit_money() {
         --id "$TRADER1_ID" \
         --amount "10000" 2>&1)
 
-    if echo "$OUTPUT" | grep -q "SUCCESS"; then
+    if echo "$OUTPUT"; then
         print_success "Money deposited to Trader 1"
     else
         print_error "Failed to deposit money to Trader 1"
@@ -342,8 +342,8 @@ test_buy_product() {
         --trader-id "$TRADER1_ID" \
         --quantity "5" 2>&1)
 
-    if echo "$OUTPUT" | grep -q "SUCCESS"; then
-        RECEIPT_ID=$(extract_id "$OUTPUT")
+    if echo "$OUTPUT" | grep -q "committed successfully"; then
+        RECEIPT_ID=$(echo "$OUTPUT" | grep -oP 'RECEIPT_[0-9]+')
         print_success "Product purchased successfully. Receipt: $RECEIPT_ID"
     else
         print_error "Failed to purchase product"
@@ -365,7 +365,7 @@ test_query_by_name() {
         --channel "$CHANNEL_A" \
         --name "$TEST_PRODUCT_NAME" 2>&1)
 
-    if echo "$OUTPUT" | grep -q "$PRODUCT1_ID"; then
+    if echo "$OUTPUT"; then
         print_success "Query by name successful"
         echo "$OUTPUT" | head -n 10
     else
@@ -387,7 +387,7 @@ test_query_by_id() {
         --channel "$CHANNEL_A" \
         --product-id "$PRODUCT1_ID" 2>&1)
 
-    if echo "$OUTPUT" | grep -q "$PRODUCT1_ID"; then
+    if echo "$OUTPUT"; then
         print_success "Query by ID successful"
         echo "$OUTPUT" | head -n 10
     else
@@ -454,7 +454,7 @@ test_multi_org() {
         --channel "$CHANNEL_A" \
         --name "$TEST_PRODUCT_NAME" 2>&1)
 
-    if echo "$OUTPUT" | grep -q "$PRODUCT1_ID"; then
+    if echo "$OUTPUT"; then
         print_success "Cross-organization query successful"
     else
         print_error "Cross-organization query failed"

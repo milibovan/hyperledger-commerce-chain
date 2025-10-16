@@ -159,7 +159,7 @@ func handleCreateProduct() error {
 			fmt.Scanln()
 			continue
 		}
-		expiryDate = expiryDate + time.Now().Format(" 15:04:05")
+		expiryDate = expiryDate + time.Now().UTC().Format(" 15:04:05")
 		break
 	}
 

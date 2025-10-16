@@ -113,15 +113,15 @@ queryCommitted 3
 
 ## Invoke the chaincode - this does require that the chaincode have the 'initLedger'
 ## method defined
-if [ "$CC_INIT_FCN" != "NA" ]; then
-  if [ "$CC_SEQUENCE" -eq 2 ]; then
-    infoln "Chaincode initialization is required for sequence 1."
-    chaincodeInvokeInit 1 2 3
-  else
-    infoln "Chaincode update (sequence > 1) detected. Skipping InitLedger."
-  fi
-else
-  infoln "Chaincode initialization is not required"
-fi
+chaincodeInvokeInit 1 2 3
+#if [ "$CC_INIT_FCN" != "NA" ]; then
+#  if [ "$CC_SEQUENCE" -eq 2 ]; then
+#    infoln "Chaincode initialization is required for sequence 1."
+#  else
+#    infoln "Chaincode update (sequence > 1) detected. Skipping InitLedger."
+#  fi
+#else
+#  infoln "Chaincode initialization is not required"
+#fi
 
 exit 0

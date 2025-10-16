@@ -5,7 +5,6 @@ go 1.24.0
 toolchain go1.24.9
 
 require (
-	github.com/google/uuid v1.6.0
 	github.com/hyperledger/fabric-chaincode-go/v2 v2.3.0
 	github.com/hyperledger/fabric-contract-api-go/v2 v2.2.0
 )

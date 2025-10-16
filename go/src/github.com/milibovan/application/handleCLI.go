@@ -9,11 +9,6 @@ import (
 )
 
 func handleCLI() {
-	// Global flags
-	org := flag.String("org", "org1", "Organization (org1, org2, org3)")
-	user := flag.String("user", "User1", "User identity (User1, Admin)")
-	channel := flag.String("channel", "channel-a", "Channel name (channel-a, channel-b)")
-
 	if len(os.Args) < 2 {
 		printCLIHelp()
 		os.Exit(1)
@@ -24,6 +19,11 @@ func handleCLI() {
 	switch command {
 	case "create-trader":
 		createTraderCmd := flag.NewFlagSet("create-trader", flag.ExitOnError)
+		// Add global flags to THIS command's flagset
+		org := createTraderCmd.String("org", "org1", "Organization (org1, org2, org3)")
+		user := createTraderCmd.String("user", "User1", "User identity (User1, Admin)")
+		channel := createTraderCmd.String("channel", "channel-a", "Channel name (channel-a, channel-b)")
+		// Command-specific flags
 		traderType := createTraderCmd.String("type", "SUPERMARKET", "Trader type")
 		vat := createTraderCmd.String("vat", "123456789", "VAT number")
 		balance := createTraderCmd.String("balance", "10000", "Initial balance")
@@ -35,6 +35,9 @@ func handleCLI() {
 
 	case "create-user":
 		createUserCmd := flag.NewFlagSet("create-user", flag.ExitOnError)
+		org := createUserCmd.String("org", "org1", "Organization")
+		user := createUserCmd.String("user", "User1", "User identity")
+		channel := createUserCmd.String("channel", "channel-a", "Channel name")
 		name := createUserCmd.String("name", "John", "User name")
 		surname := createUserCmd.String("surname", "Doe", "User surname")
 		email := createUserCmd.String("email", "john@example.com", "User email")
@@ -47,21 +50,29 @@ func handleCLI() {
 
 	case "create-product":
 		createProductCmd := flag.NewFlagSet("create-product", flag.ExitOnError)
+		org := createProductCmd.String("org", "org1", "Organization")
+		user := createProductCmd.String("user", "User1", "User identity")
+		channel := createProductCmd.String("channel", "channel-a", "Channel name")
 		name := createProductCmd.String("name", "Product", "Product name")
-		expiryDate := createProductCmd.String("expiry", "2025-12-31", "Expiry date (YYYY-MM-DD)")
+		expiryDate := createProductCmd.String("expiry", "2025-12-31 15:45:03", "Expiry date (YYYY-MM-DD)")
 		price := createProductCmd.String("price", "10.0", "Product price")
 		quantity := createProductCmd.String("quantity", "100", "Product quantity")
 		traderType := createProductCmd.String("type", "SUPERMARKET", "Trader type")
 
 		createProductCmd.Parse(os.Args[2:])
-		// Add time to expiry date
-		expiryDateTime := *expiryDate + " 00:00:00"
-		executeCLI(*org, *user, *channel, func() {
+		expiryDateTime := *expiryDate
+		err := executeCLI(*org, *user, *channel, func() {
 			handleCLICreateProduct(*channel, *name, expiryDateTime, *price, *quantity, *traderType)
 		})
+		if err != nil {
+			fmt.Errorf(err.Error())
+		}
 
 	case "add-product-to-trader":
 		addProductCmd := flag.NewFlagSet("add-product-to-trader", flag.ExitOnError)
+		org := addProductCmd.String("org", "org1", "Organization")
+		user := addProductCmd.String("user", "User1", "User identity")
+		channel := addProductCmd.String("channel", "channel-a", "Channel name")
 		productId := addProductCmd.String("product-id", "", "Product ID")
 		traderId := addProductCmd.String("trader-id", "", "Trader ID")
 
@@ -75,6 +86,9 @@ func handleCLI() {
 
 	case "buy-product":
 		buyProductCmd := flag.NewFlagSet("buy-product", flag.ExitOnError)
+		org := buyProductCmd.String("org", "org1", "Organization")
+		user := buyProductCmd.String("user", "User1", "User identity")
+		channel := buyProductCmd.String("channel", "channel-a", "Channel name")
 		userId := buyProductCmd.String("user-id", "", "User ID")
 		productId := buyProductCmd.String("product-id", "", "Product ID")
 		traderId := buyProductCmd.String("trader-id", "", "Trader ID")
@@ -90,6 +104,9 @@ func handleCLI() {
 
 	case "deposit-money":
 		depositCmd := flag.NewFlagSet("deposit-money", flag.ExitOnError)
+		org := depositCmd.String("org", "org1", "Organization")
+		user := depositCmd.String("user", "User1", "User identity")
+		channel := depositCmd.String("channel", "channel-a", "Channel name")
 		id := depositCmd.String("id", "", "User or Trader ID")
 		amount := depositCmd.String("amount", "100", "Amount to deposit")
 
@@ -103,6 +120,9 @@ func handleCLI() {
 
 	case "query-by-multiple":
 		queryCmd := flag.NewFlagSet("query-by-multiple", flag.ExitOnError)
+		org := queryCmd.String("org", "org1", "Organization")
+		user := queryCmd.String("user", "User1", "User identity")
+		channel := queryCmd.String("channel", "channel-a", "Channel name")
 		name := queryCmd.String("name", "", "Product name")
 		productId := queryCmd.String("product-id", "", "Product ID")
 		traderType := queryCmd.String("type", "", "Trader type")
@@ -115,6 +135,9 @@ func handleCLI() {
 
 	case "query-by-multiple-range":
 		queryCmd := flag.NewFlagSet("query-by-multiple-range", flag.ExitOnError)
+		org := queryCmd.String("org", "org1", "Organization")
+		user := queryCmd.String("user", "User1", "User identity")
+		channel := queryCmd.String("channel", "channel-a", "Channel name")
 		name := queryCmd.String("name", "", "Product name")
 		productId := queryCmd.String("product-id", "", "Product ID")
 		traderType := queryCmd.String("type", "", "Trader type")
@@ -128,6 +151,9 @@ func handleCLI() {
 
 	case "query-by-name":
 		queryCmd := flag.NewFlagSet("query-by-name", flag.ExitOnError)
+		org := queryCmd.String("org", "org1", "Organization")
+		user := queryCmd.String("user", "User1", "User identity")
+		channel := queryCmd.String("channel", "channel-a", "Channel name")
 		name := queryCmd.String("name", "", "Product name")
 
 		queryCmd.Parse(os.Args[2:])
@@ -137,6 +163,9 @@ func handleCLI() {
 
 	case "query-by-id":
 		queryCmd := flag.NewFlagSet("query-by-id", flag.ExitOnError)
+		org := queryCmd.String("org", "org1", "Organization")
+		user := queryCmd.String("user", "User1", "User identity")
+		channel := queryCmd.String("channel", "channel-a", "Channel name")
 		productId := queryCmd.String("product-id", "", "Product ID")
 
 		queryCmd.Parse(os.Args[2:])
@@ -149,6 +178,9 @@ func handleCLI() {
 
 	case "query-by-type":
 		queryCmd := flag.NewFlagSet("query-by-type", flag.ExitOnError)
+		org := queryCmd.String("org", "org1", "Organization")
+		user := queryCmd.String("user", "User1", "User identity")
+		channel := queryCmd.String("channel", "channel-a", "Channel name")
 		traderType := queryCmd.String("type", "", "Trader type")
 
 		queryCmd.Parse(os.Args[2:])
@@ -161,6 +193,9 @@ func handleCLI() {
 
 	case "query-by-price-range":
 		queryCmd := flag.NewFlagSet("query-by-price-range", flag.ExitOnError)
+		org := queryCmd.String("org", "org1", "Organization")
+		user := queryCmd.String("user", "User1", "User identity")
+		channel := queryCmd.String("channel", "channel-a", "Channel name")
 		minPrice := queryCmd.String("min-price", "", "Minimum price")
 		maxPrice := queryCmd.String("max-price", "", "Maximum price")
 
@@ -183,18 +218,23 @@ func handleCLI() {
 }
 
 // executeCLI connects to gateway and executes the operation
-func executeCLI(org, user, channel string, operation func()) {
+func executeCLI(org, user, channel string, operation func()) error {
+	printInfo(fmt.Sprintf("\nAttempting to connect as %s from %s...\n", user, org))
+
 	gw, conn, err := client.ConnectGateway(org, user)
 	if err != nil {
-		log.Fatalf("Failed to connect: %v", err)
+		return fmt.Errorf("failed to establish connection: %w", err)
 	}
-	defer gw.Close()
-	defer conn.Close()
 
 	activeGW = gw
 	activeConn = conn
+	printSuccess("✅ Successfully connected to Fabric Gateway.")
+	defer gw.Close()
+	defer conn.Close()
 
 	operation()
+
+	return nil
 }
 
 func printCLIHelp() {
@@ -256,7 +296,7 @@ func handleCLIAddProductToTrader(channelName, productId, traderId string) {
 func handleCLIBuyProduct(channelName, userId, productId, traderId, quantity string) {
 	blockNumber, ID := client.BuyProduct(activeGW, channelName, userId, productId, traderId, quantity)
 
-	printInfo(fmt.Sprintf("\nProduct was bought successfully on channel %s. Block number: %d, Receipt number: %d\n", channelName, blockNumber, ID))
+	printInfo(fmt.Sprintf("\nProduct was bought successfully on channel %s. Block number: %d, Receipt number: %s\n", channelName, blockNumber, ID))
 }
 
 func handleCLIDepositMoney(channelName, userId, amount string) {

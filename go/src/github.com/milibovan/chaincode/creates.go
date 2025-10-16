@@ -81,28 +81,29 @@ func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface
 
 func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterface, id, name, expiryDate, price, quantity, traderTypeStr string) error {
 	exists, err := s.AssetExists(ctx, id)
+
 	if err != nil {
 		return err
 	}
+	if exists {
+		return fmt.Errorf("Product %s already exists", id)
+	}
 
-	layout := "2006-01-02"
+	layout := "2006-01-02 15:04:05"
 	expiryDateTime, err := time.Parse(layout, expiryDate)
+	fmt.Println(expiryDateTime)
 	if err != nil {
 		return fmt.Errorf("invalid expiry date format: %w", err)
 	}
 
 	priceFl, err := strconv.ParseFloat(price, 64)
 	if err != nil {
-		return fmt.Errorf("invalid balance format: %w", err)
+		return fmt.Errorf("invalid price format: %w", err)
 	}
 
 	quantityInt, err := strconv.Atoi(quantity)
 	if err != nil {
 		return fmt.Errorf("invalid quantity format: %w", err)
-	}
-
-	if exists {
-		return fmt.Errorf("Product %s already exists", id)
 	}
 
 	traderType, err := structs.GetTraderTypeFromString(traderTypeStr)
