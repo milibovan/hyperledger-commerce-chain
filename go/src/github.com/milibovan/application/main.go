@@ -4,6 +4,7 @@ import (
 	"commerce-sdk/client"
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	fabricclient "github.com/hyperledger/fabric-gateway/pkg/client"
@@ -18,6 +19,11 @@ var (
 )
 
 func main() {
+	if len(os.Args) > 1 {
+		handleCLI()
+		return
+	}
+
 	if err := handleMenu(); err != nil {
 		log.Fatalf("Application terminated with error: %v", err)
 	}
