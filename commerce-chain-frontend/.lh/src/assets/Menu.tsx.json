@@ -1,0 +1,42 @@
+{
+    "sourceFile": "src/assets/Menu.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 6,
+            "patches": [
+                {
+                    "date": 1760693621982,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1760693902935,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,10 @@\n-export default function Menu() {\r\n-    return <menu>\r\n-        <menuitem>Products</menuitem>\r\n-        <menuitem>Users</menuitem>\r\n-        <menuitem>Traders</menuitem>\r\n-        <menuitem>Products</menuitem>\r\n-        <menuitem>Receipts</menuitem>\r\n-    </menu>\r\n-}\n\\ No newline at end of file\n+export default function Menus() {\r\n+  return (\r\n+    <nav className=\"menu-container\">\r\n+      <ul className=\"menu-list\">\r\n+        <li>Products\r\n+          </li>\r\n+      </ul>\r\n+    </nav>\r\n+  );\r\n+}\r\n"
+                },
+                {
+                    "date": 1760693917937,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,12 @@\n export default function Menus() {\r\n   return (\r\n     <nav className=\"menu-container\">\r\n       <ul className=\"menu-list\">\r\n-        <li>Products\r\n-          </li>\r\n+        <li>Products</li>\r\n+        <li>Users</li>\r\n+        <li>Traders</li>\r\n+        <li>Receipts</li>\r\n       </ul>\r\n     </nav>\r\n   );\r\n }\r\n"
+                },
+                {
+                    "date": 1760693940386,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-export default function Menus() {\r\n+export default function Menu() {\r\n   return (\r\n     <nav className=\"menu-container\">\r\n       <ul className=\"menu-list\">\r\n         <li>Products</li>\r\n"
+                },
+                {
+                    "date": 1760694045247,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,99 @@\n+import { useState } from 'react';\r\n+import { Package, Users, TrendingUp, Receipt } from 'lucide-react';\r\n+\r\n+type MenuItem = 'Products' | 'Users' | 'Traders' | 'Receipts';\r\n+\r\n export default function Menu() {\r\n+  const [activeItem, setActiveItem] = useState<MenuItem>('Products');\r\n+\r\n+  const menuItems: { label: MenuItem; icon: React.ReactNode }[] = [\r\n+    { label: 'Products', icon: <Package size={24} /> },\r\n+    { label: 'Users', icon: <Users size={24} /> },\r\n+    { label: 'Traders', icon: <TrendingUp size={24} /> },\r\n+    { label: 'Receipts', icon: <Receipt size={24} /> },\r\n+  ];\r\n+\r\n+  const renderContent = () => {\r\n+    switch (activeItem) {\r\n+      case 'Products':\r\n+        return <ProductsPanel />;\r\n+      case 'Users':\r\n+        return <UsersPanel />;\r\n+      case 'Traders':\r\n+        return <TradersPanel />;\r\n+      case 'Receipts':\r\n+        return <ReceiptsPanel />;\r\n+      default:\r\n+        return null;\r\n+    }\r\n+  };\r\n+\r\n   return (\r\n-    <nav className=\"menu-container\">\r\n-      <ul className=\"menu-list\">\r\n-        <li>Products</li>\r\n-        <li>Users</li>\r\n-        <li>Traders</li>\r\n-        <li>Receipts</li>\r\n-      </ul>\r\n-    </nav>\r\n+    <div className=\"min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex\">\r\n+      {/* Sidebar */}\r\n+      <nav className=\"w-64 bg-gray-800 border-r-2 border-cyan-500 p-6\">\r\n+        <h2 className=\"text-2xl font-bold text-cyan-400 mb-8 uppercase tracking-wider\">\r\n+          Menu\r\n+        </h2>\r\n+        <ul className=\"space-y-4\">\r\n+          {menuItems.map((item) => (\r\n+            <li key={item.label}>\r\n+              <button\r\n+                onClick={() => setActiveItem(item.label)}\r\n+                className={`w-full flex items-center gap-4 px-4 py-3 rounded border-2 font-semibold transition-all duration-200 ${\r\n+                  activeItem === item.label\r\n+                    ? 'bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50'\r\n+                    : 'bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200'\r\n+                }`}\r\n+              >\r\n+                {item.icon}\r\n+                {item.label}\r\n+              </button>\r\n+            </li>\r\n+          ))}\r\n+        </ul>\r\n+      </nav>\r\n+\r\n+      {/* Main Content */}\r\n+      <div className=\"flex-1 p-8\">\r\n+        {renderContent()}\r\n+      </div>\r\n+    </div>\r\n   );\r\n }\r\n+\r\n+function ProductsPanel() {\r\n+  return (\r\n+    <div className=\"bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50\">\r\n+      <h3 className=\"text-3xl font-bold text-cyan-400 mb-4\">Products</h3>\r\n+      <p className=\"text-gray-300\">Products panel content goes here</p>\r\n+    </div>\r\n+  );\r\n+}\r\n+\r\n+function UsersPanel() {\r\n+  return (\r\n+    <div className=\"bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50\">\r\n+      <h3 className=\"text-3xl font-bold text-purple-400 mb-4\">Users</h3>\r\n+      <p className=\"text-gray-300\">Users panel content goes here</p>\r\n+    </div>\r\n+  );\r\n+}\r\n+\r\n+function TradersPanel() {\r\n+  return (\r\n+    <div className=\"bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50\">\r\n+      <h3 className=\"text-3xl font-bold text-pink-400 mb-4\">Traders</h3>\r\n+      <p className=\"text-gray-300\">Traders panel content goes here</p>\r\n+    </div>\r\n+  );\r\n+}\r\n+\r\n+function ReceiptsPanel() {\r\n+  return (\r\n+    <div className=\"bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50\">\r\n+      <h3 className=\"text-3xl font-bold text-green-400 mb-4\">Receipts</h3>\r\n+      <p className=\"text-gray-300\">Receipts panel content goes here</p>\r\n+    </div>\r\n+  );\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1760694147184,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,9 +54,9 @@\n         </ul>\r\n       </nav>\r\n \r\n       {/* Main Content */}\r\n-      <div className=\"flex-1 p-8\">\r\n+      <div className=\"flex-1 p-8 flex flex-col\">\r\n         {renderContent()}\r\n       </div>\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1760694904234,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,9 +29,8 @@\n   };\r\n \r\n   return (\r\n     <div className=\"min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex\">\r\n-      {/* Sidebar */}\r\n       <nav className=\"w-64 bg-gray-800 border-r-2 border-cyan-500 p-6\">\r\n         <h2 className=\"text-2xl font-bold text-cyan-400 mb-8 uppercase tracking-wider\">\r\n           Menu\r\n         </h2>\r\n"
+                }
+            ],
+            "date": 1760693621982,
+            "name": "Commit-0",
+            "content": "export default function Menu() {\r\n    return <menu>\r\n        <menuitem>Products</menuitem>\r\n        <menuitem>Users</menuitem>\r\n        <menuitem>Traders</menuitem>\r\n        <menuitem>Products</menuitem>\r\n        <menuitem>Receipts</menuitem>\r\n    </menu>\r\n}"
+        }
+    ]
+}

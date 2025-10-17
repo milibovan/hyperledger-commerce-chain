@@ -1,10 +1,11 @@
-import { useState } from 'react';
-import { LogOut } from 'lucide-react';
+import { useState } from "react";
+import { LogOut } from "lucide-react";
+import Menu from "./assets/Menu";
 
-type ConnectionState = 'disconnected' | 'connected';
+type ConnectionState = "disconnected" | "connected";
 
 export default function App() {
-  const [state, setState] = useState<ConnectionState>('disconnected');
+  const [state, setState] = useState<ConnectionState>("disconnected");
   const [showOrgs, setShowOrgs] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
@@ -12,12 +13,12 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const organizations = ['Org1', 'Org2', 'Org3'];
-  const users = ['User1', 'Admin'];
+  const organizations = ["Org1", "Org2", "Org3"];
+  const users = ["User1", "Admin"];
 
   const handleConnect = async () => {
     if (!selectedOrg || !selectedUser) {
-      setError('Please select both organization and user');
+      setError("Please select both organization and user");
       return;
     }
 
@@ -25,18 +26,21 @@ export default function App() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/connect', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ organization: selectedOrg, userId: selectedUser }),
+      const response = await fetch("http://localhost:8080/connect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          organization: selectedOrg,
+          userId: selectedUser,
+        }),
       });
 
       if (response.ok) {
-        setState('connected');
+        setState("connected");
         setShowOrgs(false);
         setShowUsers(false);
       } else {
-        setError('Connection failed');
+        setError("Connection failed");
       }
     } catch (err) {
       setError(`Error connecting to network ${err}`);
@@ -50,16 +54,16 @@ export default function App() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/disconnect', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8080/disconnect", {
+        method: "POST",
       });
 
       if (response.ok) {
-        setState('disconnected');
+        setState("disconnected");
         setSelectedOrg(null);
         setSelectedUser(null);
       } else {
-        setError('Disconnection failed');
+        setError("Disconnection failed");
       }
     } catch (err) {
       setError(`Error disconnecting from network ${err}`);
@@ -74,29 +78,30 @@ export default function App() {
     setSelectedUser(null);
   };
 
-  if (state === 'connected') {
+  if (state === "connected") {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4">
-        <div className="absolute top-8 right-8">
-          <button
-            onClick={handleDisconnect}
-            disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded border-2 border-red-400 transition-all duration-200 disabled:opacity-50"
-          >
-            <LogOut size={18} />
-            Disconnect
-          </button>
-        </div>
-        <div className="text-center text-cyan-400">
-          <div className="text-4xl font-bold mb-4">Connected</div>
-          <div className="text-lg text-purple-300">
-            Organization: {selectedOrg}
+      <>
+        <Menu />
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex items-center justify-center p-4">
+          <div className="absolute bottom-8 right-8">
+            <button
+              onClick={handleDisconnect}
+              disabled={loading}
+              className="flex items-center gap-2 px-6 py-3 bg-red-700 hover:bg-red-900 text-white font-semibold rounded-3xl border-2 border-red-400 transition-all duration-200 disabled:opacity-50"
+            >
+              <LogOut size={12} />
+              Disconnect
+            </button>
           </div>
-          <div className="text-lg text-purple-300">
-            Role: {selectedUser}
+          <div className="text-center text-cyan-400">
+            <div className="text-4xl font-bold mb-4">Connected</div>
+            <div className="text-lg text-purple-300">
+              Organization: {selectedOrg}
+            </div>
+            <div className="text-lg text-purple-300">Role: {selectedUser}</div>
           </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -132,8 +137,8 @@ export default function App() {
                     onClick={() => handleOrgSelect(org)}
                     className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${
                       selectedOrg === org
-                        ? 'bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50'
-                        : 'bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200'
+                        ? "bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50"
+                        : "bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200"
                     }`}
                   >
                     {org}
@@ -154,8 +159,8 @@ export default function App() {
                     onClick={() => setSelectedUser(user)}
                     className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${
                       selectedUser === user
-                        ? 'bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50'
-                        : 'bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200'
+                        ? "bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50"
+                        : "bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200"
                     }`}
                   >
                     {user}
@@ -178,7 +183,7 @@ export default function App() {
                 disabled={loading}
                 className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-lg rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
               >
-                {loading ? 'Connecting...' : 'Submit'}
+                {loading ? "Connecting..." : "Submit"}
               </button>
             )}
           </div>
