@@ -4,6 +4,7 @@ import (
 	"commerce-sdk/api"
 	"commerce-sdk/client"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -26,9 +27,9 @@ func main() {
 
 	api.CreateServer()
 
-	//if err := handleMenu(); err != nil {
-	//	log.Fatalf("Application terminated with error: %v", err)
-	//}
+	if err := handleMenu(); err != nil {
+		log.Fatalf("Application terminated with error: %v", err)
+	}
 }
 
 func handleMenu() error {

@@ -2,6 +2,7 @@ package api
 
 import (
 	"commerce-sdk/client"
+	"commerce-sdk/models"
 	"fmt"
 	"strings"
 	"time"
@@ -46,6 +47,9 @@ func CreateServer() {
 	router.GET("/api-status", getApiStatus)
 	router.POST("/connect", connectClient)
 	router.POST("/disconnect", disconnectClient)
+	router.POST("/user/:channel", createUser)
+	router.POST("/trader", createTrader)
+	router.POST("/product", createProduct)
 	router.Run("localhost:8080")
 }
 
@@ -93,3 +97,24 @@ func disconnectClient(c *gin.Context) {
 
 	c.JSON(200, gin.H{"Message": "Disconntected from the gateway"})
 }
+
+func createUser(c *gin.Context) {
+	var User models.User
+	var channel string
+
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&User); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request"})
+		return
+	}
+
+	fmt.Println(User)
+
+	blockNumber, ID := client.CreateUser(activeGW, channel, User.Name, User.Surname, User.Email, fmt.Sprint(User.Balance))
+
+	c.JSON(201, gin.H{"Message": fmt.Sprintf("User created %d %s", blockNumber, ID)})
+
+}
+func createTrader(c *gin.Context)  {}
+func createProduct(c *gin.Context) {}
