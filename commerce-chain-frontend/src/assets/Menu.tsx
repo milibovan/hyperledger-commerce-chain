@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Package, Users, TrendingUp, Receipt } from 'lucide-react';
+import { Package, Users, TrendingUp, Receipt, Plus, Edit, Eye, Trash2 } from 'lucide-react';
+import CreateUserForm from './forms/CreateUserForm';
 
 type MenuItem = 'Products' | 'Users' | 'Traders' | 'Receipts';
 
@@ -30,6 +31,7 @@ export default function Menu() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 flex">
+      {/* Sidebar */}
       <nav className="w-64 bg-gray-800 border-r-2 border-cyan-500 p-6">
         <h2 className="text-2xl font-bold text-cyan-400 mb-8 uppercase tracking-wider">
           Menu
@@ -62,37 +64,191 @@ export default function Menu() {
 }
 
 function ProductsPanel() {
+  const [action, setAction] = useState<'list' | 'create' | 'read' | 'update' | 'delete' | null>(null);
+
+  const crudActions = [
+    { label: 'Create', icon: <Plus size={20} />, value: 'create' as const },
+    { label: 'Read', icon: <Eye size={20} />, value: 'read' as const },
+    { label: 'Update', icon: <Edit size={20} />, value: 'update' as const },
+    { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
+  ];
+
   return (
-    <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50">
-      <h3 className="text-3xl font-bold text-cyan-400 mb-4">Products</h3>
-      <p className="text-gray-300">Products panel content goes here</p>
+    <div className="space-y-6">
+      {!action ? (
+        <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50">
+          <h3 className="text-3xl font-bold text-cyan-400 mb-6">Products</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {crudActions.map((item) => (
+              <button
+                key={item.value}
+                onClick={() => setAction(item.value)}
+                className="flex items-center gap-3 px-6 py-4 bg-cyan-600 hover:bg-cyan-500 text-white font-semibold rounded border-2 border-cyan-400 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-400/50"
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50">
+          <button
+            onClick={() => setAction(null)}
+            className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-cyan-300 font-semibold rounded border-2 border-gray-600 transition-all"
+          >
+            ← Back
+          </button>
+          <h3 className="text-3xl font-bold text-cyan-400 mb-4 capitalize">{action} Product</h3>
+          <p className="text-gray-300">{action} functionality goes here</p>
+        </div>
+      )}
     </div>
   );
 }
 
 function UsersPanel() {
+  const [action, setAction] = useState<'list' | 'create' | 'read' | 'update' | 'delete' | null>(null);
+
+  const crudActions = [
+    { label: 'Create', icon: <Plus size={20} />, value: 'create' as const },
+    { label: 'Read', icon: <Eye size={20} />, value: 'read' as const },
+    { label: 'Update', icon: <Edit size={20} />, value: 'update' as const },
+    { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
+  ];
+
+  const renderContent = () => {
+    switch (action) {
+      case 'create':
+        return <CreateUserForm />;
+    //   case 'read':
+    //     return <ReadUserForm />;
+    //   case 'update':
+    //     return <UpdateUserForm />;
+    //   case 'delete':
+    //     return <DeleteUserForm />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
-      <h3 className="text-3xl font-bold text-purple-400 mb-4">Users</h3>
-      <p className="text-gray-300">Users panel content goes here</p>
+    <div className="space-y-6">
+      {!action ? (
+        <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
+          <h3 className="text-3xl font-bold text-purple-400 mb-6">Users</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {crudActions.map((item) => (
+              <button
+                key={item.value}
+                onClick={() => setAction(item.value)}
+                className="flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50"
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
+          <button
+            onClick={() => setAction(null)}
+            className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-purple-300 font-semibold rounded border-2 border-gray-600 transition-all"
+          >
+            ← Back
+          </button>
+          {renderContent()}
+        </div>
+      )}
     </div>
   );
 }
 
 function TradersPanel() {
+  const [action, setAction] = useState<'list' | 'create' | 'read' | 'update' | 'delete' | null>(null);
+
+  const crudActions = [
+    { label: 'Create', icon: <Plus size={20} />, value: 'create' as const },
+    { label: 'Read', icon: <Eye size={20} />, value: 'read' as const },
+    { label: 'Update', icon: <Edit size={20} />, value: 'update' as const },
+    { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
+  ];
+
   return (
-    <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50">
-      <h3 className="text-3xl font-bold text-pink-400 mb-4">Traders</h3>
-      <p className="text-gray-300">Traders panel content goes here</p>
+    <div className="space-y-6">
+      {!action ? (
+        <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50">
+          <h3 className="text-3xl font-bold text-pink-400 mb-6">Traders</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {crudActions.map((item) => (
+              <button
+                key={item.value}
+                onClick={() => setAction(item.value)}
+                className="flex items-center gap-3 px-6 py-4 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50"
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50">
+          <button
+            onClick={() => setAction(null)}
+            className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-pink-300 font-semibold rounded border-2 border-gray-600 transition-all"
+          >
+            ← Back
+          </button>
+          <h3 className="text-3xl font-bold text-pink-400 mb-4 capitalize">{action} Trader</h3>
+          <p className="text-gray-300">{action} functionality goes here</p>
+        </div>
+      )}
     </div>
   );
 }
 
 function ReceiptsPanel() {
+  const [action, setAction] = useState<'list' | 'create' | 'read' | 'update' | 'delete' | null>(null);
+
+  const crudActions = [
+    { label: 'Create', icon: <Plus size={20} />, value: 'create' as const },
+    { label: 'Read', icon: <Eye size={20} />, value: 'read' as const },
+    { label: 'Update', icon: <Edit size={20} />, value: 'update' as const },
+    { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
+  ];
+
   return (
-    <div className="bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50">
-      <h3 className="text-3xl font-bold text-green-400 mb-4">Receipts</h3>
-      <p className="text-gray-300">Receipts panel content goes here</p>
+    <div className="space-y-6">
+      {!action ? (
+        <div className="bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50">
+          <h3 className="text-3xl font-bold text-green-400 mb-6">Receipts</h3>
+          <div className="grid grid-cols-2 gap-4">
+            {crudActions.map((item) => (
+              <button
+                key={item.value}
+                onClick={() => setAction(item.value)}
+                className="flex items-center gap-3 px-6 py-4 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all duration-200 hover:shadow-lg hover:shadow-green-400/50"
+              >
+                {item.icon}
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50">
+          <button
+            onClick={() => setAction(null)}
+            className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-green-300 font-semibold rounded border-2 border-gray-600 transition-all"
+          >
+            ← Back
+          </button>
+          <h3 className="text-3xl font-bold text-green-400 mb-4 capitalize">{action} Receipt</h3>
+          <p className="text-gray-300">{action} functionality goes here</p>
+        </div>
+      )}
     </div>
   );
 }
