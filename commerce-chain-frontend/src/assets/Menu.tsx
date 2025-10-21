@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Package, Users, TrendingUp, Receipt, Plus, Edit, Eye, Trash2 } from 'lucide-react';
 import CreateUserForm from './forms/CreateUserForm';
+import CreateTraderForm from './forms/CreateTraderForm';
 
 type MenuItem = 'Products' | 'Users' | 'Traders' | 'Receipts';
 
@@ -175,6 +176,21 @@ function TradersPanel() {
     { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
   ];
 
+  const renderContent = () => {
+    switch (action) {
+      case 'create':
+        return <CreateTraderForm />;
+    //   case 'read':
+    //     return <ReadUserForm />;
+    //   case 'update':
+    //     return <UpdateUserForm />;
+    //   case 'delete':
+    //     return <DeleteUserForm />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className="space-y-6">
       {!action ? (
@@ -201,8 +217,7 @@ function TradersPanel() {
           >
             ← Back
           </button>
-          <h3 className="text-3xl font-bold text-pink-400 mb-4 capitalize">{action} Trader</h3>
-          <p className="text-gray-300">{action} functionality goes here</p>
+          {renderContent()}
         </div>
       )}
     </div>

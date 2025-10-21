@@ -89,19 +89,19 @@ export default function CreateUserForm() {
 
   return (
     <div className="w-full max-w-2xl">
-      <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50 space-y-6">
-        <h3 className="text-3xl font-bold text-cyan-400 mb-6">Create User</h3>
+      <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50 space-y-6">
+        <h3 className="text-3xl font-bold text-purple-400 mb-6">Create User</h3>
 
         {/* Channel Selection */}
         <div>
-          <label className="block text-cyan-300 font-semibold mb-2">
+          <label className="block text-purple-300 font-semibold mb-2">
             Channel *
           </label>
           <select
             name="channel"
             value={formData.channel}
             onChange={handleChange}
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-cyan-500 text-white rounded font-semibold transition-all duration-200 focus:outline-none focus:border-cyan-300 focus:shadow-lg focus:shadow-cyan-400/50"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
           >
             <option value="">Select a channel</option>
             {channels.map((ch) => (
@@ -114,7 +114,7 @@ export default function CreateUserForm() {
 
         {/* First Name */}
         <div>
-          <label className="block text-cyan-300 font-semibold mb-2">
+          <label className="block text-purple-300 font-semibold mb-2">
             First Name *
           </label>
           <input
@@ -123,13 +123,13 @@ export default function CreateUserForm() {
             value={formData.name}
             onChange={handleChange}
             placeholder="Enter first name"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-cyan-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-cyan-300 focus:shadow-lg focus:shadow-cyan-400/50"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
           />
         </div>
 
         {/* Last Name */}
         <div>
-          <label className="block text-cyan-300 font-semibold mb-2">
+          <label className="block text-purple-300 font-semibold mb-2">
             Last Name *
           </label>
           <input
@@ -138,13 +138,13 @@ export default function CreateUserForm() {
             value={formData.surname}
             onChange={handleChange}
             placeholder="Enter last name"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-cyan-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-cyan-300 focus:shadow-lg focus:shadow-cyan-400/50"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
           />
         </div>
 
         {/* Email */}
         <div>
-          <label className="block text-cyan-300 font-semibold mb-2">
+          <label className="block text-purple-300 font-semibold mb-2">
             Email *
           </label>
           <input
@@ -153,13 +153,13 @@ export default function CreateUserForm() {
             value={formData.email}
             onChange={handleChange}
             placeholder="Enter email address"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-cyan-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-cyan-300 focus:shadow-lg focus:shadow-cyan-400/50"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
           />
         </div>
 
         {/* Balance */}
         <div>
-          <label className="block text-cyan-300 font-semibold mb-2">
+          <label className="block text-purple-300 font-semibold mb-2">
             Balance *
           </label>
           <input
@@ -170,7 +170,7 @@ export default function CreateUserForm() {
             placeholder="Enter balance"
             step="0.01"
             min="0"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-cyan-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-cyan-300 focus:shadow-lg focus:shadow-cyan-400/50"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
           />
         </div>
 
@@ -194,7 +194,7 @@ export default function CreateUserForm() {
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-cyan-300 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
+          className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-purple-300 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
         >
           <Send size={20} />
           {loading ? 'Creating...' : 'Create User'}
