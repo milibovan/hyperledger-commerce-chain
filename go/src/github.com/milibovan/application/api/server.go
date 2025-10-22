@@ -4,6 +4,7 @@ import (
 	"commerce-sdk/client"
 	"commerce-sdk/models"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -48,8 +49,8 @@ func CreateServer() {
 	router.POST("/connect", connectClient)
 	router.POST("/disconnect", disconnectClient)
 	router.POST("/user/:channel", createUser)
-	router.POST("/trader", createTrader)
-	router.POST("/product", createProduct)
+	router.POST("/trader/:channel", createTrader)
+	router.POST("/product/:channel", createProduct)
 	router.Run("localhost:8080")
 }
 
@@ -116,5 +117,36 @@ func createUser(c *gin.Context) {
 	c.JSON(201, gin.H{"Message": fmt.Sprintf("User created %d %s", blockNumber, ID)})
 
 }
-func createTrader(c *gin.Context)  {}
-func createProduct(c *gin.Context) {}
+func createTrader(c *gin.Context) {
+	var Trader models.Trader
+	var channel string
+
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&Trader); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request"})
+		return
+	}
+
+	fmt.Println(Trader)
+
+	blockNumber, ID := client.CreateTrader(activeGW, channel, string(Trader.TraderType), Trader.VAT, fmt.Sprint(Trader.Balance))
+
+	c.JSON(201, gin.H{"Message": fmt.Sprintf("Trader created %d %s", blockNumber, ID)})
+}
+func createProduct(c *gin.Context) {
+	var Product models.Product
+	var channel string
+
+	channel = c.Param("channel")
+
+	fmt.Println(Product)
+	if err := c.BindJSON(&Product); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request"})
+		return
+	}
+
+	blockNumber, ID := client.CreateProduct(activeGW, channel, Product.Name, Product.ExpiryDate.Format("2025-12-30 09:43:32"), fmt.Sprint(Product.Price), strconv.Itoa(Product.Quantity), string(Product.TraderType))
+
+	c.JSON(201, gin.H{"Message": fmt.Sprintf("Product created %d %s", blockNumber, ID)})
+}
