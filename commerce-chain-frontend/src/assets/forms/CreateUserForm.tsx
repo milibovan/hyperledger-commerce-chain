@@ -1,28 +1,20 @@
-import { useState } from 'react';
-import { Send, AlertCircle, CheckCircle } from 'lucide-react';
-
-interface User {
-  name: string;
-  surname: string;
-  email: string;
-  balance: string;
-  channel: string;
-}
+import { useState } from "react";
+import { Send, AlertCircle, CheckCircle } from "lucide-react";
+import type { User} from "../utils/utils";
+import { channels } from "../utils/utils";
 
 export default function CreateUserForm() {
   const [formData, setFormData] = useState<User>({
-    name: '',
-    surname: '',
-    email: '',
-    balance: '',
-    channel: '',
+    name: "",
+    surname: "",
+    email: "",
+    balance: "",
+    channel: "",
   });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
-  const channels = ['channel-a', 'channel-b'];
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -45,7 +37,7 @@ export default function CreateUserForm() {
       !formData.balance ||
       !formData.channel
     ) {
-      setError('All fields are required');
+      setError("All fields are required");
       return;
     }
 
@@ -55,8 +47,8 @@ export default function CreateUserForm() {
       const response = await fetch(
         `http://localhost:8080/user/${formData.channel}`,
         {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             name: formData.name,
             surname: formData.surname,
@@ -70,15 +62,15 @@ export default function CreateUserForm() {
         const data = await response.json();
         setSuccess(`User created: ${data.Message}`);
         setFormData({
-          name: '',
-          surname: '',
-          email: '',
-          balance: '',
-          channel: '',
+          name: "",
+          surname: "",
+          email: "",
+          balance: "",
+          channel: "",
         });
       } else {
         const errorData = await response.json();
-        setError(errorData.Message || 'Failed to create user');
+        setError(errorData.Message || "Failed to create user");
       }
     } catch (err) {
       setError(`Error connecting to server ${err}`);
@@ -197,7 +189,7 @@ export default function CreateUserForm() {
           className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-purple-300 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
         >
           <Send size={20} />
-          {loading ? 'Creating...' : 'Create User'}
+          {loading ? "Creating..." : "Create User"}
         </button>
       </div>
     </div>

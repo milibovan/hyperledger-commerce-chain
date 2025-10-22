@@ -1,20 +1,7 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
-
-interface Trader {
-  traderType: string;
-  vat: string;
-  balance: string;
-  channel: string;
-}
-
-const TraderType = [
-  "SUPERMARKET",
-  "CARDEALER",
-  "PHARMACY",
-  "GROCERY",
-  "GAS_STATON",
-];
+import type { Trader } from "../utils/utils";
+import { TraderType, channels } from "../utils/utils";
 
 export default function CreateTraderForm() {
   const [formData, setFormData] = useState<Trader>({
@@ -27,8 +14,6 @@ export default function CreateTraderForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
-  const channels = ["channel-a", "channel-b"];
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>

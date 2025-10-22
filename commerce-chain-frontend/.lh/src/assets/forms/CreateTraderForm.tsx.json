@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 20,
+            "activePatchIndex": 26,
             "patches": [
                 {
                     "date": 1761056766125,
@@ -88,6 +88,30 @@
                 {
                     "date": 1761153404283,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,9 +63,9 @@\n         {\r\n           method: \"POST\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n-            traderType: formData.traderType,\r\n+            \"trader-type\": formData.traderType,\r\n             vat: formData.vat,\r\n             balance: parseFloat(formData.balance),\r\n             channel: formData.channel,\r\n           }),\r\n"
+                },
+                {
+                    "date": 1761153962086,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,22 +1,8 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n+import { Trader, TraderType } from \"../utils/utils\";\r\n \r\n-interface Trader {\r\n-  traderType: string;\r\n-  vat: string;\r\n-  balance: string;\r\n-  channel: string;\r\n-}\r\n-\r\n-const TraderType = [\r\n-  \"SUPERMARKET\",\r\n-  \"CARDEALER\",\r\n-  \"PHARMACY\",\r\n-  \"GROCERY\",\r\n-  \"GAS_STATON\",\r\n-];\r\n-\r\n export default function CreateTraderForm() {\r\n   const [formData, setFormData] = useState<Trader>({\r\n     traderType: \"\",\r\n     vat: \"\",\r\n"
+                },
+                {
+                    "date": 1761154095164,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import { Trader, TraderType } from \"../utils/utils\";\r\n+import { Trader, TraderType, channels } from \"../utils/utils\";\r\n \r\n export default function CreateTraderForm() {\r\n   const [formData, setFormData] = useState<Trader>({\r\n     traderType: \"\",\r\n@@ -13,10 +13,8 @@\n   const [loading, setLoading] = useState(false);\r\n   const [error, setError] = useState<string | null>(null);\r\n   const [success, setSuccess] = useState<string | null>(null);\r\n \r\n-  const channels = [\"channel-a\", \"channel-b\"];\r\n-\r\n   const handleChange = (\r\n     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>\r\n   ) => {\r\n     const { name, value } = e.target;\r\n"
+                },
+                {
+                    "date": 1761154291176,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import { Trader, TraderType, channels } from \"../utils/utils\";\r\n+import type { Trader, TraderType, channels } from \"../utils/utils\";\r\n \r\n export default function CreateTraderForm() {\r\n   const [formData, setFormData] = useState<Trader>({\r\n     traderType: \"\",\r\n"
+                },
+                {
+                    "date": 1761154307360,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import type { Trader, TraderType, channels } from \"../utils/utils\";\r\n+import type { Trader } from \"../utils/utils\";\r\n+import { TraderType, channels } from \"../utils/utils\";\r\n \r\n export default function CreateTraderForm() {\r\n   const [formData, setFormData] = useState<Trader>({\r\n     traderType: \"\",\r\n"
+                },
+                {
+                    "date": 1761154878645,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,9 +41,9 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n-      console.log(formData)\r\n+      // console.log(formData)\r\n       const response = await fetch(\r\n         `http://localhost:8080/trader/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n"
+                },
+                {
+                    "date": 1761155209029,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,9 +41,9 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n-      // console.log(formData)\r\n+      console.log(formData)\r\n       const response = await fetch(\r\n         `http://localhost:8080/trader/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n"
                 }
             ],
             "date": 1761056766125,
