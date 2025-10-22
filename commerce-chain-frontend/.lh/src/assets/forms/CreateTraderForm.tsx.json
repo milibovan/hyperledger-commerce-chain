@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 17,
+            "activePatchIndex": 20,
             "patches": [
                 {
                     "date": 1761056766125,
@@ -76,6 +76,18 @@
                 {
                     "date": 1761058239100,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -93,11 +93,9 @@\n \r\n   return (\r\n     <div className=\"w-full max-w-2xl\">\r\n       <div className=\"bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 space-y-6\">\r\n-        <h3 className=\"text-3xl font-bold text-pink-400 mb-6\">\r\n-          Create Trader\r\n-        </h3>\r\n+        <h3 className=\"text-3xl font-bold text-pink-400 mb-6\">Create Trader</h3>\r\n \r\n         {/* Channel Selection */}\r\n         <div>\r\n           <label className=\"block text-pink-300 font-semibold mb-2\">\r\n@@ -128,21 +126,21 @@\n             value={formData.traderType}\r\n             onChange={handleChange}\r\n             className=\"w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50\"\r\n           >\r\n-          <option value=\"\">Select a trader type</option>\r\n-          {TraderType.map((type) => (\r\n-            <option key={type} value={type}>\r\n-              {type}\r\n-            </option>\r\n-          ))}\r\n+            <option value=\"\">Select a trader type</option>\r\n+            {TraderType.map((type) => (\r\n+              <option key={type} value={type}>\r\n+                {type}\r\n+              </option>\r\n+            ))}\r\n           </select>\r\n         </div>\r\n \r\n         {/* VAT */}\r\n         <div>\r\n           <label className=\"block text-pink-300 font-semibold mb-2\">\r\n-            Balance *\r\n+            VAT *\r\n           </label>\r\n           <input\r\n             type=\"text\"\r\n             name=\"vat\"\r\n"
+                },
+                {
+                    "date": 1761153319136,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,8 +56,9 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n+      console.log(formData.traderType,)\r\n       const response = await fetch(\r\n         `http://localhost:8080/trader/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n"
+                },
+                {
+                    "date": 1761153360079,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -56,9 +56,9 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n-      console.log(formData.traderType,)\r\n+      console.log(formData)\r\n       const response = await fetch(\r\n         `http://localhost:8080/trader/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n"
+                },
+                {
+                    "date": 1761153404283,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,9 +63,9 @@\n         {\r\n           method: \"POST\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n-            traderType: formData.traderType,\r\n+            \"trader-type\": formData.traderType,\r\n             vat: formData.vat,\r\n             balance: parseFloat(formData.balance),\r\n             channel: formData.channel,\r\n           }),\r\n"
                 }
             ],
             "date": 1761056766125,

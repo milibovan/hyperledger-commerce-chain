@@ -57,13 +57,14 @@ export default function CreateTraderForm() {
     setLoading(true);
 
     try {
+      console.log(formData)
       const response = await fetch(
         `http://localhost:8080/trader/${formData.channel}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            traderType: formData.traderType,
+            "trader-type": formData.traderType,
             vat: formData.vat,
             balance: parseFloat(formData.balance),
             channel: formData.channel,
