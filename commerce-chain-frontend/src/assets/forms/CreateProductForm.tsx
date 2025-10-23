@@ -46,8 +46,6 @@ export default function CreateProductForm() {
     setLoading(true);
 
     try {
-      console.log(formData)
-      console.log(formData.expiryDate.replace("T", " "))
       const response = await fetch(
         `http://localhost:8080/product/${formData.channel}`,
         {
@@ -59,7 +57,6 @@ export default function CreateProductForm() {
             quantity: parseInt(formData.quantity),
             price: parseFloat(formData.price),
             name: formData.name,
-            channel: formData.channel,
           }),
         }
       );
@@ -77,7 +74,7 @@ export default function CreateProductForm() {
         });
       } else {
         const errorData = await response.json();
-        setError(errorData.Message || "Failed to create product")
+        setError(errorData.Message || "Failed to create product");
       }
     } catch (err) {
       setError(`Error connecting to server ${err}`);

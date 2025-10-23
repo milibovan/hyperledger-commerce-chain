@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 18,
+            "activePatchIndex": 27,
             "patches": [
                 {
                     "date": 1761153821526,
@@ -80,6 +80,42 @@
                 {
                     "date": 1761155466055,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -46,8 +46,9 @@\n     setLoading(true);\r\n \r\n     try {\r\n       console.log(formData)\r\n+      console.log(formData.expiryDate.replace(\"T\", \" \"))\r\n       const response = await fetch(\r\n         `http://localhost:8080/product/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n"
+                },
+                {
+                    "date": 1761221982253,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,10 +45,18 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n-      console.log(formData)\r\n-      console.log(formData.expiryDate.replace(\"T\", \" \"))\r\n+      const body = JSON.stringify({\r\n+            \"trader-type\": formData.traderType,\r\n+            \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n+            quantity: parseInt(formData.quantity),\r\n+            price: parseFloat(formData.price),\r\n+            name: formData.name,\r\n+            channel: formData.channel,\r\n+          })\r\n+\r\n+          console.log(body)\r\n       const response = await fetch(\r\n         `http://localhost:8080/product/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n"
+                },
+                {
+                    "date": 1761222197523,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,18 +45,8 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n-      const body = JSON.stringify({\r\n-            \"trader-type\": formData.traderType,\r\n-            \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n-            quantity: parseInt(formData.quantity),\r\n-            price: parseFloat(formData.price),\r\n-            name: formData.name,\r\n-            channel: formData.channel,\r\n-          })\r\n-\r\n-          console.log(body)\r\n       const response = await fetch(\r\n         `http://localhost:8080/product/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n@@ -65,10 +55,9 @@\n             \"trader-type\": formData.traderType,\r\n             \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n             quantity: parseInt(formData.quantity),\r\n             price: parseFloat(formData.price),\r\n-            name: formData.name,\r\n-            channel: formData.channel,\r\n+            name: formData.name\r\n           }),\r\n         }\r\n       );\r\n \r\n"
+                },
+                {
+                    "date": 1761222318286,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,8 +44,18 @@\n     }\r\n \r\n     setLoading(true);\r\n \r\n+    const body = JSON.stringify({\r\n+            \"trader-type\": formData.traderType,\r\n+            \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n+            quantity: parseInt(formData.quantity),\r\n+            price: parseFloat(formData.price),\r\n+            name: formData.name\r\n+          })\r\n+\r\n+          console.log(body)\r\n+\r\n     try {\r\n       const response = await fetch(\r\n         `http://localhost:8080/product/${formData.channel}`,\r\n         {\r\n"
+                },
+                {
+                    "date": 1761222529806,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,18 +44,8 @@\n     }\r\n \r\n     setLoading(true);\r\n \r\n-    const body = JSON.stringify({\r\n-            \"trader-type\": formData.traderType,\r\n-            \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n-            quantity: parseInt(formData.quantity),\r\n-            price: parseFloat(formData.price),\r\n-            name: formData.name\r\n-          })\r\n-\r\n-          console.log(body)\r\n-\r\n     try {\r\n       const response = await fetch(\r\n         `http://localhost:8080/product/${formData.channel}`,\r\n         {\r\n@@ -65,9 +55,9 @@\n             \"trader-type\": formData.traderType,\r\n             \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n             quantity: parseInt(formData.quantity),\r\n             price: parseFloat(formData.price),\r\n-            name: formData.name\r\n+            name: formData.name,\r\n           }),\r\n         }\r\n       );\r\n \r\n@@ -83,9 +73,9 @@\n           channel: \"\",\r\n         });\r\n       } else {\r\n         const errorData = await response.json();\r\n-        setError(errorData.Message || \"Failed to create product\")\r\n+        setError(errorData.Message || \"Failed to create product\");\r\n       }\r\n     } catch (err) {\r\n       setError(`Error connecting to server ${err}`);\r\n     } finally {\r\n"
+                },
+                {
+                    "date": 1761224645153,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,9 +52,9 @@\n           method: \"POST\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n             \"trader-type\": formData.traderType,\r\n-            \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n+            // \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n             quantity: parseInt(formData.quantity),\r\n             price: parseFloat(formData.price),\r\n             name: formData.name,\r\n           }),\r\n"
+                },
+                {
+                    "date": 1761224815370,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,9 +52,9 @@\n           method: \"POST\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n             \"trader-type\": formData.traderType,\r\n-            // \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n+            \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n             quantity: parseInt(formData.quantity),\r\n             price: parseFloat(formData.price),\r\n             name: formData.name,\r\n           }),\r\n"
+                },
+                {
+                    "date": 1761224917799,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,9 +52,9 @@\n           method: \"POST\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n             \"trader-type\": formData.traderType,\r\n-            \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n+            \"expiry-date\": formData.expiryDate,\r\n             quantity: parseInt(formData.quantity),\r\n             price: parseFloat(formData.price),\r\n             name: formData.name,\r\n           }),\r\n"
+                },
+                {
+                    "date": 1761225038300,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,9 +52,9 @@\n           method: \"POST\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n             \"trader-type\": formData.traderType,\r\n-            \"expiry-date\": formData.expiryDate,\r\n+            \"expiry-date\": formData.expiryDate + \":00Z\",\r\n             quantity: parseInt(formData.quantity),\r\n             price: parseFloat(formData.price),\r\n             name: formData.name,\r\n           }),\r\n"
+                },
+                {
+                    "date": 1761225132941,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -52,9 +52,9 @@\n           method: \"POST\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n             \"trader-type\": formData.traderType,\r\n-            \"expiry-date\": formData.expiryDate + \":00Z\",\r\n+            \"expiry-date\": formData.expiryDate.replace(\"T\", \" \"),\r\n             quantity: parseInt(formData.quantity),\r\n             price: parseFloat(formData.price),\r\n             name: formData.name,\r\n           }),\r\n"
                 }
             ],
             "date": 1761153821526,
