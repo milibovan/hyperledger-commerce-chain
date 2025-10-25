@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 7,
             "patches": [
                 {
                     "date": 1761153837018,
@@ -24,6 +24,18 @@
                 {
                     "date": 1761154502601,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n     name: string,\r\n     expiryDate: string,\r\n     price: string,\r\n     quantity: string,\r\n-    traderTypeStr: string,\r\n+    traderType: string,\r\n     channel: string\r\n }\r\n \r\n export interface User {\r\n"
+                },
+                {
+                    "date": 1761387823797,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -29,5 +29,9 @@\n   \"GROCERY\",\r\n   \"GAS_STATON\",\r\n ];\r\n \r\n-export const channels = ['channel-a', 'channel-b'];\n\\ No newline at end of file\n+export const channels = ['channel-a', 'channel-b'];\r\n+\r\n+export const interface Users {\r\n+  Users: string\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761387853310,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,7 +31,7 @@\n ];\r\n \r\n export const channels = ['channel-a', 'channel-b'];\r\n \r\n-export const interface Users {\r\n+export interface Users {\r\n   Users: string\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761387884995,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,7 +31,7 @@\n ];\r\n \r\n export const channels = ['channel-a', 'channel-b'];\r\n \r\n-export interface Users {\r\n+export interface UsersData {\r\n   Users: string\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1761153837018,

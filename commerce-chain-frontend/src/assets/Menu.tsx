@@ -1,30 +1,42 @@
-import { useState } from 'react';
-import { Package, Users, TrendingUp, Receipt, Plus, Edit, Eye, Trash2 } from 'lucide-react';
-import CreateUserForm from './forms/CreateUserForm';
-import CreateTraderForm from './forms/CreateTraderForm';
-import CreateProductForm from './forms/CreateProductForm';
+import { useEffect, useState } from "react";
+import {
+  Package,
+  Users,
+  TrendingUp,
+  Receipt,
+  Plus,
+  Edit,
+  Eye,
+  Trash2,
+  AlertCircle,
+  CheckCircle,
+} from "lucide-react";
+import CreateUserForm from "./forms/CreateUserForm";
+import CreateTraderForm from "./forms/CreateTraderForm";
+import CreateProductForm from "./forms/CreateProductForm";
+import type { UsersData } from "./utils/utils";
 
-type MenuItem = 'Products' | 'Users' | 'Traders' | 'Receipts';
+type MenuItem = "Products" | "Users" | "Traders" | "Receipts";
 
 export default function Menu() {
-  const [activeItem, setActiveItem] = useState<MenuItem>('Products');
+  const [activeItem, setActiveItem] = useState<MenuItem>("Products");
 
   const menuItems: { label: MenuItem; icon: React.ReactNode }[] = [
-    { label: 'Products', icon: <Package size={24} /> },
-    { label: 'Users', icon: <Users size={24} /> },
-    { label: 'Traders', icon: <TrendingUp size={24} /> },
-    { label: 'Receipts', icon: <Receipt size={24} /> },
+    { label: "Products", icon: <Package size={24} /> },
+    { label: "Users", icon: <Users size={24} /> },
+    { label: "Traders", icon: <TrendingUp size={24} /> },
+    { label: "Receipts", icon: <Receipt size={24} /> },
   ];
 
   const renderContent = () => {
     switch (activeItem) {
-      case 'Products':
+      case "Products":
         return <ProductsPanel />;
-      case 'Users':
+      case "Users":
         return <UsersPanel />;
-      case 'Traders':
+      case "Traders":
         return <TradersPanel />;
-      case 'Receipts':
+      case "Receipts":
         return <ReceiptsPanel />;
       default:
         return null;
@@ -45,8 +57,8 @@ export default function Menu() {
                 onClick={() => setActiveItem(item.label)}
                 className={`w-full flex items-center gap-4 px-4 py-3 rounded border-2 font-semibold transition-all duration-200 ${
                   activeItem === item.label
-                    ? 'bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50'
-                    : 'bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200'
+                    ? "bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50"
+                    : "bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200"
                 }`}
               >
                 {item.icon}
@@ -58,33 +70,33 @@ export default function Menu() {
       </nav>
 
       {/* Main Content */}
-      <div className="flex-1 p-8 flex flex-col">
-        {renderContent()}
-      </div>
+      <div className="flex-1 p-8 flex flex-col">{renderContent()}</div>
     </div>
   );
 }
 
 function ProductsPanel() {
-  const [action, setAction] = useState<'list' | 'create' | 'read' | 'update' | 'delete' | null>(null);
+  const [action, setAction] = useState<
+    "list" | "create" | "read" | "update" | "delete" | null
+  >(null);
 
   const crudActions = [
-    { label: 'Create', icon: <Plus size={20} />, value: 'create' as const },
-    { label: 'Read', icon: <Eye size={20} />, value: 'read' as const },
-    { label: 'Update', icon: <Edit size={20} />, value: 'update' as const },
-    { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
+    { label: "Create", icon: <Plus size={20} />, value: "create" as const },
+    { label: "Read", icon: <Eye size={20} />, value: "read" as const },
+    { label: "Update", icon: <Edit size={20} />, value: "update" as const },
+    { label: "Delete", icon: <Trash2 size={20} />, value: "delete" as const },
   ];
 
   const renderContent = () => {
     switch (action) {
-      case 'create':
+      case "create":
         return <CreateProductForm />;
-    //   case 'read':
-    //     return <ReadUserForm />;
-    //   case 'update':
-    //     return <UpdateUserForm />;
-    //   case 'delete':
-    //     return <DeleteUserForm />;
+      //   case 'read':
+      //     return <ReadUserForm />;
+      //   case 'update':
+      //     return <UpdateUserForm />;
+      //   case 'delete':
+      //     return <DeleteUserForm />;
       default:
         return null;
     }
@@ -124,25 +136,60 @@ function ProductsPanel() {
 }
 
 function UsersPanel() {
-  const [action, setAction] = useState<'list' | 'create' | 'read' | 'update' | 'delete' | null>(null);
+  const [data, setData] = useState<UsersData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchUsers() {
+      try {
+        const response = await fetch(`http://localhost:8080/users/channel-a`, {
+          method: "GET",
+          headers: { "Content-Type": "application/json" },
+        });
+
+        if (response.ok) {
+          const responseData: UsersData = await response.json();
+          setData(responseData);
+          setSuccess(`Users fetched: ${responseData.Users}`);
+        } else {
+          const errorData = await response.json();
+          setError(errorData.Message || "Failed to fetch Users");
+        }
+      } catch (err) {
+        setError(
+          `Error connecting to server ${
+            err instanceof Error ? err.message : String(err)
+          }`
+        );
+      }
+    }
+    fetchUsers();
+  }, []);
+
+
+  console.log(data)
+  const [action, setAction] = useState<
+    "list" | "create" | "read" | "update" | "delete" | null
+  >(null);
 
   const crudActions = [
-    { label: 'Create', icon: <Plus size={20} />, value: 'create' as const },
-    { label: 'Read', icon: <Eye size={20} />, value: 'read' as const },
-    { label: 'Update', icon: <Edit size={20} />, value: 'update' as const },
-    { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
+    { label: "Create", icon: <Plus size={20} />, value: "create" as const },
+    { label: "Read", icon: <Eye size={20} />, value: "read" as const },
+    { label: "Update", icon: <Edit size={20} />, value: "update" as const },
+    { label: "Delete", icon: <Trash2 size={20} />, value: "delete" as const },
   ];
 
   const renderContent = () => {
     switch (action) {
-      case 'create':
+      case "create":
         return <CreateUserForm />;
-    //   case 'read':
-    //     return <ReadUserForm />;
-    //   case 'update':
-    //     return <UpdateUserForm />;
-    //   case 'delete':
-    //     return <DeleteUserForm />;
+      //   case 'read':
+      //     return <ReadUserForm />;
+      //   case 'update':
+      //     return <UpdateUserForm />;
+      //   case 'delete':
+      //     return <DeleteUserForm />;
       default:
         return null;
     }
@@ -177,30 +224,47 @@ function UsersPanel() {
           {renderContent()}
         </div>
       )}
+      {/* Error Message */}
+      {error && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-red-900 border-2 border-red-500 text-red-200 rounded">
+          <AlertCircle size={20} />
+          <span className="font-semibold">{error}</span>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {success && (
+        <div className="flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded">
+          <CheckCircle size={20} />
+          <span className="font-semibold">{success}</span>
+        </div>
+      )}
     </div>
   );
 }
 
 function TradersPanel() {
-  const [action, setAction] = useState<'list' | 'create' | 'read' | 'update' | 'delete' | null>(null);
+  const [action, setAction] = useState<
+    "list" | "create" | "read" | "update" | "delete" | null
+  >(null);
 
   const crudActions = [
-    { label: 'Create', icon: <Plus size={20} />, value: 'create' as const },
-    { label: 'Read', icon: <Eye size={20} />, value: 'read' as const },
-    { label: 'Update', icon: <Edit size={20} />, value: 'update' as const },
-    { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
+    { label: "Create", icon: <Plus size={20} />, value: "create" as const },
+    { label: "Read", icon: <Eye size={20} />, value: "read" as const },
+    { label: "Update", icon: <Edit size={20} />, value: "update" as const },
+    { label: "Delete", icon: <Trash2 size={20} />, value: "delete" as const },
   ];
 
   const renderContent = () => {
     switch (action) {
-      case 'create':
+      case "create":
         return <CreateTraderForm />;
-    //   case 'read':
-    //     return <ReadUserForm />;
-    //   case 'update':
-    //     return <UpdateUserForm />;
-    //   case 'delete':
-    //     return <DeleteUserForm />;
+      //   case 'read':
+      //     return <ReadUserForm />;
+      //   case 'update':
+      //     return <UpdateUserForm />;
+      //   case 'delete':
+      //     return <DeleteUserForm />;
       default:
         return null;
     }
@@ -240,13 +304,15 @@ function TradersPanel() {
 }
 
 function ReceiptsPanel() {
-  const [action, setAction] = useState<'list' | 'create' | 'read' | 'update' | 'delete' | null>(null);
+  const [action, setAction] = useState<
+    "list" | "create" | "read" | "update" | "delete" | null
+  >(null);
 
   const crudActions = [
-    { label: 'Create', icon: <Plus size={20} />, value: 'create' as const },
-    { label: 'Read', icon: <Eye size={20} />, value: 'read' as const },
-    { label: 'Update', icon: <Edit size={20} />, value: 'update' as const },
-    { label: 'Delete', icon: <Trash2 size={20} />, value: 'delete' as const },
+    { label: "Create", icon: <Plus size={20} />, value: "create" as const },
+    { label: "Read", icon: <Eye size={20} />, value: "read" as const },
+    { label: "Update", icon: <Edit size={20} />, value: "update" as const },
+    { label: "Delete", icon: <Trash2 size={20} />, value: "delete" as const },
   ];
 
   return (
@@ -275,7 +341,9 @@ function ReceiptsPanel() {
           >
             ← Back
           </button>
-          <h3 className="text-3xl font-bold text-green-400 mb-4 capitalize">{action} Receipt</h3>
+          <h3 className="text-3xl font-bold text-green-400 mb-4 capitalize">
+            {action} Receipt
+          </h3>
           <p className="text-gray-300">{action} functionality goes here</p>
         </div>
       )}

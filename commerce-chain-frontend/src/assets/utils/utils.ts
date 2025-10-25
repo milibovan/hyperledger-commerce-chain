@@ -31,3 +31,7 @@ export const TraderType = [
 ];
 
 export const channels = ['channel-a', 'channel-b'];
+
+export interface UsersData {
+  Users: string
+}
