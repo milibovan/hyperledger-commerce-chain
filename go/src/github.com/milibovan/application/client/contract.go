@@ -315,3 +315,79 @@ func QueryProductsByPriceRange(gw *fabricClient.Gateway, channel, minPrice, maxP
 	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
 	return nil
 }
+
+func QueryAllUsers(gw *fabricClient.Gateway, channel string) (string, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetAllUsers from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetAllUsers")
+	if err != nil {
+		return "", err
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No users found matching the criteria")
+		return "", err
+	}
+
+	return formatJSON(resultBytes), nil
+}
+
+func QueryAllTraders(gw *fabricClient.Gateway, channel string) (string, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetAllTraders from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetAllTraders")
+	if err != nil {
+		return "", err
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No traders found matching the criteria")
+		return "", err
+	}
+
+	return formatJSON(resultBytes), nil
+}
+
+func QueryAllProducts(gw *fabricClient.Gateway, channel string) (string, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetAllProducts from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetAllProducts")
+	if err != nil {
+		return "", err
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No products found matching the criteria")
+		return "", err
+	}
+
+	return formatJSON(resultBytes), nil
+}
+
+func QueryAllReceipts(gw *fabricClient.Gateway, channel string) (string, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetAllReceipts from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetAllReceipts")
+	if err != nil {
+		return "", err
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No receipts found matching the criteria")
+		return "", err
+	}
+
+	return formatJSON(resultBytes), nil
+}

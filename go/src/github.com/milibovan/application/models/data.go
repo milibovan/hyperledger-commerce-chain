@@ -1,12 +1,16 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
 type Product struct {
 	DocType    string     `json:"doc-type"`
 	Id         string     `json:"id"`
 	Name       string     `json:"name"`
-	ExpiryDate time.Time  `json:"expiry-date,omitempty"`
+	ExpiryDate CustomTime `json:"expiry-date,omitempty"`
 	Price      float64    `json:"price"`
 	Quantity   int        `json:"quantity"`
 	TraderType TraderType `json:"trader-type"`
@@ -49,4 +53,26 @@ type User struct {
 	Email       string   `json:"email"`
 	ReceiptsIDs []string `json:"receipts-ids"`
 	Balance     float64  `json:"balance"`
+}
+
+type CustomTime struct {
+	time.Time
+}
+
+func (ct *CustomTime) UnmarshalJSON(b []byte) error {
+	s := strings.Trim(string(b), "\"")
+	if s == "null" || s == "" {
+		return nil
+	}
+
+	t, err := time.Parse("2006-01-02 15:04:05", s)
+	if err != nil {
+		return err
+	}
+	ct.Time = t
+	return nil
+}
+
+func (ct CustomTime) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("\"%s\"", ct.Format("2006-01-02 15:04:05"))), nil
 }

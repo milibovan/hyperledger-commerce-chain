@@ -21,7 +21,7 @@ const (
 )
 
 const (
-	ChaincodeName = "commerce"
+	ChaincodeName = "commerce-chain"
 	Channel_a     = "channel-a"
 	Channel_b     = "channel-b"
 )

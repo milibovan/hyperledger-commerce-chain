@@ -51,13 +51,17 @@ func CreateServer() {
 	router.POST("/user/:channel", createUser)
 	router.POST("/trader/:channel", createTrader)
 	router.POST("/product/:channel", createProduct)
+
+	router.GET("/users/:channel", getUsers)
+	router.GET("/traders/:channel", getTraders)
+	router.GET("/products/:channel", getProducts)
+	router.GET("/receipts/:channel", getReceipts)
 	router.Run("localhost:8080")
 }
 
 func getApiStatus(c *gin.Context) {
 	c.JSON(200, gin.H{"Hello": "World"})
 }
-
 func connectClient(c *gin.Context) {
 	var payload ConnectionBody
 
@@ -81,7 +85,6 @@ func connectClient(c *gin.Context) {
 	c.JSON(200, gin.H{"Message": "Conntected to gateway"})
 
 }
-
 func disconnectClient(c *gin.Context) {
 	err := activeGW.Close()
 	if err != nil {
@@ -98,7 +101,6 @@ func disconnectClient(c *gin.Context) {
 
 	c.JSON(200, gin.H{"Message": "Disconntected from the gateway"})
 }
-
 func createUser(c *gin.Context) {
 	var User models.User
 	var channel string
@@ -140,13 +142,60 @@ func createProduct(c *gin.Context) {
 
 	channel = c.Param("channel")
 
-	fmt.Println(Product)
 	if err := c.BindJSON(&Product); err != nil {
-		c.JSON(400, gin.H{"Message": "Cannot parse request"})
+		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
 		return
 	}
+	fmt.Println(Product)
 
-	blockNumber, ID := client.CreateProduct(activeGW, channel, Product.Name, Product.ExpiryDate.Format("2025-12-30 09:43:32"), fmt.Sprint(Product.Price), strconv.Itoa(Product.Quantity), string(Product.TraderType))
+	blockNumber, ID := client.CreateProduct(activeGW, channel, Product.Name, Product.ExpiryDate.Format("2006-01-02 15:04:05"), fmt.Sprint(Product.Price), strconv.Itoa(Product.Quantity), string(Product.TraderType))
 
 	c.JSON(201, gin.H{"Message": fmt.Sprintf("Product created %d %s", blockNumber, ID)})
+}
+
+func getUsers(c *gin.Context) {
+	var channel string
+	channel = c.Param("channel")
+
+	users, err := client.QueryAllUsers(activeGW, channel)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+	c.JSON(200, gin.H{"Users": users})
+}
+
+func getTraders(c *gin.Context) {
+	var channel string
+	channel = c.Param("channel")
+
+	traders, err := client.QueryAllTraders(activeGW, channel)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": "Failed to establish connection"})
+	}
+	fmt.Println(traders)
+	c.JSON(200, gin.H{"Traders": traders})
+}
+
+func getReceipts(c *gin.Context) {
+	var channel string
+	channel = c.Param("channel")
+
+	receipts, err := client.QueryAllReceipts(activeGW, channel)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": "Failed to establish connection"})
+	}
+	fmt.Println(receipts)
+	c.JSON(200, gin.H{"Receipts": receipts})
+}
+
+func getProducts(c *gin.Context) {
+	var channel string
+	channel = c.Param("channel")
+
+	products, err := client.QueryAllProducts(activeGW, channel)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": "Failed to establish connection"})
+	}
+	fmt.Println(products)
+	c.JSON(200, gin.H{"Products": products})
 }

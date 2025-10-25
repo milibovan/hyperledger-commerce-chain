@@ -44,7 +44,7 @@ func (s *SmartContract) GetProductsByMultipleCategories(ctx contractapi.Transact
 	}
 	queryString := string(queryStringBytes)
 
-	return getQueryResultForQueryString(ctx, queryString)
+	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
 func (s *SmartContract) GetProductsByMultipleCategoriesPriceRange(ctx contractapi.TransactionContextInterface, name, id, traderType, minPrice, maxPrice string) ([]*structs.Product, error) {
@@ -88,7 +88,7 @@ func (s *SmartContract) GetProductsByMultipleCategoriesPriceRange(ctx contractap
 	}
 	queryString := string(queryStringBytes)
 
-	return getQueryResultForQueryString(ctx, queryString)
+	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
 func (t *SmartContract) QueryProductsByName(ctx contractapi.TransactionContextInterface, name string) ([]*structs.Product, error) {
@@ -110,7 +110,7 @@ func (t *SmartContract) QueryProductsByName(ctx contractapi.TransactionContextIn
 	}
 	queryString := string(queryStringBytes)
 
-	return getQueryResultForQueryString(ctx, queryString)
+	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
 func (t *SmartContract) QueryProductsById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Product, error) {
@@ -132,7 +132,7 @@ func (t *SmartContract) QueryProductsById(ctx contractapi.TransactionContextInte
 	}
 	queryString := string(queryStringBytes)
 
-	return getQueryResultForQueryString(ctx, queryString)
+	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
 func (t *SmartContract) QueryProductsByTraderType(ctx contractapi.TransactionContextInterface, traderType string) ([]*structs.Product, error) {
@@ -154,7 +154,7 @@ func (t *SmartContract) QueryProductsByTraderType(ctx contractapi.TransactionCon
 	}
 	queryString := string(queryStringBytes)
 
-	return getQueryResultForQueryString(ctx, queryString)
+	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
 func (t *SmartContract) QueryProductsByPrice(ctx contractapi.TransactionContextInterface, price string) ([]*structs.Product, error) {
@@ -181,7 +181,7 @@ func (t *SmartContract) QueryProductsByPrice(ctx contractapi.TransactionContextI
 	}
 	queryString := string(queryStringBytes)
 
-	return getQueryResultForQueryString(ctx, queryString)
+	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
 func (t *SmartContract) QueryProductsByPriceRange(ctx contractapi.TransactionContextInterface, minPrice, maxPrice string) ([]*structs.Product, error) {
@@ -213,12 +213,84 @@ func (t *SmartContract) QueryProductsByPriceRange(ctx contractapi.TransactionCon
 	}
 	queryString := string(queryStringBytes)
 
-	return getQueryResultForQueryString(ctx, queryString)
+	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
-// getQueryResultForQueryString executes the passed in query string.
+func (t *SmartContract) GetAllUsers(ctx contractapi.TransactionContextInterface) ([]*structs.User, error) {
+	selector := map[string]interface{}{
+		"doc-type": "user",
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getUserQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) GetAllTraders(ctx contractapi.TransactionContextInterface) ([]*structs.Trader, error) {
+	selector := map[string]interface{}{
+		"doc-type": "user",
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getTraderQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) GetAllReceipts(ctx contractapi.TransactionContextInterface) ([]*structs.Receipt, error) {
+	selector := map[string]interface{}{
+		"doc-type": "user",
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getReceiptQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) GetAllProducts(ctx contractapi.TransactionContextInterface) ([]*structs.Product, error) {
+	selector := map[string]interface{}{
+		"doc-type": "user",
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getProductQueryResultForQueryString(ctx, queryString)
+}
+
+// getProductQueryResultForQueryString executes the passed in query string.
 // The result set is built and returned as a byte array containing the JSON results.
-func getQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.Product, error) {
+func getProductQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.Product, error) {
 	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
 	if err != nil {
 		return nil, err
@@ -226,4 +298,40 @@ func getQueryResultForQueryString(ctx contractapi.TransactionContextInterface, q
 	defer resultsIterator.Close()
 
 	return constructProductQueryResponseFromIterator(resultsIterator)
+}
+
+// getUserQueryResultForQueryString executes the passed in query string.
+// The result set is built and returned as a byte array containing the JSON results.
+func getUserQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.User, error) {
+	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	return constructUserQueryResponseFromIterator(resultsIterator)
+}
+
+// getTraderQueryResultForQueryString executes the passed in query string.
+// The result set is built and returned as a byte array containing the JSON results.
+func getTraderQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.Trader, error) {
+	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	return constructTraderQueryResponseFromIterator(resultsIterator)
+}
+
+// getReceiptQueryResultForQueryString executes the passed in query string.
+// The result set is built and returned as a byte array containing the JSON results.
+func getReceiptQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.Receipt, error) {
+	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	return constructReceiptQueryResponseFromIterator(resultsIterator)
 }
