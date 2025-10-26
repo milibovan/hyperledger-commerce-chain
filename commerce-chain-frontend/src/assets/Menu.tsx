@@ -149,9 +149,16 @@ function UsersPanel() {
         });
 
         if (response.ok) {
-          const responseData: UsersData = await response.json();
-          setData(responseData);
-          setSuccess(`Users fetched: ${responseData.Users}`);
+          const responseData = await response.json();
+
+          // If Users is a JSON string
+          const parsedData = {
+            ...responseData,
+            Users: JSON.parse(responseData.Users),
+          };
+
+          setData(parsedData);
+          setSuccess(`Users fetched: ${parsedData.Users.length}`);
         } else {
           const errorData = await response.json();
           setError(errorData.Message || "Failed to fetch Users");
@@ -167,8 +174,7 @@ function UsersPanel() {
     fetchUsers();
   }, []);
 
-
-  console.log(data)
+  // console.log(data)
   const [action, setAction] = useState<
     "list" | "create" | "read" | "update" | "delete" | null
   >(null);
@@ -233,7 +239,21 @@ function UsersPanel() {
       )}
 
       {/* Success Message */}
-      {success && (
+      {success && data && Array.isArray(data.Users) ? (
+        <>
+          {data.Users.map((item) => {
+            return (
+              <div className="flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50">
+                <h1>{item.id}</h1>
+                <h2>{item.email}</h2>
+                <p>{item.name} {item.surname}</p>
+                <p>{item.balance}</p>
+                {item["receipts-ids"].length > 0 ? <><p>Some receipts</p></> : <><p>There is no receipts</p></>}
+              </div>
+            ) 
+          })}
+        </>
+      ) : (
         <div className="flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded">
           <CheckCircle size={20} />
           <span className="font-semibold">{success}</span>

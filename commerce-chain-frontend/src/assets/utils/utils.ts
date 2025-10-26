@@ -33,5 +33,15 @@ export const TraderType = [
 export const channels = ['channel-a', 'channel-b'];
 
 export interface UsersData {
-  Users: string
+  Users: Array<UserData>
+}
+
+interface UserData {
+  name: string;
+  surname: string;
+  email: string;
+  balance: string;
+  "doc-type": string;
+  id: string;
+  "receipts-ids": Array<string>;
 }

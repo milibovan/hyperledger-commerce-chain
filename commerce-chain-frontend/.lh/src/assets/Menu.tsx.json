@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 24,
+            "activePatchIndex": 69,
             "patches": [
                 {
                     "date": 1760693621982,
@@ -104,6 +104,186 @@
                 {
                     "date": 1761387974363,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -150,9 +150,8 @@\n \r\n         if (response.ok) {\r\n           const responseData: UsersData = await response.json();\r\n           setData(responseData);\r\n-          // 2. Incorrect State Access (Use responseData)\r\n           setSuccess(`Users fetched: ${responseData.Users}`);\r\n         } else {\r\n           const errorData = await response.json();\r\n           setError(errorData.Message || \"Failed to fetch Users\");\r\n@@ -167,8 +166,10 @@\n     }\r\n     fetchUsers();\r\n   }, []);\r\n \r\n+\r\n+  console.log(data)\r\n   const [action, setAction] = useState<\r\n     \"list\" | \"create\" | \"read\" | \"update\" | \"delete\" | null\r\n   >(null);\r\n \r\n"
+                },
+                {
+                    "date": 1761518994417,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -235,9 +235,9 @@\n       {/* Success Message */}\r\n       {success && (\r\n         <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n-          <span className=\"font-semibold\">{success}</span>\r\n+          <span className=\"font-semibold\">{data}</span>\r\n         </div>\r\n       )}\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1761519013783,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -235,9 +235,9 @@\n       {/* Success Message */}\r\n       {success && (\r\n         <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n-          <span className=\"font-semibold\">{data}</span>\r\n+          <span className=\"font-semibold\">{success}</span>\r\n         </div>\r\n       )}\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1761519085471,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -232,12 +232,12 @@\n         </div>\r\n       )}\r\n \r\n       {/* Success Message */}\r\n-      {success && (\r\n+      {success && data (\r\n         <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n-          <span className=\"font-semibold\">{success}</span>\r\n+          <span className=\"font-semibold\">{data}</span>\r\n         </div>\r\n       )}\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1761519098558,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -135,9 +135,9 @@\n   );\r\n }\r\n \r\n function UsersPanel() {\r\n-  const [data, setData] = useState<UsersData | null>(null);\r\n+  const [data, setData] = useState<UsersData>(undefined);\r\n   const [error, setError] = useState<string | null>(null);\r\n   const [success, setSuccess] = useState<string | null>(null);\r\n \r\n   useEffect(() => {\r\n"
+                },
+                {
+                    "date": 1761519106049,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -135,9 +135,9 @@\n   );\r\n }\r\n \r\n function UsersPanel() {\r\n-  const [data, setData] = useState<UsersData>(undefined);\r\n+  const [data, setData] = useState<UsersData>({});\r\n   const [error, setError] = useState<string | null>(null);\r\n   const [success, setSuccess] = useState<string | null>(null);\r\n \r\n   useEffect(() => {\r\n"
+                },
+                {
+                    "date": 1761519116990,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -135,9 +135,9 @@\n   );\r\n }\r\n \r\n function UsersPanel() {\r\n-  const [data, setData] = useState<UsersData>({});\r\n+  const [data, setData] = useState<UsersData | null>(null);\r\n   const [error, setError] = useState<string | null>(null);\r\n   const [success, setSuccess] = useState<string | null>(null);\r\n \r\n   useEffect(() => {\r\n"
+                },
+                {
+                    "date": 1761519225050,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -232,14 +232,12 @@\n         </div>\r\n       )}\r\n \r\n       {/* Success Message */}\r\n-      {success && data (\r\n-        <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n+      {success && data ? <></> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n-          <span className=\"font-semibold\">{data}</span>\r\n-        </div>\r\n-      )}\r\n+          <span className=\"font-semibold\">{success}</span>\r\n+        </div>}\r\n     </div>\r\n   );\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1761519325152,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -232,9 +232,11 @@\n         </div>\r\n       )}\r\n \r\n       {/* Success Message */}\r\n-      {success && data ? <></> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n+      {success && data ? <>\r\n+          {data}\r\n+      </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n     </div>\r\n"
+                },
+                {
+                    "date": 1761519350945,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -233,9 +233,9 @@\n       )}\r\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n-          {data}\r\n+          {data.Users}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n"
+                },
+                {
+                    "date": 1761519532654,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -233,9 +233,9 @@\n       )}\r\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n-          {data.Users}\r\n+          {data.Users.id}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n"
+                },
+                {
+                    "date": 1761519557005,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -167,9 +167,9 @@\n     fetchUsers();\r\n   }, []);\r\n \r\n \r\n-  console.log(data)\r\n+  // console.log(data)\r\n   const [action, setAction] = useState<\r\n     \"list\" | \"create\" | \"read\" | \"update\" | \"delete\" | null\r\n   >(null);\r\n \r\n"
+                },
+                {
+                    "date": 1761519588868,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n } from \"lucide-react\";\r\n import CreateUserForm from \"./forms/CreateUserForm\";\r\n import CreateTraderForm from \"./forms/CreateTraderForm\";\r\n import CreateProductForm from \"./forms/CreateProductForm\";\r\n-import type { UsersData } from \"./utils/utils\";\r\n+import type { UsersData, UserData } from \"./utils/utils\";\r\n \r\n type MenuItem = \"Products\" | \"Users\" | \"Traders\" | \"Receipts\";\r\n \r\n export default function Menu() {\r\n"
+                },
+                {
+                    "date": 1761519595593,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n } from \"lucide-react\";\r\n import CreateUserForm from \"./forms/CreateUserForm\";\r\n import CreateTraderForm from \"./forms/CreateTraderForm\";\r\n import CreateProductForm from \"./forms/CreateProductForm\";\r\n-import type { UsersData, UserData } from \"./utils/utils\";\r\n+import type { UsersData } from \"./utils/utils\";\r\n \r\n type MenuItem = \"Products\" | \"Users\" | \"Traders\" | \"Receipts\";\r\n \r\n export default function Menu() {\r\n"
+                },
+                {
+                    "date": 1761519656125,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -233,9 +233,9 @@\n       )}\r\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n-          {data.Users.id}\r\n+          {data.Users}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n"
+                },
+                {
+                    "date": 1761519707211,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -233,9 +233,11 @@\n       )}\r\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n-          {data.Users}\r\n+          {data.Users.map((item) => {\r\n+            <div>item.id</div>\r\n+          })}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n"
+                },
+                {
+                    "date": 1761519714028,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -234,9 +234,9 @@\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n           {data.Users.map((item) => {\r\n-            <div>item.id</div>\r\n+            <div>{item.id}</div>\r\n           })}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n"
+                },
+                {
+                    "date": 1761519759901,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -234,9 +234,9 @@\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n           {data.Users.map((item) => {\r\n-            <div>{item.id}</div>\r\n+            <h1>{item.id}</h1>\r\n           })}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n"
+                },
+                {
+                    "date": 1761519819101,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -233,11 +233,9 @@\n       )}\r\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n-          {data.Users.map((item) => {\r\n-            <h1>{item.id}</h1>\r\n-          })}\r\n+          {data.Users}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n"
+                },
+                {
+                    "date": 1761519843335,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -233,9 +233,9 @@\n       )}\r\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n-          {data.Users}\r\n+          {console.log(data.Users)}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n"
+                },
+                {
+                    "date": 1761519881607,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -233,9 +233,9 @@\n       )}\r\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n-          {console.log(data.Users)}\r\n+          {data.Users}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n"
+                },
+                {
+                    "date": 1761519980651,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -233,9 +233,13 @@\n       )}\r\n \r\n       {/* Success Message */}\r\n       {success && data ? <>\r\n-          {data.Users}\r\n+          {data.Users.map((item) => {\r\n+            <li key={item.id}>\r\n+              {item}\r\n+            </li>\r\n+          })}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n         </div>}\r\n"
+                },
+                {
+                    "date": 1761519993369,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -235,9 +235,9 @@\n       {/* Success Message */}\r\n       {success && data ? <>\r\n           {data.Users.map((item) => {\r\n             <li key={item.id}>\r\n-              {item}\r\n+              {item.id}\r\n             </li>\r\n           })}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n"
+                },
+                {
+                    "date": 1761520133062,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -166,9 +166,8 @@\n     }\r\n     fetchUsers();\r\n   }, []);\r\n \r\n-\r\n   // console.log(data)\r\n   const [action, setAction] = useState<\r\n     \"list\" | \"create\" | \"read\" | \"update\" | \"delete\" | null\r\n   >(null);\r\n@@ -232,18 +231,20 @@\n         </div>\r\n       )}\r\n \r\n       {/* Success Message */}\r\n-      {success && data ? <>\r\n-          {data.Users.map((item) => {\r\n-            <li key={item.id}>\r\n-              {item.id}\r\n-            </li>\r\n-          })}\r\n-      </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n+      {success && data ? (\r\n+        <>\r\n+          {data.Users.map((item) => (\r\n+             <li key={item.id}>{item.id}</li>;\r\n+          ))}\r\n+        </>\r\n+      ) : (\r\n+        <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n-        </div>}\r\n+        </div>\r\n+      )}\r\n     </div>\r\n   );\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1761520167428,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -234,9 +234,9 @@\n       {/* Success Message */}\r\n       {success && data ? (\r\n         <>\r\n           {data.Users.map((item) => (\r\n-             <li key={item.id}>{item.id}</li>;\r\n+            <li key={item.id}>{item.id}</li>\r\n           ))}\r\n         </>\r\n       ) : (\r\n         <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n"
+                },
+                {
+                    "date": 1761520176557,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -234,10 +234,10 @@\n       {/* Success Message */}\r\n       {success && data ? (\r\n         <>\r\n           {data.Users.map((item) => (\r\n-            <li key={item.id}>{item.id}</li>\r\n-          ))}\r\n+      <li key={item.id}>{item.id}</li>\r\n+    ))}\r\n         </>\r\n       ) : (\r\n         <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n"
+                },
+                {
+                    "date": 1761520187995,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -234,10 +234,10 @@\n       {/* Success Message */}\r\n       {success && data ? (\r\n         <>\r\n           {data.Users.map((item) => (\r\n-      <li key={item.id}>{item.id}</li>\r\n-    ))}\r\n+            return <li key={item.id}>{item.id}</li>\r\n+          ))}\r\n         </>\r\n       ) : (\r\n         <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n"
+                },
+                {
+                    "date": 1761520208449,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -166,8 +166,9 @@\n     }\r\n     fetchUsers();\r\n   }, []);\r\n \r\n+\r\n   // console.log(data)\r\n   const [action, setAction] = useState<\r\n     \"list\" | \"create\" | \"read\" | \"update\" | \"delete\" | null\r\n   >(null);\r\n@@ -231,20 +232,18 @@\n         </div>\r\n       )}\r\n \r\n       {/* Success Message */}\r\n-      {success && data ? (\r\n-        <>\r\n-          {data.Users.map((item) => (\r\n-            return <li key={item.id}>{item.id}</li>\r\n-          ))}\r\n-        </>\r\n-      ) : (\r\n-        <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n+      {success && data ? <>\r\n+          {data.Users.map((item) => {\r\n+            return (<li key={item.id}>\r\n+              {item.id}\r\n+            </li>)\r\n+          })}\r\n+      </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n-        </div>\r\n-      )}\r\n+        </div>}\r\n     </div>\r\n   );\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1761520318128,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -232,9 +232,9 @@\n         </div>\r\n       )}\r\n \r\n       {/* Success Message */}\r\n-      {success && data ? <>\r\n+      {data ? <>\r\n           {data.Users.map((item) => {\r\n             return (<li key={item.id}>\r\n               {item.id}\r\n             </li>)\r\n"
+                },
+                {
+                    "date": 1761520399127,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -232,9 +232,9 @@\n         </div>\r\n       )}\r\n \r\n       {/* Success Message */}\r\n-      {data ? <>\r\n+      {success && data && Array.isArray(data.Users) ? <>\r\n           {data.Users.map((item) => {\r\n             return (<li key={item.id}>\r\n               {item.id}\r\n             </li>)\r\n"
+                },
+                {
+                    "date": 1761520435615,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -241,8 +241,9 @@\n           })}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n+          {console.log(Array.isArray(data?.Users))}\r\n         </div>}\r\n     </div>\r\n   );\r\n }\r\n"
+                },
+                {
+                    "date": 1761520443913,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -241,9 +241,9 @@\n           })}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n-          {console.log(Array.isArray(data?.Users))}\r\n+          {console.log(data?.Users)}\r\n         </div>}\r\n     </div>\r\n   );\r\n }\r\n"
+                },
+                {
+                    "date": 1761520488255,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -241,9 +241,8 @@\n           })}\r\n       </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n-          {console.log(data?.Users)}\r\n         </div>}\r\n     </div>\r\n   );\r\n }\r\n"
+                },
+                {
+                    "date": 1761520571960,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -148,11 +148,18 @@\n           headers: { \"Content-Type\": \"application/json\" },\r\n         });\r\n \r\n         if (response.ok) {\r\n-          const responseData: UsersData = await response.json();\r\n-          setData(responseData);\r\n-          setSuccess(`Users fetched: ${responseData.Users}`);\r\n+          const responseData = await response.json();\r\n+\r\n+          // If Users is a JSON string\r\n+          const parsedData = {\r\n+            ...responseData,\r\n+            Users: JSON.parse(responseData.Users), // Transform string to array\r\n+          };\r\n+\r\n+          setData(parsedData);\r\n+          setSuccess(`Users fetched: ${parsedData.Users.length}`);\r\n         } else {\r\n           const errorData = await response.json();\r\n           setError(errorData.Message || \"Failed to fetch Users\");\r\n         }\r\n@@ -166,9 +173,8 @@\n     }\r\n     fetchUsers();\r\n   }, []);\r\n \r\n-\r\n   // console.log(data)\r\n   const [action, setAction] = useState<\r\n     \"list\" | \"create\" | \"read\" | \"update\" | \"delete\" | null\r\n   >(null);\r\n@@ -232,18 +238,20 @@\n         </div>\r\n       )}\r\n \r\n       {/* Success Message */}\r\n-      {success && data && Array.isArray(data.Users) ? <>\r\n+      {success && data && Array.isArray(data.Users) ? (\r\n+        <>\r\n           {data.Users.map((item) => {\r\n-            return (<li key={item.id}>\r\n-              {item.id}\r\n-            </li>)\r\n+            return <li key={item.id}>{item.id}</li>;\r\n           })}\r\n-      </> : <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n+        </>\r\n+      ) : (\r\n+        <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n           <CheckCircle size={20} />\r\n           <span className=\"font-semibold\">{success}</span>\r\n-        </div>}\r\n+        </div>\r\n+      )}\r\n     </div>\r\n   );\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1761520581226,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -153,9 +153,9 @@\n \r\n           // If Users is a JSON string\r\n           const parsedData = {\r\n             ...responseData,\r\n-            Users: JSON.parse(responseData.Users), // Transform string to array\r\n+            Users: JSON.parse(responseData.Users),\r\n           };\r\n \r\n           setData(parsedData);\r\n           setSuccess(`Users fetched: ${parsedData.Users.length}`);\r\n"
+                },
+                {
+                    "date": 1761520643623,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -241,9 +241,13 @@\n       {/* Success Message */}\r\n       {success && data && Array.isArray(data.Users) ? (\r\n         <>\r\n           {data.Users.map((item) => {\r\n-            return <li key={item.id}>{item.id}</li>;\r\n+            return (\r\n+              <div>\r\n+                <h1>{item.id}</h1>\r\n+              </div>\r\n+            ) \r\n           })}\r\n         </>\r\n       ) : (\r\n         <div className=\"flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded\">\r\n"
+                },
+                {
+                    "date": 1761520664918,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -242,11 +242,12 @@\n       {success && data && Array.isArray(data.Users) ? (\r\n         <>\r\n           {data.Users.map((item) => {\r\n             return (\r\n-              <div>\r\n+              <button>\r\n                 <h1>{item.id}</h1>\r\n-              </div>\r\n+\r\n+              </button>\r\n             ) \r\n           })}\r\n         </>\r\n       ) : (\r\n"
+                },
+                {
+                    "date": 1761520684369,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -242,9 +242,9 @@\n       {success && data && Array.isArray(data.Users) ? (\r\n         <>\r\n           {data.Users.map((item) => {\r\n             return (\r\n-              <button>\r\n+              <button className=\"flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\">\r\n                 <h1>{item.id}</h1>\r\n \r\n               </button>\r\n             ) \r\n"
+                },
+                {
+                    "date": 1761520704589,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -244,9 +244,9 @@\n           {data.Users.map((item) => {\r\n             return (\r\n               <button className=\"flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\">\r\n                 <h1>{item.id}</h1>\r\n-\r\n+                <h2>{item.email}</h2>\r\n               </button>\r\n             ) \r\n           })}\r\n         </>\r\n"
+                },
+                {
+                    "date": 1761520720338,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -242,12 +242,12 @@\n       {success && data && Array.isArray(data.Users) ? (\r\n         <>\r\n           {data.Users.map((item) => {\r\n             return (\r\n-              <button className=\"flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\">\r\n+              <div className=\"flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\">\r\n                 <h1>{item.id}</h1>\r\n                 <h2>{item.email}</h2>\r\n-              </button>\r\n+              </div>\r\n             ) \r\n           })}\r\n         </>\r\n       ) : (\r\n"
+                },
+                {
+                    "date": 1761520734619,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -243,9 +243,9 @@\n         <>\r\n           {data.Users.map((item) => {\r\n             return (\r\n               <div className=\"flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\">\r\n-                <h1>{item.id}</h1>\r\n+                <span><h1>{item.id}</h1></span>\r\n                 <h2>{item.email}</h2>\r\n               </div>\r\n             ) \r\n           })}\r\n"
+                },
+                {
+                    "date": 1761520742157,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -243,9 +243,9 @@\n         <>\r\n           {data.Users.map((item) => {\r\n             return (\r\n               <div className=\"flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\">\r\n-                <span><h1>{item.id}</h1></span>\r\n+                <h1>{item.id}</h1>\r\n                 <h2>{item.email}</h2>\r\n               </div>\r\n             ) \r\n           })}\r\n"
+                },
+                {
+                    "date": 1761520758625,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -245,8 +245,9 @@\n             return (\r\n               <div className=\"flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\">\r\n                 <h1>{item.id}</h1>\r\n                 <h2>{item.email}</h2>\r\n+                <p>{item.name} {item.surname}</p>\r\n               </div>\r\n             ) \r\n           })}\r\n         </>\r\n"
+                },
+                {
+                    "date": 1761520771929,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -246,8 +246,9 @@\n               <div className=\"flex items-center gap-3 px-6 py-4 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\">\r\n                 <h1>{item.id}</h1>\r\n                 <h2>{item.email}</h2>\r\n                 <p>{item.name} {item.surname}</p>\r\n+                <p>{item.balance}</p>\r\n               </div>\r\n             ) \r\n           })}\r\n         </>\r\n"
+                },
+                {
+                    "date": 1761520782595,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -247,8 +247,9 @@\n                 <h1>{item.id}</h1>\r\n                 <h2>{item.email}</h2>\r\n                 <p>{item.name} {item.surname}</p>\r\n                 <p>{item.balance}</p>\r\n+                <p>{item[\"receipts-ids\"]</p>\r\n               </div>\r\n             ) \r\n           })}\r\n         </>\r\n"
+                },
+                {
+                    "date": 1761520834258,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -247,9 +247,9 @@\n                 <h1>{item.id}</h1>\r\n                 <h2>{item.email}</h2>\r\n                 <p>{item.name} {item.surname}</p>\r\n                 <p>{item.balance}</p>\r\n-                <p>{item[\"receipts-ids\"]</p>\r\n+                {item[\"receipts-ids\"].length > 0 ? <><p>Some receipts</p></> : <><p>There is no receipts</p></>}\r\n               </div>\r\n             ) \r\n           })}\r\n         </>\r\n"
                 }
             ],
             "date": 1760693621982,
