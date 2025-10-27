@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { LogOut } from "lucide-react";
-import Menu from "./assets/Menu";
+import Menu from "./components/Menu";
 
 type ConnectionState = "disconnected" | "connected";
 

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 12,
             "patches": [
                 {
                     "date": 1760695959038,
@@ -44,6 +44,18 @@
                 {
                     "date": 1761154284566,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import { User, channels } from \"../utils/utils\";\r\n+import type { User} from \"../utils/utils\";\r\n+import { channels } from \"../utils/utils\";\r\n \r\n export default function CreateUserForm() {\r\n   const [formData, setFormData] = useState<User>({\r\n     name: \"\",\r\n@@ -192,5 +193,5 @@\n         </button>\r\n       </div>\r\n     </div>\r\n   );\r\n-}\n\\ No newline at end of file\n+}\r\n"
+                },
+                {
+                    "date": 1761555585151,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n import type { User} from \"../utils/utils\";\r\n import { channels } from \"../utils/utils\";\r\n \r\n-export default function CreateUserForm() {\r\n+export default function CreateUserForm({ onSuccess }: CreateUserFormProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n     name: \"\",\r\n     surname: \"\",\r\n     email: \"\",\r\n"
+                },
+                {
+                    "date": 1761555597940,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,12 @@\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n import type { User} from \"../utils/utils\";\r\n import { channels } from \"../utils/utils\";\r\n \r\n+interface CreateUserFormProps {\r\n+  onSuccess?: () => void;\r\n+}\r\n+\r\n export default function CreateUserForm({ onSuccess }: CreateUserFormProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n     name: \"\",\r\n     surname: \"\",\r\n"
+                },
+                {
+                    "date": 1761555620535,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -71,8 +71,11 @@\n           email: \"\",\r\n           balance: \"\",\r\n           channel: \"\",\r\n         });\r\n+        if (onSuccess) {\r\n+          onSuccess();\r\n+        }\r\n       } else {\r\n         const errorData = await response.json();\r\n         setError(errorData.Message || \"Failed to create user\");\r\n       }\r\n"
                 }
             ],
             "date": 1760695959038,

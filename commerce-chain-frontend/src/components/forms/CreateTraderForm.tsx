@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
-import type { Trader } from "../utils/utils";
-import { TraderType, channels } from "../utils/utils";
+import type { Trader } from "../../utils/utils";
+import { TraderType, channels } from "../../utils/utils";
 
 export default function CreateTraderForm() {
   const [formData, setFormData] = useState<Trader>({

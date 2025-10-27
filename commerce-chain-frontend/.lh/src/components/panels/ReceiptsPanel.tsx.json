@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/components/panels/ReceiptsPanel.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1761556014588,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1761556051630,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,11 @@\n import { useState } from \"react\";\r\n+import {\r\n+  Plus,\r\n+  Edit,\r\n+  Eye,\r\n+  Trash2,\r\n+} from \"lucide-react\";\r\n \r\n export default function ReceiptsPanel() {\r\n   const [action, setAction] = useState<\r\n     \"list\" | \"create\" | \"read\" | \"update\" | \"delete\" | null\r\n"
+                }
+            ],
+            "date": 1761556014588,
+            "name": "Commit-0",
+            "content": "import { useState } from \"react\";\r\n\r\nexport default function ReceiptsPanel() {\r\n  const [action, setAction] = useState<\r\n    \"list\" | \"create\" | \"read\" | \"update\" | \"delete\" | null\r\n  >(null);\r\n\r\n  const crudActions = [\r\n    { label: \"Create\", icon: <Plus size={20} />, value: \"create\" as const },\r\n    { label: \"Read\", icon: <Eye size={20} />, value: \"read\" as const },\r\n    { label: \"Update\", icon: <Edit size={20} />, value: \"update\" as const },\r\n    { label: \"Delete\", icon: <Trash2 size={20} />, value: \"delete\" as const },\r\n  ];\r\n\r\n  return (\r\n    <div className=\"space-y-6\">\r\n      {!action ? (\r\n        <div className=\"bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50\">\r\n          <h3 className=\"text-3xl font-bold text-green-400 mb-6\">Receipts</h3>\r\n          <div className=\"grid grid-cols-2 gap-4\">\r\n            {crudActions.map((item) => (\r\n              <button\r\n                key={item.value}\r\n                onClick={() => setAction(item.value)}\r\n                className=\"flex items-center gap-3 px-6 py-4 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all duration-200 hover:shadow-lg hover:shadow-green-400/50\"\r\n              >\r\n                {item.icon}\r\n                {item.label}\r\n              </button>\r\n            ))}\r\n          </div>\r\n        </div>\r\n      ) : (\r\n        <div className=\"bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50\">\r\n          <button\r\n            onClick={() => setAction(null)}\r\n            className=\"mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-green-300 font-semibold rounded border-2 border-gray-600 transition-all\"\r\n          >\r\n            ← Back\r\n          </button>\r\n          <h3 className=\"text-3xl font-bold text-green-400 mb-4 capitalize\">\r\n            {action} Receipt\r\n          </h3>\r\n          <p className=\"text-gray-300\">{action} functionality goes here</p>\r\n        </div>\r\n      )}\r\n    </div>\r\n  );\r\n}"
+        }
+    ]
+}

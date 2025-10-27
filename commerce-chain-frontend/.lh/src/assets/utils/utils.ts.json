@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 11,
+            "activePatchIndex": 15,
             "patches": [
                 {
                     "date": 1761153837018,
@@ -52,6 +52,22 @@
                 {
                     "date": 1761519679288,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,9 +32,9 @@\n \r\n export const channels = ['channel-a', 'channel-b'];\r\n \r\n export interface UsersData {\r\n-  Users: UserData\r\n+  Users: Array<UserData>\r\n }\r\n \r\n interface UserData {\r\n   name: string;\r\n"
+                },
+                {
+                    "date": 1761555331514,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,12 +32,12 @@\n \r\n export const channels = ['channel-a', 'channel-b'];\r\n \r\n export interface UsersData {\r\n-  Users: Array<UserData>\r\n+  Users: Array<User>\r\n }\r\n \r\n-interface UserData {\r\n+interface User {\r\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n   balance: string;\r\n"
+                },
+                {
+                    "date": 1761555362787,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -39,9 +39,9 @@\n interface User {\r\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n-  balance: string;\r\n+  balance: number;\r\n   \"doc-type\": string;\r\n   id: string;\r\n   \"receipts-ids\": Array<string>;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761555372762,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,12 +32,12 @@\n \r\n export const channels = ['channel-a', 'channel-b'];\r\n \r\n export interface UsersData {\r\n-  Users: Array<User>\r\n+  Users: Array<UserData>\r\n }\r\n \r\n-interface User {\r\n+interface UserData {\r\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n   balance: number;\r\n"
+                },
+                {
+                    "date": 1761555398093,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,9 +35,9 @@\n export interface UsersData {\r\n   Users: Array<UserData>\r\n }\r\n \r\n-interface UserData {\r\n+export interface UserData {\r\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n   balance: number;\r\n"
                 }
             ],
             "date": 1761153837018,

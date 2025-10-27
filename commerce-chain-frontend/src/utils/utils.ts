@@ -36,11 +36,11 @@ export interface UsersData {
   Users: Array<UserData>
 }
 
-interface UserData {
+export interface UserData {
   name: string;
   surname: string;
   email: string;
-  balance: string;
+  balance: number;
   "doc-type": string;
   id: string;
   "receipts-ids": Array<string>;

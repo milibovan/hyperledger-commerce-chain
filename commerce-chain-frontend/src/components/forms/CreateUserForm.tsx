@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
-import type { User} from "../utils/utils";
-import { channels } from "../utils/utils";
+import type { User} from "../../utils/utils";
+import { channels } from "../../utils/utils";
 
-export default function CreateUserForm() {
+interface CreateUserFormProps {
+  onSuccess?: () => void;
+}
+
+export default function CreateUserForm({ onSuccess }: CreateUserFormProps) {
   const [formData, setFormData] = useState<User>({
     name: "",
     surname: "",
@@ -68,6 +72,9 @@ export default function CreateUserForm() {
           balance: "",
           channel: "",
         });
+        if (onSuccess) {
+          onSuccess();
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to create user");

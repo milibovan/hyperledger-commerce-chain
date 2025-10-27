@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { Product } from "../utils/utils";
-import { channels, TraderType } from "../utils/utils";
+import type { Product } from "../../utils/utils";
+import { channels, TraderType } from "../../utils/utils";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function CreateProductForm() {
