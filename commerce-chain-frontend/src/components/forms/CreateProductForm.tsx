@@ -3,8 +3,6 @@ import type { CreateFormsProps, Product } from "../../utils/utils";
 import { channels, TraderType } from "../../utils/utils";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
 
-
-
 export default function CreateProductForm({
   onSuccess,
 }: CreateFormsProps) {

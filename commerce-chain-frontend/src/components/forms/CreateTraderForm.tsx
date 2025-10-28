@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
-import type { Trader } from "../../utils/utils";
+import type { CreateFormsProps, Trader } from "../../utils/utils";
 import { TraderType, channels } from "../../utils/utils";
 
-export default function CreateTraderForm() {
+export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
   const [formData, setFormData] = useState<Trader>({
     traderType: "",
     vat: "",
@@ -66,6 +66,9 @@ export default function CreateTraderForm() {
           balance: "",
           channel: "",
         });
+        if (onSuccess) {
+          onSuccess();
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to create user");

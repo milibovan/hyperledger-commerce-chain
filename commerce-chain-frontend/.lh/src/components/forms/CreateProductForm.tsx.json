@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1761555960720,
@@ -20,6 +20,10 @@
                 {
                     "date": 1761646472610,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,16 +1,14 @@\n import { useState } from \"react\";\r\n-import type { Product } from \"../../utils/utils\";\r\n+import type { CreateFormsProps, Product } from \"../../utils/utils\";\r\n import { channels, TraderType } from \"../../utils/utils\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n \r\n-interface CreateProductFormProps {\r\n-  onSuccess?: () => void;\r\n-}\r\n \r\n+\r\n export default function CreateProductForm({\r\n   onSuccess,\r\n-}: CreateProductFormProps) {\r\n+}: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<Product>({\r\n     name: \"\",\r\n     expiryDate: \"\",\r\n     price: \"\",\r\n"
+                },
+                {
+                    "date": 1761648854407,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,8 @@\n import type { CreateFormsProps, Product } from \"../../utils/utils\";\r\n import { channels, TraderType } from \"../../utils/utils\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n \r\n-\r\n-\r\n export default function CreateProductForm({\r\n   onSuccess,\r\n }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<Product>({\r\n"
                 }
             ],
             "date": 1761555960720,
