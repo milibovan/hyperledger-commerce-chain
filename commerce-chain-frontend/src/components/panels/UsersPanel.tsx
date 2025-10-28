@@ -115,12 +115,42 @@ export default function UsersPanel() {
   if (action || viewDetails) {
     return (
       <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
-        <button
-          onClick={handleBackToList}
-          className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-purple-300 font-semibold rounded border-2 border-gray-600 transition-all"
-        >
-          ← Back to Users
-        </button>
+        <div className="flex justify-between items-center mb-6">
+          <div
+            className="flex gap-2 my-4 justify-start"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleBackToList}
+              className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-purple-300 font-semibold rounded border-2 border-gray-600 transition-all"
+            >
+              ← Back to Users
+            </button>
+          </div>
+          <div className="flex gap-2 my-4 justify-end">
+            <button
+              // onClick={() => handleActionClick("deposit", user)}
+              className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
+              title="Deposit"
+            >
+              <Plus size={18} /> Deposit
+            </button>
+            <button
+              // onClick={() => handleActionClick("update", user)}
+              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold"
+              title="Update"
+            >
+              <Edit size={18} /> Update
+            </button>
+            <button
+              // onClick={() => handleActionClick("delete", user)}
+              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
+              title="Delete"
+            >
+              <Trash2 size={18} /> Delete
+            </button>
+          </div>
+        </div>
         {renderContent()}
       </div>
     );

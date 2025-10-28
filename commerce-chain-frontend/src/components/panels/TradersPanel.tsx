@@ -8,7 +8,7 @@ export default function TradersPanel() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState<
-    "create" | "increase_quantity" | "update" | "delete" | null
+    "create" | "deposit_money" | "update" | "delete" | null
   >(null);
   const [selectedTrader, setSelectedTrader] = useState<TraderData | null>(null);
   const [viewDetails, setViewDetails] = useState(false);
@@ -89,10 +89,10 @@ export default function TradersPanel() {
       );
     }
     switch (action) {
-      case "increase_quantity":
+      case "deposit_money":
         return (
           <div className="text-gray-300">
-            Increase quantity form for {selectedTrader?.id}{" "}
+            Deposit Money form for {selectedTrader?.id}{" "}
             {selectedTrader?.vat}
           </div>
         );
@@ -116,12 +116,42 @@ export default function TradersPanel() {
   if (action || viewDetails) {
     return (
       <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50">
-        <button
-          onClick={handleBackToList}
-          className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-pink-300 font-semibold rounded border-2 border-gray-600 transition-all"
-        >
-          ← Back to Traders
-        </button>
+        <div className="flex justify-between items-center mb-6">
+          <div
+            className="flex gap-2 my-4 justify-start"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleBackToList}
+              className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-pink-300 font-semibold rounded border-2 border-gray-600 transition-all"
+            >
+              ← Back to Traders
+            </button>
+          </div>
+          <div className="flex gap-2 my-4 justify-end">
+            <button
+            //   onClick={() => handleActionClick("deposit_money", trader)}
+              className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
+              title="Deposit Money"
+            >
+              <Plus size={18} /> Deposit
+            </button>
+            <button
+            //   onClick={() => handleActionClick("update", trader)}
+              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold"
+              title="Update"
+            >
+              <Edit size={18} /> Update
+            </button>
+            <button
+            //   onClick={() => handleActionClick("delete", trader)}
+              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
+              title="Delete"
+            >
+              <Trash2 size={18} /> Delete
+            </button>
+          </div>
+        </div>
         {renderContent()}
       </div>
     );
@@ -166,7 +196,9 @@ export default function TradersPanel() {
                   <h4 className="font-bold text-lg text-pink-300">
                     {trader.vat}
                   </h4>
-                  <p className="text-sm text-gray-400">{trader["trader-type"]}</p>
+                  <p className="text-sm text-gray-400">
+                    {trader["trader-type"]}
+                  </p>
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
@@ -181,10 +213,10 @@ export default function TradersPanel() {
                   >
                     <button
                       onClick={() =>
-                        handleActionClick("increase_quantity", trader)
+                        handleActionClick("deposit_money", trader)
                       }
                       className="p-2 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all"
-                      title="Increase quantity"
+                      title="Deposit Money"
                     >
                       <Plus size={18} />
                     </button>

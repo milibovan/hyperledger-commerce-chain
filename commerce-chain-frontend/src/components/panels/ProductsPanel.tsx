@@ -69,7 +69,7 @@ export default function ProductsPanel() {
       return <CreateProductForm onSuccess={fetchProducts} />;
     }
     if (viewDetails && selectedProduct) {
-        const formattedDate: string = getFormattedDate(selectedProduct)
+      const formattedDate: string = getFormattedDate(selectedProduct);
 
       return (
         <div className="space-y-4">
@@ -130,27 +130,58 @@ export default function ProductsPanel() {
   };
 
   function getFormattedDate(product: ProductData) {
-      const expiryDate: Date = new Date(product["expiry-date"]);
-      const formatedDate: string = expiryDate.toLocaleString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+    const expiryDate: Date = new Date(product["expiry-date"]);
+    const formatedDate: string = expiryDate.toLocaleString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
-      return formatedDate;
+    return formatedDate;
   }
 
   if (action || viewDetails) {
     return (
-      <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50">
-        <button
-          onClick={handleBackToList}
-          className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-cyan-300 font-semibold rounded border-2 border-gray-600 transition-all"
-        >
-          ← Back to Products
-        </button>
+      <div className="bg-gray-800 border-2 justify-between border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50">
+        <div className="flex justify-between items-center mb-6">
+          <div
+            className="flex gap-2 my-4 justify-start"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleBackToList}
+              className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-cyan-300 font-semibold rounded border-2 border-gray-600 transition-all"
+            >
+              ← Back to Products
+            </button>
+          </div>
+          <div className="flex gap-2 my-4 justify-end">
+            <button
+            //   onClick={() => handleActionClick("increase_quantity", product)}
+              className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
+              title="Increase quantity"
+            >
+              <Plus size={18} />
+              Increase quantity
+            </button>
+            <button
+            //   onClick={() => handleActionClick("update", product)}
+              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold"
+              title="Update"
+            >
+              <Edit size={18} /> Update
+            </button>
+            <button
+            //   onClick={() => handleActionClick("delete", product)}
+              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
+              title="Delete"
+            >
+              <Trash2 size={18} /> Delete
+            </button>
+          </div>
+        </div>
         {renderContent()}
       </div>
     );
@@ -239,7 +270,9 @@ export default function ProductsPanel() {
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-400 py-8">No products found</div>
+          <div className="text-center text-gray-400 py-8">
+            No products found
+          </div>
         )}
       </div>
     </div>
