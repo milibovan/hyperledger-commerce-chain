@@ -3,11 +3,23 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 3,
             "patches": [
                 {
                     "date": 1761555960720,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1761646420508,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,13 @@\n import type { Product } from \"../../utils/utils\";\r\n import { channels, TraderType } from \"../../utils/utils\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n \r\n-export default function CreateProductForm() {\r\n+interface CreateProductFormProps {\r\n+  onSuccess?: () => void;\r\n+}\r\n+\r\n+export default function CreateProductForm({ onSuccess }: CreateProductFormProps) {\r\n   const [formData, setFormData] = useState<Product>({\r\n     name: \"\",\r\n     expiryDate: \"\",\r\n     price: \"\",\r\n"
+                },
+                {
+                    "date": 1761646445698,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,11 @@\n interface CreateProductFormProps {\r\n   onSuccess?: () => void;\r\n }\r\n \r\n-export default function CreateProductForm({ onSuccess }: CreateProductFormProps) {\r\n+export default function CreateProductForm({\r\n+  onSuccess,\r\n+}: CreateProductFormProps) {\r\n   const [formData, setFormData] = useState<Product>({\r\n     name: \"\",\r\n     expiryDate: \"\",\r\n     price: \"\",\r\n@@ -75,8 +77,11 @@\n           quantity: \"\",\r\n           traderType: \"\",\r\n           channel: \"\",\r\n         });\r\n+        if (onSuccess) {\r\n+          onSuccess();\r\n+        }\r\n       } else {\r\n         const errorData = await response.json();\r\n         setError(errorData.Message || \"Failed to create product\");\r\n       }\r\n"
+                },
+                {
+                    "date": 1761646472610,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,16 +1,14 @@\n import { useState } from \"react\";\r\n-import type { Product } from \"../../utils/utils\";\r\n+import type { CreateFormsProps, Product } from \"../../utils/utils\";\r\n import { channels, TraderType } from \"../../utils/utils\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n \r\n-interface CreateProductFormProps {\r\n-  onSuccess?: () => void;\r\n-}\r\n \r\n+\r\n export default function CreateProductForm({\r\n   onSuccess,\r\n-}: CreateProductFormProps) {\r\n+}: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<Product>({\r\n     name: \"\",\r\n     expiryDate: \"\",\r\n     price: \"\",\r\n"
                 }
             ],
             "date": 1761555960720,

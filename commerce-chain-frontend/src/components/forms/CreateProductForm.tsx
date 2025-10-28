@@ -1,9 +1,13 @@
 import { useState } from "react";
-import type { Product } from "../../utils/utils";
+import type { CreateFormsProps, Product } from "../../utils/utils";
 import { channels, TraderType } from "../../utils/utils";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
 
-export default function CreateProductForm() {
+
+
+export default function CreateProductForm({
+  onSuccess,
+}: CreateFormsProps) {
   const [formData, setFormData] = useState<Product>({
     name: "",
     expiryDate: "",
@@ -72,6 +76,9 @@ export default function CreateProductForm() {
           traderType: "",
           channel: "",
         });
+        if (onSuccess) {
+          onSuccess();
+        }
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to create product");

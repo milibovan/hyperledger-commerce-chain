@@ -37,11 +37,55 @@ export interface UsersData {
 }
 
 export interface UserData {
+  "doc-type": string;
+  id: string;
   name: string;
   surname: string;
   email: string;
+  "receipts-ids": Array<string>;
   balance: number;
+}
+
+export interface ProductsData {
+  Products: Array<ProductData>
+}
+
+export interface ProductData {
   "doc-type": string;
   id: string;
+  name: string;
+  "expiry-date": Date;
+  price: number;
+  quantity: number;
+  "trader-type": string;
+}
+export interface TradersData {
+  Traders: Array<TraderData>
+}
+
+export interface TraderData {
+  "doc-type": string;
+  id: string;
+  "trader-type": string;
+  vat: string;
+  "products-available-ids": Array<string>;
   "receipts-ids": Array<string>;
+  balance: number;
+}
+
+export interface ReceiptsData {
+  Receipts: Array<ReceiptData>
+}
+
+export interface ReceiptData {
+  "doc-type": string;
+  id: string;
+  "trader-id": string;
+  "user-ud": string;
+  "products-ids": Array<string>;
+  date: Date;
+}
+
+export interface CreateFormsProps {
+  onSuccess?: () => void;
 }

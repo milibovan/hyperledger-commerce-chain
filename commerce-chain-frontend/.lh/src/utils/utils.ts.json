@@ -1,0 +1,54 @@
+{
+    "sourceFile": "src/utils/utils.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 9,
+            "patches": [
+                {
+                    "date": 1761645950564,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1761646029910,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,12 +50,12 @@\n   Users: Array<ProductData>\r\n }\r\n \r\n export interface ProductData {\r\n+  \"doc-type\": string;\r\n+  id: string;\r\n   name: string;\r\n   \"expiry-date\": Date;\r\n-  email: string;\r\n-  balance: number;\r\n-  \"doc-type\": string;\r\n-  id: string;\r\n-  \"receipts-ids\": Array<string>;\r\n+  price: number;\r\n+  quantity: number;\r\n+  \"trader-type\": string;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761646047895,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -36,15 +36,15 @@\n   Users: Array<UserData>\r\n }\r\n \r\n export interface UserData {\r\n+  \"doc-type\": string;\r\n+  id: string;\r\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n+  \"receipts-ids\": Array<string>;\r\n   balance: number;\r\n-  \"doc-type\": string;\r\n-  id: string;\r\n-  \"receipts-ids\": Array<string>;\r\n }\r\n \r\n export interface ProductsData {\r\n   Users: Array<ProductData>\r\n"
+                },
+                {
+                    "date": 1761646073515,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -57,5 +57,18 @@\n   \"expiry-date\": Date;\r\n   price: number;\r\n   quantity: number;\r\n   \"trader-type\": string;\r\n+}\r\n+export interface TradersData {\r\n+  Users: Array<TraderData>\r\n+}\r\n+\r\n+export interface TraderData {\r\n+  \"doc-type\": string;\r\n+  id: string;\r\n+  name: string;\r\n+  \"expiry-date\": Date;\r\n+  price: number;\r\n+  quantity: number;\r\n+  \"trader-type\": string;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761646129285,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -65,10 +65,10 @@\n \r\n export interface TraderData {\r\n   \"doc-type\": string;\r\n   id: string;\r\n-  name: string;\r\n-  \"expiry-date\": Date;\r\n-  price: number;\r\n-  quantity: number;\r\n   \"trader-type\": string;\r\n+  vat: string;\r\n+  \"products-available-ids\": Array<string>;\r\n+  \"receipts-ids\": Array<string>;\r\n+  balance: number;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761646153000,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -70,5 +70,19 @@\n   vat: string;\r\n   \"products-available-ids\": Array<string>;\r\n   \"receipts-ids\": Array<string>;\r\n   balance: number;\r\n+}\r\n+\r\n+export interface ReceiptsData {\r\n+  Users: Array<ReceiptData>\r\n+}\r\n+\r\n+export interface ReceiptData {\r\n+  \"doc-type\": string;\r\n+  id: string;\r\n+  \"trader-type\": string;\r\n+  vat: string;\r\n+  \"products-available-ids\": Array<string>;\r\n+  \"receipts-ids\": Array<string>;\r\n+  balance: number;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761646190548,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -79,10 +79,9 @@\n \r\n export interface ReceiptData {\r\n   \"doc-type\": string;\r\n   id: string;\r\n-  \"trader-type\": string;\r\n-  vat: string;\r\n-  \"products-available-ids\": Array<string>;\r\n-  \"receipts-ids\": Array<string>;\r\n-  balance: number;\r\n+  \"trader-id\": string;\r\n+  \"user-ud\": string;\r\n+  \"products-ids\": Array<string>;\r\n+  date: Date;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761646265168,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -73,9 +73,9 @@\n   balance: number;\r\n }\r\n \r\n export interface ReceiptsData {\r\n-  Users: Array<ReceiptData>\r\n+  Receipts: Array<ReceiptData>\r\n }\r\n \r\n export interface ReceiptData {\r\n   \"doc-type\": string;\r\n"
+                },
+                {
+                    "date": 1761646273474,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -46,9 +46,9 @@\n   balance: number;\r\n }\r\n \r\n export interface ProductsData {\r\n-  Users: Array<ProductData>\r\n+  Products: Array<ProductData>\r\n }\r\n \r\n export interface ProductData {\r\n   \"doc-type\": string;\r\n@@ -59,9 +59,9 @@\n   quantity: number;\r\n   \"trader-type\": string;\r\n }\r\n export interface TradersData {\r\n-  Users: Array<TraderData>\r\n+  Traders: Array<TraderData>\r\n }\r\n \r\n export interface TraderData {\r\n   \"doc-type\": string;\r\n"
+                },
+                {
+                    "date": 1761646465981,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,5 +83,9 @@\n   \"trader-id\": string;\r\n   \"user-ud\": string;\r\n   \"products-ids\": Array<string>;\r\n   date: Date;\r\n+}\r\n+\r\n+export interface CreateFormsProps {\r\n+  onSuccess?: () => void;\r\n }\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1761645950564,
+            "name": "Commit-0",
+            "content": "export interface Product {\r\n    name: string,\r\n    expiryDate: string,\r\n    price: string,\r\n    quantity: string,\r\n    traderType: string,\r\n    channel: string\r\n}\r\n\r\nexport interface User {\r\n  name: string;\r\n  surname: string;\r\n  email: string;\r\n  balance: string;\r\n  channel: string;\r\n}\r\n\r\nexport interface Trader {\r\n  traderType: string;\r\n  vat: string;\r\n  balance: string;\r\n  channel: string;\r\n}\r\n\r\nexport const TraderType = [\r\n  \"SUPERMARKET\",\r\n  \"CARDEALER\",\r\n  \"PHARMACY\",\r\n  \"GROCERY\",\r\n  \"GAS_STATON\",\r\n];\r\n\r\nexport const channels = ['channel-a', 'channel-b'];\r\n\r\nexport interface UsersData {\r\n  Users: Array<UserData>\r\n}\r\n\r\nexport interface UserData {\r\n  name: string;\r\n  surname: string;\r\n  email: string;\r\n  balance: number;\r\n  \"doc-type\": string;\r\n  id: string;\r\n  \"receipts-ids\": Array<string>;\r\n}\r\n\r\nexport interface ProductsData {\r\n  Users: Array<ProductData>\r\n}\r\n\r\nexport interface ProductData {\r\n  name: string;\r\n  \"expiry-date\": Date;\r\n  email: string;\r\n  balance: number;\r\n  \"doc-type\": string;\r\n  id: string;\r\n  \"receipts-ids\": Array<string>;\r\n}"
+        }
+    ]
+}
