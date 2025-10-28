@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 52,
+            "activePatchIndex": 54,
             "patches": [
                 {
                     "date": 1761645570981,
@@ -216,6 +216,14 @@
                 {
                     "date": 1761648670566,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -84,9 +84,9 @@\n               {selectedProduct.name}\r\n             </div>\r\n             <div>\r\n               <span className=\"font-semibold text-cyan-300\">Expiry Date:</span>{\" \"}\r\n-              {getFormattedDate(selectedProduct)}\r\n+              {formattedDate}\r\n             </div>\r\n             <div>\r\n               <span className=\"font-semibold text-cyan-300\">Price:</span> $\r\n               {selectedProduct.price.toFixed(2)}\r\n"
+                },
+                {
+                    "date": 1761653495967,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -238,9 +238,9 @@\n               </div>\r\n             ))}\r\n           </div>\r\n         ) : (\r\n-          <div className=\"text-center text-gray-400 py-8\">No users found</div>\r\n+          <div className=\"text-center text-gray-400 py-8\">No productss found</div>\r\n         )}\r\n       </div>\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1761653520720,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -238,9 +238,9 @@\n               </div>\r\n             ))}\r\n           </div>\r\n         ) : (\r\n-          <div className=\"text-center text-gray-400 py-8\">No productss found</div>\r\n+          <div className=\"text-center text-gray-400 py-8\">No products found</div>\r\n         )}\r\n       </div>\r\n     </div>\r\n   );\r\n"
                 }
             ],
             "date": 1761645570981,

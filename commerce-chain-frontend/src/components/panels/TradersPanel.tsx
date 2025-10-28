@@ -208,7 +208,7 @@ export default function TradersPanel() {
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-400 py-8">No users found</div>
+          <div className="text-center text-gray-400 py-8">No traders found</div>
         )}
       </div>
     </div>

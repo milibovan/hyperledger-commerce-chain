@@ -239,7 +239,7 @@ export default function ProductsPanel() {
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-400 py-8">No users found</div>
+          <div className="text-center text-gray-400 py-8">No products found</div>
         )}
       </div>
     </div>

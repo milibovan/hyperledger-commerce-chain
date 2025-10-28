@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 19,
+            "activePatchIndex": 20,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -84,6 +84,10 @@
                 {
                     "date": 1761649315024,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -165,8 +165,9 @@\n                 <div className=\"flex-1\">\r\n                   <h4 className=\"font-bold text-lg text-pink-300\">\r\n                     {trader.vat}\r\n                   </h4>\r\n+                  <p className=\"text-sm text-gray-400\">{trader[\"trader-type\"]}</p>\r\n                 </div>\r\n                 <div className=\"flex items-center gap-6\">\r\n                   <div className=\"text-right\">\r\n                     <p className=\"text-sm text-gray-400\">Balance</p>\r\n"
+                },
+                {
+                    "date": 1761653505896,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -207,9 +207,9 @@\n               </div>\r\n             ))}\r\n           </div>\r\n         ) : (\r\n-          <div className=\"text-center text-gray-400 py-8\">No users found</div>\r\n+          <div className=\"text-center text-gray-400 py-8\">No traderss found</div>\r\n         )}\r\n       </div>\r\n     </div>\r\n   );\r\n"
                 }
             ],
             "date": 1761645486253,

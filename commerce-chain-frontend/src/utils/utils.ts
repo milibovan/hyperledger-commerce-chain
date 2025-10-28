@@ -81,7 +81,7 @@ export interface ReceiptData {
   "doc-type": string;
   id: string;
   "trader-id": string;
-  "user-ud": string;
+  "user-id": string;
   "products-ids": Array<string>;
   date: Date;
 }

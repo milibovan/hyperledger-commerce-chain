@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -44,6 +44,10 @@
                 {
                     "date": 1761646465981,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,5 +83,9 @@\n   \"trader-id\": string;\r\n   \"user-ud\": string;\r\n   \"products-ids\": Array<string>;\r\n   date: Date;\r\n+}\r\n+\r\n+export interface CreateFormsProps {\r\n+  onSuccess?: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761653200963,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -80,9 +80,9 @@\n export interface ReceiptData {\r\n   \"doc-type\": string;\r\n   id: string;\r\n   \"trader-id\": string;\r\n-  \"user-ud\": string;\r\n+  \"user-id\": string;\r\n   \"products-ids\": Array<string>;\r\n   date: Date;\r\n }\r\n \r\n"
                 }
             ],
             "date": 1761645950564,
