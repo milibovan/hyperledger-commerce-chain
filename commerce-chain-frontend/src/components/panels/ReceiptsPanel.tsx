@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  Plus,
-  Edit,
-  Eye,
-  Trash2,
-} from "lucide-react";
+import { Plus, Edit, Eye, Trash2 } from "lucide-react";
 
 export default function ReceiptsPanel() {
   const [action, setAction] = useState<
