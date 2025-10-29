@@ -161,7 +161,7 @@ func BuyProduct(gw *fabricClient.Gateway, channel, userId, productId, traderId, 
 	return status.BlockNumber, ID
 }
 
-func DepositMoney(gw *fabricClient.Gateway, channel, id, amount string) uint64 {
+func DepositMoney(gw *fabricClient.Gateway, channel, id, amount string) (uint64, error) {
 	var userType string
 
 	if strings.HasPrefix(id, "USER_") {
@@ -169,7 +169,7 @@ func DepositMoney(gw *fabricClient.Gateway, channel, id, amount string) uint64 {
 	} else if strings.HasPrefix(id, "TRADER_") {
 		userType = "trader"
 	} else {
-		panic("ID prefix not recognized")
+		return uint64(0), fmt.Errorf("invalid user id: %s", id)
 	}
 
 	net := gw.GetNetwork(channel)
@@ -179,21 +179,21 @@ func DepositMoney(gw *fabricClient.Gateway, channel, id, amount string) uint64 {
 
 	_, commit, err := ccContract.SubmitAsync("DepositMoney", fabricClient.WithArguments(id, amount, userType))
 	if err != nil {
-		panic(fmt.Errorf("failed to submit transaction: %w", err))
+		return uint64(0), fmt.Errorf("failed to submit transaction: %w", err)
 	}
 
 	status, err := commit.Status()
 	if err != nil {
-		panic(fmt.Errorf("failed to get transaction commit status: %w", err))
+		return uint64(0), fmt.Errorf("failed to get transaction commit status: %w", err)
 	}
 
 	if !status.Successful {
-		panic(fmt.Errorf("failed to commit transaction with status code %v", status.Code))
+		return uint64(0), fmt.Errorf("failed to commit transaction with status code %v", status.Code)
 	}
 
 	fmt.Println("\n*** DepositMoney committed successfully")
 
-	return status.BlockNumber
+	return status.BlockNumber, nil
 }
 
 func GetProductsByMultipleCategories(gw *fabricClient.Gateway, channel, name, id, traderType, price string) error {
@@ -389,5 +389,65 @@ func QueryAllReceipts(gw *fabricClient.Gateway, channel string) (string, error) 
 		return "", err
 	}
 
+	return formatJSON(resultBytes), nil
+}
+
+func QueryUsersById(gw *fabricClient.Gateway, channel, id string) (string, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: QueryUsersById from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("QueryUsersById", fabricClient.WithArguments(id))
+	if err != nil {
+		return "", err
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No users found matching the criteria")
+		return "", nil
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+	return formatJSON(resultBytes), nil
+}
+
+func QueryTradersById(gw *fabricClient.Gateway, channel, id string) (string, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: QueryTradersById from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("QueryTradersById", fabricClient.WithArguments(id))
+	if err != nil {
+		return "", err
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No traders found matching the criteria")
+		return "", nil
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
+	return formatJSON(resultBytes), nil
+}
+
+func QueryReceiptsById(gw *fabricClient.Gateway, channel, id string) (string, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: QueryReceiptsById from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("QueryReceiptsById", fabricClient.WithArguments(id))
+	if err != nil {
+		return "", err
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No receipts found matching the criteria")
+		return "", nil
+	}
+
+	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
 	return formatJSON(resultBytes), nil
 }

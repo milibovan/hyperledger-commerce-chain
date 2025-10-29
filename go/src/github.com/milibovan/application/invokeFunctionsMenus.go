@@ -313,7 +313,10 @@ func handleDepositMoney() error {
 		break
 	}
 
-	blockNumber := client.DepositMoney(activeGW, channelName, userId, amount)
+	blockNumber, err := client.DepositMoney(activeGW, channelName, userId, amount)
+	if err != nil {
+		return err
+	}
 
 	printInfo(fmt.Sprintf("\nMoney was deposited successfully to %s on channel %s. Block number: %d\n", userId, channelName, blockNumber))
 

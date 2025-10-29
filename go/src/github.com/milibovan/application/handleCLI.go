@@ -300,7 +300,10 @@ func handleCLIBuyProduct(channelName, userId, productId, traderId, quantity stri
 }
 
 func handleCLIDepositMoney(channelName, userId, amount string) {
-	blockNumber := client.DepositMoney(activeGW, channelName, userId, amount)
+	blockNumber, err := client.DepositMoney(activeGW, channelName, userId, amount)
+	if err != nil {
+		printError(err.Error())
+	}
 
 	printInfo(fmt.Sprintf("\nMoney was deposited successfully to %s on channel %s. Block number: %d\n", userId, channelName, blockNumber))
 }

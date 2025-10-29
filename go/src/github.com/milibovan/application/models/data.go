@@ -76,3 +76,8 @@ func (ct *CustomTime) UnmarshalJSON(b []byte) error {
 func (ct CustomTime) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("\"%s\"", ct.Format("2006-01-02 15:04:05"))), nil
 }
+
+type DepositObject struct {
+	UserId string  `json:"user-id"`
+	Amount float64 `json:"amount"`
+}

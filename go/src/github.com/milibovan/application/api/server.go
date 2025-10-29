@@ -56,6 +56,9 @@ func CreateServer() {
 	router.GET("/traders/:channel", getTraders)
 	router.GET("/products/:channel", getProducts)
 	router.GET("/receipts/:channel", getReceipts)
+
+	router.POST("/deposit-money/:channel", depositMoney)
+
 	router.Run("localhost:8080")
 }
 
@@ -163,7 +166,6 @@ func getUsers(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{"Users": users})
 }
-
 func getTraders(c *gin.Context) {
 	var channel string
 	channel = c.Param("channel")
@@ -175,7 +177,6 @@ func getTraders(c *gin.Context) {
 	fmt.Println(traders)
 	c.JSON(200, gin.H{"Traders": traders})
 }
-
 func getReceipts(c *gin.Context) {
 	var channel string
 	channel = c.Param("channel")
@@ -187,7 +188,6 @@ func getReceipts(c *gin.Context) {
 	fmt.Println(receipts)
 	c.JSON(200, gin.H{"Receipts": receipts})
 }
-
 func getProducts(c *gin.Context) {
 	var channel string
 	channel = c.Param("channel")
@@ -198,4 +198,22 @@ func getProducts(c *gin.Context) {
 	}
 	fmt.Println(products)
 	c.JSON(200, gin.H{"Products": products})
+}
+
+func depositMoney(c *gin.Context) {
+	var channel string
+	var depositObject models.DepositObject
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&depositObject); err != nil {
+		c.JSON(400, gin.H{"Message": fmt.Sprintf("Cannot parse request. Error: %s", err.Error())})
+		return
+	}
+
+	blockNumber, err := client.DepositMoney(activeGW, channel, depositObject.UserId, fmt.Sprint(depositObject.Amount))
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Cannot deposit money %s", err.Error())})
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Deposited money %d", blockNumber)})
 }
