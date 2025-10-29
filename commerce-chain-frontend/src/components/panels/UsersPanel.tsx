@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { UsersData, UserData } from "../../utils/utils";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
+import DepositMoneyForm from "../forms/DepositMoneyForm";
 
 export default function UsersPanel() {
   const [data, setData] = useState<UsersData | null>(null);
@@ -90,11 +91,13 @@ export default function UsersPanel() {
     }
     switch (action) {
       case "deposit":
-        return (
-          <div className="text-gray-300">
-            Deposit form for {selectedUser?.name} {selectedUser?.surname}
-          </div>
-        );
+        if (selectedUser) {
+          return (
+            <DepositMoneyForm user={selectedUser} onSuccess={fetchUsers} handleBackToList={handleBackToList}/>
+          );
+        }
+        return;
+
       case "update":
         return (
           <div className="text-gray-300">
@@ -129,7 +132,7 @@ export default function UsersPanel() {
           </div>
           <div className="flex gap-2 my-4 justify-end">
             <button
-              // onClick={() => handleActionClick("deposit", user)}
+              onClick={() => handleActionClick("deposit", selectedUser!)}
               className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
               title="Deposit"
             >

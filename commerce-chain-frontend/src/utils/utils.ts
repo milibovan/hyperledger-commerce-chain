@@ -89,3 +89,8 @@ export interface ReceiptData {
 export interface CreateFormsProps {
   onSuccess?: () => void;
 }
+
+export interface Deposit {
+  amount: string,
+  channel: string
+}
