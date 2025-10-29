@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { LogOut } from 'lucide-react';
-import Menu from './components/Menu';
+import { useState } from "react";
+import { LogOut } from "lucide-react";
+import Menu from "./components/Menu";
 
-type ConnectionState = 'disconnected' | 'connected';
+type ConnectionState = "disconnected" | "connected";
 
 export default function App() {
-  const [state, setState] = useState<ConnectionState>('disconnected');
+  const [state, setState] = useState<ConnectionState>("disconnected");
   const [showOrgs, setShowOrgs] = useState(false);
   const [showUsers, setShowUsers] = useState(false);
   const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
@@ -13,12 +13,12 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const organizations = ['Org1', 'Org2', 'Org3'];
-  const users = ['User1', 'Admin'];
+  const organizations = ["Org1", "Org2", "Org3"];
+  const users = ["User1", "Admin"];
 
   const handleConnect = async () => {
     if (!selectedOrg || !selectedUser) {
-      setError('Please select both organization and user');
+      setError("Please select both organization and user");
       return;
     }
 
@@ -36,11 +36,11 @@ export default function App() {
       });
 
       if (response.ok) {
-        setState('connected');
+        setState("connected");
         setShowOrgs(false);
         setShowUsers(false);
       } else {
-        setError('Connection failed');
+        setError("Connection failed");
       }
     } catch (err) {
       setError(`Error connecting to network ${err}`);
@@ -54,16 +54,16 @@ export default function App() {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:8080/disconnect', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8080/disconnect", {
+        method: "POST",
       });
 
       if (response.ok) {
-        setState('disconnected');
+        setState("disconnected");
         setSelectedOrg(null);
         setSelectedUser(null);
       } else {
-        setError('Disconnection failed');
+        setError("Disconnection failed");
       }
     } catch (err) {
       setError(`Error disconnecting from network ${err}`);
@@ -78,17 +78,21 @@ export default function App() {
     setSelectedUser(null);
   };
 
-  if (state === 'connected') {
+  if (state === "connected") {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
         <Menu />
         {/* Connection Info - Top Right */}
-        <div className="fixed top-4 right-4 z-50 group bg-gray-800 border-2 border-cyan-500 rounded-lg shadow-lg shadow-cyan-500/50 overflow-hidden transition-all duration-300 hover:px-6 hover:py-3 px-3 py-2">
-          <div className="flex items-center gap-2">
+        <div className="fixed top-4 right-4 z-50 h-10 hover:h-15 group bg-gray-800 border-2 border-cyan-500 rounded-3xl shadow-lg shadow-cyan-500/50 overflow-hidden transition-all duration-300 hover:px-6 hover:py-3 px-3 py-2">
+          <div className="flex items-center gap-2 h-full">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse flex-shrink-0"></div>
             <div className="max-w-0 group-hover:max-w-xs transition-all duration-300 overflow-hidden">
-              <div className="text-xs text-cyan-400 font-semibold uppercase whitespace-nowrap">Connected</div>
-              <div className="text-sm text-purple-300 whitespace-nowrap">{selectedOrg} • {selectedUser}</div>
+              <div className="text-xs text-cyan-400 font-semibold uppercase whitespace-nowrap">
+                Connected
+              </div>
+              <div className="text-sm text-purple-300 whitespace-nowrap">
+                {selectedOrg} • {selectedUser}
+              </div>
             </div>
           </div>
         </div>
@@ -142,8 +146,8 @@ export default function App() {
                     onClick={() => handleOrgSelect(org)}
                     className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${
                       selectedOrg === org
-                        ? 'bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50'
-                        : 'bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200'
+                        ? "bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50"
+                        : "bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200"
                     }`}
                   >
                     {org}
@@ -164,8 +168,8 @@ export default function App() {
                     onClick={() => setSelectedUser(user)}
                     className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${
                       selectedUser === user
-                        ? 'bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50'
-                        : 'bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200'
+                        ? "bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50"
+                        : "bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200"
                     }`}
                   >
                     {user}
@@ -188,7 +192,7 @@ export default function App() {
                 disabled={loading}
                 className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold text-lg rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
               >
-                {loading ? 'Connecting...' : 'Submit'}
+                {loading ? "Connecting..." : "Submit"}
               </button>
             )}
           </div>
