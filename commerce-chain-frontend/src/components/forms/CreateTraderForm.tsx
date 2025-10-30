@@ -5,6 +5,7 @@ import { TraderType, channels } from "../../utils/utils";
 
 export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
   const [formData, setFormData] = useState<Trader>({
+    name: "",
     traderType: "",
     vat: "",
     balance: "",
@@ -49,6 +50,7 @@ export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            name: formData.name,
             "trader-type": formData.traderType,
             vat: formData.vat,
             balance: parseFloat(formData.balance),
@@ -59,8 +61,9 @@ export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
 
       if (response.ok) {
         const data = await response.json();
-        setSuccess(`User created: ${data.Message}`);
+        setSuccess(`Trader created: ${data.Message}`);
         setFormData({
+          name: "",
           traderType: "",
           vat: "",
           balance: "",
@@ -103,6 +106,21 @@ export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* First Name */}
+        <div>
+          <label className="block text-pink-300 font-semibold mb-2">
+            Trader Name *
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Enter trader name"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50"
+          />
         </div>
 
         {/* Trader Type */}
@@ -180,7 +198,7 @@ export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
           className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-pink-300 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
         >
           <Send size={20} />
-          {loading ? "Creating..." : "Create User"}
+          {loading ? "Creating..." : "Create Trader"}
         </button>
       </div>
     </div>

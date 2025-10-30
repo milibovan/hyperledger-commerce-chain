@@ -16,6 +16,7 @@ export interface User {
 }
 
 export interface Trader {
+  name: string;
   traderType: string;
   vat: string;
   balance: string;
@@ -66,6 +67,7 @@ export interface TradersData {
 export interface TraderData {
   "doc-type": string;
   id: string;
+  name: string;
   "trader-type": string;
   vat: string;
   "products-available-ids": Array<string>;

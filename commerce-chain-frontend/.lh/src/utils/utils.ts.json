@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 11,
+            "activePatchIndex": 13,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -52,6 +52,14 @@
                 {
                     "date": 1761767480409,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -87,5 +87,10 @@\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n+}\r\n+\r\n+export interface Deposit {\r\n+  amount: string,\r\n+  channel: string\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761833906174,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,8 +15,9 @@\n   channel: string;\r\n }\r\n \r\n export interface Trader {\r\n+  name: string;\r\n   traderType: string;\r\n   vat: string;\r\n   balance: string;\r\n   channel: string;\r\n"
+                },
+                {
+                    "date": 1761833973993,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -66,8 +66,9 @@\n \r\n export interface TraderData {\r\n   \"doc-type\": string;\r\n   id: string;\r\n+  name: string;\r\n   \"trader-type\": string;\r\n   vat: string;\r\n   \"products-available-ids\": Array<string>;\r\n   \"receipts-ids\": Array<string>;\r\n"
                 }
             ],
             "date": 1761645950564,

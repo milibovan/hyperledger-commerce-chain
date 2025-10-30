@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import type { TraderData, TradersData } from "../../utils/utils";
+import DepositMoneyForm from "../forms/DepositMoneyForm";
 
 export default function TradersPanel() {
   const [data, setData] = useState<TradersData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState<
-    "create" | "deposit_money" | "update" | "delete" | null
+    "create" | "deposit" | "update" | "delete" | null
   >(null);
   const [selectedTrader, setSelectedTrader] = useState<TraderData | null>(null);
   const [viewDetails, setViewDetails] = useState(false);
@@ -63,38 +64,15 @@ export default function TradersPanel() {
     if (action === "create") {
       return <CreateTraderForm onSuccess={fetchTraders} />;
     }
-    if (viewDetails && selectedTrader) {
-      return (
-        <div className="space-y-4">
-          <h3 className="text-2xl font-bold text-pink-400">Trader Details</h3>
-          <div className="grid grid-cols-2 gap-4 text-gray-300">
-            <div>
-              <span className="font-semibold text-pink-300">ID:</span>{" "}
-              {selectedTrader.id}
-            </div>
-            <div>
-              <span className="font-semibold text-pink-300">Trader vat:</span>{" "}
-              {selectedTrader.vat}
-            </div>
-            <div>
-              <span className="font-semibold text-pink-300">Balance:</span> $
-              {selectedTrader.balance.toFixed(2)}
-            </div>
-            <div>
-              <span className="font-semibold text-pink-300">Trader type: </span>
-              {selectedTrader["trader-type"].toUpperCase()}
-            </div>
-          </div>
-        </div>
-      );
-    }
+
     switch (action) {
-      case "deposit_money":
+      case "deposit":
         return (
-          <div className="text-gray-300">
-            Deposit Money form for {selectedTrader?.id}{" "}
-            {selectedTrader?.vat}
-          </div>
+          <DepositMoneyForm
+            user={selectedTrader!}
+            onSuccess={fetchTraders}
+            handleBackToList={handleBackToList}
+          />
         );
       case "update":
         return (
@@ -109,7 +87,41 @@ export default function TradersPanel() {
           </div>
         );
       default:
-        return null;
+        if (viewDetails && selectedTrader) {
+          return (
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-pink-400">
+                Trader Details
+              </h3>
+              <div className="grid grid-cols-2 gap-4 text-gray-300">
+                <div>
+                  <span className="font-semibold text-pink-300">ID:</span>{" "}
+                  {selectedTrader.id}
+                </div>
+                <div>
+                  <span className="font-semibold text-pink-300">
+                    Trader vat:
+                  </span>{" "}
+                  {selectedTrader.vat}
+                </div>
+                <div>
+                  <span className="font-semibold text-pink-300">Name:</span>{" "}
+                  {selectedTrader.name}
+                </div>
+                <div>
+                  <span className="font-semibold text-pink-300">Balance:</span>{" "}
+                  ${selectedTrader.balance.toFixed(2)}
+                </div>
+                <div>
+                  <span className="font-semibold text-pink-300">
+                    Trader type:{" "}
+                  </span>
+                  {selectedTrader["trader-type"].toUpperCase()}
+                </div>
+              </div>
+            </div>
+          );
+        }
     }
   };
 
@@ -128,29 +140,31 @@ export default function TradersPanel() {
               ← Back to Traders
             </button>
           </div>
-          <div className="flex gap-2 my-4 justify-end">
-            <button
-            //   onClick={() => handleActionClick("deposit_money", trader)}
-              className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
-              title="Deposit Money"
-            >
-              <Plus size={18} /> Deposit
-            </button>
-            <button
-            //   onClick={() => handleActionClick("update", trader)}
-              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold"
-              title="Update"
-            >
-              <Edit size={18} /> Update
-            </button>
-            <button
-            //   onClick={() => handleActionClick("delete", trader)}
-              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
-              title="Delete"
-            >
-              <Trash2 size={18} /> Delete
-            </button>
-          </div>
+          {action === null && (
+            <div className="flex gap-2 my-4 justify-end">
+              <button
+                  onClick={() => handleActionClick("deposit", selectedTrader!)}
+                className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
+                title="Deposit Money"
+              >
+                <Plus size={18} /> Deposit
+              </button>
+              <button
+                  onClick={() => handleActionClick("update", selectedTrader!)}
+                className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold"
+                title="Update"
+              >
+                <Edit size={18} /> Update
+              </button>
+              <button
+                  onClick={() => handleActionClick("delete", selectedTrader!)}
+                className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
+                title="Delete"
+              >
+                <Trash2 size={18} /> Delete
+              </button>
+            </div>
+          )}
         </div>
         {renderContent()}
       </div>
@@ -212,9 +226,7 @@ export default function TradersPanel() {
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
-                      onClick={() =>
-                        handleActionClick("deposit_money", trader)
-                      }
+                      onClick={() => handleActionClick("deposit", trader)}
                       className="p-2 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all"
                       title="Deposit Money"
                     >
