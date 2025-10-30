@@ -64,39 +64,16 @@ export default function UsersPanel() {
     if (action === "create") {
       return <CreateUserForm onSuccess={fetchUsers} />;
     }
-    if (viewDetails && selectedUser) {
-      return (
-        <div className="space-y-4">
-          <h3 className="text-2xl font-bold text-purple-400">User Details</h3>
-          <div className="grid grid-cols-2 gap-4 text-gray-300">
-            <div>
-              <span className="font-semibold text-purple-300">ID:</span>{" "}
-              {selectedUser.id}
-            </div>
-            <div>
-              <span className="font-semibold text-purple-300">Email:</span>{" "}
-              {selectedUser.email}
-            </div>
-            <div>
-              <span className="font-semibold text-purple-300">Name:</span>{" "}
-              {selectedUser.name} {selectedUser.surname}
-            </div>
-            <div>
-              <span className="font-semibold text-purple-300">Balance:</span> $
-              {selectedUser.balance.toFixed(2)}
-            </div>
-          </div>
-        </div>
-      );
-    }
+
     switch (action) {
       case "deposit":
-        if (selectedUser) {
-          return (
-            <DepositMoneyForm user={selectedUser} onSuccess={fetchUsers} handleBackToList={handleBackToList}/>
-          );
-        }
-        return;
+        return (
+          <DepositMoneyForm
+            user={selectedUser!}
+            onSuccess={fetchUsers}
+            handleBackToList={handleBackToList}
+          />
+        );
 
       case "update":
         return (
@@ -111,6 +88,36 @@ export default function UsersPanel() {
           </div>
         );
       default:
+        // Show user details if viewDetails is true and no action is selected
+        if (viewDetails && selectedUser) {
+          return (
+            <div className="space-y-4">
+              <h3 className="text-2xl font-bold text-purple-400">
+                User Details
+              </h3>
+              <div className="grid grid-cols-2 gap-4 text-gray-300">
+                <div>
+                  <span className="font-semibold text-purple-300">ID:</span>{" "}
+                  {selectedUser.id}
+                </div>
+                <div>
+                  <span className="font-semibold text-purple-300">Email:</span>{" "}
+                  {selectedUser.email}
+                </div>
+                <div>
+                  <span className="font-semibold text-purple-300">Name:</span>{" "}
+                  {selectedUser.name} {selectedUser.surname}
+                </div>
+                <div>
+                  <span className="font-semibold text-purple-300">
+                    Balance:
+                  </span>{" "}
+                  ${selectedUser.balance.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          );
+        }
         return null;
     }
   };
@@ -130,29 +137,31 @@ export default function UsersPanel() {
               ← Back to Users
             </button>
           </div>
-          <div className="flex gap-2 my-4 justify-end">
-            <button
-              onClick={() => handleActionClick("deposit", selectedUser!)}
-              className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
-              title="Deposit"
-            >
-              <Plus size={18} /> Deposit
-            </button>
-            <button
-              // onClick={() => handleActionClick("update", user)}
-              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold"
-              title="Update"
-            >
-              <Edit size={18} /> Update
-            </button>
-            <button
-              // onClick={() => handleActionClick("delete", user)}
-              className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
-              title="Delete"
-            >
-              <Trash2 size={18} /> Delete
-            </button>
-          </div>
+          {action === null && (
+            <div className="flex gap-2 my-4 justify-end">
+              <button
+                onClick={() => handleActionClick("deposit", selectedUser!)}
+                className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
+                title="Deposit"
+              >
+                <Plus size={18} /> Deposit
+              </button>
+              <button
+                onClick={() => handleActionClick("update", selectedUser!)}
+                className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold"
+                title="Update"
+              >
+                <Edit size={18} /> Update
+              </button>
+              <button
+                onClick={() => handleActionClick("delete", selectedUser!)}
+                className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
+                title="Delete"
+              >
+                <Trash2 size={18} /> Delete
+              </button>
+            </div>
+          )}
         </div>
         {renderContent()}
       </div>
