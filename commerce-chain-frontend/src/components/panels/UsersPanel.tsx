@@ -3,6 +3,7 @@ import type { UsersData, UserData } from "../../utils/utils";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
+import UpdateUserForm from "../forms/UpdateUserForm";
 
 export default function UsersPanel() {
   const [data, setData] = useState<UsersData | null>(null);
@@ -77,9 +78,7 @@ export default function UsersPanel() {
 
       case "update":
         return (
-          <div className="text-gray-300">
-            Update form for {selectedUser?.name} {selectedUser?.surname}
-          </div>
+          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!} handleActionClick={handleActionClick} handleBackToList={handleBackToList}/>
         );
       case "delete":
         return (

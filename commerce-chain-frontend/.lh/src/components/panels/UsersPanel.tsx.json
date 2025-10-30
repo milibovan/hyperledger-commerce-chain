@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 39,
+            "activePatchIndex": 43,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -164,6 +164,22 @@
                 {
                     "date": 1761828737234,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -68,9 +68,9 @@\n     switch (action) {\r\n       case \"deposit\":\r\n         return (\r\n           <DepositMoneyForm\r\n-            user={selectedUser}\r\n+            user={selectedUser!}\r\n             onSuccess={fetchUsers}\r\n             handleBackToList={handleBackToList}\r\n           />\r\n         );\r\n"
+                },
+                {
+                    "date": 1761859847151,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,9 @@\n import type { UsersData, UserData } from \"../../utils/utils\";\r\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n import CreateUserForm from \"../forms/CreateUserForm\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n+import UpdateUserForm from \"../forms/UpdateUserForm\";\r\n \r\n export default function UsersPanel() {\r\n   const [data, setData] = useState<UsersData | null>(null);\r\n   const [error, setError] = useState<string | null>(null);\r\n@@ -76,11 +77,9 @@\n         );\r\n \r\n       case \"update\":\r\n         return (\r\n-          <div className=\"text-gray-300\">\r\n-            Update form for {selectedUser?.name} {selectedUser?.surname}\r\n-          </div>\r\n+          <UpdateUserForm onSuccess={fetchUsers}/>\r\n         );\r\n       case \"delete\":\r\n         return (\r\n           <div className=\"text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1761860001970,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -77,9 +77,9 @@\n         );\r\n \r\n       case \"update\":\r\n         return (\r\n-          <UpdateUserForm onSuccess={fetchUsers}/>\r\n+          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!}/>\r\n         );\r\n       case \"delete\":\r\n         return (\r\n           <div className=\"text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1761860966220,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -77,9 +77,9 @@\n         );\r\n \r\n       case \"update\":\r\n         return (\r\n-          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!}/>\r\n+          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!} handleActionClick={handleActionClick}/>\r\n         );\r\n       case \"delete\":\r\n         return (\r\n           <div className=\"text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1761861098106,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -77,9 +77,9 @@\n         );\r\n \r\n       case \"update\":\r\n         return (\r\n-          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!} handleActionClick={handleActionClick}/>\r\n+          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!} handleActionClick={handleActionClick} handleBackToList={handleBackToList}/>\r\n         );\r\n       case \"delete\":\r\n         return (\r\n           <div className=\"text-gray-300\">\r\n"
                 }
             ],
             "date": 1761645579091,
