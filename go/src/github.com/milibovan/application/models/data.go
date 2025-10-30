@@ -14,6 +14,7 @@ type Product struct {
 	Price      float64    `json:"price"`
 	Quantity   int        `json:"quantity"`
 	TraderType TraderType `json:"trader-type"`
+	Deleted    bool       `json:"deleted"`
 }
 
 type Receipt struct {
@@ -23,6 +24,7 @@ type Receipt struct {
 	UserId     string    `json:"user-id"`
 	ProductIDs []string  `json:"products-ids"`
 	Date       time.Time `json:"date"`
+	Deleted    bool      `json:"deleted"`
 }
 
 type TraderType string
@@ -44,6 +46,7 @@ type Trader struct {
 	ProductsAvailableIDs []string   `json:"products-available-ids"`
 	ReceiptsIDs          []string   `json:"receipts-ids"`
 	Balance              float64    `json:"balance"`
+	Deleted              bool       `json:"deleted"`
 }
 
 type User struct {
@@ -54,6 +57,7 @@ type User struct {
 	Email       string   `json:"email"`
 	ReceiptsIDs []string `json:"receipts-ids"`
 	Balance     float64  `json:"balance"`
+	Deleted     bool     `json:"deleted"`
 }
 
 type CustomTime struct {

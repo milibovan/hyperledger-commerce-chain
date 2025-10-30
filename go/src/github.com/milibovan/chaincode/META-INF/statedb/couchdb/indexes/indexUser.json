@@ -5,7 +5,8 @@
       "surname",
       "email",
       "receipts-ids",
-      "balance"
+      "balance",
+      "deleted"
     ]
   },
   "ddoc": "indexUserDoc",

@@ -451,3 +451,88 @@ func QueryReceiptsById(gw *fabricClient.Gateway, channel, id string) (string, er
 	fmt.Printf("*** Result: %s\n", formatJSON(resultBytes))
 	return formatJSON(resultBytes), nil
 }
+
+func UpdateUser(gw *fabricClient.Gateway, channel, id, name, surname, email string) (uint64, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Submit transaction: UpdateUser, ID: %s on channel %s\n", id, channel)
+
+	_, commit, err := ccContract.SubmitAsync("UpdateUser", fabricClient.WithArguments(id, name, surname, email))
+	if err != nil {
+		return uint64(0), fmt.Errorf("failed to submit transaction: %w", err)
+	}
+
+	status, err := commit.Status()
+	if err != nil {
+		return uint64(0), fmt.Errorf("failed to get transaction commit status: %w", err)
+	}
+
+	if !status.Successful {
+		return uint64(0), fmt.Errorf("failed to commit transaction with status code %v", status.Code)
+	}
+
+	fmt.Println("\n*** UpdateUser committed successfully")
+
+	return status.BlockNumber, nil
+}
+func UpdateTrader(gw *fabricClient.Gateway, channel, id, name, vat, traderType string) (uint64, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Submit transaction: UpdateTrader, ID: %s on channel %s\n", id, channel)
+
+	_, commit, err := ccContract.SubmitAsync("UpdateTrader", fabricClient.WithArguments(id, name, vat, traderType))
+	if err != nil {
+		return uint64(0), fmt.Errorf("failed to submit transaction: %w", err)
+	}
+
+	status, err := commit.Status()
+	if err != nil {
+		return uint64(0), fmt.Errorf("failed to get transaction commit status: %w", err)
+	}
+
+	if !status.Successful {
+		return uint64(0), fmt.Errorf("failed to commit transaction with status code %v", status.Code)
+	}
+
+	fmt.Println("\n*** UpdateTrader committed successfully")
+
+	return status.BlockNumber, nil
+}
+func UpdateProduct(gw *fabricClient.Gateway, channel, id, name, expiryDate, price, traderType string) (uint64, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Submit transaction: UpdateProduct, ID: %s on channel %s\n", id, channel)
+
+	_, commit, err := ccContract.SubmitAsync("UpdateProduct", fabricClient.WithArguments(id, name, expiryDate, price, traderType))
+	if err != nil {
+		return uint64(0), fmt.Errorf("failed to submit transaction: %w", err)
+	}
+
+	status, err := commit.Status()
+	if err != nil {
+		return uint64(0), fmt.Errorf("failed to get transaction commit status: %w", err)
+	}
+
+	if !status.Successful {
+		return uint64(0), fmt.Errorf("failed to commit transaction with status code %v", status.Code)
+	}
+
+	fmt.Println("\n*** UpdateProduct committed successfully")
+
+	return status.BlockNumber, nil
+}
+func DeleteUser(gw *fabricClient.Gateway, channel, id string) (string, error) {
+	return "", nil
+}
+func DeleteTrader(gw *fabricClient.Gateway, channel, id string) (string, error) {
+	return "", nil
+}
+func DeleteProduct(gw *fabricClient.Gateway, channel, id string) (string, error) {
+	return "", nil
+}
+func DeleteReceipt(gw *fabricClient.Gateway, channel, id string) (string, error) {
+	return "", nil
+}

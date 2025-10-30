@@ -7,4 +7,5 @@ type Receipt struct {
 	UserId     string   `json:"user-id"`
 	ProductIDs []string `json:"products-ids"`
 	Date       string   `json:"date"`
+	Deleted    bool     `json:"deleted"`
 }

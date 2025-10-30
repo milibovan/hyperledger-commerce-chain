@@ -8,4 +8,5 @@ type User struct {
 	Email       string   `json:"email"`
 	ReceiptsIDs []string `json:"receipts-ids"`
 	Balance     float64  `json:"balance"`
+	Deleted     bool     `json:"deleted"`
 }

@@ -6,7 +6,8 @@
       "vat",
       "products-available-ids",
       "receipts-ids",
-      "balance"
+      "balance",
+      "deleted"
     ]
   },
   "ddoc": "indexTraderDoc",

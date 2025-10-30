@@ -5,7 +5,8 @@
       "id",
       "trader-id",
       "user-id",
-      "date"
+      "date",
+      "deleted"
     ]
   },
   "ddoc": "indexReceiptDoc",

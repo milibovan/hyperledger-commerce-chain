@@ -21,6 +21,7 @@ type Trader struct {
 	ProductsAvailableIDs []string   `json:"products-available-ids"`
 	ReceiptsIDs          []string   `json:"receipts-ids"`
 	Balance              float64    `json:"balance"`
+	Deleted              bool       `json:"deleted"`
 }
 
 func GetTraderTypeFromString(input string) (TraderType, error) {

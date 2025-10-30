@@ -10,4 +10,5 @@ type Product struct {
 	Price      float64    `json:"price"`
 	Quantity   int        `json:"quantity"`
 	TraderType TraderType `json:"trader-type"`
+	Deleted    bool       `json:"deleted"`
 }

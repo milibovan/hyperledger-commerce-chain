@@ -57,6 +57,15 @@ func CreateServer() {
 	router.GET("/products/:channel", getProducts)
 	router.GET("/receipts/:channel", getReceipts)
 
+	router.PUT("/users/:channel", updateUser)
+	router.PUT("/traders/:channel", updateTrader)
+	router.PUT("/products/:channel", updateProduct)
+
+	router.DELETE("/users/:channel", deleteUser)
+	router.DELETE("/traders/:channel", deleteTrader)
+	router.DELETE("/products/:channel", deleteProduct)
+	router.DELETE("/receipts/:channel", deleteReceipt)
+
 	router.POST("/deposit-money/:channel", depositMoney)
 
 	router.Run("localhost:8080")
@@ -104,6 +113,7 @@ func disconnectClient(c *gin.Context) {
 
 	c.JSON(200, gin.H{"Message": "Disconntected from the gateway"})
 }
+
 func createUser(c *gin.Context) {
 	var User models.User
 	var channel string
@@ -217,3 +227,59 @@ func depositMoney(c *gin.Context) {
 
 	c.JSON(200, gin.H{"Message": fmt.Sprintf("Deposited money %d", blockNumber)})
 }
+
+func updateUser(c *gin.Context) {
+	var User models.User
+	var channel string
+
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&User); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request"})
+		return
+	}
+
+	fmt.Println(User)
+
+	blockNumber, ID := client.UpdateUser(activeGW, channel, User.Id, User.Name, User.Surname, User.Email)
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("User updated %d %s", blockNumber, ID)})
+}
+func updateTrader(c *gin.Context) {
+	var Trader models.Trader
+	var channel string
+
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&Trader); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request"})
+		return
+	}
+
+	fmt.Println(Trader)
+
+	blockNumber, ID := client.UpdateTrader(activeGW, channel, Trader.Id, Trader.Name, Trader.VAT, string(Trader.TraderType))
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Trader updated %d %s", blockNumber, ID)})
+}
+func updateProduct(c *gin.Context) {
+	var Product models.Product
+	var channel string
+
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&Product); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
+		return
+	}
+	fmt.Println(Product)
+
+	blockNumber, ID := client.UpdateProduct(activeGW, channel, Product.Id, Product.Name, Product.ExpiryDate.Format("2006-01-02 15:04:05"), fmt.Sprint(Product.Price), string(Product.TraderType))
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Product updated %d %s", blockNumber, ID)})
+}
+
+func deleteUser(c *gin.Context)    {}
+func deleteTrader(c *gin.Context)  {}
+func deleteProduct(c *gin.Context) {}
+func deleteReceipt(c *gin.Context) {}

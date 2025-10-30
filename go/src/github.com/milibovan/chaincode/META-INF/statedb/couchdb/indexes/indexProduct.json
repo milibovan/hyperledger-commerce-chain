@@ -5,7 +5,8 @@
       "expiry-date",
       "quantity",
       "price",
-      "trader-type"
+      "trader-type",
+      "deleted"
     ]
   },
   "ddoc": "indexProductDoc",
