@@ -42,7 +42,7 @@ func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, 
 	return ctx.GetStub().PutState(user.Id, userJSON)
 }
 
-func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id, traderTypeStr, vat, balance string) error {
+func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id, name, traderTypeStr, vat, balance string) error {
 	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
 		return err
@@ -64,6 +64,7 @@ func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface
 	trader := structs.Trader{
 		DocType:              "trader",
 		Id:                   id,
+		Name:                 name,
 		TraderType:           traderType,
 		VAT:                  vat,
 		ProductsAvailableIDs: []string{},

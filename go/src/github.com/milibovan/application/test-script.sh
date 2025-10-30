@@ -33,6 +33,7 @@ CHANNEL_B="channel-b"
 
 # Test data
 TEST_TRADER_TYPE="SUPERMARKET"
+TEST_TRADER_NAME="Supermarket_1"
 TEST_VAT="123456789"
 TEST_BALANCE="50000"
 
@@ -124,6 +125,7 @@ test_create_traders() {
         --org "$ORG1" \
         --user "$USER1" \
         --channel "$CHANNEL_A" \
+        --name "$TEST_TRADER_NAME" \
         --type "$TEST_TRADER_TYPE" \
         --vat "$TEST_VAT" \
         --balance "$TEST_BALANCE" 2>&1)

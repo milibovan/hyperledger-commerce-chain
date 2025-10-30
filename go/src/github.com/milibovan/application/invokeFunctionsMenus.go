@@ -72,7 +72,7 @@ func handleInvokeMenu() error {
 }
 
 func handleCreateTrader() error {
-	var channelName, traderType, vat, balance string
+	var channelName, name, traderType, vat, balance string
 
 	channelName = channelSelectionMenu(channelName)
 
@@ -94,7 +94,7 @@ func handleCreateTrader() error {
 		break
 	}
 
-	blockNumber, ID := client.CreateTrader(activeGW, channelName, traderType, vat, balance)
+	blockNumber, ID := client.CreateTrader(activeGW, channelName, name, traderType, vat, balance)
 
 	printInfo(fmt.Sprintf("\nTrader with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber))
 

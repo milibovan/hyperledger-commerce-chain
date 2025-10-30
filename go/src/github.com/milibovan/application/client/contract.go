@@ -23,7 +23,7 @@ func formatJSON(data []byte) string {
 	return result.String()
 }
 
-func CreateTrader(gw *fabricClient.Gateway, channel, traderType, vat, balance string) (uint64, string) {
+func CreateTrader(gw *fabricClient.Gateway, channel, name, traderType, vat, balance string) (uint64, string) {
 	var now = time.Now()
 	var ID = fmt.Sprintf("TRADER_%d", now.UnixNano())
 
@@ -32,7 +32,7 @@ func CreateTrader(gw *fabricClient.Gateway, channel, traderType, vat, balance st
 
 	fmt.Printf("\n--> Submit transaction: CreateTrader, ID: %s on channel %s\n", ID, channel)
 
-	_, commit, err := ccContract.SubmitAsync("CreateTrader", fabricClient.WithArguments(ID, traderType, vat, balance))
+	_, commit, err := ccContract.SubmitAsync("CreateTrader", fabricClient.WithArguments(ID, name, traderType, vat, balance))
 	if err != nil {
 		panic(fmt.Errorf("failed to submit transaction: %w", err))
 	}

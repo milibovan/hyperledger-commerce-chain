@@ -62,9 +62,9 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 
 	// Traders
 	traders := []structs.Trader{
-		{DocType: "trader", Id: "TRADER_1", TraderType: structs.SUPERMARKET, VAT: "123456", ProductsAvailableIDs: []string{"S1", "S2", "S3"}, ReceiptsIDs: []string{}, Balance: 10000.0},
-		{DocType: "trader", Id: "TRADER_2", TraderType: structs.PHARMACY, VAT: "456789", ProductsAvailableIDs: []string{"P4", "P5", "P6"}, ReceiptsIDs: []string{}, Balance: 5000.0},
-		{DocType: "trader", Id: "TRADER_3", TraderType: structs.GROCERY, VAT: "789123", ProductsAvailableIDs: []string{"G7", "G8", "G9"}, ReceiptsIDs: []string{}, Balance: 1000.0},
+		{DocType: "trader", Id: "TRADER_1", Name: "Supermarket_1", TraderType: structs.SUPERMARKET, VAT: "123456", ProductsAvailableIDs: []string{"S1", "S2", "S3"}, ReceiptsIDs: []string{}, Balance: 10000.0},
+		{DocType: "trader", Id: "TRADER_2", Name: "Pharmacy_2", TraderType: structs.PHARMACY, VAT: "456789", ProductsAvailableIDs: []string{"P4", "P5", "P6"}, ReceiptsIDs: []string{}, Balance: 5000.0},
+		{DocType: "trader", Id: "TRADER_3", Name: "Grocery_3", TraderType: structs.GROCERY, VAT: "789123", ProductsAvailableIDs: []string{"G7", "G8", "G9"}, ReceiptsIDs: []string{}, Balance: 1000.0},
 	}
 
 	for _, trader := range traders {

@@ -15,6 +15,7 @@ const (
 type Trader struct {
 	DocType              string     `json:"doc-type"`
 	Id                   string     `json:"id"`
+	Name                 string     `json:"name"`
 	TraderType           TraderType `json:"trader-type"`
 	VAT                  string     `json:"vat"`
 	ProductsAvailableIDs []string   `json:"products-available-ids"`

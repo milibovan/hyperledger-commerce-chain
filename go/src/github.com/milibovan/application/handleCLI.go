@@ -25,12 +25,13 @@ func handleCLI() {
 		channel := createTraderCmd.String("channel", "channel-a", "Channel name (channel-a, channel-b)")
 		// Command-specific flags
 		traderType := createTraderCmd.String("type", "SUPERMARKET", "Trader type")
+		name := createTraderCmd.String("name", "Some name", "Trader name")
 		vat := createTraderCmd.String("vat", "123456789", "VAT number")
 		balance := createTraderCmd.String("balance", "10000", "Initial balance")
 
 		createTraderCmd.Parse(os.Args[2:])
 		executeCLI(*org, *user, *channel, func() {
-			handleCLICreateTrader(*channel, *traderType, *vat, *balance)
+			handleCLICreateTrader(*channel, *name, *traderType, *vat, *balance)
 		})
 
 	case "create-user":
@@ -268,8 +269,8 @@ func printCLIHelp() {
 	printInfo("  commerce-app <command> --help")
 }
 
-func handleCLICreateTrader(channelName, traderType, vat, balance string) {
-	blockNumber, ID := client.CreateTrader(activeGW, channelName, traderType, vat, balance)
+func handleCLICreateTrader(channelName, name, traderType, vat, balance string) {
+	blockNumber, ID := client.CreateTrader(activeGW, channelName, name, traderType, vat, balance)
 
 	printInfo(fmt.Sprintf("\nTrader with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber))
 }
