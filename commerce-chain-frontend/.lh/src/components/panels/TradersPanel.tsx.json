@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 38,
+            "activePatchIndex": 39,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -160,6 +160,10 @@
                 {
                     "date": 1761914131779,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -77,9 +77,9 @@\n         );\r\n       case \"update\":\r\n         return (\r\n           <UpdateTraderForm\r\n-            user={selectedTrader!}\r\n+            trader={selectedTrader!}\r\n             onSuccess={fetchTraders}\r\n             handleActionClick={handleActionClick}\r\n             handleBackToList={handleBackToList}\r\n           />\r\n"
+                },
+                {
+                    "date": 1761934196833,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -211,9 +211,9 @@\n                 className=\"flex items-center justify-between px-6 py-4 bg-gray-700 hover:bg-gray-600 text-white rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50 cursor-pointer\"\r\n               >\r\n                 <div className=\"flex-1\">\r\n                   <h4 className=\"font-bold text-lg text-pink-300\">\r\n-                    {trader.vat}\r\n+                    {trader.name}\r\n                   </h4>\r\n                   <p className=\"text-sm text-gray-400\">\r\n                     {trader[\"trader-type\"]}\r\n                   </p>\r\n"
                 }
             ],
             "date": 1761645486253,

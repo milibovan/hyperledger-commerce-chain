@@ -4,7 +4,7 @@ import type {
   UpdateProductFormsProps,
   Product,
 } from "../../utils/utils";
-import { channels, TraderType } from "../../utils/utils";
+import { channels, formatDate, TraderType } from "../../utils/utils";
 
 export default function UpdateProductForm({
   onSuccess,
@@ -15,7 +15,7 @@ export default function UpdateProductForm({
   const [formData, setFormData] = useState<Product>({
     id: product.id,
     name: product.name,
-    expiryDate: product["expiry-date"].toString(),
+    expiryDate: formatDate(product["expiry-date"].toString()),
     traderType: product["trader-type"],
     price: product.price.toString(),
     quantity: product.quantity.toString(),
@@ -61,10 +61,11 @@ export default function UpdateProductForm({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id: formData.id,
-            name: formData.name,
-            expiryDate: formData.expiryDate,
             "trader-type": formData.traderType,
+            "expiry-date": formData.expiryDate.replace("T", " "),
+            quantity: parseInt(formData.quantity),
             price: parseFloat(formData.price),
+            name: formData.name,
           }),
         }
       );

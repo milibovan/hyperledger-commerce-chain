@@ -212,7 +212,7 @@ export default function TradersPanel() {
               >
                 <div className="flex-1">
                   <h4 className="font-bold text-lg text-pink-300">
-                    {trader.vat}
+                    {trader.name}
                   </h4>
                   <p className="text-sm text-gray-400">
                     {trader["trader-type"]}

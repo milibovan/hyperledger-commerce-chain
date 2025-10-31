@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 30,
+            "activePatchIndex": 33,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -128,6 +128,18 @@
                 {
                     "date": 1761916828181,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n export interface Product {\r\n   id: string;\r\n   name: string;\r\n-  expiry-date: string;\r\n+  expiryDate: string;\r\n   price: string;\r\n   quantity: string;\r\n   traderType: string;\r\n   channel: string;\r\n"
+                },
+                {
+                    "date": 1761922061851,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -30,9 +30,9 @@\n   \"SUPERMARKET\",\r\n   \"CARDEALER\",\r\n   \"PHARMACY\",\r\n   \"GROCERY\",\r\n-  \"GAS_STATON\",\r\n+  \"GAS_STATION\",\r\n ];\r\n \r\n export const channels = [\"channel-a\", \"channel-b\"];\r\n \r\n"
+                },
+                {
+                    "date": 1761934589745,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -128,4 +128,23 @@\n export interface Deposit {\r\n   amount: string;\r\n   channel: string;\r\n }\r\n+\r\n+export function formatDate(date: string) {\r\n+  const dateTime = new Date(date);\r\n+  \r\n+  const month = String(dateTime.getMonth() + 1).padStart(2, '0');\r\n+  const day = String(dateTime.getDate()).padStart(2, '0');\r\n+  const year = dateTime.getFullYear();\r\n+  \r\n+  let hours = dateTime.getHours();\r\n+  const minutes = String(dateTime.getMinutes()).padStart(2, '0');\r\n+  const seconds = String(dateTime.getSeconds()).padStart(2, '0');\r\n+  \r\n+  const ampm = hours >= 12 ? 'PM' : 'AM';\r\n+  hours = hours % 12 || 12; \r\n+  const formattedHours = String(hours).padStart(2, '0');\r\n+  \r\n+  return `${month}/${day}/${year} ${formattedHours}:${minutes}:${seconds} ${ampm}`;\r\n+\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761934730724,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -130,21 +130,16 @@\n   channel: string;\r\n }\r\n \r\n export function formatDate(date: string) {\r\n-  const dateTime = new Date(date);\r\n+   const dateTime = new Date(date);\r\n   \r\n+  const year = dateTime.getFullYear();\r\n   const month = String(dateTime.getMonth() + 1).padStart(2, '0');\r\n   const day = String(dateTime.getDate()).padStart(2, '0');\r\n-  const year = dateTime.getFullYear();\r\n-  \r\n-  let hours = dateTime.getHours();\r\n+  const hours = String(dateTime.getHours()).padStart(2, '0');\r\n   const minutes = String(dateTime.getMinutes()).padStart(2, '0');\r\n   const seconds = String(dateTime.getSeconds()).padStart(2, '0');\r\n   \r\n-  const ampm = hours >= 12 ? 'PM' : 'AM';\r\n-  hours = hours % 12 || 12; \r\n-  const formattedHours = String(hours).padStart(2, '0');\r\n-  \r\n-  return `${month}/${day}/${year} ${formattedHours}:${minutes}:${seconds} ${ampm}`;\r\n+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;\r\n \r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1761645950564,
