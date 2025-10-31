@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 33,
+            "activePatchIndex": 34,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -140,6 +140,10 @@
                 {
                     "date": 1761934730724,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -130,21 +130,16 @@\n   channel: string;\r\n }\r\n \r\n export function formatDate(date: string) {\r\n-  const dateTime = new Date(date);\r\n+   const dateTime = new Date(date);\r\n   \r\n+  const year = dateTime.getFullYear();\r\n   const month = String(dateTime.getMonth() + 1).padStart(2, '0');\r\n   const day = String(dateTime.getDate()).padStart(2, '0');\r\n-  const year = dateTime.getFullYear();\r\n-  \r\n-  let hours = dateTime.getHours();\r\n+  const hours = String(dateTime.getHours()).padStart(2, '0');\r\n   const minutes = String(dateTime.getMinutes()).padStart(2, '0');\r\n   const seconds = String(dateTime.getSeconds()).padStart(2, '0');\r\n   \r\n-  const ampm = hours >= 12 ? 'PM' : 'AM';\r\n-  hours = hours % 12 || 12; \r\n-  const formattedHours = String(hours).padStart(2, '0');\r\n-  \r\n-  return `${month}/${day}/${year} ${formattedHours}:${minutes}:${seconds} ${ampm}`;\r\n+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;\r\n \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1761940331452,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -98,9 +98,9 @@\n export interface UpdateUserFormsProps {\r\n   onSuccess?: () => void;\r\n   user: UserData;\r\n   handleActionClick: (\r\n-    action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n+    action: \"create\" | \"deposit\" | \"update\" | null,\r\n     user: UserData\r\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n@@ -108,9 +108,9 @@\n export interface UpdateTraderFormsProps {\r\n   onSuccess?: () => void;\r\n   trader: TraderData;\r\n   handleActionClick: (\r\n-    action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n+    action: \"create\" | \"deposit\" | \"update\" | null,\r\n     trader: TraderData\r\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n@@ -118,9 +118,9 @@\n export interface UpdateProductFormsProps {\r\n   onSuccess?: () => void;\r\n   product: ProductData;\r\n   handleActionClick: (\r\n-    action: \"create\" | \"increase_quantity\" | \"update\" | \"delete\" | null,\r\n+    action: \"create\" | \"increase_quantity\" | \"update\" | null,\r\n     product: ProductData\r\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n"
                 }
             ],
             "date": 1761645950564,

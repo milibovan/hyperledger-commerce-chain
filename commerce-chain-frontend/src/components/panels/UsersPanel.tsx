@@ -1,19 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import type { UsersData, UserData } from "../../utils/utils";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateUserForm from "../forms/UpdateUserForm";
+import type { ModalHandle } from "../forms/DeleteModal";
+import Modal from "../forms/DeleteModal";
 
 export default function UsersPanel() {
   const [data, setData] = useState<UsersData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [action, setAction] = useState<
-    "create" | "deposit" | "update" | "delete" | null
-  >(null);
+  const [action, setAction] = useState<"create" | "deposit" | "update" | null>(
+    null
+  );
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const [viewDetails, setViewDetails] = useState(false);
+  const modalRef = useRef<ModalHandle>(null);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -61,6 +64,37 @@ export default function UsersPanel() {
     setViewDetails(false);
   };
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/users/channel-a/${selectedUser?.id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        await fetchUsers(); // Refresh the list
+        modalRef.current?.close();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.Message || "Failed to delete user");
+      }
+    } catch (err) {
+      setError(
+        `Error deleting user: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
+  };
+
+  const handleDeleteClick = (user: UserData) => {
+    setSelectedUser(user);
+    modalRef.current?.open();
+  };
+
   const renderContent = () => {
     if (action === "create") {
       return <CreateUserForm onSuccess={fetchUsers} />;
@@ -85,12 +119,7 @@ export default function UsersPanel() {
             handleBackToList={handleBackToList}
           />
         );
-      case "delete":
-        return (
-          <div className="text-gray-300">
-            Delete confirmation for {selectedUser?.name} {selectedUser?.surname}
-          </div>
-        );
+
       default:
         // Show user details if viewDetails is true and no action is selected
         if (viewDetails && selectedUser) {
@@ -158,7 +187,7 @@ export default function UsersPanel() {
                 <Edit size={18} /> Update
               </button>
               <button
-                onClick={() => handleActionClick("delete", selectedUser!)}
+                onClick={() => handleDeleteClick(selectedUser!)}
                 className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
                 title="Delete"
               >
@@ -174,6 +203,29 @@ export default function UsersPanel() {
 
   return (
     <div className="space-y-6">
+      <Modal
+        ref={modalRef}
+        onConfirm={handleDelete}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        confirmClassName="px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold"
+        cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-purple-300 font-semibold"
+      >
+        <h2 className="text-2xl font-bold text-purple-400 mb-4">
+          Confirm Deletion
+        </h2>
+        <p className="text-gray-300">
+          Are you sure you want to delete{" "}
+          <span className="font-semibold text-purple-300">
+            {selectedUser?.name} {selectedUser?.surname}
+          </span>
+          ?
+        </p>
+        <p className="text-sm text-gray-400 mt-2">ID: {selectedUser?.id}</p>
+        <p className="text-sm text-red-400 mt-4">
+          This action cannot be undone.
+        </p>
+      </Modal>
       <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-3xl font-bold text-purple-400">Users</h3>
@@ -239,7 +291,7 @@ export default function UsersPanel() {
                       <Edit size={18} />
                     </button>
                     <button
-                      onClick={() => handleActionClick("delete", user)}
+                      onClick={() => handleDeleteClick(user)}
                       className="p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all"
                       title="Delete"
                     >

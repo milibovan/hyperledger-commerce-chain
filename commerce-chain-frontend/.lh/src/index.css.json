@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1760687358187,
@@ -12,6 +12,10 @@
                 {
                     "date": 1760687825057,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n @import \"tailwindcss\";\n \n-:root {\n+/* :root {\n   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;\n   line-height: 1.5;\n   font-weight: 400;\n \n@@ -66,5 +66,5 @@\n   }\n   button {\n     background-color: #f9f9f9;\n   }\n-}\n+} */\n"
+                },
+                {
+                    "date": 1761940781192,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,17 @@\n @import \"tailwindcss\";\n \n+dialog::backdrop {\n+  background-color: rgba(0, 0, 0, 0.8);\n+}\n+\n+dialog {\n+  position: fixed;\n+  top: 50%;\n+  left: 50%;\n+  transform: translate(-50%, -50%);\n+  margin: 0;\n+}\n /* :root {\n   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;\n   line-height: 1.5;\n   font-weight: 400;\n"
                 }
             ],
             "date": 1760687358187,
