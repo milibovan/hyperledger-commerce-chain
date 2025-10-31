@@ -3,8 +3,9 @@ import { Send, AlertCircle, CheckCircle } from "lucide-react";
 import type { CreateFormsProps, Trader } from "../../utils/utils";
 import { TraderType, channels } from "../../utils/utils";
 
-export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
+export default function CreateTraderForm({ onSuccess }: CreateFormsProps) {
   const [formData, setFormData] = useState<Trader>({
+    id: "",
     name: "",
     traderType: "",
     vat: "",
@@ -43,7 +44,7 @@ export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
     setLoading(true);
 
     try {
-      console.log(formData)
+      console.log(formData);
       const response = await fetch(
         `http://localhost:8080/trader/${formData.channel}`,
         {
@@ -63,6 +64,7 @@ export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
         const data = await response.json();
         setSuccess(`Trader created: ${data.Message}`);
         setFormData({
+          id: "",
           name: "",
           traderType: "",
           vat: "",
@@ -108,7 +110,7 @@ export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {
           </select>
         </div>
 
-        {/* First Name */}
+        {/* Trader Name */}
         <div>
           <label className="block text-pink-300 font-semibold mb-2">
             Trader Name *

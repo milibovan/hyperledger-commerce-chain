@@ -1,20 +1,24 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle, Plus } from "lucide-react";
-import type { UpdateUserFormsProps, User } from "../../utils/utils";
-import { channels } from "../../utils/utils";
+import type {
+  UpdateTraderFormsProps,
+  Trader,
+  TraderData,
+} from "../../utils/utils";
+import { channels, TraderType } from "../../utils/utils";
 
-export default function UpdateUserForm({
+export default function UpdateTraderForm({
   onSuccess,
-  user,
+  trader,
   handleActionClick,
-  handleBackToList
-}: UpdateUserFormsProps) {
-  const [formData, setFormData] = useState<User>({
-    id: user.id,
-    name: user.name,
-    surname: user.surname,
-    email: user.email,
-    balance: user.balance.toString(),
+  handleBackToList,
+}: UpdateTraderFormsProps) {
+  const [formData, setFormData] = useState<Trader>({
+    id: trader.id,
+    name: trader.name,
+    vat: trader.vat,
+    traderType: trader["trader-type"],
+    balance: trader.balance.toString(),
     channel: channels[0],
   });
 
@@ -38,9 +42,10 @@ export default function UpdateUserForm({
 
     if (
       !formData.name ||
-      !formData.surname ||
-      !formData.email ||
+      !formData.vat ||
+      !formData.traderType ||
       !formData.balance ||
+      !formData.traderType ||
       !formData.channel
     ) {
       setError("All fields are required");
@@ -51,15 +56,15 @@ export default function UpdateUserForm({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/users/${formData.channel}`,
+        `http://localhost:8080/traders/${formData.channel}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             id: formData.id,
             name: formData.name,
-            surname: formData.surname,
-            email: formData.email,
+            vat: formData.vat,
+            "trader-type": formData.traderType,
             balance: parseFloat(formData.balance),
           }),
         }
@@ -67,12 +72,12 @@ export default function UpdateUserForm({
 
       if (response.ok) {
         const data = await response.json();
-        setSuccess(`User updated: ${data.Message}`);
+        setSuccess(`Trader updated: ${data.Message}`);
         setFormData({
           id: "",
           name: "",
-          surname: "",
-          email: "",
+          vat: "",
+          traderType: "",
           balance: "",
           channel: "",
         });
@@ -84,7 +89,7 @@ export default function UpdateUserForm({
         }, 2000);
       } else {
         const errorData = await response.json();
-        setError(errorData.Message || "Failed to update user");
+        setError(errorData.Message || "Failed to update trader");
       }
     } catch (err) {
       setError(`Error connecting to server ${err}`);
@@ -95,25 +100,25 @@ export default function UpdateUserForm({
 
   return (
     <div className="w-full max-w-2xl">
-      <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50 space-y-6">
+      <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 space-y-6">
         <div>
-          <h3 className="text-3xl font-bold text-purple-400 mb-2">
-            Update User
+          <h3 className="text-3xl font-bold text-pink-400 mb-2">
+            Update Trader
           </h3>
           <p className="text-sm text-gray-400">
-            Editing user in{" "}
-            <span className="text-purple-300 font-semibold">
+            Editing trader in{" "}
+            <span className="text-pink-300 font-semibold">
               {formData.channel}
             </span>
           </p>
         </div>
 
         {/* Current balance display (not editable, but informative) */}
-        <div className="px-4 py-3 bg-purple-900/20 border border-purple-500/30 rounded">
+        <div className="px-4 py-3 bg-pink-900/20 border border-pink-500/30 rounded">
           <div className="flex justify-between items-center">
             <div>
-              <span className="text-sm text-purple-300">Current Balance:</span>
-              <p className="text-lg font-bold text-purple-300">
+              <span className="text-sm text-pink-300">Current Balance:</span>
+              <p className="text-lg font-bold text-pink-300">
                 ${formData.balance}
               </p>
             </div>
@@ -122,7 +127,7 @@ export default function UpdateUserForm({
               Use the deposit feature to modify balance
             </p>
             <button
-                onClick={() => handleActionClick("deposit", user)}
+              onClick={() => handleActionClick("deposit", trader as TraderData)}
               className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all flex items-center gap-2"
             >
               <Plus size={18} />
@@ -131,46 +136,53 @@ export default function UpdateUserForm({
           </div>
         </div>
 
-        {/* Only editable fields */}
+        {/* Trader Name */}
         <div>
-          <label className="block text-purple-300 font-semibold mb-2">
-            First Name *
+          <label className="block text-pink-300 font-semibold mb-2">
+            Trader Name *
           </label>
           <input
             type="text"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="Enter first name"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
+            placeholder="Enter trader name"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50"
           />
         </div>
 
+        {/* Trader Type */}
         <div>
-          <label className="block text-purple-300 font-semibold mb-2">
-            Last Name *
+          <label className="block text-pink-300 font-semibold mb-2">
+            Trader Type *
+          </label>
+          <select
+            name="traderType"
+            value={formData.traderType}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50"
+          >
+            <option value="">Select a trader type</option>
+            {TraderType.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* VAT */}
+        <div>
+          <label className="block text-pink-300 font-semibold mb-2">
+            VAT *
           </label>
           <input
             type="text"
-            name="surname"
-            value={formData.surname}
+            name="vat"
+            value={formData.vat}
             onChange={handleChange}
-            placeholder="Enter last name"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-purple-300 font-semibold mb-2">
-            Email *
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter email address"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
+            placeholder="Enter vat"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50"
           />
         </div>
 
@@ -191,10 +203,10 @@ export default function UpdateUserForm({
         <button
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-purple-300 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
+          className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-pink-300 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
         >
           <Send size={20} />
-          {loading ? "Updating..." : "Update User"}
+          {loading ? "Updating..." : "Update Trader"}
         </button>
       </div>
     </div>

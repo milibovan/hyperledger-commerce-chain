@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 7,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1761555960730,
@@ -36,6 +36,18 @@
                 {
                     "date": 1761834028217,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -60,9 +60,9 @@\n       );\r\n \r\n       if (response.ok) {\r\n         const data = await response.json();\r\n-        setSuccess(`User created: ${data.Message}`);\r\n+        setSuccess(`Trader created: ${data.Message}`);\r\n         setFormData({\r\n           name: \"\",\r\n           traderType: \"\",\r\n           vat: \"\",\r\n@@ -197,9 +197,9 @@\n           disabled={loading}\r\n           className=\"w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-pink-500 to-blue-500 hover:from-pink-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-pink-300 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide\"\r\n         >\r\n           <Send size={20} />\r\n-          {loading ? \"Creating...\" : \"Create User\"}\r\n+          {loading ? \"Creating...\" : \"Create Trader\"}\r\n         </button>\r\n       </div>\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1761914284134,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n import { TraderType, channels } from \"../../utils/utils\";\r\n \r\n export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {\r\n   const [formData, setFormData] = useState<Trader>({\r\n+    id: \"\",\r\n     name: \"\",\r\n     traderType: \"\",\r\n     vat: \"\",\r\n     balance: \"\",\r\n@@ -61,8 +62,9 @@\n \r\n       if (response.ok) {\r\n         const data = await response.json();\r\n         setSuccess(`Trader created: ${data.Message}`);\r\n+        id: \"\",\r\n         setFormData({\r\n           name: \"\",\r\n           traderType: \"\",\r\n           vat: \"\",\r\n"
+                },
+                {
+                    "date": 1761914294969,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n import type { CreateFormsProps, Trader } from \"../../utils/utils\";\r\n import { TraderType, channels } from \"../../utils/utils\";\r\n \r\n-export default function CreateTraderForm({onSuccess,} :CreateFormsProps) {\r\n+export default function CreateTraderForm({ onSuccess }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<Trader>({\r\n     id: \"\",\r\n     name: \"\",\r\n     traderType: \"\",\r\n@@ -43,9 +43,9 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n-      console.log(formData)\r\n+      console.log(formData);\r\n       const response = await fetch(\r\n         `http://localhost:8080/trader/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n@@ -62,10 +62,11 @@\n \r\n       if (response.ok) {\r\n         const data = await response.json();\r\n         setSuccess(`Trader created: ${data.Message}`);\r\n-        id: \"\",\r\n+\r\n         setFormData({\r\n+          id: \"\",\r\n           name: \"\",\r\n           traderType: \"\",\r\n           vat: \"\",\r\n           balance: \"\",\r\n"
+                },
+                {
+                    "date": 1761914327201,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,9 +62,8 @@\n \r\n       if (response.ok) {\r\n         const data = await response.json();\r\n         setSuccess(`Trader created: ${data.Message}`);\r\n-\r\n         setFormData({\r\n           id: \"\",\r\n           name: \"\",\r\n           traderType: \"\",\r\n@@ -110,9 +109,9 @@\n             ))}\r\n           </select>\r\n         </div>\r\n \r\n-        {/* First Name */}\r\n+        {/* Trader Name */}\r\n         <div>\r\n           <label className=\"block text-pink-300 font-semibold mb-2\">\r\n             Trader Name *\r\n           </label>\r\n"
                 }
             ],
             "date": 1761555960730,

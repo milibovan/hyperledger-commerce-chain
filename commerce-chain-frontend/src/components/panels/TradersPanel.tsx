@@ -3,6 +3,7 @@ import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import type { TraderData, TradersData } from "../../utils/utils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
+import UpdateTraderForm from "../forms/UpdateTraderForm";
 
 export default function TradersPanel() {
   const [data, setData] = useState<TradersData | null>(null);
@@ -76,9 +77,12 @@ export default function TradersPanel() {
         );
       case "update":
         return (
-          <div className="text-gray-300">
-            Update form for {selectedTrader?.id} {selectedTrader?.vat}
-          </div>
+          <UpdateTraderForm
+            trader={selectedTrader!}
+            onSuccess={fetchTraders}
+            handleActionClick={handleActionClick}
+            handleBackToList={handleBackToList}
+          />
         );
       case "delete":
         return (
@@ -143,21 +147,21 @@ export default function TradersPanel() {
           {action === null && (
             <div className="flex gap-2 my-4 justify-end">
               <button
-                  onClick={() => handleActionClick("deposit", selectedTrader!)}
+                onClick={() => handleActionClick("deposit", selectedTrader!)}
                 className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
                 title="Deposit Money"
               >
                 <Plus size={18} /> Deposit
               </button>
               <button
-                  onClick={() => handleActionClick("update", selectedTrader!)}
+                onClick={() => handleActionClick("update", selectedTrader!)}
                 className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold"
                 title="Update"
               >
                 <Edit size={18} /> Update
               </button>
               <button
-                  onClick={() => handleActionClick("delete", selectedTrader!)}
+                onClick={() => handleActionClick("delete", selectedTrader!)}
                 className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
                 title="Delete"
               >

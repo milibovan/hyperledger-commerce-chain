@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 43,
+            "activePatchIndex": 45,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -180,6 +180,14 @@
                 {
                     "date": 1761861098106,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -77,9 +77,9 @@\n         );\r\n \r\n       case \"update\":\r\n         return (\r\n-          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!} handleActionClick={handleActionClick}/>\r\n+          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!} handleActionClick={handleActionClick} handleBackToList={handleBackToList}/>\r\n         );\r\n       case \"delete\":\r\n         return (\r\n           <div className=\"text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1761913953073,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -77,9 +77,14 @@\n         );\r\n \r\n       case \"update\":\r\n         return (\r\n-          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!} handleActionClick={handleActionClick} handleBackToList={handleBackToList}/>\r\n+          <UpdateUserForm\r\n+            onSuccess={fetchUsers}\r\n+            entity={selectedUser!}\r\n+            handleActionClick={handleActionClick}\r\n+            handleBackToList={handleBackToList}\r\n+          />\r\n         );\r\n       case \"delete\":\r\n         return (\r\n           <div className=\"text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1761914030010,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -79,9 +79,9 @@\n       case \"update\":\r\n         return (\r\n           <UpdateUserForm\r\n             onSuccess={fetchUsers}\r\n-            entity={selectedUser!}\r\n+            user={selectedUser!}\r\n             handleActionClick={handleActionClick}\r\n             handleBackToList={handleBackToList}\r\n           />\r\n         );\r\n"
                 }
             ],
             "date": 1761645579091,

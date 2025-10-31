@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 27,
+            "activePatchIndex": 32,
             "patches": [
                 {
                     "date": 1761859675662,
@@ -116,6 +116,26 @@
                 {
                     "date": 1761913574600,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -80,9 +80,9 @@\n           onSuccess();\r\n         }\r\n         setTimeout(() => {\r\n           handleBackToList();\r\n-        }, 20000);\r\n+        }, 2000);\r\n       } else {\r\n         const errorData = await response.json();\r\n         setError(errorData.Message || \"Failed to update user\");\r\n       }\r\n"
+                },
+                {
+                    "date": 1761914020920,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,15 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle, Plus } from \"lucide-react\";\r\n-import type { UpdateFormsProps, User, UserData } from \"../../utils/utils\";\r\n+import type { UpdateUserFormsProps, User, UserData } from \"../../utils/utils\";\r\n import { channels } from \"../../utils/utils\";\r\n \r\n export default function UpdateUserForm({\r\n   onSuccess,\r\n   entity,\r\n   handleActionClick,\r\n   handleBackToList\r\n-}: UpdateFormsProps) {\r\n+}: UpdateUserFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n     id: `${(entity as UserData).id}`,\r\n     name: `${(entity as UserData).name}`,\r\n     surname: `${(entity as UserData).surname}`,\r\n"
+                },
+                {
+                    "date": 1761914029693,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n import { channels } from \"../../utils/utils\";\r\n \r\n export default function UpdateUserForm({\r\n   onSuccess,\r\n-  entity,\r\n+  user: entity,\r\n   handleActionClick,\r\n   handleBackToList\r\n }: UpdateUserFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n"
+                },
+                {
+                    "date": 1761915600165,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,18 +4,18 @@\n import { channels } from \"../../utils/utils\";\r\n \r\n export default function UpdateUserForm({\r\n   onSuccess,\r\n-  user: entity,\r\n+  user,\r\n   handleActionClick,\r\n   handleBackToList\r\n }: UpdateUserFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n-    id: `${(entity as UserData).id}`,\r\n-    name: `${(entity as UserData).name}`,\r\n-    surname: `${(entity as UserData).surname}`,\r\n-    email: `${(entity as UserData).email}`,\r\n-    balance: `${(entity as UserData).balance}`,\r\n+    id: user.id,\r\n+    name: user.name,\r\n+    surname: user.surname,\r\n+    email: user.email,\r\n+    balance: user.balance.toString(),\r\n     channel: channels[0],\r\n   });\r\n \r\n   const [loading, setLoading] = useState(false);\r\n"
+                },
+                {
+                    "date": 1761915815261,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -121,9 +121,9 @@\n             <p className=\"text-xs text-gray-400 mt-1\">\r\n               Use the deposit feature to modify balance\r\n             </p>\r\n             <button\r\n-                onClick={() => handleActionClick(\"deposit\", (entity as UserData))}\r\n+                onClick={() => handleActionClick(\"deposit\", user)}\r\n               className=\"px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all flex items-center gap-2\"\r\n             >\r\n               <Plus size={18} />\r\n               Deposit\r\n"
+                },
+                {
+                    "date": 1761915820996,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle, Plus } from \"lucide-react\";\r\n-import type { UpdateUserFormsProps, User, UserData } from \"../../utils/utils\";\r\n+import type { UpdateUserFormsProps, User } from \"../../utils/utils\";\r\n import { channels } from \"../../utils/utils\";\r\n \r\n export default function UpdateUserForm({\r\n   onSuccess,\r\n"
                 }
             ],
             "date": 1761859675662,

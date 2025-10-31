@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 20,
+            "activePatchIndex": 30,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -88,6 +88,46 @@
                 {
                     "date": 1761913463623,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,8 +7,9 @@\n   channel: string;\r\n }\r\n \r\n export interface User {\r\n+  id: string;\r\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n   balance: string;\r\n"
+                },
+                {
+                    "date": 1761913780094,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,6 @@\n export interface Product {\r\n+  id: string;\r\n   name: string;\r\n   expiryDate: string;\r\n   price: string;\r\n   quantity: string;\r\n@@ -16,8 +17,9 @@\n   channel: string;\r\n }\r\n \r\n export interface Trader {\r\n+  id: string;\r\n   name: string;\r\n   traderType: string;\r\n   vat: string;\r\n   balance: string;\r\n@@ -95,9 +97,12 @@\n \r\n export interface UpdateFormsProps {\r\n   onSuccess?: () => void;\r\n   entity: UserData | TraderData | ProductData;\r\n-  handleActionClick: (action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null, user: UserData) => void;\r\n+  handleActionClick: (\r\n+    action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n+    user: UserData\r\n+  ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n export interface Deposit {\r\n"
+                },
+                {
+                    "date": 1761913825324,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -99,9 +99,9 @@\n   onSuccess?: () => void;\r\n   entity: UserData | TraderData | ProductData;\r\n   handleActionClick: (\r\n     action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n-    user: UserData\r\n+    user: UserData | TraderData\r\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1761914020978,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -94,14 +94,14 @@\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n }\r\n \r\n-export interface UpdateFormsProps {\r\n+export interface UpdateUserFormsProps {\r\n   onSuccess?: () => void;\r\n   entity: UserData | TraderData | ProductData;\r\n   handleActionClick: (\r\n     action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n-    user: UserData | TraderData\r\n+    user: UserData\r\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1761914029721,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,9 +96,9 @@\n }\r\n \r\n export interface UpdateUserFormsProps {\r\n   onSuccess?: () => void;\r\n-  entity: UserData | TraderData | ProductData;\r\n+  user: UserData;\r\n   handleActionClick: (\r\n     action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n     user: UserData\r\n   ) => void;\r\n"
+                },
+                {
+                    "date": 1761914119990,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -104,8 +104,18 @@\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n+export interface UpdateUserFormsProps {\r\n+  onSuccess?: () => void;\r\n+  trader: TraderData;\r\n+  handleActionClick: (\r\n+    action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n+    trader: TraderData\r\n+  ) => void;\r\n+  handleBackToList: () => void;\r\n+}\r\n+\r\n export interface Deposit {\r\n   amount: string;\r\n   channel: string;\r\n }\r\n"
+                },
+                {
+                    "date": 1761914125653,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -104,9 +104,9 @@\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n-export interface UpdateUserFormsProps {\r\n+export interface UpdateTraderFormsProps {\r\n   onSuccess?: () => void;\r\n   trader: TraderData;\r\n   handleActionClick: (\r\n     action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n"
+                },
+                {
+                    "date": 1761916668186,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -114,8 +114,18 @@\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n+export interface UpdateProductFormsProps {\r\n+  onSuccess?: () => void;\r\n+  product: ProductData;\r\n+  handleActionClick: (\r\n+    action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n+    product: ProductData\r\n+  ) => void;\r\n+  handleBackToList: () => void;\r\n+}\r\n+\r\n export interface Deposit {\r\n   amount: string;\r\n   channel: string;\r\n }\r\n"
+                },
+                {
+                    "date": 1761916694686,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -118,9 +118,9 @@\n export interface UpdateProductFormsProps {\r\n   onSuccess?: () => void;\r\n   product: ProductData;\r\n   handleActionClick: (\r\n-    action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null,\r\n+    action: \"create\" | \"increase_quantity\" | \"update\" | \"delete\" | null,\r\n     product: ProductData\r\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n"
+                },
+                {
+                    "date": 1761916807490,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n export interface Product {\r\n   id: string;\r\n   name: string;\r\n-  expiryDate: string;\r\n+  expiry-date: string;\r\n   price: string;\r\n   quantity: string;\r\n   traderType: string;\r\n   channel: string;\r\n"
+                },
+                {
+                    "date": 1761916828181,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n export interface Product {\r\n   id: string;\r\n   name: string;\r\n-  expiry-date: string;\r\n+  expiryDate: string;\r\n   price: string;\r\n   quantity: string;\r\n   traderType: string;\r\n   channel: string;\r\n"
                 }
             ],
             "date": 1761645950564,

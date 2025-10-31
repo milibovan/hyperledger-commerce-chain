@@ -78,7 +78,12 @@ export default function UsersPanel() {
 
       case "update":
         return (
-          <UpdateUserForm onSuccess={fetchUsers} entity={selectedUser!} handleActionClick={handleActionClick} handleBackToList={handleBackToList}/>
+          <UpdateUserForm
+            onSuccess={fetchUsers}
+            user={selectedUser!}
+            handleActionClick={handleActionClick}
+            handleBackToList={handleBackToList}
+          />
         );
       case "delete":
         return (

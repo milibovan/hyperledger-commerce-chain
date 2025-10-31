@@ -1,4 +1,5 @@
 export interface Product {
+  id: string;
   name: string;
   expiryDate: string;
   price: string;
@@ -17,6 +18,7 @@ export interface User {
 }
 
 export interface Trader {
+  id: string;
   name: string;
   traderType: string;
   vat: string;
@@ -93,10 +95,33 @@ export interface CreateFormsProps {
   onSuccess?: () => void;
 }
 
-export interface UpdateFormsProps {
+export interface UpdateUserFormsProps {
   onSuccess?: () => void;
-  entity: UserData | TraderData | ProductData;
-  handleActionClick: (action: "create" | "deposit" | "update" | "delete" | null, user: UserData) => void;
+  user: UserData;
+  handleActionClick: (
+    action: "create" | "deposit" | "update" | "delete" | null,
+    user: UserData
+  ) => void;
+  handleBackToList: () => void;
+}
+
+export interface UpdateTraderFormsProps {
+  onSuccess?: () => void;
+  trader: TraderData;
+  handleActionClick: (
+    action: "create" | "deposit" | "update" | "delete" | null,
+    trader: TraderData
+  ) => void;
+  handleBackToList: () => void;
+}
+
+export interface UpdateProductFormsProps {
+  onSuccess?: () => void;
+  product: ProductData;
+  handleActionClick: (
+    action: "create" | "increase_quantity" | "update" | "delete" | null,
+    product: ProductData
+  ) => void;
   handleBackToList: () => void;
 }
 
