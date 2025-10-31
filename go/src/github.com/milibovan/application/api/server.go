@@ -241,9 +241,12 @@ func updateUser(c *gin.Context) {
 
 	fmt.Println(User)
 
-	blockNumber, ID := client.UpdateUser(activeGW, channel, User.Id, User.Name, User.Surname, User.Email)
-
-	c.JSON(200, gin.H{"Message": fmt.Sprintf("User updated %d %s", blockNumber, ID)})
+	blockNumber, err := client.UpdateUser(activeGW, channel, User.Id, User.Name, User.Surname, User.Email)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("User updated at block %d", blockNumber)})
 }
 func updateTrader(c *gin.Context) {
 	var Trader models.Trader
@@ -258,9 +261,13 @@ func updateTrader(c *gin.Context) {
 
 	fmt.Println(Trader)
 
-	blockNumber, ID := client.UpdateTrader(activeGW, channel, Trader.Id, Trader.Name, Trader.VAT, string(Trader.TraderType))
+	blockNumber, err := client.UpdateTrader(activeGW, channel, Trader.Id, Trader.Name, Trader.VAT, string(Trader.TraderType))
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 
-	c.JSON(200, gin.H{"Message": fmt.Sprintf("Trader updated %d %s", blockNumber, ID)})
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Trader updated %d", blockNumber)})
 }
 func updateProduct(c *gin.Context) {
 	var Product models.Product
@@ -274,9 +281,13 @@ func updateProduct(c *gin.Context) {
 	}
 	fmt.Println(Product)
 
-	blockNumber, ID := client.UpdateProduct(activeGW, channel, Product.Id, Product.Name, Product.ExpiryDate.Format("2006-01-02 15:04:05"), fmt.Sprint(Product.Price), string(Product.TraderType))
+	blockNumber, err := client.UpdateProduct(activeGW, channel, Product.Id, Product.Name, Product.ExpiryDate.Format("2006-01-02 15:04:05"), fmt.Sprint(Product.Price), string(Product.TraderType))
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 
-	c.JSON(200, gin.H{"Message": fmt.Sprintf("Product updated %d %s", blockNumber, ID)})
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Product updated %d", blockNumber)})
 }
 
 func deleteUser(c *gin.Context)    {}

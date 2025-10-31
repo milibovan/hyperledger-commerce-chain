@@ -23,13 +23,22 @@ func (s *SmartContract) UpdateUser(ctx contractapi.TransactionContextInterface, 
 		return err
 	}
 
+	changed := false
+
 	if user.Name != name {
 		user.Name = name
-	} else if user.Surname != surname {
+		changed = true
+	}
+	if user.Surname != surname {
 		user.Surname = surname
-	} else if user.Email != email {
+		changed = true
+	}
+	if user.Email != email {
 		user.Email = email
-	} else {
+		changed = true
+	}
+
+	if !changed {
 		return fmt.Errorf("No changes have been made")
 	}
 
@@ -58,17 +67,25 @@ func (s *SmartContract) UpdateTrader(ctx contractapi.TransactionContextInterface
 		return err
 	}
 
+	changed := false
+
 	if trader.Name != name {
 		trader.Name = name
+		changed = true
 	} else if trader.VAT != vat {
 		trader.VAT = vat
+		changed = true
 	} else if trader.TraderType != traderType {
 		trader.TraderType = traderType
-	} else {
+		changed = true
+	}
+
+	if !changed {
 		return fmt.Errorf("No changes have been made")
 	}
 
 	traderJSON, err := json.Marshal(trader)
+	fmt.Println(traderJSON)
 	if err != nil {
 		return err
 	}
@@ -105,15 +122,23 @@ func (s *SmartContract) UpdateProduct(ctx contractapi.TransactionContextInterfac
 		return fmt.Errorf("invalid expiry date format: %w", err)
 	}
 
+	changed := false
+
 	if product.Name != name {
 		product.Name = name
+		changed = true
 	} else if product.ExpiryDate != expiryDateTime {
 		product.ExpiryDate = expiryDateTime
+		changed = true
 	} else if product.Price != price {
 		product.Price = price
+		changed = true
 	} else if product.TraderType != traderType {
 		product.TraderType = traderType
-	} else {
+		changed = true
+	}
+
+	if !changed {
 		return fmt.Errorf("No changes have been made")
 	}
 
