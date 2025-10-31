@@ -10,6 +10,7 @@ export default function UpdateUserForm({
   handleBackToList
 }: UpdateFormsProps) {
   const [formData, setFormData] = useState<User>({
+    id: `${(entity as UserData).id}`,
     name: `${(entity as UserData).name}`,
     surname: `${(entity as UserData).surname}`,
     email: `${(entity as UserData).email}`,
@@ -55,6 +56,7 @@ export default function UpdateUserForm({
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            id: formData.id,
             name: formData.name,
             surname: formData.surname,
             email: formData.email,
@@ -67,6 +69,7 @@ export default function UpdateUserForm({
         const data = await response.json();
         setSuccess(`User updated: ${data.Message}`);
         setFormData({
+          id: "",
           name: "",
           surname: "",
           email: "",
@@ -78,7 +81,7 @@ export default function UpdateUserForm({
         }
         setTimeout(() => {
           handleBackToList();
-        }, 20000);
+        }, 2000);
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to update user");

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 24,
+            "activePatchIndex": 27,
             "patches": [
                 {
                     "date": 1761859675662,
@@ -104,6 +104,18 @@
                 {
                     "date": 1761861257131,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -75,11 +75,11 @@\n         });\r\n         if (onSuccess) {\r\n           onSuccess();\r\n         }\r\n-        // setTimeout(() => {\r\n-        //   handleBackToList();\r\n-        // }, 2000);\r\n+        setTimeout(() => {\r\n+          handleBackToList();\r\n+        }, 20000);\r\n       } else {\r\n         const errorData = await response.json();\r\n         setError(errorData.Message || \"Failed to update user\");\r\n       }\r\n"
+                },
+                {
+                    "date": 1761913476794,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,8 +9,9 @@\n   handleActionClick,\r\n   handleBackToList\r\n }: UpdateFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n+    id: `${(entity as UserData).id}`,\r\n     name: `${(entity as UserData).name}`,\r\n     surname: `${(entity as UserData).surname}`,\r\n     email: `${(entity as UserData).email}`,\r\n     balance: `${(entity as UserData).balance}`,\r\n@@ -66,8 +67,9 @@\n       if (response.ok) {\r\n         const data = await response.json();\r\n         setSuccess(`User updated: ${data.Message}`);\r\n         setFormData({\r\n+          id: \"\",\r\n           name: \"\",\r\n           surname: \"\",\r\n           email: \"\",\r\n           balance: \"\",\r\n"
+                },
+                {
+                    "date": 1761913562987,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,8 +55,9 @@\n         {\r\n           method: \"PUT\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n+            id: formData.id,\r\n             name: formData.name,\r\n             surname: formData.surname,\r\n             email: formData.email,\r\n             balance: parseFloat(formData.balance),\r\n"
+                },
+                {
+                    "date": 1761913574600,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -80,9 +80,9 @@\n           onSuccess();\r\n         }\r\n         setTimeout(() => {\r\n           handleBackToList();\r\n-        }, 20000);\r\n+        }, 2000);\r\n       } else {\r\n         const errorData = await response.json();\r\n         setError(errorData.Message || \"Failed to update user\");\r\n       }\r\n"
                 }
             ],
             "date": 1761859675662,

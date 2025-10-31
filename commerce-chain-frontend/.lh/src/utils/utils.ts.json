@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 19,
+            "activePatchIndex": 20,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -84,6 +84,10 @@
                 {
                     "date": 1761861087554,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -95,8 +95,9 @@\n export interface UpdateFormsProps {\r\n   onSuccess?: () => void;\r\n   entity: UserData | TraderData | ProductData;\r\n   handleActionClick: (action: \"create\" | \"deposit\" | \"update\" | \"delete\" | null, user: UserData) => void;\r\n+  handleBackToList: () => void;\r\n }\r\n \r\n export interface Deposit {\r\n   amount: string;\r\n"
+                },
+                {
+                    "date": 1761913463623,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,8 +7,9 @@\n   channel: string;\r\n }\r\n \r\n export interface User {\r\n+  id: string;\r\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n   balance: string;\r\n"
                 }
             ],
             "date": 1761645950564,
