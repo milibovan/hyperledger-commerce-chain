@@ -72,10 +72,12 @@ func (s *SmartContract) UpdateTrader(ctx contractapi.TransactionContextInterface
 	if trader.Name != name {
 		trader.Name = name
 		changed = true
-	} else if trader.VAT != vat {
+	}
+	if trader.VAT != vat {
 		trader.VAT = vat
 		changed = true
-	} else if trader.TraderType != traderType {
+	}
+	if trader.TraderType != traderType {
 		trader.TraderType = traderType
 		changed = true
 	}
@@ -127,13 +129,16 @@ func (s *SmartContract) UpdateProduct(ctx contractapi.TransactionContextInterfac
 	if product.Name != name {
 		product.Name = name
 		changed = true
-	} else if product.ExpiryDate != expiryDateTime {
+	}
+	if product.ExpiryDate != expiryDateTime {
 		product.ExpiryDate = expiryDateTime
 		changed = true
-	} else if product.Price != price {
+	}
+	if product.Price != price {
 		product.Price = price
 		changed = true
-	} else if product.TraderType != traderType {
+	}
+	if product.TraderType != traderType {
 		product.TraderType = traderType
 		changed = true
 	}

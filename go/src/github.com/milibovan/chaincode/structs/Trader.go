@@ -9,7 +9,7 @@ const (
 	CARDEALER   TraderType = "CARDEALER"
 	PHARMACY    TraderType = "PHARMACY"
 	GROCERY     TraderType = "GROCERY"
-	GAS_STATON  TraderType = "GAS_STATON"
+	GAS_STATION TraderType = "GAS_STATION"
 )
 
 type Trader struct {
@@ -28,7 +28,7 @@ func GetTraderTypeFromString(input string) (TraderType, error) {
 	traderType := TraderType(input)
 
 	switch traderType {
-	case SUPERMARKET, CARDEALER, PHARMACY, GROCERY, GAS_STATON:
+	case SUPERMARKET, CARDEALER, PHARMACY, GROCERY, GAS_STATION:
 		return traderType, nil
 	default:
 		return "", fmt.Errorf("invalid or unsupported trader type: %s", input)

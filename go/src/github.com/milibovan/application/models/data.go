@@ -34,7 +34,7 @@ const (
 	CARDEALER   TraderType = "CARDEALER"
 	PHARMACY    TraderType = "PHARMACY"
 	GROCERY     TraderType = "GROCERY"
-	GAS_STATON  TraderType = "GAS_STATON"
+	GAS_STATION TraderType = "GAS_STATION"
 )
 
 type Trader struct {
