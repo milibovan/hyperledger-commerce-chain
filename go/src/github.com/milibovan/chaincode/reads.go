@@ -58,3 +58,19 @@ func (s *SmartContract) ReadProduct(ctx contractapi.TransactionContextInterface,
 	}
 	return product, nil
 }
+func (s *SmartContract) ReadReceipt(ctx contractapi.TransactionContextInterface, id string) (*structs.Receipt, error) {
+	receiptJSON, err := ctx.GetStub().GetState(id)
+	if err != nil {
+		return nil, err
+	}
+	if receiptJSON == nil {
+		return nil, fmt.Errorf("receipt %s does not exists", id)
+	}
+
+	var receipt *structs.Receipt
+	err = json.Unmarshal(receiptJSON, &receipt)
+	if err != nil {
+		return nil, err
+	}
+	return receipt, nil
+}

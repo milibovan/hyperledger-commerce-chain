@@ -219,6 +219,7 @@ func (t *SmartContract) QueryProductsByPriceRange(ctx contractapi.TransactionCon
 func (t *SmartContract) GetAllUsers(ctx contractapi.TransactionContextInterface) ([]*structs.User, error) {
 	selector := map[string]interface{}{
 		"doc-type": "user",
+		"deleted":  map[string]interface{}{"$ne": true},
 	}
 
 	queryMap := map[string]interface{}{
@@ -237,6 +238,7 @@ func (t *SmartContract) GetAllUsers(ctx contractapi.TransactionContextInterface)
 func (t *SmartContract) GetAllTraders(ctx contractapi.TransactionContextInterface) ([]*structs.Trader, error) {
 	selector := map[string]interface{}{
 		"doc-type": "trader",
+		"deleted":  map[string]interface{}{"$ne": true},
 	}
 
 	queryMap := map[string]interface{}{
@@ -255,6 +257,7 @@ func (t *SmartContract) GetAllTraders(ctx contractapi.TransactionContextInterfac
 func (t *SmartContract) GetAllReceipts(ctx contractapi.TransactionContextInterface) ([]*structs.Receipt, error) {
 	selector := map[string]interface{}{
 		"doc-type": "receipt",
+		"deleted":  map[string]interface{}{"$ne": true},
 	}
 
 	queryMap := map[string]interface{}{
@@ -273,6 +276,7 @@ func (t *SmartContract) GetAllReceipts(ctx contractapi.TransactionContextInterfa
 func (t *SmartContract) GetAllProducts(ctx contractapi.TransactionContextInterface) ([]*structs.Product, error) {
 	selector := map[string]interface{}{
 		"doc-type": "product",
+		"deleted":  map[string]interface{}{"$ne": true},
 	}
 
 	queryMap := map[string]interface{}{

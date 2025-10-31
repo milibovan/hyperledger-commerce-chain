@@ -61,10 +61,10 @@ func CreateServer() {
 	router.PUT("/traders/:channel", updateTrader)
 	router.PUT("/products/:channel", updateProduct)
 
-	router.DELETE("/users/:channel", deleteUser)
-	router.DELETE("/traders/:channel", deleteTrader)
-	router.DELETE("/products/:channel", deleteProduct)
-	router.DELETE("/receipts/:channel", deleteReceipt)
+	router.DELETE("/users/:channel/:id", deleteUser)
+	router.DELETE("/traders/:channel/:id", deleteTrader)
+	router.DELETE("/products/:channel/:id", deleteProduct)
+	router.DELETE("/receipts/:channel/:id", deleteReceipt)
 
 	router.POST("/deposit-money/:channel", depositMoney)
 
@@ -290,7 +290,59 @@ func updateProduct(c *gin.Context) {
 	c.JSON(200, gin.H{"Message": fmt.Sprintf("Product updated %d", blockNumber)})
 }
 
-func deleteUser(c *gin.Context)    {}
-func deleteTrader(c *gin.Context)  {}
-func deleteProduct(c *gin.Context) {}
-func deleteReceipt(c *gin.Context) {}
+func deleteUser(c *gin.Context) {
+	var channel, id string
+
+	channel = c.Param("channel")
+	id = c.Param("id")
+
+	blockNumber, err := client.DeleteUser(activeGW, channel, id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("User deleted %d", blockNumber)})
+}
+func deleteTrader(c *gin.Context) {
+	var channel, id string
+
+	channel = c.Param("channel")
+	id = c.Param("id")
+
+	blockNumber, err := client.DeleteTrader(activeGW, channel, id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Trader deleted %d", blockNumber)})
+}
+func deleteProduct(c *gin.Context) {
+	var channel, id string
+
+	channel = c.Param("channel")
+	id = c.Param("id")
+
+	blockNumber, err := client.DeleteProduct(activeGW, channel, id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Product deleted %d", blockNumber)})
+}
+func deleteReceipt(c *gin.Context) {
+	var channel, id string
+
+	channel = c.Param("channel")
+	id = c.Param("id")
+
+	blockNumber, err := client.DeleteReceipt(activeGW, channel, id)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Receipt deleted %d", blockNumber)})
+}
