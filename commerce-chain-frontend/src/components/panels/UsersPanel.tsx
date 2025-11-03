@@ -75,8 +75,12 @@ export default function UsersPanel() {
       );
 
       if (response.ok) {
-        await fetchUsers(); // Refresh the list
-        modalRef.current?.close();
+        const responseData = await response.json();
+        const parsedData = {
+          ...responseData,
+          Users: JSON.parse(responseData?.Users),
+        };
+        setData(parsedData);
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to delete user");
@@ -158,6 +162,29 @@ export default function UsersPanel() {
   if (action || viewDetails) {
     return (
       <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
+        <Modal
+          ref={modalRef}
+          onConfirm={handleDelete}
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          confirmClassName="px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold"
+          cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-purple-300 font-semibold"
+        >
+          <h2 className="text-2xl font-bold text-purple-400 mb-4">
+            Confirm Deletion
+          </h2>
+          <p className="text-gray-300">
+            Are you sure you want to delete{" "}
+            <span className="font-semibold text-purple-300">
+              {selectedUser?.name} {selectedUser?.surname}
+            </span>
+            ?
+          </p>
+          <p className="text-sm text-gray-400 mt-2">ID: {selectedUser?.id}</p>
+          <p className="text-sm text-red-400 mt-4">
+            This action cannot be undone.
+          </p>
+        </Modal>
         <div className="flex justify-between items-center mb-6">
           <div
             className="flex gap-2 my-4 justify-start"

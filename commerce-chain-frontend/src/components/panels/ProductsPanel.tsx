@@ -1,20 +1,23 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import CreateProductForm from "../forms/CreateProductForm";
 import type { ProductData, ProductsData } from "../../utils/utils";
 import UpdateProductForm from "../forms/UpdateProductForm";
+import Modal from "../forms/DeleteModal";
+import type { ModalHandle } from "../forms/DeleteModal";
 
 export default function ProductsPanel() {
   const [data, setData] = useState<ProductsData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [action, setAction] = useState<
-    "create" | "increase_quantity" | "update" | "delete" | null
+    "create" | "increase_quantity" | "update" | null
   >(null);
   const [selectedProduct, setSelectedProduct] = useState<ProductData | null>(
     null
   );
   const [viewDetails, setViewDetails] = useState(false);
+  const modalRef = useRef<ModalHandle>(null);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -65,6 +68,41 @@ export default function ProductsPanel() {
     setViewDetails(false);
   };
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/products/channel-a/${selectedProduct?.id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        const responseData = await response.json();
+        const parsedData = {
+          ...responseData,
+          Products: JSON.parse(responseData?.Products),
+        };
+        setData(parsedData);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.Message || "Failed to delete product");
+      }
+    } catch (err) {
+      setError(
+        `Error deleting product: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
+  };
+
+  const handleDeleteClick = (product: ProductData) => {
+    setSelectedProduct(product);
+    modalRef.current?.open();
+  };
+
   const renderContent = () => {
     if (action === "create") {
       return <CreateProductForm onSuccess={fetchProducts} />;
@@ -86,13 +124,6 @@ export default function ProductsPanel() {
             handleActionClick={handleActionClick}
             handleBackToList={handleBackToList}
           />
-        );
-      case "delete":
-        return (
-          <div className="text-gray-300">
-            Delete confirmation for {selectedProduct?.name}{" "}
-            {selectedProduct?.id}
-          </div>
         );
       default:
         if (viewDetails && selectedProduct) {
@@ -159,6 +190,32 @@ export default function ProductsPanel() {
   if (action || viewDetails) {
     return (
       <div className="bg-gray-800 border-2 justify-between border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50">
+        <Modal
+          ref={modalRef}
+          onConfirm={handleDelete}
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          confirmClassName="px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold"
+          cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-cyan-300 font-semibold"
+          dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50 max-w-2xl w-full"
+        >
+          <h2 className="text-2xl font-bold text-cyan-400 mb-4">
+            Confirm Deletion
+          </h2>
+          <p className="text-gray-300">
+            Are you sure you want to delete{" "}
+            <span className="font-semibold text-cyan-300">
+              {selectedProduct?.name} {selectedProduct?.["trader-type"]}
+            </span>
+            ?
+          </p>
+          <p className="text-sm text-gray-400 mt-2">
+            ID: {selectedProduct?.id}
+          </p>
+          <p className="text-sm text-red-400 mt-4">
+            This action cannot be undone.
+          </p>
+        </Modal>
         <div className="flex justify-between items-center mb-6">
           <div
             className="flex gap-2 my-4 justify-start"
@@ -189,7 +246,7 @@ export default function ProductsPanel() {
                 <Edit size={18} /> Update
               </button>
               <button
-                //   onClick={() => handleActionClick("delete", product)}
+                onClick={() => handleDeleteClick(selectedProduct!)}
                 className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
                 title="Delete"
               >
@@ -205,6 +262,30 @@ export default function ProductsPanel() {
 
   return (
     <div className="space-y-6">
+      <Modal
+        ref={modalRef}
+        onConfirm={handleDelete}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        confirmClassName="px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold"
+        cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-cyan-300 font-semibold"
+        dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50 max-w-2xl w-full"
+      >
+        <h2 className="text-2xl font-bold text-cyan-400 mb-4">
+          Confirm Deletion
+        </h2>
+        <p className="text-gray-300">
+          Are you sure you want to delete{" "}
+          <span className="font-semibold text-cyan-300">
+            {selectedProduct?.name} {selectedProduct?.["trader-type"]}
+          </span>
+          ?
+        </p>
+        <p className="text-sm text-gray-400 mt-2">ID: {selectedProduct?.id}</p>
+        <p className="text-sm text-red-400 mt-4">
+          This action cannot be undone.
+        </p>
+      </Modal>
       <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-3xl font-bold text-cyan-400">Products</h3>
@@ -274,7 +355,7 @@ export default function ProductsPanel() {
                       <Edit size={18} />
                     </button>
                     <button
-                      onClick={() => handleActionClick("delete", product)}
+                      onClick={() => handleDeleteClick(product)}
                       className="p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all"
                       title="Delete"
                     >

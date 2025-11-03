@@ -1,19 +1,22 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import type { TraderData, TradersData } from "../../utils/utils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateTraderForm from "../forms/UpdateTraderForm";
+import Modal from "../forms/DeleteModal";
+import type { ModalHandle } from "../forms/DeleteModal";
 
 export default function TradersPanel() {
   const [data, setData] = useState<TradersData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [action, setAction] = useState<
-    "create" | "deposit" | "update" | "delete" | null
-  >(null);
+  const [action, setAction] = useState<"create" | "deposit" | "update" | null>(
+    null
+  );
   const [selectedTrader, setSelectedTrader] = useState<TraderData | null>(null);
   const [viewDetails, setViewDetails] = useState(false);
+  const modalRef = useRef<ModalHandle>(null);
 
   const fetchTraders = async () => {
     setLoading(true);
@@ -61,6 +64,41 @@ export default function TradersPanel() {
     setViewDetails(false);
   };
 
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/traders/channel-a/${selectedTrader?.id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      if (response.ok) {
+        const responseData = await response.json();
+        const parsedData = {
+          ...responseData,
+          Traders: JSON.parse(responseData?.Traders),
+        };
+        setData(parsedData);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.Message || "Failed to delete trader");
+      }
+    } catch (err) {
+      setError(
+        `Error deleting trader: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    }
+  };
+
+  const handleDeleteClick = (trader: TraderData) => {
+    setSelectedTrader(trader);
+    modalRef.current?.open();
+  };
+
   const renderContent = () => {
     if (action === "create") {
       return <CreateTraderForm onSuccess={fetchTraders} />;
@@ -83,12 +121,6 @@ export default function TradersPanel() {
             handleActionClick={handleActionClick}
             handleBackToList={handleBackToList}
           />
-        );
-      case "delete":
-        return (
-          <div className="text-gray-300">
-            Delete confirmation for {selectedTrader?.id} {selectedTrader?.vat}
-          </div>
         );
       default:
         if (viewDetails && selectedTrader) {
@@ -132,6 +164,30 @@ export default function TradersPanel() {
   if (action || viewDetails) {
     return (
       <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50">
+        <Modal
+          ref={modalRef}
+          onConfirm={handleDelete}
+          confirmLabel="Delete"
+          cancelLabel="Cancel"
+          confirmClassName="px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold"
+          cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-pink-300 font-semibold"
+          dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-2xl w-full"
+        >
+          <h2 className="text-2xl font-bold text-pink-400 mb-4">
+            Confirm Deletion
+          </h2>
+          <p className="text-gray-300">
+            Are you sure you want to delete{" "}
+            <span className="font-semibold text-pink-300">
+              {selectedTrader?.name} {selectedTrader?.["trader-type"]}
+            </span>
+            ?
+          </p>
+          <p className="text-sm text-gray-400 mt-2">ID: {selectedTrader?.id}</p>
+          <p className="text-sm text-red-400 mt-4">
+            This action cannot be undone.
+          </p>
+        </Modal>
         <div className="flex justify-between items-center mb-6">
           <div
             className="flex gap-2 my-4 justify-start"
@@ -161,7 +217,7 @@ export default function TradersPanel() {
                 <Edit size={18} /> Update
               </button>
               <button
-                onClick={() => handleActionClick("delete", selectedTrader!)}
+                onClick={() => handleDeleteClick(selectedTrader!)}
                 className="flex items-center justify-center mb-4 px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold"
                 title="Delete"
               >
@@ -177,6 +233,30 @@ export default function TradersPanel() {
 
   return (
     <div className="space-y-6">
+      <Modal
+        ref={modalRef}
+        onConfirm={handleDelete}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        confirmClassName="px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold"
+        cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-pink-300 font-semibold"
+        dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-2xl w-full"
+      >
+        <h2 className="text-2xl font-bold text-pink-400 mb-4">
+          Confirm Deletion
+        </h2>
+        <p className="text-gray-300">
+          Are you sure you want to delete{" "}
+          <span className="font-semibold text-pink-300">
+            {selectedTrader?.name} {selectedTrader?.["trader-type"]}
+          </span>
+          ?
+        </p>
+        <p className="text-sm text-gray-400 mt-2">ID: {selectedTrader?.id}</p>
+        <p className="text-sm text-red-400 mt-4">
+          This action cannot be undone.
+        </p>
+      </Modal>
       <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-3xl font-bold text-pink-400">Traders</h3>
@@ -244,7 +324,7 @@ export default function TradersPanel() {
                       <Edit size={18} />
                     </button>
                     <button
-                      onClick={() => handleActionClick("delete", trader)}
+                      onClick={() => handleDeleteClick(trader)}
                       className="p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all"
                       title="Delete"
                     >
