@@ -30,9 +30,24 @@ export default function ProductsPanel() {
 
       if (response.ok) {
         const responseData = await response.json();
+        let parsedProducts = [];
+        if (responseData.Products) {
+          try {
+            parsedProducts = JSON.parse(responseData.Products);
+            if (!Array.isArray(parsedProducts)) {
+              parsedProducts = [];
+            }
+          } catch (parseError) {
+            console.warn(
+              `Failed to parse products, defaulting to empty array ${parseError}`
+            );
+            parsedProducts = [];
+          }
+        }
+
         const parsedData = {
           ...responseData,
-          Products: JSON.parse(responseData.Products),
+          Products: parsedProducts,
         };
         setData(parsedData);
       } else {
@@ -79,12 +94,9 @@ export default function ProductsPanel() {
       );
 
       if (response.ok) {
-        const responseData = await response.json();
-        const parsedData = {
-          ...responseData,
-          Products: JSON.parse(responseData?.Products),
-        };
-        setData(parsedData);
+        modalRef.current?.close();
+        setSelectedProduct(null);
+        await fetchProducts();
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to delete product");

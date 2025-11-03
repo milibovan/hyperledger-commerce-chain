@@ -29,9 +29,24 @@ export default function UsersPanel() {
 
       if (response.ok) {
         const responseData = await response.json();
+        let parsedUsers = [];
+        if (responseData.Users) {
+          try {
+            parsedUsers = JSON.parse(responseData.Users);
+            if (!Array.isArray(parsedUsers)) {
+              parsedUsers = [];
+            }
+          } catch (parseError) {
+            console.warn(
+              `Failed to parse users, defaulting to empty array ${parseError}`
+            );
+            parsedUsers = [];
+          }
+        }
+
         const parsedData = {
           ...responseData,
-          Users: JSON.parse(responseData.Users),
+          Users: parsedUsers,
         };
         setData(parsedData);
       } else {
@@ -75,12 +90,9 @@ export default function UsersPanel() {
       );
 
       if (response.ok) {
-        const responseData = await response.json();
-        const parsedData = {
-          ...responseData,
-          Users: JSON.parse(responseData?.Users),
-        };
-        setData(parsedData);
+        modalRef.current?.close();
+        setSelectedUser(null);
+        await fetchUsers();
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to delete user");

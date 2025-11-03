@@ -23,11 +23,26 @@ export default function ReceiptsPanel() {
   
         if (response.ok) {
           const responseData = await response.json();
-          const parsedData = {
-            ...responseData,
-            Receipts: JSON.parse(responseData.Receipts),
-          };
-          setData(parsedData);
+          let parsedReceipts = [];
+        if (responseData.Receipts) {
+          try {
+            parsedReceipts = JSON.parse(responseData.Receipts);
+            if (!Array.isArray(parsedReceipts)) {
+              parsedReceipts = [];
+            }
+          } catch (parseError) {
+            console.warn(
+              `Failed to parse receipts, defaulting to empty array ${parseError}`
+            );
+            parsedReceipts = [];
+          }
+        }
+
+        const parsedData = {
+          ...responseData,
+          Receipts: parsedReceipts,
+        };
+        setData(parsedData);
         } else {
           const errorData = await response.json();
           setError(errorData.Message || "Failed to fetch receipts");

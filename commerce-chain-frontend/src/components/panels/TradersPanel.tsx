@@ -29,9 +29,24 @@ export default function TradersPanel() {
 
       if (response.ok) {
         const responseData = await response.json();
+        let parsedTraders = [];
+        if (responseData.Traders) {
+          try {
+            parsedTraders = JSON.parse(responseData.Traders);
+            if (!Array.isArray(parsedTraders)) {
+              parsedTraders = [];
+            }
+          } catch (parseError) {
+            console.warn(
+              `Failed to parse traders, defaulting to empty array ${parseError}`
+            );
+            parsedTraders = [];
+          }
+        }
+
         const parsedData = {
           ...responseData,
-          Traders: JSON.parse(responseData.Traders),
+          Traders: parsedTraders,
         };
         setData(parsedData);
       } else {
@@ -75,12 +90,10 @@ export default function TradersPanel() {
       );
 
       if (response.ok) {
-        const responseData = await response.json();
-        const parsedData = {
-          ...responseData,
-          Traders: JSON.parse(responseData?.Traders),
-        };
-        setData(parsedData);
+        modalRef.current?.close();
+        setSelectedTrader(null);
+        await fetchTraders();
+        
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to delete trader");
