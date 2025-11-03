@@ -1,0 +1,22 @@
+{
+    "sourceFile": "tsconfig.json",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1762204687906,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1762204698030,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,6 @@\n   \"files\": [],\n   \"references\": [\n     { \"path\": \"./tsconfig.app.json\" },\n     { \"path\": \"./tsconfig.node.json\" }\n-  ],\n-  \"compilerOptions\": {\n-        // ... other options\n-        \"erasableSyntaxOnly\": false // Set to false or remove the line\n-      }\n+  ]\n }\n"
+                }
+            ],
+            "date": 1762204687906,
+            "name": "Commit-0",
+            "content": "{\n  \"files\": [],\n  \"references\": [\n    { \"path\": \"./tsconfig.app.json\" },\n    { \"path\": \"./tsconfig.node.json\" }\n  ],\n  \"compilerOptions\": {\n        // ... other options\n        \"erasableSyntaxOnly\": false // Set to false or remove the line\n      }\n}\n"
+        }
+    ]
+}

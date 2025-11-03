@@ -4,8 +4,8 @@ import type {
   UpdateTraderFormsProps,
   Trader,
   TraderData,
-} from "../../utils/utils";
-import { channels, TraderType } from "../../utils/utils";
+} from "../../utils/dataTypesUtils";
+import { channels, TraderType } from "../../utils/dataTypesUtils";
 
 export default function UpdateTraderForm({
   onSuccess,

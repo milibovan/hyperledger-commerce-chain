@@ -1,5 +1,5 @@
-import type { UserData, TraderData, Deposit } from "../../utils/utils";
-import { channels } from "../../utils/utils";
+import type { UserData, TraderData, Deposit } from "../../utils/dataTypesUtils";
+import { channels } from "../../utils/dataTypesUtils";
 import { useState, useMemo } from "react";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
 

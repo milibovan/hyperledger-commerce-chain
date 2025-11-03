@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle, Plus } from "lucide-react";
-import type { UpdateUserFormsProps, User } from "../../utils/utils";
-import { channels } from "../../utils/utils";
+import type { UpdateUserFormsProps, User } from "../../utils/dataTypesUtils";
+import { channels } from "../../utils/dataTypesUtils";
 
 export default function UpdateUserForm({
   onSuccess,

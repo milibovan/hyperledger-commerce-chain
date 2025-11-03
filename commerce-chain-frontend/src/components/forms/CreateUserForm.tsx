@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
-import type { CreateFormsProps, User} from "../../utils/utils";
-import { channels } from "../../utils/utils";
+import type { CreateFormsProps, User} from "../../utils/dataTypesUtils";
+import { channels } from "../../utils/dataTypesUtils";
 
 export default function CreateUserForm({ onSuccess }: CreateFormsProps) {
   const [formData, setFormData] = useState<User>({

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 10,
+            "activePatchIndex": 11,
             "patches": [
                 {
                     "date": 1761555960730,
@@ -48,6 +48,10 @@
                 {
                     "date": 1761914327201,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,9 +62,8 @@\n \r\n       if (response.ok) {\r\n         const data = await response.json();\r\n         setSuccess(`Trader created: ${data.Message}`);\r\n-\r\n         setFormData({\r\n           id: \"\",\r\n           name: \"\",\r\n           traderType: \"\",\r\n@@ -110,9 +109,9 @@\n             ))}\r\n           </select>\r\n         </div>\r\n \r\n-        {/* First Name */}\r\n+        {/* Trader Name */}\r\n         <div>\r\n           <label className=\"block text-pink-300 font-semibold mb-2\">\r\n             Trader Name *\r\n           </label>\r\n"
+                },
+                {
+                    "date": 1762204278949,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import type { CreateFormsProps, Trader } from \"../../utils/utils\";\r\n-import { TraderType, channels } from \"../../utils/utils\";\r\n+import type { CreateFormsProps, Trader } from \"../../utils/dataTypesUtils\";\r\n+import { TraderType, channels } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function CreateTraderForm({ onSuccess }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<Trader>({\r\n     id: \"\",\r\n"
                 }
             ],
             "date": 1761555960730,

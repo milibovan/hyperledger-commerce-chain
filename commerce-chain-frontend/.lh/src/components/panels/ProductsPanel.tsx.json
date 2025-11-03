@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 124,
+            "activePatchIndex": 125,
             "patches": [
                 {
                     "date": 1761645570981,
@@ -504,6 +504,10 @@
                 {
                     "date": 1762198562427,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -93,14 +93,11 @@\n         }\r\n       );\r\n \r\n       if (response.ok) {\r\n-        const responseData = await response.json();\r\n-        const parsedData = {\r\n-          ...responseData,\r\n-          Products: JSON.parse(responseData?.Products),\r\n-        };\r\n-        setData(parsedData);\r\n+        modalRef.current?.close();\r\n+        setSelectedProduct(null);\r\n+        await fetchProducts();\r\n       } else {\r\n         const errorData = await response.json();\r\n         setError(errorData.Message || \"Failed to delete product\");\r\n       }\r\n"
+                },
+                {
+                    "date": 1762204278493,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useState, useEffect, useRef } from \"react\";\r\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n import CreateProductForm from \"../forms/CreateProductForm\";\r\n-import type { ProductData, ProductsData } from \"../../utils/utils\";\r\n+import type { ProductData, ProductsData } from \"../../utils/dataTypesUtils\";\r\n import UpdateProductForm from \"../forms/UpdateProductForm\";\r\n import Modal from \"../forms/DeleteModal\";\r\n import type { ModalHandle } from \"../forms/DeleteModal\";\r\n \r\n"
                 }
             ],
             "date": 1761645570981,

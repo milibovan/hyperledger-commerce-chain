@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 13,
+            "activePatchIndex": 14,
             "patches": [
                 {
                     "date": 1761913706589,
@@ -60,6 +60,10 @@
                 {
                     "date": 1761915844341,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,9 +63,9 @@\n           body: JSON.stringify({\r\n             id: formData.id,\r\n             name: formData.name,\r\n             vat: formData.vat,\r\n-            traderType: formData.traderType,\r\n+            \"trader-type\": formData.traderType,\r\n             balance: parseFloat(formData.balance),\r\n           }),\r\n         }\r\n       );\r\n"
+                },
+                {
+                    "date": 1762204279311,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,10 +3,10 @@\n import type {\r\n   UpdateTraderFormsProps,\r\n   Trader,\r\n   TraderData,\r\n-} from \"../../utils/utils\";\r\n-import { channels, TraderType } from \"../../utils/utils\";\r\n+} from \"../../utils/dataTypesUtils\";\r\n+import { channels, TraderType } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function UpdateTraderForm({\r\n   onSuccess,\r\n   trader,\r\n"
                 }
             ],
             "date": 1761913706589,

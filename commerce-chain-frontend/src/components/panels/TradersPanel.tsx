@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2, Package } from "lucide-react";
-import type { TraderData, TradersData, ProductData } from "../../utils/utils";
+import type { TraderData, TradersData, ProductData } from "../../utils/dataTypesUtils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateTraderForm from "../forms/UpdateTraderForm";
 import Modal from "../forms/DeleteModal";
 import type { ModalHandle } from "../forms/DeleteModal";
+import { host, httpMethod } from "../../utils/utils";
+import { addButtonStyle, addButtonStyleSm, traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 
 export default function TradersPanel() {
   const [data, setData] = useState<TradersData | null>(null);
@@ -24,8 +26,8 @@ export default function TradersPanel() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`http://localhost:8080/traders/channel-a`, {
-        method: "GET",
+      const response = await fetch(`${host}/traders/channel-a`, {
+        method: httpMethod.GET,
         headers: { "Content-Type": "application/json" },
       });
 
@@ -82,9 +84,9 @@ export default function TradersPanel() {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/products/channel-a/by-ids`,
+        `${host}/products/channel-a/by-ids`,
         {
-          method: "POST",
+          method: httpMethod.POST,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             productIds: trader["products-available-ids"],
@@ -159,9 +161,9 @@ export default function TradersPanel() {
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/traders/channel-a/${selectedTrader?.id}`,
+        `${host}/traders/channel-a/${selectedTrader?.id}`,
         {
-          method: "DELETE",
+          method: httpMethod.DELETE,
           headers: { "Content-Type": "application/json" },
         }
       );
@@ -226,23 +228,23 @@ export default function TradersPanel() {
               {/* Basic Info */}
               <div className="grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400">
                 <div>
-                  <span className="font-semibold text-pink-300">ID:</span>{" "}
+                  <span className={traderFontSemibold}>ID:</span>{" "}
                   {selectedTrader.id}
                 </div>
                 <div>
-                  <span className="font-semibold text-pink-300">VAT:</span>{" "}
+                  <span className={traderFontSemibold}>VAT:</span>{" "}
                   {selectedTrader.vat}
                 </div>
                 <div>
-                  <span className="font-semibold text-pink-300">Name:</span>{" "}
+                  <span className={traderFontSemibold}>Name:</span>{" "}
                   {selectedTrader.name}
                 </div>
                 <div>
-                  <span className="font-semibold text-pink-300">Balance:</span>{" "}
+                  <span className={traderFontSemibold}>Balance:</span>{" "}
                   ${selectedTrader.balance.toFixed(2)}
                 </div>
                 <div>
-                  <span className="font-semibold text-pink-300">Type:</span>{" "}
+                  <span className={traderFontSemibold}>Type:</span>{" "}
                   {selectedTrader["trader-type"].toUpperCase()}
                 </div>
               </div>
@@ -257,7 +259,7 @@ export default function TradersPanel() {
                   </h4>
                   <button
                     // onClick={() => handleActionClick("deposit", selectedTrader!)}
-                    className="flex items-center px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
+                    className={addButtonStyle}
                     title="Add products"
                   >
                     <Plus size={18} /> Add products
@@ -276,7 +278,7 @@ export default function TradersPanel() {
                         className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400"
                       >
                         <div className="flex-1">
-                          <h5 className="font-semibold text-pink-300">
+                          <h5 className={traderFontSemibold}>
                             {product.name}
                           </h5>
                           <p className="text-xs text-gray-400">
@@ -284,7 +286,7 @@ export default function TradersPanel() {
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-pink-300">
+                          <p className={traderFontBold}>
                             ${product.price.toFixed(2)}
                           </p>
                           <p className="text-xs text-gray-400">
@@ -348,7 +350,7 @@ export default function TradersPanel() {
           </h2>
           <p className="text-gray-300">
             Are you sure you want to delete{" "}
-            <span className="font-semibold text-pink-300">
+            <span className={traderFontSemibold}>
               {selectedTrader?.name} {selectedTrader?.["trader-type"]}
             </span>
             ?
@@ -374,7 +376,7 @@ export default function TradersPanel() {
             <div className="flex gap-2 my-4 justify-end">
               <button
                 onClick={() => handleActionClick("deposit", selectedTrader!)}
-                className="flex items-center mb-4 px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
+                className={addButtonStyle + " mb-4"}
                 title="Deposit Money"
               >
                 <Plus size={18} /> Deposit
@@ -417,7 +419,7 @@ export default function TradersPanel() {
         </h2>
         <p className="text-gray-300">
           Are you sure you want to delete{" "}
-          <span className="font-semibold text-pink-300">
+          <span className={traderFontSemibold}>
             {selectedTrader?.name} {selectedTrader?.["trader-type"]}
           </span>
           ?
@@ -471,7 +473,7 @@ export default function TradersPanel() {
                 <div className="flex items-center gap-6">
                   <div className="text-right">
                     <p className="text-sm text-gray-400">Balance</p>
-                    <p className="font-bold text-pink-300">
+                    <p className={traderFontBold}>
                       ${trader.balance.toFixed(2)}
                     </p>
                   </div>
@@ -481,7 +483,7 @@ export default function TradersPanel() {
                   >
                     <button
                       onClick={() => handleActionClick("deposit", trader)}
-                      className="p-2 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all"
+                      className={addButtonStyleSm}
                       title="Deposit Money"
                     >
                       <Plus size={18} />

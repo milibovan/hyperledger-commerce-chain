@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 57,
+            "activePatchIndex": 58,
             "patches": [
                 {
                     "date": 1761764853834,
@@ -236,6 +236,10 @@
                 {
                     "date": 1761834133838,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -28,9 +28,9 @@\n     const isTrader = user[\"doc-type\"] === \"trader\";\r\n     return {\r\n       primary: isTrader ? \"pink\" : \"purple\",\r\n       displayName: isTrader \r\n-        ? `${(user as TraderData).vat}` \r\n+        ? `${(user as TraderData).name}` \r\n         : `${(user as UserData).name} ${(user as UserData).surname}`,\r\n       entityType: isTrader ? \"trader\" : \"user\",\r\n       colors: {\r\n         text: isTrader ? \"text-pink-400\" : \"text-purple-400\",\r\n"
+                },
+                {
+                    "date": 1762204279246,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n-import type { UserData, TraderData, Deposit } from \"../../utils/utils\";\r\n-import { channels } from \"../../utils/utils\";\r\n+import type { UserData, TraderData, Deposit } from \"../../utils/dataTypesUtils\";\r\n+import { channels } from \"../../utils/dataTypesUtils\";\r\n import { useState, useMemo } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n \r\n interface DepositMoneyProps {\r\n"
                 }
             ],
             "date": 1761764853834,

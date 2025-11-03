@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import type { ReceiptsData, ReceiptData } from "../../utils/utils";
+import type { ReceiptsData, ReceiptData } from "../../utils/dataTypesUtils";
 
 export default function ReceiptsPanel() {
   const [data, setData] = useState<ReceiptsData | null>(null);

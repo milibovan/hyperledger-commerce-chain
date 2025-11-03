@@ -1,6 +1,6 @@
 import { useState } from "react";
-import type { CreateFormsProps, Product } from "../../utils/utils";
-import { channels, TraderType } from "../../utils/utils";
+import type { CreateFormsProps, Product } from "../../utils/dataTypesUtils";
+import { channels, TraderType } from "../../utils/dataTypesUtils";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
 
 export default function CreateProductForm({ onSuccess }: CreateFormsProps) {

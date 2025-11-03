@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import type { UsersData, UserData } from "../../utils/utils";
+import type { UsersData, UserData } from "../../utils/dataTypesUtils";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
 import DepositMoneyForm from "../forms/DepositMoneyForm";

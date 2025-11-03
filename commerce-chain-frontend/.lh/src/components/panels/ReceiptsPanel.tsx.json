@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 22,
+            "activePatchIndex": 23,
             "patches": [
                 {
                     "date": 1761556014588,
@@ -96,6 +96,10 @@
                 {
                     "date": 1762198606460,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,9 +31,9 @@\n               parsedReceipts = [];\r\n             }\r\n           } catch (parseError) {\r\n             console.warn(\r\n-              `Failed to parse traders, defaulting to empty array ${parseError}`\r\n+              `Failed to parse receipts, defaulting to empty array ${parseError}`\r\n             );\r\n             parsedReceipts = [];\r\n           }\r\n         }\r\n"
+                },
+                {
+                    "date": 1762204278925,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { useState, useEffect } from \"react\";\r\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import type { ReceiptsData, ReceiptData } from \"../../utils/utils\";\r\n+import type { ReceiptsData, ReceiptData } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function ReceiptsPanel() {\r\n   const [data, setData] = useState<ReceiptsData | null>(null);\r\n     const [error, setError] = useState<string | null>(null);\r\n"
                 }
             ],
             "date": 1761556014588,

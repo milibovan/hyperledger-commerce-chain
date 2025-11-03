@@ -3,8 +3,8 @@ import { Send, AlertCircle, CheckCircle, Plus } from "lucide-react";
 import type {
   UpdateProductFormsProps,
   Product,
-} from "../../utils/utils";
-import { channels, formatDate, TraderType } from "../../utils/utils";
+} from "../../utils/dataTypesUtils";
+import { channels, formatDate, TraderType } from "../../utils/dataTypesUtils";
 
 export default function UpdateProductForm({
   onSuccess,

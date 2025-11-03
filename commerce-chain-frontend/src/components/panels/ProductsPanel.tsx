@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import CreateProductForm from "../forms/CreateProductForm";
-import type { ProductData, ProductsData } from "../../utils/utils";
+import type { ProductData, ProductsData } from "../../utils/dataTypesUtils";
 import UpdateProductForm from "../forms/UpdateProductForm";
 import Modal from "../forms/DeleteModal";
 import type { ModalHandle } from "../forms/DeleteModal";
