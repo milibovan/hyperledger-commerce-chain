@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
-import { Plus, Edit, Trash2 } from "lucide-react";
-import type { TraderData, TradersData } from "../../utils/utils";
+import { Plus, Edit, Trash2, Package } from "lucide-react";
+import type { TraderData, TradersData, ProductData } from "../../utils/utils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateTraderForm from "../forms/UpdateTraderForm";
 import Modal from "../forms/DeleteModal";
@@ -11,6 +11,8 @@ export default function TradersPanel() {
   const [data, setData] = useState<TradersData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [traderProducts, setTraderProducts] = useState<ProductData[]>([]);
   const [action, setAction] = useState<"create" | "deposit" | "update" | null>(
     null
   );
@@ -38,7 +40,8 @@ export default function TradersPanel() {
             }
           } catch (parseError) {
             console.warn(
-              `Failed to parse traders, defaulting to empty array ${parseError}`
+              `Failed to parse traders, defaulting to empty array`,
+              parseError
             );
             parsedTraders = [];
           }
@@ -64,19 +67,93 @@ export default function TradersPanel() {
     }
   };
 
+  const fetchTraderProducts = async (trader: TraderData) => {
+    // Don't fetch if no products
+    if (
+      !trader["products-available-ids"] ||
+      trader["products-available-ids"].length === 0
+    ) {
+      setTraderProducts([]);
+      return;
+    }
+
+    setProductsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `http://localhost:8080/products/channel-a/by-ids`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            productIds: trader["products-available-ids"],
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const responseData = await response.json();
+        let parsedProducts = [];
+
+        if (responseData.Products) {
+          try {
+            parsedProducts = JSON.parse(responseData.Products);
+            if (!Array.isArray(parsedProducts)) {
+              parsedProducts = [];
+            }
+          } catch (parseError) {
+            console.warn(
+              `Failed to parse products, defaulting to empty array`,
+              parseError
+            );
+            parsedProducts = [];
+          }
+        }
+
+        setTraderProducts(parsedProducts);
+      } else {
+        const errorData = await response.json();
+        setError(errorData.error || "Failed to fetch products");
+        setTraderProducts([]);
+      }
+    } catch (err) {
+      setError(
+        `Error fetching products: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+      setTraderProducts([]);
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
+  // Fetch traders on mount
   useEffect(() => {
     fetchTraders();
   }, []);
 
+  // Fetch products when trader is selected and details view is shown
+  useEffect(() => {
+    if (selectedTrader && viewDetails) {
+      fetchTraderProducts(selectedTrader);
+    } else {
+      setTraderProducts([]);
+    }
+  }, [selectedTrader, viewDetails]);
+
   const handleActionClick = (actionType: typeof action, trader: TraderData) => {
     setSelectedTrader(trader);
     setAction(actionType);
+    setViewDetails(false); // Close details when starting an action
   };
 
   const handleBackToList = () => {
     setAction(null);
     setSelectedTrader(null);
     setViewDetails(false);
+    setTraderProducts([]);
   };
 
   const handleDelete = async () => {
@@ -92,11 +169,13 @@ export default function TradersPanel() {
       if (response.ok) {
         modalRef.current?.close();
         setSelectedTrader(null);
+        setViewDetails(false);
+        setTraderProducts([]);
         await fetchTraders();
-        
       } else {
         const errorData = await response.json();
         setError(errorData.Message || "Failed to delete trader");
+        modalRef.current?.close();
       }
     } catch (err) {
       setError(
@@ -104,6 +183,7 @@ export default function TradersPanel() {
           err instanceof Error ? err.message : String(err)
         }`
       );
+      modalRef.current?.close();
     }
   };
 
@@ -138,19 +218,19 @@ export default function TradersPanel() {
       default:
         if (viewDetails && selectedTrader) {
           return (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <h3 className="text-2xl font-bold text-pink-400">
                 Trader Details
               </h3>
-              <div className="grid grid-cols-2 gap-4 text-gray-300">
+
+              {/* Basic Info */}
+              <div className="grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400">
                 <div>
                   <span className="font-semibold text-pink-300">ID:</span>{" "}
                   {selectedTrader.id}
                 </div>
                 <div>
-                  <span className="font-semibold text-pink-300">
-                    Trader vat:
-                  </span>{" "}
+                  <span className="font-semibold text-pink-300">VAT:</span>{" "}
                   {selectedTrader.vat}
                 </div>
                 <div>
@@ -162,11 +242,88 @@ export default function TradersPanel() {
                   ${selectedTrader.balance.toFixed(2)}
                 </div>
                 <div>
-                  <span className="font-semibold text-pink-300">
-                    Trader type:{" "}
-                  </span>
+                  <span className="font-semibold text-pink-300">Type:</span>{" "}
                   {selectedTrader["trader-type"].toUpperCase()}
                 </div>
+              </div>
+
+              {/* Products Section */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="text-xl font-bold text-pink-300 flex items-center gap-2">
+                    <Package size={20} />
+                    Products (
+                    {selectedTrader["products-available-ids"]?.length || 0})
+                  </h4>
+                  <button
+                    // onClick={() => handleActionClick("deposit", selectedTrader!)}
+                    className="flex items-center px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold"
+                    title="Add products"
+                  >
+                    <Plus size={18} /> Add products
+                  </button>
+                </div>
+
+                {productsLoading ? (
+                  <div className="text-center text-pink-300 py-4">
+                    Loading products...
+                  </div>
+                ) : traderProducts.length > 0 ? (
+                  <div className="space-y-2">
+                    {traderProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400"
+                      >
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-pink-300">
+                            {product.name}
+                          </h5>
+                          <p className="text-xs text-gray-400">
+                            ID: {product.id}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-pink-300">
+                            ${product.price.toFixed(2)}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {new Date(
+                              product["expiry-date"]
+                            ).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400">
+                    No products available
+                  </div>
+                )}
+              </div>
+
+              {/* Receipts Section */}
+              <div className="pt-4 border-t-2 border-pink-400">
+                <h4 className="text-xl font-bold text-pink-300 mb-2">
+                  Receipts ({selectedTrader["receipts-ids"]?.length || 0})
+                </h4>
+                {selectedTrader["receipts-ids"]?.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    {selectedTrader["receipts-ids"].map((receiptId) => (
+                      <div
+                        key={receiptId}
+                        className="px-3 py-2 bg-gray-700 rounded border border-pink-400 text-sm text-gray-300"
+                      >
+                        {receiptId}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400">
+                    No receipts
+                  </div>
+                )}
               </div>
             </div>
           );
