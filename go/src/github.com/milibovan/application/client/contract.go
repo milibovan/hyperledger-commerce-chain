@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"commerce-sdk/models"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -21,6 +22,20 @@ func formatJSON(data []byte) string {
 		panic(fmt.Errorf("failed to parse JSON: %w", err))
 	}
 	return result.String()
+}
+
+func unmarshalEntityArray[T any](resultBytes []byte) ([]*T, error) {
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		return []*T{}, nil
+	}
+
+	var entities []*T
+	err := json.Unmarshal(resultBytes, &entities)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal entities: %w", err)
+	}
+
+	return entities, nil
 }
 
 func CreateTrader(gw *fabricClient.Gateway, channel, name, traderType, vat, balance string) (uint64, string) {
@@ -619,4 +634,28 @@ func DeleteReceipt(gw *fabricClient.Gateway, channel, id string) (uint64, error)
 	fmt.Println("\n*** DeleteReceipt committed successfully")
 
 	return status.BlockNumber, nil
+}
+func GetProductsByIds(gw *fabricClient.Gateway, channel, productsIds string) ([]*models.Product, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetProductsByIds from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetProductsByIds", fabricClient.WithArguments(productsIds))
+	if err != nil {
+		return nil, fmt.Errorf("failed to evaluate transaction: %w", err)
+	}
+
+	products, err := unmarshalEntityArray[models.Product](resultBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(products) == 0 {
+		fmt.Println("*** No products found matching the criteria")
+	} else {
+		fmt.Printf("*** Found %d products\n", len(products))
+	}
+
+	return products, nil
 }

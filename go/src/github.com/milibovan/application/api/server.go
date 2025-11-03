@@ -3,6 +3,7 @@ package api
 import (
 	"commerce-sdk/client"
 	"commerce-sdk/models"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -67,6 +68,7 @@ func CreateServer() {
 	router.DELETE("/receipts/:channel/:id", deleteReceipt)
 
 	router.POST("/deposit-money/:channel", depositMoney)
+	router.GET("/traders-products/:channel", getTradersProducts)
 
 	router.Run("localhost:8080")
 }
@@ -210,24 +212,6 @@ func getProducts(c *gin.Context) {
 	c.JSON(200, gin.H{"Products": products})
 }
 
-func depositMoney(c *gin.Context) {
-	var channel string
-	var depositObject models.DepositObject
-	channel = c.Param("channel")
-
-	if err := c.BindJSON(&depositObject); err != nil {
-		c.JSON(400, gin.H{"Message": fmt.Sprintf("Cannot parse request. Error: %s", err.Error())})
-		return
-	}
-
-	blockNumber, err := client.DepositMoney(activeGW, channel, depositObject.UserId, fmt.Sprint(depositObject.Amount))
-	if err != nil {
-		c.JSON(500, gin.H{"Message": fmt.Sprintf("Cannot deposit money %s", err.Error())})
-	}
-
-	c.JSON(200, gin.H{"Message": fmt.Sprintf("Deposited money %d", blockNumber)})
-}
-
 func updateUser(c *gin.Context) {
 	var User models.User
 	var channel string
@@ -345,4 +329,58 @@ func deleteReceipt(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"Message": fmt.Sprintf("Receipt deleted %d", blockNumber)})
+}
+
+func depositMoney(c *gin.Context) {
+	var channel string
+	var depositObject models.DepositObject
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&depositObject); err != nil {
+		c.JSON(400, gin.H{"Message": fmt.Sprintf("Cannot parse request. Error: %s", err.Error())})
+		return
+	}
+
+	blockNumber, err := client.DepositMoney(activeGW, channel, depositObject.UserId, fmt.Sprint(depositObject.Amount))
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Cannot deposit money %s", err.Error())})
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Deposited money %d", blockNumber)})
+}
+
+func getTradersProducts(c *gin.Context) {
+	var request struct {
+		ProductIds []string `json:"product-ids"`
+	}
+	var channel string
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	idsJSON, err := json.Marshal(request.ProductIds)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to marshal IDs"})
+		return
+	}
+
+	products, err := client.GetProductsByIds(activeGW, channel, string(idsJSON))
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	productsJSON, err := json.Marshal(products)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to marshal products"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"Message":  "Products retrieved successfully",
+		"Products": string(productsJSON),
+	})
 }

@@ -292,6 +292,34 @@ func (t *SmartContract) GetAllProducts(ctx contractapi.TransactionContextInterfa
 	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
+func (t *SmartContract) GetProductsByIds(ctx contractapi.TransactionContextInterface, productIds string) ([]*structs.Product, error) {
+	var ids []string
+	err := json.Unmarshal([]byte(productIds), &ids)
+	if err != nil {
+		return nil, fmt.Errorf("invalid product IDs format: %w", err)
+	}
+
+	selector := map[string]interface{}{
+		"doc-type": "product",
+		"id": map[string]interface{}{
+			"$in": ids,
+		},
+		"deleted": map[string]interface{}{"$ne": true},
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getProductQueryResultForQueryString(ctx, queryString)
+}
+
 // getProductQueryResultForQueryString executes the passed in query string.
 // The result set is built and returned as a byte array containing the JSON results.
 func getProductQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.Product, error) {

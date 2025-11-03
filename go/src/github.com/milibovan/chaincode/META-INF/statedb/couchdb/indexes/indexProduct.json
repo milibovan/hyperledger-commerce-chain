@@ -2,6 +2,8 @@
   "index": {
     "fields": [
       "doc-type",
+      "id",
+      "name",
       "expiry-date",
       "quantity",
       "price",
