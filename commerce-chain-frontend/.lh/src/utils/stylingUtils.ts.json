@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 6,
+            "activePatchIndex": 12,
             "patches": [
                 {
                     "date": 1762204899059,
@@ -32,6 +32,30 @@
                 {
                     "date": 1762249460069,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,5 +3,7 @@\n export const addButtonStyleSm = \"p-2 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all\"\r\n export const traderFontBold = \"font-bold text-pink-300\"\r\n \r\n export const updateButtonSm = \"p-2 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all\"\r\n-export const deleteButtonSm = \"p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all\"\n\\ No newline at end of file\n+export const deleteButtonSm = \"p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all\"\r\n+\r\n+export const entitiesNotFound = \"text-center text-gray-400 py-8\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762261917456,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n export const traderFontSemibold = \"font-semibold text-pink-300\"\r\n export const addButtonStyle = \"flex items-center px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold\"\r\n+export const updateButtonStyle = \"flex items-center justify-center px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold\"\r\n export const addButtonStyleSm = \"p-2 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all\"\r\n export const traderFontBold = \"font-bold text-pink-300\"\r\n \r\n export const updateButtonSm = \"p-2 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all\"\r\n"
+                },
+                {
+                    "date": 1762261970146,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,10 @@\n export const traderFontSemibold = \"font-semibold text-pink-300\"\r\n+export const traderFontBold = \"font-bold text-pink-300\"\r\n export const addButtonStyle = \"flex items-center px-4 py-2 gap-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold\"\r\n export const updateButtonStyle = \"flex items-center justify-center px-4 py-2 gap-3 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all  text-white font-semibold\"\r\n+export const deleteButtonStyle = \"flex items-center justify-center px-4 py-2 gap-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all  text-white font-semibold\"\r\n+\r\n export const addButtonStyleSm = \"p-2 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all\"\r\n-export const traderFontBold = \"font-bold text-pink-300\"\r\n-\r\n export const updateButtonSm = \"p-2 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all\"\r\n export const deleteButtonSm = \"p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all\"\r\n-\r\n export const entitiesNotFound = \"text-center text-gray-400 py-8\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762262392894,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,5 +6,8 @@\n \r\n export const addButtonStyleSm = \"p-2 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all\"\r\n export const updateButtonSm = \"p-2 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all\"\r\n export const deleteButtonSm = \"p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all\"\r\n-export const entitiesNotFound = \"text-center text-gray-400 py-8\"\n\\ No newline at end of file\n+export const entitiesNotFound = \"text-center text-gray-400 py-8\"\r\n+\r\n+export const traderDialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-2xl w-full\"\r\n+export const traderCancelClassName = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-pink-300 font-semibold\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762262494429,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,5 +9,5 @@\n export const deleteButtonSm = \"p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all\"\r\n export const entitiesNotFound = \"text-center text-gray-400 py-8\"\r\n \r\n export const traderDialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-2xl w-full\"\r\n-export const traderCancelClassName = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-pink-300 font-semibold\"\n\\ No newline at end of file\n+export const modalButtonStyle = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-pink-300 font-semibold\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762262624477,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,5 +9,5 @@\n export const deleteButtonSm = \"p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all\"\r\n export const entitiesNotFound = \"text-center text-gray-400 py-8\"\r\n \r\n export const traderDialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-2xl w-full\"\r\n-export const modalButtonStyle = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-pink-300 font-semibold\"\n\\ No newline at end of file\n+export const modalCancelButtonStyle = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 font-semibold\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762262649935,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,5 +9,6 @@\n export const deleteButtonSm = \"p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all\"\r\n export const entitiesNotFound = \"text-center text-gray-400 py-8\"\r\n \r\n export const traderDialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-2xl w-full\"\r\n-export const modalCancelButtonStyle = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 font-semibold\"\n\\ No newline at end of file\n+export const modalCancelButtonStyle = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 font-semibold\"\r\n+export const modalConfirmButtonStyle = \"px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold\"\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762204899059,

@@ -6,6 +6,7 @@ import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateUserForm from "../forms/UpdateUserForm";
 import type { ModalHandle } from "../forms/DeleteModal";
 import Modal from "../forms/DeleteModal";
+import { modalCancelButtonStyle, modalConfirmButtonStyle } from "../../utils/stylingUtils";
 
 export default function UsersPanel() {
   const [data, setData] = useState<UsersData | null>(null);
@@ -179,8 +180,8 @@ export default function UsersPanel() {
           onConfirm={handleDelete}
           confirmLabel="Delete"
           cancelLabel="Cancel"
-          confirmClassName="px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold"
-          cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-purple-300 font-semibold"
+          confirmClassName={modalConfirmButtonStyle}
+          cancelClassName={modalCancelButtonStyle + " text-purple-300"}
         >
           <h2 className="text-2xl font-bold text-purple-400 mb-4">
             Confirm Deletion

@@ -153,6 +153,5 @@ export function useTraders(channel: string = "channel-a") {
     fetchProductsByIds,
     clearProducts,
     deleteTrader,
-    setError,
   };
 }

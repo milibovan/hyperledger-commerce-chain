@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1761939465127,
@@ -24,6 +24,10 @@
                 {
                     "date": 1761940565121,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,11 +25,11 @@\n       onConfirm,\r\n       onCancel,\r\n       confirmLabel = \"Yes\",\r\n       cancelLabel = \"No\",\r\n-      confirmClassName = \"px-4 py-2 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all text-white font-semibold\",\r\n-      cancelClassName = \"px-4 py-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all text-white font-semibold\",\r\n-      dialogClassName = \"backdrop:bg-stone-900/90 p-4 rounded shadow-md min-w-96\",\r\n+      confirmClassName = \"px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 text-white font-semibold\",\r\n+      cancelClassName = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-purple-300 font-semibold\",\r\n+      dialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50 max-w-2xl w-full\",\r\n       showActions = true,\r\n     },\r\n     ref\r\n   ) => {\r\n@@ -57,11 +57,13 @@\n     };\r\n \r\n     return createPortal(\r\n       <dialog ref={dialog} className={dialogClassName}>\r\n-        {children}\r\n+        <div className=\"text-gray-300\">\r\n+          {children}\r\n+        </div>\r\n         {showActions && (\r\n-          <div className=\"mt-4 flex gap-2 justify-end\">\r\n+          <div className=\"mt-6 flex gap-3 justify-end\">\r\n             <button\r\n               type=\"button\"\r\n               onClick={handleCancel}\r\n               className={cancelClassName}\r\n"
+                },
+                {
+                    "date": 1762262834623,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,10 +23,10 @@\n     {\r\n       children,\r\n       onConfirm,\r\n       onCancel,\r\n-      confirmLabel = \"Yes\",\r\n-      cancelLabel = \"No\",\r\n+      confirmLabel = \"Delete\",\r\n+      cancelLabel = \"Cancel\",\r\n       confirmClassName = \"px-6 py-3 bg-purple-600 hover:bg-purple-500 rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 text-white font-semibold\",\r\n       cancelClassName = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-purple-300 font-semibold\",\r\n       dialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50 max-w-2xl w-full\",\r\n       showActions = true,\r\n"
                 }
             ],
             "date": 1761939465127,

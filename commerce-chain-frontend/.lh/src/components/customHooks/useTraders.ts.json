@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 12,
+            "activePatchIndex": 13,
             "patches": [
                 {
                     "date": 1762250049160,
@@ -56,6 +56,10 @@
                 {
                     "date": 1762250425126,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -149,8 +149,10 @@\n     products: products,\r\n     loading,\r\n     error,\r\n     fetchTraders,\r\n+    fetchProductsByIds,\r\n+    clearProducts,\r\n     deleteTrader,\r\n     setError,\r\n   };\r\n }\r\n"
+                },
+                {
+                    "date": 1762262219023,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -152,7 +152,6 @@\n     fetchTraders,\r\n     fetchProductsByIds,\r\n     clearProducts,\r\n     deleteTrader,\r\n-    setError,\r\n   };\r\n }\r\n"
                 }
             ],
             "date": 1762250049160,
