@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/utils/dataTypesUtils.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1762249804506,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1762249804506,
+            "name": "Commit-0",
+            "content": "export interface Product {\r\n  id: string;\r\n  name: string;\r\n  expiryDate: string;\r\n  price: string;\r\n  quantity: string;\r\n  traderType: string;\r\n  channel: string;\r\n}\r\n\r\nexport interface User {\r\n  id: string;\r\n  name: string;\r\n  surname: string;\r\n  email: string;\r\n  balance: string;\r\n  channel: string;\r\n}\r\n\r\nexport interface Trader {\r\n  id: string;\r\n  name: string;\r\n  traderType: string;\r\n  vat: string;\r\n  balance: string;\r\n  channel: string;\r\n}\r\n\r\nexport const TraderType = [\r\n  \"SUPERMARKET\",\r\n  \"CARDEALER\",\r\n  \"PHARMACY\",\r\n  \"GROCERY\",\r\n  \"GAS_STATION\",\r\n];\r\n\r\nexport const channels = [\"channel-a\", \"channel-b\"];\r\n\r\nexport interface UsersData {\r\n  Users: Array<UserData>;\r\n}\r\n\r\nexport interface UserData {\r\n  \"doc-type\": string;\r\n  id: string;\r\n  name: string;\r\n  surname: string;\r\n  email: string;\r\n  \"receipts-ids\": Array<string>;\r\n  balance: number;\r\n}\r\n\r\nexport interface ProductsData {\r\n  Products: Array<ProductData>;\r\n}\r\n\r\nexport interface ProductData {\r\n  \"doc-type\": string;\r\n  id: string;\r\n  name: string;\r\n  \"expiry-date\": Date;\r\n  price: number;\r\n  quantity: number;\r\n  \"trader-type\": string;\r\n}\r\nexport interface TradersData {\r\n  Traders: Array<TraderData>;\r\n}\r\n\r\nexport interface TraderData {\r\n  \"doc-type\": string;\r\n  id: string;\r\n  name: string;\r\n  \"trader-type\": string;\r\n  vat: string;\r\n  \"products-available-ids\": Array<string>;\r\n  \"receipts-ids\": Array<string>;\r\n  balance: number;\r\n}\r\n\r\nexport interface ReceiptsData {\r\n  Receipts: Array<ReceiptData>;\r\n}\r\n\r\nexport interface ReceiptData {\r\n  \"doc-type\": string;\r\n  id: string;\r\n  \"trader-id\": string;\r\n  \"user-id\": string;\r\n  \"products-ids\": Array<string>;\r\n  date: Date;\r\n}\r\n\r\nexport interface Deposit {\r\n  amount: string;\r\n  channel: string;\r\n}\r\n\r\nexport function formatDate(date: string) {\r\n   const dateTime = new Date(date);\r\n  \r\n  const year = dateTime.getFullYear();\r\n  const month = String(dateTime.getMonth() + 1).padStart(2, '0');\r\n  const day = String(dateTime.getDate()).padStart(2, '0');\r\n  const hours = String(dateTime.getHours()).padStart(2, '0');\r\n  const minutes = String(dateTime.getMinutes()).padStart(2, '0');\r\n  const seconds = String(dateTime.getSeconds()).padStart(2, '0');\r\n  \r\n  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;\r\n\r\n}"
+        }
+    ]
+}

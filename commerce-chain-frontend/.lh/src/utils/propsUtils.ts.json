@@ -1,0 +1,34 @@
+{
+    "sourceFile": "src/utils/propsUtils.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1762248920808,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1762248931319,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,6 @@\n+import { TraderData } from \"./dataTypesUtils\";\r\n+\r\n export interface TradersListProps {\r\n   traders: TraderData[];\r\n   loading: boolean;\r\n   error: string | null;\r\n"
+                },
+                {
+                    "date": 1762248966773,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { TraderData } from \"./dataTypesUtils\";\r\n+import type { TraderData } from \"./dataTypesUtils\";\r\n \r\n export interface TradersListProps {\r\n   traders: TraderData[];\r\n   loading: boolean;\r\n@@ -9,4 +9,40 @@\n   onDepositClick: (trader: TraderData) => void;\r\n   onUpdateClick: (trader: TraderData) => void;\r\n   onDeleteClick: (trader: TraderData) => void;\r\n }\r\n+\r\n+\r\n+\r\n+export interface CreateFormsProps {\r\n+  onSuccess?: () => void;\r\n+}\r\n+\r\n+export interface UpdateUserFormsProps {\r\n+  onSuccess?: () => void;\r\n+  user: UserData;\r\n+  handleActionClick: (\r\n+    action: \"create\" | \"deposit\" | \"update\" | null,\r\n+    user: UserData\r\n+  ) => void;\r\n+  handleBackToList: () => void;\r\n+}\r\n+\r\n+export interface UpdateTraderFormsProps {\r\n+  onSuccess?: () => void;\r\n+  trader: TraderData;\r\n+  handleActionClick: (\r\n+    action: \"create\" | \"deposit\" | \"update\" | null,\r\n+    trader: TraderData\r\n+  ) => void;\r\n+  handleBackToList: () => void;\r\n+}\r\n+\r\n+export interface UpdateProductFormsProps {\r\n+  onSuccess?: () => void;\r\n+  product: ProductData;\r\n+  handleActionClick: (\r\n+    action: \"create\" | \"increase_quantity\" | \"update\" | null,\r\n+    product: ProductData\r\n+  ) => void;\r\n+  handleBackToList: () => void;\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762248977160,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData } from \"./dataTypesUtils\";\r\n \r\n export interface TradersListProps {\r\n   traders: TraderData[];\r\n   loading: boolean;\r\n"
+                },
+                {
+                    "date": 1762249584001,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,10 +10,14 @@\n   onUpdateClick: (trader: TraderData) => void;\r\n   onDeleteClick: (trader: TraderData) => void;\r\n }\r\n \r\n+export interface TraderDetailsProps {\r\n+    trader: TraderData;\r\n+    products: ProductData[];\r\n+    productsLoading: boolean;\r\n+}\r\n \r\n-\r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n }\r\n \r\n"
+                }
+            ],
+            "date": 1762248920808,
+            "name": "Commit-0",
+            "content": "export interface TradersListProps {\r\n  traders: TraderData[];\r\n  loading: boolean;\r\n  error: string | null;\r\n  onCreateClick: () => void;\r\n  onTraderClick: (trader: TraderData) => void;\r\n  onDepositClick: (trader: TraderData) => void;\r\n  onUpdateClick: (trader: TraderData) => void;\r\n  onDeleteClick: (trader: TraderData) => void;\r\n}\r\n"
+        }
+    ]
+}

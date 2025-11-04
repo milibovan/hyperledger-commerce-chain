@@ -6,3 +6,5 @@ export enum httpMethod {
   PUT = "PUT",
   DELETE = "DELETE",
 }
+
+export type ActionType = "create" | "update" | "deposit" | "delete" | null;

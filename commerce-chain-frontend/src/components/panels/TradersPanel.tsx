@@ -7,7 +7,7 @@ import UpdateTraderForm from "../forms/UpdateTraderForm";
 import Modal from "../forms/DeleteModal";
 import type { ModalHandle } from "../forms/DeleteModal";
 import { host, httpMethod } from "../../utils/utils";
-import { addButtonStyle, addButtonStyleSm, traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
+import { addButtonStyle, addButtonStyleSm, deleteButtonSm, entitiesNotFound, traderFontBold, traderFontSemibold, updateButtonSm } from "../../utils/stylingUtils";
 
 export default function TradersPanel() {
   const [data, setData] = useState<TradersData | null>(null);
@@ -490,14 +490,14 @@ export default function TradersPanel() {
                     </button>
                     <button
                       onClick={() => handleActionClick("update", trader)}
-                      className="p-2 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all"
+                      className={updateButtonSm}
                       title="Update"
                     >
                       <Edit size={18} />
                     </button>
                     <button
                       onClick={() => handleDeleteClick(trader)}
-                      className="p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all"
+                      className={deleteButtonSm}
                       title="Delete"
                     >
                       <Trash2 size={18} />
@@ -508,7 +508,7 @@ export default function TradersPanel() {
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-400 py-8">No traders found</div>
+          <div className={entitiesNotFound}>No traders found</div>
         )}
       </div>
     </div>
