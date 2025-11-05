@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/components/customHooks/useProducts.ts",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1762376983409,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1762376983409,
+            "name": "Commit-0",
+            "content": "import { useCallback, useState } from \"react\";\r\nimport type { ProductsData } from \"../../utils/dataTypesUtils\";\r\nimport { host, httpMethod } from \"../../utils/utils\";\r\n\r\nexport function useProducts(channel: string = \"channel-a\") {\r\n  const [data, setData] = useState<ProductsData | null>(null);\r\n  const [error, setError] = useState<string | null>(null);\r\n  const [loading, setLoading] = useState(true);\r\n\r\n  const fetchProducts = useCallback(async () => {\r\n    setLoading(true);\r\n    setError(null);\r\n    try {\r\n      const response = await fetch(`${host}/products/${channel}`, {\r\n        method: httpMethod.GET,\r\n        headers: { \"Content-Type\": \"application/json\" },\r\n      });\r\n\r\n      if (response.ok) {\r\n        const responseData = await response.json();\r\n        let parsedProducts = [];\r\n        if (responseData.Products) {\r\n          try {\r\n            parsedProducts = JSON.parse(responseData.Products);\r\n            if (!Array.isArray(parsedProducts)) {\r\n              parsedProducts = [];\r\n            }\r\n          } catch (parseError) {\r\n            console.warn(\r\n              `Failed to parse products, defaulting to empty array`,\r\n              parseError\r\n            );\r\n            parsedProducts = [];\r\n          }\r\n        }\r\n\r\n        const parsedData = {\r\n          ...responseData,\r\n          Products: parsedProducts,\r\n        };\r\n        setData(parsedData);\r\n      } else {\r\n        const errorData = await response.json();\r\n        setError(errorData.Message || \"Failed to fetch products\");\r\n      }\r\n    } catch (err) {\r\n      setError(\r\n        `Error connecting to server: ${\r\n          err instanceof Error ? err.message : String(err)\r\n        }`\r\n      );\r\n    } finally {\r\n      setLoading(false);\r\n    }\r\n  }, [channel]);\r\n\r\n  const deleteProduct = useCallback(\r\n    async (productId: string) => {\r\n      try {\r\n        const response = await fetch(`${host}/products/${channel}/${productId}`, {\r\n          method: httpMethod.DELETE,\r\n          headers: { \"Content-Type\": \"application/json\" },\r\n        });\r\n\r\n        if (response.ok) {\r\n          await fetchProducts();\r\n          return { success: true };\r\n        } else {\r\n          const errorData = await response.json();\r\n          const errorMsg = errorData.Message || \"Failed to delete product\";\r\n          setError(errorMsg);\r\n          return { success: false, error: errorMsg };\r\n        }\r\n      } catch (err) {\r\n        const errorMsg = `Error deleting product: ${\r\n          err instanceof Error ? err.message : String(err)\r\n        }`;\r\n        setError(errorMsg);\r\n        return { success: false, error: errorMsg };\r\n      }\r\n    },\r\n    [channel, fetchProducts]\r\n  );\r\n\r\n  return {\r\n    products: data?.Products || [],\r\n    loading,\r\n    error,\r\n    fetchProducts,\r\n    deleteProduct,\r\n  };\r\n}\r\n"
+        }
+    ]
+}

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 83,
+            "activePatchIndex": 84,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -340,6 +340,10 @@
                 {
                     "date": 1762357637301,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,9 @@\n import { useUsers } from \"../customHooks/useUsers\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n import UserDetails from \"../overviews/UserDetails\";\r\n import UsersList from \"../lists/UsersList\";\r\n+import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n \r\n export default function UsersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n"
+                },
+                {
+                    "date": 1762378365735,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,10 +96,8 @@\n       <div className=\"bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50\">\r\n         <Modal\r\n           ref={modalRef}\r\n           onConfirm={handleDeleteConfirm}\r\n-          confirmLabel=\"Delete\"\r\n-          cancelLabel=\"Cancel\"\r\n           confirmClassName={modalConfirmButtonStyle}\r\n           cancelClassName={modalCancelButtonStyle + \" text-purple-300\"}\r\n         >\r\n           <h2 className=\"text-2xl font-bold text-purple-400 mb-4\">\r\n"
                 }
             ],
             "date": 1761645579091,

@@ -11,14 +11,11 @@ export interface ListProps<T> {
   onDeleteClick: (trader: T) => void;
 }
 
-export interface TraderDetailsProps {
-    trader: TraderData;
-    products: ProductData[];
-    productsLoading: boolean;
-}
-
 export interface DetailsProps<T> {
     entity: T;
+    date?: string;
+    products?: ProductData[];
+    productsLoading?: boolean;
 }
 
 export interface CreateFormsProps {

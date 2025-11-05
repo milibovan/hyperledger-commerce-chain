@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 14,
+            "activePatchIndex": 15,
             "patches": [
                 {
                     "date": 1762204899059,
@@ -64,6 +64,10 @@
                 {
                     "date": 1762356822561,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,5 +10,7 @@\n export const entitiesNotFound = \"text-center text-gray-400 py-8\"\r\n \r\n export const traderDialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-2xl w-full\"\r\n export const modalCancelButtonStyle = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 font-semibold\"\r\n-export const modalConfirmButtonStyle = \"px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold\"\n\\ No newline at end of file\n+export const modalConfirmButtonStyle = \"px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold\"\r\n+\r\n+export const userFontSemibold = \"font-semibold text-purple-300\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762378456700,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,9 @@\n export const updateButtonSm = \"p-2 bg-blue-600 hover:bg-blue-500 rounded border-2 border-blue-400 transition-all\"\r\n export const deleteButtonSm = \"p-2 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all\"\r\n export const entitiesNotFound = \"text-center text-gray-400 py-8\"\r\n \r\n-export const traderDialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-2xl w-full\"\r\n+export const modalDialogClassName = \"backdrop:bg-black/80 bg-gray-800 border-2 rounded-lg p-8 shadow-2xl max-w-2xl w-full\"\r\n export const modalCancelButtonStyle = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 font-semibold\"\r\n export const modalConfirmButtonStyle = \"px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold\"\r\n \r\n export const userFontSemibold = \"font-semibold text-purple-300\"\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762204899059,

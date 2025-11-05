@@ -97,8 +97,6 @@ export default function UsersPanel() {
         <Modal
           ref={modalRef}
           onConfirm={handleDeleteConfirm}
-          confirmLabel="Delete"
-          cancelLabel="Cancel"
           confirmClassName={modalConfirmButtonStyle}
           cancelClassName={modalCancelButtonStyle + " text-purple-300"}
         >

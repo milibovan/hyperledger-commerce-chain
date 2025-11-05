@@ -12,7 +12,7 @@ import {
   deleteButtonStyle,
   modalCancelButtonStyle,
   modalConfirmButtonStyle,
-  traderDialogClassName,
+  modalDialogClassName,
   traderFontSemibold,
   updateButtonStyle,
 } from "../../utils/stylingUtils";
@@ -103,7 +103,7 @@ export default function TradersPanel() {
           if (viewDetails) {
             return (
               <TraderDetails
-                trader={selectedTrader}
+                entity={selectedTrader}
                 products={products}
                 productsLoading={loading}
               />
@@ -121,7 +121,7 @@ export default function TradersPanel() {
           onConfirm={handleDeleteConfirm}
           confirmClassName={modalConfirmButtonStyle}
           cancelClassName={modalCancelButtonStyle + " text-pink-300"}
-          dialogClassName={traderDialogClassName}
+          dialogClassName={modalDialogClassName + " border-pink-500 shadow-pink-500/50"}
         >
           <h2 className="text-2xl font-bold text-pink-400 mb-4">
             Confirm Deletion
@@ -153,21 +153,21 @@ export default function TradersPanel() {
           {action === null && selectedTrader && (
             <div className="flex gap-2 my-4 justify-end">
               <button
-                onClick={() => handleAction("deposit", selectedTrader!)}
+                onClick={() => handleAction("deposit", selectedTrader)}
                 className={addButtonStyle + " mb-4"}
                 title="Deposit Money"
               >
                 <Plus size={18} /> Deposit
               </button>
               <button
-                onClick={() => handleAction("update", selectedTrader!)}
+                onClick={() => handleAction("update", selectedTrader)}
                 className={updateButtonStyle + " mb-4"}
                 title="Update"
               >
                 <Edit size={18} /> Update
               </button>
               <button
-                onClick={() => handleDeleteClick(selectedTrader!)}
+                onClick={() => handleDeleteClick(selectedTrader)}
                 className={deleteButtonStyle + " mb-4"}
                 title="Delete"
               >
@@ -188,7 +188,7 @@ export default function TradersPanel() {
         onConfirm={handleDeleteConfirm}
         confirmClassName={modalConfirmButtonStyle}
         cancelClassName={modalCancelButtonStyle + " text-pink-300"}
-        dialogClassName={traderDialogClassName}
+        dialogClassName={modalDialogClassName + " border-pink-500 shadow-pink-500/50"}
       >
         <h2 className="text-2xl font-bold text-pink-400 mb-4">
           Confirm Deletion

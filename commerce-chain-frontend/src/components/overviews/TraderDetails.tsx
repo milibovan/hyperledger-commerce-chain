@@ -1,13 +1,14 @@
-import type { TraderDetailsProps } from "../../utils/propsUtils";
+import type { TraderData } from "../../utils/dataTypesUtils";
+import type { DetailsProps } from "../../utils/propsUtils";
 import { traderFontBold, traderFontSemibold, addButtonStyle } from "../../utils/stylingUtils";
 import { Package, Plus } from "lucide-react";
 
 
 export default function TraderDetails({
-  trader,
+  entity: trader,
   products,
   productsLoading,
-}: TraderDetailsProps) {
+}: DetailsProps<TraderData>) {
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold text-pink-400">Trader Details</h3>
@@ -54,7 +55,7 @@ export default function TraderDetails({
           <div className="text-center text-pink-300 py-4">
             Loading products...
           </div>
-        ) : products.length > 0 ? (
+        ) : products && products.length > 0 ? (
           <div className="space-y-2">
             {products.map((product) => (
               <div

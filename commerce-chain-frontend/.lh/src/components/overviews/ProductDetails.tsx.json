@@ -1,0 +1,38 @@
+{
+    "sourceFile": "src/components/overviews/ProductDetails.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 5,
+            "patches": [
+                {
+                    "date": 1762377383218,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1762377429850,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,8 @@\n-export default function ProductDetails() {\r\n+import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n+import type { DetailsProps } from \"../../utils/propsUtils\";\r\n+\r\n+export default function ProductDetails({entity: product}: DetailsProps<ProductData> ) {\r\n   return (\r\n     <div className=\"space-y-4\">\r\n       <h3 className=\"text-2xl font-bold text-cyan-400\">Product Details</h3>\r\n       <div className=\"grid grid-cols-2 gap-4 text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1762377439018,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,29 +7,29 @@\n       <h3 className=\"text-2xl font-bold text-cyan-400\">Product Details</h3>\r\n       <div className=\"grid grid-cols-2 gap-4 text-gray-300\">\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">ID:</span>{\" \"}\r\n-          {selectedProduct.id}\r\n+          {product.id}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Product Name:</span>{\" \"}\r\n-          {selectedProduct.name}\r\n+          {product.name}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Expiry Date:</span>{\" \"}\r\n           {formattedDate}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Price:</span> $\r\n-          {selectedProduct.price.toFixed(2)}\r\n+          {product.price.toFixed(2)}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Quantity: </span>\r\n-          {selectedProduct.quantity.toFixed(0)}\r\n+          {product.quantity.toFixed(0)}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Trader type: </span>\r\n-          {selectedProduct[\"trader-type\"].toUpperCase()}\r\n+          {product[\"trader-type\"].toUpperCase()}\r\n         </div>\r\n       </div>\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1762377507340,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n \r\n-export default function ProductDetails({entity: product}: DetailsProps<ProductData> ) {\r\n+export default function ProductDetails({entity: product, date: formattedDate}: DetailsProps<ProductData> ) {\r\n   return (\r\n     <div className=\"space-y-4\">\r\n       <h3 className=\"text-2xl font-bold text-cyan-400\">Product Details</h3>\r\n       <div className=\"grid grid-cols-2 gap-4 text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1762377873313,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n \r\n-export default function ProductDetails({entity: product, date: formattedDate}: DetailsProps<ProductData> ) {\r\n+export default function ProductDetails({entity: product}: DetailsProps<ProductData> ) {\r\n   return (\r\n     <div className=\"space-y-4\">\r\n       <h3 className=\"text-2xl font-bold text-cyan-400\">Product Details</h3>\r\n       <div className=\"grid grid-cols-2 gap-4 text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1762377904401,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n+import { getFormattedDate, type ProductData } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n \r\n export default function ProductDetails({entity: product}: DetailsProps<ProductData> ) {\r\n   return (\r\n@@ -15,9 +15,9 @@\n           {product.name}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Expiry Date:</span>{\" \"}\r\n-          {formattedDate}\r\n+          {getFormattedDate(product)}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Price:</span> $\r\n           {product.price.toFixed(2)}\r\n"
+                }
+            ],
+            "date": 1762377383218,
+            "name": "Commit-0",
+            "content": "export default function ProductDetails() {\r\n  return (\r\n    <div className=\"space-y-4\">\r\n      <h3 className=\"text-2xl font-bold text-cyan-400\">Product Details</h3>\r\n      <div className=\"grid grid-cols-2 gap-4 text-gray-300\">\r\n        <div>\r\n          <span className=\"font-semibold text-cyan-300\">ID:</span>{\" \"}\r\n          {selectedProduct.id}\r\n        </div>\r\n        <div>\r\n          <span className=\"font-semibold text-cyan-300\">Product Name:</span>{\" \"}\r\n          {selectedProduct.name}\r\n        </div>\r\n        <div>\r\n          <span className=\"font-semibold text-cyan-300\">Expiry Date:</span>{\" \"}\r\n          {formattedDate}\r\n        </div>\r\n        <div>\r\n          <span className=\"font-semibold text-cyan-300\">Price:</span> $\r\n          {selectedProduct.price.toFixed(2)}\r\n        </div>\r\n        <div>\r\n          <span className=\"font-semibold text-cyan-300\">Quantity: </span>\r\n          {selectedProduct.quantity.toFixed(0)}\r\n        </div>\r\n        <div>\r\n          <span className=\"font-semibold text-cyan-300\">Trader type: </span>\r\n          {selectedProduct[\"trader-type\"].toUpperCase()}\r\n        </div>\r\n      </div>\r\n    </div>\r\n  );\r\n}\r\n"
+        }
+    ]
+}

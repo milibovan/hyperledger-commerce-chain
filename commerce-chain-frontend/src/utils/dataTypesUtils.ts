@@ -97,15 +97,27 @@ export interface Deposit {
 }
 
 export function formatDate(date: string) {
-   const dateTime = new Date(date);
-  
-  const year = dateTime.getFullYear();
-  const month = String(dateTime.getMonth() + 1).padStart(2, '0');
-  const day = String(dateTime.getDate()).padStart(2, '0');
-  const hours = String(dateTime.getHours()).padStart(2, '0');
-  const minutes = String(dateTime.getMinutes()).padStart(2, '0');
-  const seconds = String(dateTime.getSeconds()).padStart(2, '0');
-  
-  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+  const dateTime = new Date(date);
 
+  const year = dateTime.getFullYear();
+  const month = String(dateTime.getMonth() + 1).padStart(2, "0");
+  const day = String(dateTime.getDate()).padStart(2, "0");
+  const hours = String(dateTime.getHours()).padStart(2, "0");
+  const minutes = String(dateTime.getMinutes()).padStart(2, "0");
+  const seconds = String(dateTime.getSeconds()).padStart(2, "0");
+
+  return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+}
+
+export function getFormattedDate(product: ProductData) {
+  const expiryDate: Date = new Date(product["expiry-date"]);
+  const formatedDate: string = expiryDate.toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  return formatedDate;
 }
