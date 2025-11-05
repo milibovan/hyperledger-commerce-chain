@@ -1,18 +1,18 @@
 import { Plus, Edit, Trash2 } from "lucide-react";
-import { addButtonStyleSm, updateButtonSm, deleteButtonSm, traderFontBold} from "../../utils/stylingUtils";
+import { addButtonSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from "../../utils/stylingUtils";
 import type { TraderData } from "../../utils/dataTypesUtils";
-import type { TradersListProps } from "../../utils/propsUtils";
+import type { ListProps } from "../../utils/propsUtils";
 
 export default function TradersList({
-  traders,
+  entities: traders,
   loading,
   error,
   onCreateClick,
-  onTraderClick,
+  onEntityClick: onTraderClick,
   onDepositClick,
   onUpdateClick,
   onDeleteClick,
-}: TradersListProps) {
+}: ListProps<TraderData>) {
     return (
         <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50">
         <div className="flex justify-between items-center mb-6">
@@ -67,7 +67,7 @@ export default function TradersList({
                   >
                     <button
                       onClick={() =>onDepositClick(trader)}
-                      className={addButtonStyleSm}
+                      className={addButtonSm}
                       title="Deposit Money"
                     >
                       <Plus size={18} />
@@ -92,7 +92,7 @@ export default function TradersList({
             ))}
           </div>
         ) : (
-          <div className="text-center text-gray-400 py-8">No traders found</div>
+          <div className={entitiesNotFound}>No traders found</div>
         )}
       </div>
     )

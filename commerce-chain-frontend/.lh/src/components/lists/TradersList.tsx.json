@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 19,
             "patches": [
                 {
                     "date": 1762248870264,
@@ -44,6 +44,46 @@
                 {
                     "date": 1762249345890,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,8 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import { addButtonStyleSm, updateButtonSm, deleteButtonSm, traderFontBold, traderFontSemibold} from \"../../utils/stylingUtils\";\r\n+import { addButtonStyleSm, updateButtonSm, deleteButtonSm, traderFontBold} from \"../../utils/stylingUtils\";\r\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n+import type { TradersListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n   traders,\r\n   loading,\r\n"
+                },
+                {
+                    "date": 1762356001302,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,9 @@\n   onTraderClick,\r\n   onDepositClick,\r\n   onUpdateClick,\r\n   onDeleteClick,\r\n-}: TradersListProps) {\r\n+}: TradersListProps<TraderData>) {\r\n     return (\r\n         <div className=\"bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50\">\r\n         <div className=\"flex justify-between items-center mb-6\">\r\n           <h3 className=\"text-3xl font-bold text-pink-400\">Traders</h3>\r\n"
+                },
+                {
+                    "date": 1762356020155,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { TradersListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n-  traders,\r\n+  traders: entities,\r\n   loading,\r\n   error,\r\n   onCreateClick,\r\n   onTraderClick,\r\n@@ -35,11 +35,11 @@\n         {loading ? (\r\n           <div className=\"text-center text-pink-300 py-8\">\r\n             Loading traders...\r\n           </div>\r\n-        ) : traders.length > 0 ? (\r\n+        ) : entities.length > 0 ? (\r\n           <div className=\"space-y-3\">\r\n-            {traders.map((trader : TraderData) => (\r\n+            {entities.map((trader : TraderData) => (\r\n               <div\r\n                 key={trader.id}\r\n                 onClick={() => {\r\n                   onTraderClick(trader)\r\n"
+                },
+                {
+                    "date": 1762356036202,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { TradersListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n-  traders: entities,\r\n+  entities: entities,\r\n   loading,\r\n   error,\r\n   onCreateClick,\r\n   onTraderClick,\r\n"
+                },
+                {
+                    "date": 1762356126970,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n import { addButtonStyleSm, updateButtonSm, deleteButtonSm, traderFontBold} from \"../../utils/stylingUtils\";\r\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n-import type { TradersListProps } from \"../../utils/propsUtils\";\r\n+import type { ListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n   entities: entities,\r\n   loading,\r\n@@ -11,9 +11,9 @@\n   onTraderClick,\r\n   onDepositClick,\r\n   onUpdateClick,\r\n   onDeleteClick,\r\n-}: TradersListProps<TraderData>) {\r\n+}: ListProps<TraderData>) {\r\n     return (\r\n         <div className=\"bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50\">\r\n         <div className=\"flex justify-between items-center mb-6\">\r\n           <h3 className=\"text-3xl font-bold text-pink-400\">Traders</h3>\r\n"
+                },
+                {
+                    "date": 1762356322375,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -7,9 +7,9 @@\n   entities: entities,\r\n   loading,\r\n   error,\r\n   onCreateClick,\r\n-  onTraderClick,\r\n+  onEntityClick: onTraderClick,\r\n   onDepositClick,\r\n   onUpdateClick,\r\n   onDeleteClick,\r\n }: ListProps<TraderData>) {\r\n"
+                },
+                {
+                    "date": 1762356340963,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n-  entities: entities,\r\n+  entities: traders,\r\n   loading,\r\n   error,\r\n   onCreateClick,\r\n   onEntityClick: onTraderClick,\r\n"
+                },
+                {
+                    "date": 1762356356187,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -35,11 +35,11 @@\n         {loading ? (\r\n           <div className=\"text-center text-pink-300 py-8\">\r\n             Loading traders...\r\n           </div>\r\n-        ) : entities.length > 0 ? (\r\n+        ) : traders.length > 0 ? (\r\n           <div className=\"space-y-3\">\r\n-            {entities.map((trader : TraderData) => (\r\n+            {traders.map((trader : TraderData) => (\r\n               <div\r\n                 key={trader.id}\r\n                 onClick={() => {\r\n                   onTraderClick(trader)\r\n"
+                },
+                {
+                    "date": 1762356489879,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -91,9 +91,9 @@\n               </div>\r\n             ))}\r\n           </div>\r\n         ) : (\r\n-          <div className=\"text-center text-gray-400 py-8\">No traders found</div>\r\n+          <div className={entitiesNotFound}>No traders found</div>\r\n         )}\r\n       </div>\r\n     )\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762356495585,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import { addButtonStyleSm, updateButtonSm, deleteButtonSm, traderFontBold} from \"../../utils/stylingUtils\";\r\n+import { addButtonStyleSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n"
+                },
+                {
+                    "date": 1762356547099,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import { addButtonStyleSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n@@ -66,9 +66,9 @@\n                     onClick={(e) => e.stopPropagation()}\r\n                   >\r\n                     <button\r\n                       onClick={() =>onDepositClick(trader)}\r\n-                      className={addButtonStyleSm}\r\n+                      className={addButtonSm}\r\n                       title=\"Deposit Money\"\r\n                     >\r\n                       <Plus size={18} />\r\n                     </button>\r\n"
                 }
             ],
             "date": 1762248870264,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 9,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -24,6 +24,26 @@
                 {
                     "date": 1762249584001,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,10 +10,14 @@\n   onUpdateClick: (trader: TraderData) => void;\r\n   onDeleteClick: (trader: TraderData) => void;\r\n }\r\n \r\n+export interface TraderDetailsProps {\r\n+    trader: TraderData;\r\n+    products: ProductData[];\r\n+    productsLoading: boolean;\r\n+}\r\n \r\n-\r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1762355927337,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,15 @@\n import type { TraderData, ProductData, UserData } from \"./dataTypesUtils\";\r\n \r\n-export interface TradersListProps {\r\n-  traders: TraderData[];\r\n+export interface TradersListProps<T> {\r\n+  traders: T[];\r\n   loading: boolean;\r\n   error: string | null;\r\n   onCreateClick: () => void;\r\n-  onTraderClick: (trader: TraderData) => void;\r\n-  onDepositClick: (trader: TraderData) => void;\r\n-  onUpdateClick: (trader: TraderData) => void;\r\n-  onDeleteClick: (trader: TraderData) => void;\r\n+  onTraderClick: (trader: T) => void;\r\n+  onDepositClick: (trader: T) => void;\r\n+  onUpdateClick: (trader: T) => void;\r\n+  onDeleteClick: (trader: T) => void;\r\n }\r\n \r\n export interface TraderDetailsProps {\r\n     trader: TraderData;\r\n"
+                },
+                {
+                    "date": 1762356120384,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import type { TraderData, ProductData, UserData } from \"./dataTypesUtils\";\r\n \r\n export interface TradersListProps<T> {\r\n-  traders: T[];\r\n+  entities: T[];\r\n   loading: boolean;\r\n   error: string | null;\r\n   onCreateClick: () => void;\r\n   onTraderClick: (trader: T) => void;\r\n"
+                },
+                {
+                    "date": 1762356126949,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import type { TraderData, ProductData, UserData } from \"./dataTypesUtils\";\r\n \r\n-export interface TradersListProps<T> {\r\n+export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n   error: string | null;\r\n   onCreateClick: () => void;\r\n"
+                },
+                {
+                    "date": 1762356322362,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n   entities: T[];\r\n   loading: boolean;\r\n   error: string | null;\r\n   onCreateClick: () => void;\r\n-  onTraderClick: (trader: T) => void;\r\n+  onEntityClick: (trader: T) => void;\r\n   onDepositClick: (trader: T) => void;\r\n   onUpdateClick: (trader: T) => void;\r\n   onDeleteClick: (trader: T) => void;\r\n }\r\n"
+                },
+                {
+                    "date": 1762356680427,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,8 +16,12 @@\n     products: ProductData[];\r\n     productsLoading: boolean;\r\n }\r\n \r\n+export interface DetailsProps<T> {\r\n+    entity: T;\r\n+}\r\n+\r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n }\r\n \r\n"
                 }
             ],
             "date": 1762248920808,

@@ -1,20 +1,24 @@
 import type { TraderData, ProductData, UserData } from "./dataTypesUtils";
 
-export interface TradersListProps {
-  traders: TraderData[];
+export interface ListProps<T> {
+  entities: T[];
   loading: boolean;
   error: string | null;
   onCreateClick: () => void;
-  onTraderClick: (trader: TraderData) => void;
-  onDepositClick: (trader: TraderData) => void;
-  onUpdateClick: (trader: TraderData) => void;
-  onDeleteClick: (trader: TraderData) => void;
+  onEntityClick: (trader: T) => void;
+  onDepositClick: (trader: T) => void;
+  onUpdateClick: (trader: T) => void;
+  onDeleteClick: (trader: T) => void;
 }
 
 export interface TraderDetailsProps {
     trader: TraderData;
     products: ProductData[];
     productsLoading: boolean;
+}
+
+export interface DetailsProps<T> {
+    entity: T;
 }
 
 export interface CreateFormsProps {

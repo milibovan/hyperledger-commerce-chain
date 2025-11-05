@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 152,
+            "activePatchIndex": 155,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -616,6 +616,18 @@
                 {
                     "date": 1762262842002,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -185,10 +185,8 @@\n     <div className=\"space-y-6\">\r\n       <Modal\r\n         ref={modalRef}\r\n         onConfirm={handleDeleteConfirm}\r\n-        confirmLabel=\"Delete\"\r\n-        cancelLabel=\"Cancel\"\r\n         confirmClassName={modalConfirmButtonStyle}\r\n         cancelClassName={modalCancelButtonStyle + \" text-pink-300\"}\r\n         dialogClassName={traderDialogClassName}\r\n       >\r\n"
+                },
+                {
+                    "date": 1762355986727,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -210,10 +210,10 @@\n         loading={loading}\r\n         error={error}\r\n         onCreateClick={() => handleAction(\"create\")}\r\n         onTraderClick={viewEntityDetails}\r\n-        onDepositClick={(trader) => handleAction(\"deposit\", trader)}\r\n-        onUpdateClick={(trader) => handleAction(\"update\", trader)}\r\n+        onDepositClick={(trader: TraderData) => handleAction(\"deposit\", trader)}\r\n+        onUpdateClick={(trader : TraderData) => handleAction(\"update\", trader)}\r\n         onDeleteClick={handleDeleteClick}\r\n       />\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1762356080598,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -205,15 +205,15 @@\n           This action cannot be undone.\r\n         </p>\r\n       </Modal>\r\n       <TradersList\r\n-        traders={traders}\r\n+        entities={traders}\r\n         loading={loading}\r\n         error={error}\r\n         onCreateClick={() => handleAction(\"create\")}\r\n         onTraderClick={viewEntityDetails}\r\n         onDepositClick={(trader: TraderData) => handleAction(\"deposit\", trader)}\r\n-        onUpdateClick={(trader : TraderData) => handleAction(\"update\", trader)}\r\n+        onUpdateClick={(trader: TraderData) => handleAction(\"update\", trader)}\r\n         onDeleteClick={handleDeleteClick}\r\n       />\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1762356322680,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -209,9 +209,9 @@\n         entities={traders}\r\n         loading={loading}\r\n         error={error}\r\n         onCreateClick={() => handleAction(\"create\")}\r\n-        onTraderClick={viewEntityDetails}\r\n+        onEntityClick={viewEntityDetails}\r\n         onDepositClick={(trader: TraderData) => handleAction(\"deposit\", trader)}\r\n         onUpdateClick={(trader: TraderData) => handleAction(\"update\", trader)}\r\n         onDeleteClick={handleDeleteClick}\r\n       />\r\n"
                 }
             ],
             "date": 1761645486253,

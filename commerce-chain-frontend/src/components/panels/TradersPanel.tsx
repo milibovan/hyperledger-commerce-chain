@@ -206,13 +206,13 @@ export default function TradersPanel() {
         </p>
       </Modal>
       <TradersList
-        traders={traders}
+        entities={traders}
         loading={loading}
         error={error}
         onCreateClick={() => handleAction("create")}
-        onTraderClick={viewEntityDetails}
-        onDepositClick={(trader) => handleAction("deposit", trader)}
-        onUpdateClick={(trader) => handleAction("update", trader)}
+        onEntityClick={viewEntityDetails}
+        onDepositClick={(trader: TraderData) => handleAction("deposit", trader)}
+        onUpdateClick={(trader: TraderData) => handleAction("update", trader)}
         onDeleteClick={handleDeleteClick}
       />
     </div>
