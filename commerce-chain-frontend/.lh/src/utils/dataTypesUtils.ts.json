@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -16,6 +16,14 @@
                 {
                     "date": 1762377826955,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,29 +96,28 @@\n   channel: string;\r\n }\r\n \r\n export function formatDate(date: string) {\r\n-   const dateTime = new Date(date);\r\n-  \r\n+  const dateTime = new Date(date);\r\n+\r\n   const year = dateTime.getFullYear();\r\n-  const month = String(dateTime.getMonth() + 1).padStart(2, '0');\r\n-  const day = String(dateTime.getDate()).padStart(2, '0');\r\n-  const hours = String(dateTime.getHours()).padStart(2, '0');\r\n-  const minutes = String(dateTime.getMinutes()).padStart(2, '0');\r\n-  const seconds = String(dateTime.getSeconds()).padStart(2, '0');\r\n-  \r\n+  const month = String(dateTime.getMonth() + 1).padStart(2, \"0\");\r\n+  const day = String(dateTime.getDate()).padStart(2, \"0\");\r\n+  const hours = String(dateTime.getHours()).padStart(2, \"0\");\r\n+  const minutes = String(dateTime.getMinutes()).padStart(2, \"0\");\r\n+  const seconds = String(dateTime.getSeconds()).padStart(2, \"0\");\r\n+\r\n   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;\r\n-\r\n }\r\n \r\n export function getFormattedDate(product: ProductData) {\r\n-    const expiryDate: Date = new Date(product[\"expiry-date\"]);\r\n-    const formatedDate: string = expiryDate.toLocaleString(\"en-US\", {\r\n-      year: \"numeric\",\r\n\\ No newline at end of file\n-      month: \"long\",\r\n-      day: \"numeric\",\r\n-      hour: \"2-digit\",\r\n-      minute: \"2-digit\",\r\n-    });\r\n+  const expiryDate: Date = new Date(product[\"expiry-date\"]);\r\n+  const formatedDate: string = expiryDate.toLocaleString(\"en-US\", {\r\n+    year: \"numeric\",\r\n+    month: \"long\",\r\n+    day: \"numeric\",\r\n+    hour: \"2-digit\",\r\n+    minute: \"2-digit\",\r\n+  });\r\n \r\n-    return formatedDate;\r\n-  }\n+  return formatedDate;\r\n+}\r\n"
+                },
+                {
+                    "date": 1762447532064,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -91,9 +91,9 @@\n   date: Date;\r\n }\r\n \r\n export interface Deposit {\r\n-  amount: string;\r\n+  amount?: string;\r\n   channel: string;\r\n }\r\n \r\n export function formatDate(date: string) {\r\n"
+                },
+                {
+                    "date": 1762447539803,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -92,8 +92,9 @@\n }\r\n \r\n export interface Deposit {\r\n   amount?: string;\r\n+  quantity?: string;\r\n   channel: string;\r\n }\r\n \r\n export function formatDate(date: string) {\r\n"
                 }
             ],
             "date": 1762249804506,

@@ -92,7 +92,8 @@ export interface ReceiptData {
 }
 
 export interface Deposit {
-  amount: string;
+  amount?: string;
+  quantity?: string;
   channel: string;
 }
 

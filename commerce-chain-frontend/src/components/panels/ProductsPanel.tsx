@@ -18,6 +18,7 @@ import {
   updateButtonStyle,
 } from "../../utils/stylingUtils";
 import ProductsList from "../lists/ProductsList";
+import IncreaseProductQuantity from "../forms/IncreaseProductQuantity";
 
 export default function ProductsPanel() {
   const modalRef = useRef<ModalHandle>(null);
@@ -62,10 +63,11 @@ export default function ProductsPanel() {
       switch (action) {
         case "deposit":
           return (
-            <div className="text-gray-300">
-              Increase quantity form for {selectedProduct?.name}{" "}
-              {selectedProduct?.id}
-            </div>
+            <IncreaseProductQuantity
+              product={selectedProduct}
+              onSuccess={fetchProducts}
+              handleBackToList={resetActions}
+            />
           );
         case "update":
           return (
@@ -186,14 +188,18 @@ export default function ProductsPanel() {
           This action cannot be undone.
         </p>
       </Modal>
-      <ProductsList 
+      <ProductsList
         entities={products}
         loading={loading}
         error={error}
         onCreateClick={() => handleAction("create")}
         onEntityClick={viewEntityDetails}
-        onDepositClick={(product: ProductData) => handleAction("deposit", product)}
-        onUpdateClick={(product: ProductData) => handleAction("update", product)}
+        onDepositClick={(product: ProductData) =>
+          handleAction("deposit", product)
+        }
+        onUpdateClick={(product: ProductData) =>
+          handleAction("update", product)
+        }
         onDeleteClick={handleDeleteClick}
       />
     </div>

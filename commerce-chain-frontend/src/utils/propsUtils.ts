@@ -51,3 +51,15 @@ export interface UpdateProductFormsProps {
   ) => void;
   handleBackToList: () => void;
 }
+
+export interface DepositMoneyProps {
+  user: UserData | TraderData;
+  onSuccess?: () => void;
+  handleBackToList: () => void;
+}
+
+export interface IncreaseQuantityProps {
+  product: ProductData;
+  onSuccess?: () => void;
+  handleBackToList: () => void;
+}

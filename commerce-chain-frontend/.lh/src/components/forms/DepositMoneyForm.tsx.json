@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 58,
+            "activePatchIndex": 61,
             "patches": [
                 {
                     "date": 1761764853834,
@@ -240,6 +240,18 @@
                 {
                     "date": 1762204279246,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n-import type { UserData, TraderData, Deposit } from \"../../utils/utils\";\r\n-import { channels } from \"../../utils/utils\";\r\n+import type { UserData, TraderData, Deposit } from \"../../utils/dataTypesUtils\";\r\n+import { channels } from \"../../utils/dataTypesUtils\";\r\n import { useState, useMemo } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n \r\n interface DepositMoneyProps {\r\n"
+                },
+                {
+                    "date": 1762447194067,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,10 @@\n import type { UserData, TraderData, Deposit } from \"../../utils/dataTypesUtils\";\r\n import { channels } from \"../../utils/dataTypesUtils\";\r\n import { useState, useMemo } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n+import { DepositMoneyProps } from \"../../utils/propsUtils\";\r\n \r\n-interface DepositMoneyProps {\r\n-  user: UserData | TraderData;\r\n-  onSuccess?: () => void;\r\n-  handleBackToList: () => void;\r\n-}\r\n-\r\n export default function DepositMoneyForm({\r\n   user,\r\n   onSuccess,\r\n   handleBackToList,\r\n"
+                },
+                {
+                    "date": 1762447333707,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,10 @@\n import type { UserData, TraderData, Deposit } from \"../../utils/dataTypesUtils\";\r\n import { channels } from \"../../utils/dataTypesUtils\";\r\n import { useState, useMemo } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import { DepositMoneyProps } from \"../../utils/propsUtils\";\r\n+import type { DepositMoneyProps } from \"../../utils/propsUtils\";\r\n+import { host, httpMethod } from \"../../utils/utils\";\r\n \r\n export default function DepositMoneyForm({\r\n   user,\r\n   onSuccess,\r\n@@ -64,11 +65,11 @@\n     setLoading(true);\r\n \r\n     try {\r\n       const response = await fetch(\r\n-        `http://localhost:8080/deposit-money/${formData.channel}`,\r\n+        `${host}/deposit-money/${formData.channel}`,\r\n         {\r\n-          method: \"POST\",\r\n+          method: httpMethod.POST,\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n             \"user-id\": user.id,\r\n             amount: parseFloat(formData.amount),\r\n"
+                },
+                {
+                    "date": 1762447552846,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -149,9 +149,9 @@\n             min=\"0\"\r\n             className={`w-full px-4 py-3 bg-gray-700 border-2 ${theme.colors.border} text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none ${theme.colors.focus}`}\r\n           />\r\n           <p className={`text-sm ${theme.colors.textLight} mt-3`}>\r\n-            Total balance: ${(+user.balance + +formData.amount).toFixed(2)}\r\n+            Total balance: ${(+user.balance + +formData.amount!).toFixed(2)}\r\n           </p>\r\n         </div>\r\n \r\n         {/* Error Message */}\r\n"
                 }
             ],
             "date": 1761764853834,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 11,
+            "activePatchIndex": 18,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -52,6 +52,34 @@
                 {
                     "date": 1762377526599,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,14 +10,8 @@\n   onUpdateClick: (trader: T) => void;\r\n   onDeleteClick: (trader: T) => void;\r\n }\r\n \r\n-export interface TraderDetailsProps {\r\n-    trader: TraderData;\r\n-    products: ProductData[];\r\n-    productsLoading: boolean;\r\n-}\r\n-\r\n export interface DetailsProps<T> {\r\n     entity: T;\r\n     date?: string;\r\n     products?: ProductData[];\r\n"
+                },
+                {
+                    "date": 1762447167667,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,5 +49,11 @@\n     action: \"create\" | \"increase_quantity\" | \"update\" | null,\r\n     product: ProductData\r\n   ) => void;\r\n   handleBackToList: () => void;\r\n+}\r\n+\r\n+interface DepositMoneyProps {\r\n+  user: UserData | TraderData;\r\n+  onSuccess?: () => void;\r\n+  handleBackToList: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762447189508,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n-interface DepositMoneyProps {\r\n+export interface DepositMoneyProps {\r\n   user: UserData | TraderData;\r\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762447218971,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n-export interface DepositMoneyProps {\r\n-  user: UserData | TraderData;\r\n+export interface DepositMoneyProps<T> {\r\n+  entity: T;\r\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762447233434,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n-export interface DepositMoneyProps<T> {\r\n-  entity: T;\r\n+export interface DepositMoneyProps {\r\n+  user: UserData | TraderData;\r\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762447262614,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,17 +41,8 @@\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n-export interface UpdateProductFormsProps {\r\n-  onSuccess?: () => void;\r\n-  product: ProductData;\r\n-  handleActionClick: (\r\n-    action: \"create\" | \"increase_quantity\" | \"update\" | null,\r\n-    product: ProductData\r\n-  ) => void;\r\n-  handleBackToList: () => void;\r\n-}\r\n \r\n export interface DepositMoneyProps {\r\n   user: UserData | TraderData;\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1762447279055,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,8 +41,17 @@\n   ) => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n+export interface UpdateProductFormsProps {\r\n+  onSuccess?: () => void;\r\n+  product: ProductData;\r\n+  handleActionClick: (\r\n+    action: \"create\" | \"increase_quantity\" | \"update\" | null,\r\n+    product: ProductData\r\n+  ) => void;\r\n+  handleBackToList: () => void;\r\n+}\r\n \r\n export interface DepositMoneyProps {\r\n   user: UserData | TraderData;\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1762447398428,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,5 +55,11 @@\n export interface DepositMoneyProps {\r\n   user: UserData | TraderData;\r\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n+}\r\n+\r\n+export interface IncreaseQuantityProps {\r\n+  product: ProductData;\r\n+  onSuccess?: () => void;\r\n+  handleBackToList: () => void;\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762248920808,

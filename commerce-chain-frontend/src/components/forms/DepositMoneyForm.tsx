@@ -2,12 +2,8 @@ import type { UserData, TraderData, Deposit } from "../../utils/dataTypesUtils";
 import { channels } from "../../utils/dataTypesUtils";
 import { useState, useMemo } from "react";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
-
-interface DepositMoneyProps {
-  user: UserData | TraderData;
-  onSuccess?: () => void;
-  handleBackToList: () => void;
-}
+import type { DepositMoneyProps } from "../../utils/propsUtils";
+import { host, httpMethod } from "../../utils/utils";
 
 export default function DepositMoneyForm({
   user,
@@ -70,9 +66,9 @@ export default function DepositMoneyForm({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/deposit-money/${formData.channel}`,
+        `${host}/deposit-money/${formData.channel}`,
         {
-          method: "POST",
+          method: httpMethod.POST,
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             "user-id": user.id,
@@ -154,7 +150,7 @@ export default function DepositMoneyForm({
             className={`w-full px-4 py-3 bg-gray-700 border-2 ${theme.colors.border} text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none ${theme.colors.focus}`}
           />
           <p className={`text-sm ${theme.colors.textLight} mt-3`}>
-            Total balance: ${(+user.balance + +formData.amount).toFixed(2)}
+            Total balance: ${(+user.balance + +formData.amount!).toFixed(2)}
           </p>
         </div>
 
