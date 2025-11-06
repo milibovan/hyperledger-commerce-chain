@@ -38,15 +38,15 @@ const (
 )
 
 type Trader struct {
-	DocType              string     `json:"doc-type"`
-	Id                   string     `json:"id"`
-	Name                 string     `json:"name"`
-	TraderType           TraderType `json:"trader-type"`
-	VAT                  string     `json:"vat"`
-	ProductsAvailableIDs []string   `json:"products-available-ids"`
-	ReceiptsIDs          []string   `json:"receipts-ids"`
-	Balance              float64    `json:"balance"`
-	Deleted              bool       `json:"deleted"`
+	DocType           string     `json:"doc-type"`
+	Id                string     `json:"id"`
+	Name              string     `json:"name"`
+	TraderType        TraderType `json:"trader-type"`
+	VAT               string     `json:"vat"`
+	ProductsAvailable []string   `json:"products-available"`
+	ReceiptsIDs       []string   `json:"receipts-ids"`
+	Balance           float64    `json:"balance"`
+	Deleted           bool       `json:"deleted"`
 }
 
 type User struct {

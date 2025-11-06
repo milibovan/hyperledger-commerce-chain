@@ -123,13 +123,13 @@ func CreateProduct(gw *fabricClient.Gateway, channel, name, expiryDate, price, q
 	return status.BlockNumber, ID
 }
 
-func AddProductToTrader(gw *fabricClient.Gateway, channel, id, traderId string) uint64 {
+func AddProductsToTrader(gw *fabricClient.Gateway, channel, ids, traderId, quantity string) (uint64, error) {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
-	fmt.Printf("\n--> Submit transaction: AddProductToTrader, ID: %s on channel %s, tradedId: %s\n", id, channel, traderId)
+	fmt.Printf("\n--> Submit transaction: AddProductsToTrader, ID: %s on channel %s, tradedId: %s\n", ids, channel, traderId)
 
-	_, commit, err := ccContract.SubmitAsync("AddProductToTrader", fabricClient.WithArguments(id, traderId))
+	_, commit, err := ccContract.SubmitAsync("AddProductsToTrader", fabricClient.WithArguments(ids, traderId, quantity))
 	if err != nil {
 		panic(fmt.Errorf("failed to submit transaction: %w", err))
 	}
@@ -143,9 +143,9 @@ func AddProductToTrader(gw *fabricClient.Gateway, channel, id, traderId string) 
 		panic(fmt.Errorf("failed to commit transaction with status code %v", status.Code))
 	}
 
-	fmt.Println("\n*** AddProductToTrader committed successfully")
+	fmt.Println("\n*** AddProductsToTrader committed successfully")
 
-	return status.BlockNumber
+	return status.BlockNumber, nil
 }
 
 func BuyProduct(gw *fabricClient.Gateway, channel, userId, productId, traderId, quantity string) (uint64, string) {

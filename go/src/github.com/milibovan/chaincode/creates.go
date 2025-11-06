@@ -62,14 +62,14 @@ func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface
 	}
 
 	trader := structs.Trader{
-		DocType:              "trader",
-		Id:                   id,
-		Name:                 name,
-		TraderType:           traderType,
-		VAT:                  vat,
-		ProductsAvailableIDs: []string{},
-		ReceiptsIDs:          []string{},
-		Balance:              balanceFl,
+		DocType:           "trader",
+		Id:                id,
+		Name:              name,
+		TraderType:        traderType,
+		VAT:               vat,
+		ProductsAvailable: []structs.ProductInventory{},
+		ReceiptsIDs:       []string{},
+		Balance:           balanceFl,
 	}
 
 	traderJSON, err := json.Marshal(trader)

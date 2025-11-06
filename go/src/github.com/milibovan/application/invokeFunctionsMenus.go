@@ -197,14 +197,14 @@ func handleCreateProduct() error {
 }
 
 func handleAddProductToTrader() error {
-	var channelName, productId, traderId string
+	var channelName, productIds, traderId, quantites string
 
 	channelName = channelSelectionMenu(channelName)
 
 	for {
 		fmt.Println(Yellow + "\nEnter product ID: " + Reset)
-		fmt.Scanln(&productId)
-		if productId == "" || !strings.HasPrefix(productId, "PRODUCT_") {
+		fmt.Scanln(&productIds)
+		if productIds == "" || !strings.HasPrefix(productIds, "PRODUCT_") {
 			printWarning("Invalid id for product. Please enter a valid id which starts with PRODUCT_.")
 			fmt.Scanln()
 			continue
@@ -222,9 +222,13 @@ func handleAddProductToTrader() error {
 		}
 		break
 	}
-	blockNumber := client.AddProductToTrader(activeGW, channelName, productId, traderId)
+	blockNumber, err := client.AddProductsToTrader(activeGW, channelName, productIds, traderId, quantites)
+	if err != nil {
+		printError(err.Error())
+		return err
+	}
 
-	printInfo(fmt.Sprintf("\nProduct with ID %s was added successfully to trader %s on channel %s. Block number: %d\n", productId, traderId, channelName, blockNumber))
+	printInfo(fmt.Sprintf("\nProduct with ID %s was added successfully to trader %s on channel %s. Block number: %d\n", productIds, traderId, channelName, blockNumber))
 
 	return nil
 }

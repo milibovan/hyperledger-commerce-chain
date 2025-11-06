@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
@@ -62,9 +63,45 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 
 	// Traders
 	traders := []structs.Trader{
-		{DocType: "trader", Id: "TRADER_1", Name: "Supermarket_1", TraderType: structs.SUPERMARKET, VAT: "123456", ProductsAvailableIDs: []string{"S1", "S2", "S3"}, ReceiptsIDs: []string{}, Balance: 10000.0},
-		{DocType: "trader", Id: "TRADER_2", Name: "Pharmacy_2", TraderType: structs.PHARMACY, VAT: "456789", ProductsAvailableIDs: []string{"P4", "P5", "P6"}, ReceiptsIDs: []string{}, Balance: 5000.0},
-		{DocType: "trader", Id: "TRADER_3", Name: "Grocery_3", TraderType: structs.GROCERY, VAT: "789123", ProductsAvailableIDs: []string{"G7", "G8", "G9"}, ReceiptsIDs: []string{}, Balance: 1000.0},
+		{
+			DocType:    "trader",
+			Id:         "TRADER_1",
+			Name:       "Supermarket_1",
+			TraderType: structs.SUPERMARKET,
+			VAT:        "123456",
+			ProductsAvailable: []structs.ProductInventory{
+				{ProductId: "S1", Quantity: 1},
+			},
+			ReceiptsIDs: []string{},
+			Balance:     10000.0,
+			Deleted:     false,
+		},
+		{
+			DocType:    "trader",
+			Id:         "TRADER_2",
+			Name:       "Pharmacy_2",
+			TraderType: structs.PHARMACY,
+			VAT:        "456789",
+			ProductsAvailable: []structs.ProductInventory{
+				{ProductId: "P4", Quantity: 2},
+			},
+			ReceiptsIDs: []string{},
+			Balance:     5000.0,
+			Deleted:     false,
+		},
+		{
+			DocType:    "trader",
+			Id:         "TRADER_3",
+			Name:       "Grocery_3",
+			TraderType: structs.GROCERY,
+			VAT:        "789123",
+			ProductsAvailable: []structs.ProductInventory{
+				{ProductId: "G7", Quantity: 3},
+			},
+			ReceiptsIDs: []string{},
+			Balance:     1000.0,
+			Deleted:     false,
+		},
 	}
 
 	for _, trader := range traders {
@@ -90,7 +127,7 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 	return assetJSON != nil, nil
 }
 
-func (s *SmartContract) AddProductToTrader(ctx contractapi.TransactionContextInterface, id, traderId string) error {
+func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextInterface, ids, traderId, quantities string) error {
 	exists, err := s.AssetExists(ctx, traderId)
 	if err != nil {
 		return err
@@ -99,12 +136,24 @@ func (s *SmartContract) AddProductToTrader(ctx contractapi.TransactionContextInt
 		return fmt.Errorf("Trader %s does not exists", traderId)
 	}
 
-	exists, err = s.AssetExists(ctx, id)
-	if err != nil {
-		return err
+	for _, id := range ids {
+		exists, err = s.AssetExists(ctx, string(id))
+		if err != nil {
+			return err
+		}
+		if !exists {
+			return fmt.Errorf("Product %s must be created using CreateProduct before adding it to a trader", id)
+		}
 	}
-	if !exists {
-		return fmt.Errorf("Product %s must be created using CreateProduct before adding it to a trader", id)
+
+	var quantitiesInt []int32
+
+	for _, quantity := range quantities {
+		quantityInt, err := strconv.Atoi(string(quantity))
+		if err != nil {
+			return err
+		}
+		quantitiesInt = append(quantitiesInt, int32(quantityInt))
 	}
 
 	trader, err := s.ReadTrader(ctx, traderId)
@@ -112,22 +161,34 @@ func (s *SmartContract) AddProductToTrader(ctx contractapi.TransactionContextInt
 		return err
 	}
 
-	product, err := s.ReadProduct(ctx, id)
-	if err != nil {
-		return err
+	var products []*structs.Product
+
+	for _, id := range ids {
+		product, err := s.ReadProduct(ctx, string(id))
+		if err != nil {
+			return err
+		}
+		products = append(products, product)
 	}
 
-	for _, existingID := range trader.ProductsAvailableIDs {
-		if existingID == id {
-			return fmt.Errorf("Product %s is already available for Trader %s", id, traderId)
+	for _, item := range trader.ProductsAvailable {
+		if strings.Contains(ids, item.ProductId) {
+			return fmt.Errorf("Product %s is already available for Trader %s", item.ProductId, traderId)
 		}
 	}
 
-	if product.TraderType != trader.TraderType {
-		return fmt.Errorf("Product %s trader type %s does not match trader %s type %s", id, product.TraderType, traderId, trader.TraderType)
-	}
+	//if product.TraderType != trader.TraderType {
+	//	return fmt.Errorf("Product %s trader type %s does not match trader %s type %s", id, product.TraderType, traderId, trader.TraderType)
+	//}
 
-	trader.ProductsAvailableIDs = append(trader.ProductsAvailableIDs, id)
+	for index, product := range products {
+		newAvaliableProduct := structs.ProductInventory{
+			product.Id,
+			quantitiesInt[index],
+		}
+		trader.ProductsAvailable = append(trader.ProductsAvailable, newAvaliableProduct)
+
+	}
 
 	traderJSON, err := json.Marshal(trader)
 	if err != nil {
@@ -183,7 +244,7 @@ func (s *SmartContract) BuyProduct(ctx contractapi.TransactionContextInterface, 
 	product.Quantity -= quantityInt
 
 	if product.Quantity == 0 {
-		trader.ProductsAvailableIDs = trader.RemoveProductId(product.Id)
+		trader.ProductsAvailable = trader.RemoveProductId(product.Id)
 	}
 
 	receiptId, err := s.CreateReceipt(ctx, id, traderId, userId, []string{productId})

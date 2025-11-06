@@ -70,6 +70,7 @@ func CreateServer() {
 	router.POST("/deposit-money/:channel", depositMoney)
 	router.POST("/increase-quantity/:channel", increaseQuantity)
 	router.GET("/traders-products/:channel", getTradersProducts)
+	router.POST("/traders-products/:channel", addProductsToTrader)
 
 	router.Run("localhost:8080")
 }
@@ -401,4 +402,32 @@ func getTradersProducts(c *gin.Context) {
 		"Message":  "Products retrieved successfully",
 		"Products": string(productsJSON),
 	})
+}
+func addProductsToTrader(c *gin.Context) {
+	var request struct {
+		ProductIds []string `json:"product-ids"`
+		TraderId   string   `json:"trader-id"`
+		Quantity   int      `json:"quantity"`
+	}
+	var channel string
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	idsJSON, err := json.Marshal(request.ProductIds)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to marshal IDs"})
+		return
+	}
+
+	blockNumber, err := client.AddProductsToTrader(activeGW, channel, string(idsJSON), request.TraderId, fmt.Sprint(request.Quantity))
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Products added to trader %d", blockNumber)})
 }

@@ -13,15 +13,20 @@ const (
 )
 
 type Trader struct {
-	DocType              string     `json:"doc-type"`
-	Id                   string     `json:"id"`
-	Name                 string     `json:"name"`
-	TraderType           TraderType `json:"trader-type"`
-	VAT                  string     `json:"vat"`
-	ProductsAvailableIDs []string   `json:"products-available-ids"`
-	ReceiptsIDs          []string   `json:"receipts-ids"`
-	Balance              float64    `json:"balance"`
-	Deleted              bool       `json:"deleted"`
+	DocType           string             `json:"doc-type"`
+	Id                string             `json:"id"`
+	Name              string             `json:"name"`
+	TraderType        TraderType         `json:"trader-type"`
+	VAT               string             `json:"vat"`
+	ProductsAvailable []ProductInventory `json:"products-available"`
+	ReceiptsIDs       []string           `json:"receipts-ids"`
+	Balance           float64            `json:"balance"`
+	Deleted           bool               `json:"deleted"`
+}
+
+type ProductInventory struct {
+	ProductId string `json:"product-id"`
+	Quantity  int32  `json:"quantity"`
 }
 
 func GetTraderTypeFromString(input string) (TraderType, error) {
@@ -35,19 +40,19 @@ func GetTraderTypeFromString(input string) (TraderType, error) {
 	}
 }
 
-func (t *Trader) RemoveProductId(id string) []string {
-	for i, item := range t.ProductsAvailableIDs {
-		if item == id {
-			return append(t.ProductsAvailableIDs[:i], t.ProductsAvailableIDs[i+1:]...)
+func (t *Trader) RemoveProductId(id string) []ProductInventory {
+	for i, item := range t.ProductsAvailable {
+		if item.ProductId == id {
+			return append(t.ProductsAvailable[:i], t.ProductsAvailable[i+1:]...)
 		}
 	}
-	return t.ProductsAvailableIDs
+	return t.ProductsAvailable
 }
 
 func (t *Trader) ContainsProduct(id string) bool {
 	isAvailable := false
-	for _, productId := range t.ProductsAvailableIDs {
-		if productId == id {
+	for _, item := range t.ProductsAvailable {
+		if item.ProductId == id {
 			isAvailable = true
 			break
 		}

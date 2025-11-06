@@ -74,15 +74,16 @@ func handleCLI() {
 		org := addProductCmd.String("org", "org1", "Organization")
 		user := addProductCmd.String("user", "User1", "User identity")
 		channel := addProductCmd.String("channel", "channel-a", "Channel name")
-		productId := addProductCmd.String("product-id", "", "Product ID")
+		productIds := addProductCmd.String("product-ids", "", "Product IDs")
 		traderId := addProductCmd.String("trader-id", "", "Trader ID")
+		quantites := addProductCmd.String("quantites", "", "Quantites")
 
 		addProductCmd.Parse(os.Args[2:])
-		if *productId == "" || *traderId == "" {
+		if *productIds == "" || *traderId == "" {
 			log.Fatal("Both --product-id and --trader-id are required")
 		}
 		executeCLI(*org, *user, *channel, func() {
-			handleCLIAddProductToTrader(*channel, *productId, *traderId)
+			handleCLIAddProductToTrader(*channel, *productIds, *traderId, *quantites)
 		})
 
 	case "buy-product":
@@ -287,10 +288,10 @@ func handleCLICreateProduct(channelName, name, expiryDate, price, quantity, trad
 	printInfo(fmt.Sprintf("\nProduct with ID %s was created successfully on channel %s. Block number: %d\n", ID, channelName, blockNumber))
 }
 
-func handleCLIAddProductToTrader(channelName, productId, traderId string) {
-	blockNumber := client.AddProductToTrader(activeGW, channelName, productId, traderId)
+func handleCLIAddProductToTrader(channelName, productIds, traderId, quantities string) {
+	blockNumber, _ := client.AddProductsToTrader(activeGW, channelName, productIds, traderId, quantities)
 
-	printInfo(fmt.Sprintf("\nProduct with ID %s was added successfully to trader %s on channel %s. Block number: %d\n", productId, traderId, channelName, blockNumber))
+	printInfo(fmt.Sprintf("\nProduct with ID %s was added successfully to trader %s on channel %s. Block number: %d\n", productIds, traderId, channelName, blockNumber))
 
 }
 
