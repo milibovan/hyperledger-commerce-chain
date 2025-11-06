@@ -267,3 +267,35 @@ func (s *SmartContract) DepositMoney(ctx contractapi.TransactionContextInterface
 	}
 	return ctx.GetStub().PutState(id, traderJSON)
 }
+
+func (s *SmartContract) IncreaseQuantity(ctx contractapi.TransactionContextInterface, id, quantity string) error {
+	quantityInt, err := strconv.Atoi(quantity)
+	if err != nil {
+		return err
+	}
+
+	exists, err := s.AssetExists(ctx, id)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("Asset type with ID %s does not exist", id)
+	}
+
+	if quantityInt <= 0 {
+		return fmt.Errorf("deposit quantity must be positive")
+	}
+
+	product, err := s.ReadProduct(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	product.Quantity += quantityInt
+
+	productJSON, err := json.Marshal(product)
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(id, productJSON)
+}

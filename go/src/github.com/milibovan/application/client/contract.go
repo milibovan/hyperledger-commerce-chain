@@ -659,3 +659,27 @@ func GetProductsByIds(gw *fabricClient.Gateway, channel, productsIds string) ([]
 
 	return products, nil
 }
+func IncreaseQuantity(gw *fabricClient.Gateway, channel, id, quantity string) (uint64, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Submit transaction: IncreaseQuantity, ID: %s on channel %s, quantity: %s\n", id, channel, quantity)
+
+	_, commit, err := ccContract.SubmitAsync("IncreaseQuantity", fabricClient.WithArguments(id, quantity))
+	if err != nil {
+		return uint64(0), fmt.Errorf("failed to submit transaction: %w", err)
+	}
+
+	status, err := commit.Status()
+	if err != nil {
+		return uint64(0), fmt.Errorf("failed to get transaction commit status: %w", err)
+	}
+
+	if !status.Successful {
+		return uint64(0), fmt.Errorf("failed to commit transaction with status code %v", status.Code)
+	}
+
+	fmt.Println("\n*** IncreaseQuantity committed successfully")
+
+	return status.BlockNumber, nil
+}

@@ -68,6 +68,7 @@ func CreateServer() {
 	router.DELETE("/receipts/:channel/:id", deleteReceipt)
 
 	router.POST("/deposit-money/:channel", depositMoney)
+	router.POST("/increase-quantity/:channel", increaseQuantity)
 	router.GET("/traders-products/:channel", getTradersProducts)
 
 	router.Run("localhost:8080")
@@ -342,6 +343,23 @@ func depositMoney(c *gin.Context) {
 	}
 
 	blockNumber, err := client.DepositMoney(activeGW, channel, depositObject.UserId, fmt.Sprint(depositObject.Amount))
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Cannot deposit money %s", err.Error())})
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Deposited money %d", blockNumber)})
+}
+func increaseQuantity(c *gin.Context) {
+	var channel string
+	var increaseObject models.IncreaseObject
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&increaseObject); err != nil {
+		c.JSON(400, gin.H{"Message": fmt.Sprintf("Cannot parse request. Error: %s", err.Error())})
+		return
+	}
+
+	blockNumber, err := client.IncreaseQuantity(activeGW, channel, increaseObject.ProductId, fmt.Sprint(increaseObject.Quantity))
 	if err != nil {
 		c.JSON(500, gin.H{"Message": fmt.Sprintf("Cannot deposit money %s", err.Error())})
 	}
