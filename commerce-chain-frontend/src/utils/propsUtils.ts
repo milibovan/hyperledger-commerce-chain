@@ -16,6 +16,7 @@ export interface DetailsProps<T> {
     date?: string;
     products?: ProductData[];
     productsLoading?: boolean;
+    addProduct?: (trader: TraderData, products?: ProductData[]) => void;
 }
 
 export interface CreateFormsProps {

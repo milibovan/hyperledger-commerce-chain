@@ -20,6 +20,7 @@ import { useTraders } from "../customHooks/useTraders";
 import { useEntityActions } from "../customHooks/useEntityActions";
 import TraderDetails from "../overviews/TraderDetails";
 import TradersList from "../lists/TradersList";
+import AddProjectToTrader from "../forms/AddProjectToTrader";
 
 export default function TradersPanel() {
   const modalRef = useRef<ModalHandle>(null);
@@ -99,6 +100,11 @@ export default function TradersPanel() {
               handleBackToList={resetActions}
             />
           );
+
+        case "addProduct":
+          return (
+            <AddProjectToTrader trader={selectedTrader} tradersProducts={products} />
+          );
         default:
           if (viewDetails) {
             return (
@@ -106,6 +112,7 @@ export default function TradersPanel() {
                 entity={selectedTrader}
                 products={products}
                 productsLoading={loading}
+                addProduct={() => handleAction("addProduct", selectedTrader)}
               />
             );
           }
@@ -121,7 +128,9 @@ export default function TradersPanel() {
           onConfirm={handleDeleteConfirm}
           confirmClassName={modalConfirmButtonStyle}
           cancelClassName={modalCancelButtonStyle + " text-pink-300"}
-          dialogClassName={modalDialogClassName + " border-pink-500 shadow-pink-500/50"}
+          dialogClassName={
+            modalDialogClassName + " border-pink-500 shadow-pink-500/50"
+          }
         >
           <h2 className="text-2xl font-bold text-pink-400 mb-4">
             Confirm Deletion
@@ -188,7 +197,9 @@ export default function TradersPanel() {
         onConfirm={handleDeleteConfirm}
         confirmClassName={modalConfirmButtonStyle}
         cancelClassName={modalCancelButtonStyle + " text-pink-300"}
-        dialogClassName={modalDialogClassName + " border-pink-500 shadow-pink-500/50"}
+        dialogClassName={
+          modalDialogClassName + " border-pink-500 shadow-pink-500/50"
+        }
       >
         <h2 className="text-2xl font-bold text-pink-400 mb-4">
           Confirm Deletion

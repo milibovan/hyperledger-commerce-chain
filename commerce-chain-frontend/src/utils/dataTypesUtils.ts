@@ -97,6 +97,12 @@ export interface Deposit {
   channel: string;
 }
 
+export interface AddProductToTrader {
+  traderId: string,
+  productId: string,
+  quantity: string
+}
+
 export function formatDate(date: string) {
   const dateTime = new Date(date);
 

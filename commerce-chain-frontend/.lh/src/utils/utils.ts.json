@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 39,
+            "activePatchIndex": 40,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -164,6 +164,10 @@
                 {
                     "date": 1762250493974,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,4 +5,6 @@\n   POST = \"POST\",\r\n   PUT = \"PUT\",\r\n   DELETE = \"DELETE\",\r\n }\r\n+\r\n+export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | null;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1762526478823,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,5 +6,5 @@\n   PUT = \"PUT\",\r\n   DELETE = \"DELETE\",\r\n }\r\n \r\n-export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | null;\n\\ No newline at end of file\n+export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | null;\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1761645950564,

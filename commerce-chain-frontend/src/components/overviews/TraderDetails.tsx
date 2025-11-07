@@ -1,13 +1,17 @@
 import type { TraderData } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
-import { traderFontBold, traderFontSemibold, addButtonStyle } from "../../utils/stylingUtils";
+import {
+  traderFontBold,
+  traderFontSemibold,
+  addButtonStyle,
+} from "../../utils/stylingUtils";
 import { Package, Plus } from "lucide-react";
-
 
 export default function TraderDetails({
   entity: trader,
   products,
   productsLoading,
+  addProduct,
 }: DetailsProps<TraderData>) {
   return (
     <div className="space-y-6">
@@ -22,8 +26,7 @@ export default function TraderDetails({
           <span className={traderFontSemibold}>VAT:</span> {trader.vat}
         </div>
         <div>
-          <span className={traderFontSemibold}>Name:</span>{" "}
-          {trader.name}
+          <span className={traderFontSemibold}>Name:</span> {trader.name}
         </div>
         <div>
           <span className={traderFontSemibold}>Balance:</span> $
@@ -42,13 +45,15 @@ export default function TraderDetails({
             <Package size={20} />
             Products ({trader["products-available-ids"]?.length || 0})
           </h4>
-          <button
-            // onClick={() => handleActionClick("deposit", trader!)}
-            className={addButtonStyle}
-            title="Add products"
-          >
-            <Plus size={18} /> Add products
-          </button>
+          {addProduct && (
+            <button
+              onClick={() => addProduct(trader!, products!)}
+              className={addButtonStyle}
+              title="Add products"
+            >
+              <Plus size={18} /> Add products
+            </button>
+          )}
         </div>
 
         {productsLoading ? (
