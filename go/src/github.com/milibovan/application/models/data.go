@@ -70,9 +70,12 @@ func (ct *CustomTime) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	t, err := time.Parse("2006-01-02 15:04:05", s)
+	t, err := time.Parse(time.RFC3339, s)
 	if err != nil {
-		return err
+		t, err = time.Parse("2006-01-02 15:04:05", s)
+		if err != nil {
+			return err
+		}
 	}
 	ct.Time = t
 	return nil

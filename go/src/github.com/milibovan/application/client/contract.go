@@ -635,17 +635,22 @@ func DeleteReceipt(gw *fabricClient.Gateway, channel, id string) (uint64, error)
 
 	return status.BlockNumber, nil
 }
-func GetProductsByIds(gw *fabricClient.Gateway, channel, productsIds string) ([]*models.Product, error) {
+func GetProductsByIds(gw *fabricClient.Gateway, channel string, productsIds []string) ([]*models.Product, error) {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
 	fmt.Printf("\n--> Evaluate Transaction: GetProductsByIds from %s\n", channel)
+	fmt.Printf("Product IDs to query: %v\n", productsIds)
 
-	resultBytes, err := ccContract.Evaluate("GetProductsByIds", fabricClient.WithArguments(productsIds))
+	productsIdsJSON, err := json.Marshal(productsIds)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal product IDs: %w", err)
+	}
+
+	resultBytes, err := ccContract.Evaluate("GetProductsByIds", fabricClient.WithArguments(string(productsIdsJSON)))
 	if err != nil {
 		return nil, fmt.Errorf("failed to evaluate transaction: %w", err)
 	}
-
 	products, err := unmarshalEntityArray[models.Product](resultBytes)
 	if err != nil {
 		return nil, err

@@ -69,7 +69,7 @@ func CreateServer() {
 
 	router.POST("/deposit-money/:channel", depositMoney)
 	router.POST("/increase-quantity/:channel", increaseQuantity)
-	router.GET("/traders-products/:channel", getTradersProducts)
+	router.POST("/traders/:channel/products", getTradersProducts)
 	router.POST("/traders-products/:channel", addProductsToTrader)
 
 	router.Run("localhost:8080")
@@ -372,6 +372,7 @@ func getTradersProducts(c *gin.Context) {
 	var request struct {
 		ProductIds []string `json:"product-ids"`
 	}
+
 	var channel string
 	channel = c.Param("channel")
 
@@ -380,13 +381,10 @@ func getTradersProducts(c *gin.Context) {
 		return
 	}
 
-	idsJSON, err := json.Marshal(request.ProductIds)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to marshal IDs"})
-		return
-	}
+	fmt.Println("Request:", request)
+	fmt.Println("Product IDs:", request.ProductIds)
 
-	products, err := client.GetProductsByIds(activeGW, channel, string(idsJSON))
+	products, err := client.GetProductsByIds(activeGW, channel, request.ProductIds)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

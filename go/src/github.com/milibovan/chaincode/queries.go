@@ -292,17 +292,17 @@ func (t *SmartContract) GetAllProducts(ctx contractapi.TransactionContextInterfa
 	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
-func (t *SmartContract) GetProductsByIds(ctx contractapi.TransactionContextInterface, productIds string) ([]*structs.Product, error) {
-	var ids []string
-	err := json.Unmarshal([]byte(productIds), &ids)
+func (t *SmartContract) GetProductsByIds(ctx contractapi.TransactionContextInterface, productIdsJSON string) ([]*structs.Product, error) {
+	var productIds []string
+	err := json.Unmarshal([]byte(productIdsJSON), &productIds)
 	if err != nil {
-		return nil, fmt.Errorf("invalid product IDs format: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal product IDs: %w", err)
 	}
 
 	selector := map[string]interface{}{
 		"doc-type": "product",
 		"id": map[string]interface{}{
-			"$in": ids,
+			"$in": productIds,
 		},
 		"deleted": map[string]interface{}{"$ne": true},
 	}
