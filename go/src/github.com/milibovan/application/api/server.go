@@ -404,10 +404,14 @@ func getTradersProducts(c *gin.Context) {
 	})
 }
 func addProductsToTrader(c *gin.Context) {
+	type products struct {
+		ProductId string `json:"product-id"`
+		Quantity  int    `json:"quantity"`
+	}
+
 	var request struct {
-		ProductIds []string `json:"product-ids"`
-		TraderId   string   `json:"trader-id"`
-		Quantity   int      `json:"quantity"`
+		Products []products `json:"products"`
+		TraderId string     `json:"trader-id"`
 	}
 	var channel string
 	channel = c.Param("channel")
@@ -417,17 +421,18 @@ func addProductsToTrader(c *gin.Context) {
 		return
 	}
 
-	idsJSON, err := json.Marshal(request.ProductIds)
-	if err != nil {
-		c.JSON(500, gin.H{"error": "Failed to marshal IDs"})
-		return
+	args := []string{request.TraderId}
+
+	for _, p := range request.Products {
+		args = append(args, p.ProductId)
+		args = append(args, strconv.Itoa(p.Quantity))
 	}
 
-	blockNumber, err := client.AddProductsToTrader(activeGW, channel, string(idsJSON), request.TraderId, fmt.Sprint(request.Quantity))
+	blockNumber, err := client.AddProductsToTrader(activeGW, channel, args)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, gin.H{"Message": fmt.Sprintf("Products added to trader %d", blockNumber)})
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Products added to trader %s %s", request.TraderId, blockNumber)})
 }

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
@@ -127,67 +126,68 @@ func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface,
 	return assetJSON != nil, nil
 }
 
-func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextInterface, ids, traderId, quantities string) error {
-	exists, err := s.AssetExists(ctx, traderId)
-	if err != nil {
-		return err
-	}
-	if !exists {
-		return fmt.Errorf("Trader %s does not exists", traderId)
+func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextInterface) error {
+	args := ctx.GetStub().GetStringArgs()
+
+	if len(args) < 4 || (len(args)-2)%2 != 0 {
+		return fmt.Errorf("incorrect number of arguments. Expecting TraderID, followed by productID/quantity pairs")
 	}
 
-	for _, id := range ids {
-		exists, err = s.AssetExists(ctx, string(id))
-		if err != nil {
-			return err
-		}
-		if !exists {
-			return fmt.Errorf("Product %s must be created using CreateProduct before adding it to a trader", id)
-		}
-	}
-
-	var quantitiesInt []int32
-
-	for _, quantity := range quantities {
-		quantityInt, err := strconv.Atoi(string(quantity))
-		if err != nil {
-			return err
-		}
-		quantitiesInt = append(quantitiesInt, int32(quantityInt))
-	}
+	traderId := args[1]
 
 	trader, err := s.ReadTrader(ctx, traderId)
 	if err != nil {
 		return err
 	}
 
-	var products []*structs.Product
+	for i := 2; i < len(args); i += 2 {
+		productId := args[i]
 
-	for _, id := range ids {
-		product, err := s.ReadProduct(ctx, string(id))
+		quantityStr := args[i+1]
+		quantity, err := strconv.Atoi(quantityStr)
+		if err != nil {
+			return fmt.Errorf("invalid quantity for product %s: %w", productId, err)
+		}
+
+		fmt.Printf("Processing Trader: %s, Product: %s, Quantity: %d\n", traderId, productId, quantity)
+
+		product, err := s.ReadProduct(ctx, productId)
 		if err != nil {
 			return err
 		}
-		products = append(products, product)
-	}
 
-	for _, item := range trader.ProductsAvailable {
-		if strings.Contains(ids, item.ProductId) {
-			return fmt.Errorf("Product %s is already available for Trader %s", item.ProductId, traderId)
+		hasTraderProduct := trader.ContainsProduct(productId)
+
+		if hasTraderProduct {
+			trader.UpdateProduct(product.Id, quantity)
+		} else {
+			newAvaliableProduct := structs.ProductInventory{
+				product.Id,
+				quantity,
+			}
+
+			trader.ProductsAvailable = append(trader.ProductsAvailable, newAvaliableProduct)
 		}
-	}
 
-	//if product.TraderType != trader.TraderType {
-	//	return fmt.Errorf("Product %s trader type %s does not match trader %s type %s", id, product.TraderType, traderId, trader.TraderType)
-	//}
-
-	for index, product := range products {
-		newAvaliableProduct := structs.ProductInventory{
-			product.Id,
-			quantitiesInt[index],
+		if trader.Balance < product.Price*float64(quantity) {
+			return fmt.Errorf("No enough funds %s: %w", trader.Id, err)
 		}
-		trader.ProductsAvailable = append(trader.ProductsAvailable, newAvaliableProduct)
 
+		trader.Balance -= product.Price * float64(quantity)
+
+		if product.Quantity < quantity {
+			return fmt.Errorf("Insufficient product %s inventory. Only %d available", productId, product.Quantity)
+		}
+
+		productJSON, err := json.Marshal(product)
+		if err != nil {
+			return err
+		}
+
+		err = ctx.GetStub().PutState(product.Id, productJSON)
+		if err != nil {
+			return err
+		}
 	}
 
 	traderJSON, err := json.Marshal(trader)

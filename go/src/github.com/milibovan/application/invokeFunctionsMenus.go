@@ -197,7 +197,7 @@ func handleCreateProduct() error {
 }
 
 func handleAddProductToTrader() error {
-	var channelName, productIds, traderId, quantites string
+	var channelName, productIds, traderId string
 
 	channelName = channelSelectionMenu(channelName)
 
@@ -222,13 +222,13 @@ func handleAddProductToTrader() error {
 		}
 		break
 	}
-	blockNumber, err := client.AddProductsToTrader(activeGW, channelName, productIds, traderId, quantites)
-	if err != nil {
-		printError(err.Error())
-		return err
-	}
+	//blockNumber, err := client.AddProductsToTrader(activeGW, channelName, productIds, traderId, quantites)
+	//if err != nil {
+	//	printError(err.Error())
+	//	return err
+	//}
 
-	printInfo(fmt.Sprintf("\nProduct with ID %s was added successfully to trader %s on channel %s. Block number: %d\n", productIds, traderId, channelName, blockNumber))
+	printInfo(fmt.Sprintf("\nProduct with ID %s was added successfully to trader %s on channel %s. Block number: %d\n", productIds, traderId, channelName))
 
 	return nil
 }

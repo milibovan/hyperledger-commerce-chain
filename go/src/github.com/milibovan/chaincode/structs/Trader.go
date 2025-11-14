@@ -26,7 +26,7 @@ type Trader struct {
 
 type ProductInventory struct {
 	ProductId string `json:"product-id"`
-	Quantity  int32  `json:"quantity"`
+	Quantity  int    `json:"quantity"`
 }
 
 func GetTraderTypeFromString(input string) (TraderType, error) {
@@ -58,4 +58,12 @@ func (t *Trader) ContainsProduct(id string) bool {
 		}
 	}
 	return isAvailable
+}
+
+func (t *Trader) UpdateProduct(productId string, quantity int) {
+	for i, item := range t.ProductsAvailable {
+		if item.ProductId == productId {
+			t.ProductsAvailable[i].Quantity = quantity
+		}
+	}
 }
