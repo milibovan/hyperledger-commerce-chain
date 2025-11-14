@@ -52,7 +52,7 @@ export default function TradersPanel() {
   // Fetch products when trader is selected and details view is shown
   useEffect(() => {
     if (selectedTrader && viewDetails) {
-      fetchProductsByIds(selectedTrader["products-available-ids"] || []);
+      fetchProductsByIds(selectedTrader["products-available"].map(product => product["product-id"]) || []);
     } else {
       clearProducts();
     }

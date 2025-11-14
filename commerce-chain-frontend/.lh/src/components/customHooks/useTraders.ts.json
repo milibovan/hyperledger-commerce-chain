@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 13,
+            "activePatchIndex": 28,
             "patches": [
                 {
                     "date": 1762250049160,
@@ -60,6 +60,66 @@
                 {
                     "date": 1762262219023,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -152,7 +152,6 @@\n     fetchTraders,\r\n     fetchProductsByIds,\r\n     clearProducts,\r\n     deleteTrader,\r\n-    setError,\r\n   };\r\n }\r\n"
+                },
+                {
+                    "date": 1763156330146,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -94,9 +94,9 @@\n       setError(null);\r\n \r\n       try {\r\n         const response = await fetch(\r\n-          `http://localhost:8080/products/${channel}/by-ids`,\r\n+          `${host}/traders-products/${channel}`,\r\n           {\r\n             method: \"POST\",\r\n             headers: { \"Content-Type\": \"application/json\" },\r\n             body: JSON.stringify({ productIds }),\r\n"
+                },
+                {
+                    "date": 1763156885272,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,9 +96,9 @@\n       try {\r\n         const response = await fetch(\r\n           `${host}/traders-products/${channel}`,\r\n           {\r\n-            method: \"POST\",\r\n+            method: httpMethod.GET,\r\n             headers: { \"Content-Type\": \"application/json\" },\r\n             body: JSON.stringify({ productIds }),\r\n           }\r\n         );\r\n"
+                },
+                {
+                    "date": 1763156923984,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -105,8 +105,9 @@\n \r\n         if (response.ok) {\r\n           const responseData = await response.json();\r\n           let parsedProducts = [];\r\n+          console.log(responseData)\r\n \r\n           if (responseData.Products) {\r\n             try {\r\n               parsedProducts = JSON.parse(responseData.Products);\r\n"
+                },
+                {
+                    "date": 1763157123462,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -105,9 +105,8 @@\n \r\n         if (response.ok) {\r\n           const responseData = await response.json();\r\n           let parsedProducts = [];\r\n-          console.log(responseData)\r\n \r\n           if (responseData.Products) {\r\n             try {\r\n               parsedProducts = JSON.parse(responseData.Products);\r\n"
+                },
+                {
+                    "date": 1763157198491,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -98,9 +98,9 @@\n           `${host}/traders-products/${channel}`,\r\n           {\r\n             method: httpMethod.GET,\r\n             headers: { \"Content-Type\": \"application/json\" },\r\n-            body: JSON.stringify({ productIds }),\r\n+            body: JSON.stringify({ \"product-ids\": productIds }),\r\n           }\r\n         );\r\n \r\n         if (response.ok) {\r\n"
+                },
+                {
+                    "date": 1763157242103,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -84,8 +84,9 @@\n   );\r\n \r\n   const fetchProductsByIds = useCallback(\r\n     async (productIds: string[]) => {\r\n+      console.log(\"product ids\", productIds)\r\n       if (!productIds || productIds.length === 0) {\r\n         setProducts([]);\r\n         return;\r\n       }\r\n"
+                },
+                {
+                    "date": 1763157277170,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,8 +106,9 @@\n \r\n         if (response.ok) {\r\n           const responseData = await response.json();\r\n           let parsedProducts = [];\r\n+          console.log(\"response data: \", responseData)\r\n \r\n           if (responseData.Products) {\r\n             try {\r\n               parsedProducts = JSON.parse(responseData.Products);\r\n"
+                },
+                {
+                    "date": 1763157313525,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,8 +103,10 @@\n             body: JSON.stringify({ \"product-ids\": productIds }),\r\n           }\r\n         );\r\n \r\n+        console.log(response)\r\n+\r\n         if (response.ok) {\r\n           const responseData = await response.json();\r\n           let parsedProducts = [];\r\n           console.log(\"response data: \", responseData)\r\n"
+                },
+                {
+                    "date": 1763157348372,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -90,8 +90,10 @@\n         setProducts([]);\r\n         return;\r\n       }\r\n \r\n+      console.log(\"Something\")\r\n+\r\n       setLoading(true);\r\n       setError(null);\r\n \r\n       try {\r\n"
+                },
+                {
+                    "date": 1763157356753,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -90,14 +90,16 @@\n         setProducts([]);\r\n         return;\r\n       }\r\n \r\n-      console.log(\"Something\")\r\n-\r\n+      \r\n       setLoading(true);\r\n       setError(null);\r\n+      \r\n+      try {\r\n+        console.log(\"Something\")\r\n \r\n-      try {\r\n+\r\n         const response = await fetch(\r\n           `${host}/traders-products/${channel}`,\r\n           {\r\n             method: httpMethod.GET,\r\n"
+                },
+                {
+                    "date": 1763157363346,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -97,9 +97,8 @@\n       \r\n       try {\r\n         console.log(\"Something\")\r\n \r\n-\r\n         const response = await fetch(\r\n           `${host}/traders-products/${channel}`,\r\n           {\r\n             method: httpMethod.GET,\r\n"
+                },
+                {
+                    "date": 1763157407211,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -84,36 +84,32 @@\n   );\r\n \r\n   const fetchProductsByIds = useCallback(\r\n     async (productIds: string[]) => {\r\n-      console.log(\"product ids\", productIds)\r\n+      console.log(\"product ids\", productIds);\r\n       if (!productIds || productIds.length === 0) {\r\n         setProducts([]);\r\n         return;\r\n       }\r\n \r\n-      \r\n       setLoading(true);\r\n       setError(null);\r\n-      \r\n+\r\n       try {\r\n-        console.log(\"Something\")\r\n+        console.log(\"Something\");\r\n \r\n-        const response = await fetch(\r\n-          `${host}/traders-products/${channel}`,\r\n-          {\r\n-            method: httpMethod.GET,\r\n-            headers: { \"Content-Type\": \"application/json\" },\r\n-            body: JSON.stringify({ \"product-ids\": productIds }),\r\n-          }\r\n-        );\r\n+        const response = await fetch(`${host}/traders-products/${channel}`, {\r\n+          method: httpMethod.GET,\r\n+          headers: { \"Content-Type\": \"application/json\" },\r\n+          body: JSON.stringify({ \"product-ids\": productIds }),\r\n+        });\r\n \r\n-        console.log(response)\r\n+        console.log(response);\r\n \r\n         if (response.ok) {\r\n           const responseData = await response.json();\r\n           let parsedProducts = [];\r\n-          console.log(\"response data: \", responseData)\r\n+          console.log(\"response data: \", responseData);\r\n \r\n           if (responseData.Products) {\r\n             try {\r\n               parsedProducts = JSON.parse(responseData.Products);\r\n"
+                },
+                {
+                    "date": 1763157523814,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,10 +96,10 @@\n \r\n       try {\r\n         console.log(\"Something\");\r\n \r\n-        const response = await fetch(`${host}/traders-products/${channel}`, {\r\n-          method: httpMethod.GET,\r\n+        const response = await fetch(`${host}/traders/${channel}/products`, {\r\n+          method: httpMethod.POST,\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({ \"product-ids\": productIds }),\r\n         });\r\n \r\n"
+                },
+                {
+                    "date": 1763157582115,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -84,9 +84,8 @@\n   );\r\n \r\n   const fetchProductsByIds = useCallback(\r\n     async (productIds: string[]) => {\r\n-      console.log(\"product ids\", productIds);\r\n       if (!productIds || productIds.length === 0) {\r\n         setProducts([]);\r\n         return;\r\n       }\r\n@@ -94,10 +93,8 @@\n       setLoading(true);\r\n       setError(null);\r\n \r\n       try {\r\n-        console.log(\"Something\");\r\n-\r\n         const response = await fetch(`${host}/traders/${channel}/products`, {\r\n           method: httpMethod.POST,\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({ \"product-ids\": productIds }),\r\n"
+                },
+                {
+                    "date": 1763160113254,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -99,14 +99,11 @@\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({ \"product-ids\": productIds }),\r\n         });\r\n \r\n-        console.log(response);\r\n-\r\n         if (response.ok) {\r\n           const responseData = await response.json();\r\n           let parsedProducts = [];\r\n-          console.log(\"response data: \", responseData);\r\n \r\n           if (responseData.Products) {\r\n             try {\r\n               parsedProducts = JSON.parse(responseData.Products);\r\n"
                 }
             ],
             "date": 1762250049160,

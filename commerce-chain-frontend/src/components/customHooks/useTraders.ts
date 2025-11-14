@@ -94,14 +94,11 @@ export function useTraders(channel: string = "channel-a") {
       setError(null);
 
       try {
-        const response = await fetch(
-          `http://localhost:8080/products/${channel}/by-ids`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ productIds }),
-          }
-        );
+        const response = await fetch(`${host}/traders/${channel}/products`, {
+          method: httpMethod.POST,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ "product-ids": productIds }),
+        });
 
         if (response.ok) {
           const responseData = await response.json();

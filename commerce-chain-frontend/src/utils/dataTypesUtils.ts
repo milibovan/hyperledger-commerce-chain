@@ -67,13 +67,18 @@ export interface TradersData {
   Traders: Array<TraderData>;
 }
 
+export interface ProductInventory {
+  "product-id": string;
+  quantity: number
+}
+
 export interface TraderData {
   "doc-type": string;
   id: string;
   name: string;
   "trader-type": string;
   vat: string;
-  "products-available-ids": Array<string>;
+  "products-available": Array<ProductInventory>;
   "receipts-ids": Array<string>;
   balance: number;
 }

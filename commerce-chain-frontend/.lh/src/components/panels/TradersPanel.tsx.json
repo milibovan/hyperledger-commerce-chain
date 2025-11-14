@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 164,
+            "activePatchIndex": 172,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -664,6 +664,38 @@
                 {
                     "date": 1763140127024,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,9 +19,9 @@\n import { useTraders } from \"../customHooks/useTraders\";\r\n import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n import TraderDetails from \"../overviews/TraderDetails\";\r\n import TradersList from \"../lists/TradersList\";\r\n-import AddProjectToTrader from \"../forms/AddProjectToTrader\";\r\n+import AddProjectToTrader from \"../forms/AddProductToTrader\";\r\n \r\n export default function TradersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n"
+                },
+                {
+                    "date": 1763156188543,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,8 +106,9 @@\n             <AddProjectToTrader trader={selectedTrader} tradersProducts={products} />\r\n           );\r\n         default:\r\n           if (viewDetails) {\r\n+            console.log(products)\r\n             return (\r\n               <TraderDetails\r\n                 entity={selectedTrader}\r\n                 products={products}\r\n"
+                },
+                {
+                    "date": 1763156345702,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,9 +106,8 @@\n             <AddProjectToTrader trader={selectedTrader} tradersProducts={products} />\r\n           );\r\n         default:\r\n           if (viewDetails) {\r\n-            console.log(products)\r\n             return (\r\n               <TraderDetails\r\n                 entity={selectedTrader}\r\n                 products={products}\r\n"
+                },
+                {
+                    "date": 1763156460378,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n-      fetchProductsByIds(selectedTrader[\"products-available-ids\"] || []);\r\n+      fetchProductsByIds(selectedTrader[\"products-available\"] || []);\r\n     } else {\r\n       clearProducts();\r\n     }\r\n   }, [selectedTrader, viewDetails, fetchProductsByIds, clearProducts]);\r\n"
+                },
+                {
+                    "date": 1763156714063,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n-      fetchProductsByIds(selectedTrader[\"products-available\"] || []);\r\n+      fetchProductsByIds(selectedTrader[\"products-available\"].map(product => product[\"product-id\"])) || []);\r\n     } else {\r\n       clearProducts();\r\n     }\r\n   }, [selectedTrader, viewDetails, fetchProductsByIds, clearProducts]);\r\n"
+                },
+                {
+                    "date": 1763156735432,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n-      fetchProductsByIds(selectedTrader[\"products-available\"].map(product => product[\"product-id\"])) || []);\r\n+      fetchProductsByIds(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]) || []);\r\n     } else {\r\n       clearProducts();\r\n     }\r\n   }, [selectedTrader, viewDetails, fetchProductsByIds, clearProducts]);\r\n"
+                },
+                {
+                    "date": 1763157007973,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,8 +51,9 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n+      console.log(selectedTrader[\"products-available\"])\r\n       fetchProductsByIds(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]) || []);\r\n     } else {\r\n       clearProducts();\r\n     }\r\n"
+                },
+                {
+                    "date": 1763157063518,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,9 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n-      console.log(selectedTrader[\"products-available\"])\r\n+      console.log(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]))\r\n       fetchProductsByIds(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]) || []);\r\n     } else {\r\n       clearProducts();\r\n     }\r\n"
+                },
+                {
+                    "date": 1763157144180,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,8 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n-      console.log(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]))\r\n       fetchProductsByIds(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]) || []);\r\n     } else {\r\n       clearProducts();\r\n     }\r\n"
                 }
             ],
             "date": 1761645486253,

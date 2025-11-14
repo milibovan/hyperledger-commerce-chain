@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 15,
+            "activePatchIndex": 16,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -68,6 +68,10 @@
                 {
                     "date": 1762526385323,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,11 +10,10 @@\n export default function TraderDetails({\r\n   entity: trader,\r\n   products,\r\n   productsLoading,\r\n-  addProduct\r\n+  addProduct,\r\n }: DetailsProps<TraderData>) {\r\n-\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <h3 className=\"text-2xl font-bold text-pink-400\">Trader Details</h3>\r\n \r\n@@ -45,15 +44,17 @@\n           <h4 className=\"text-xl font-bold text-pink-300 flex items-center gap-2\">\r\n             <Package size={20} />\r\n             Products ({trader[\"products-available-ids\"]?.length || 0})\r\n           </h4>\r\n-          <button\r\n-            onClick={() => addProduct(trader!, products!)}\r\n-            className={addButtonStyle}\r\n-            title=\"Add products\"\r\n-          >\r\n-            <Plus size={18} /> Add products\r\n-          </button>\r\n+          {addProduct && (\r\n+            <button\r\n+              onClick={() => addProduct(trader!, products!)}\r\n+              className={addButtonStyle}\r\n+              title=\"Add products\"\r\n+            >\r\n+              <Plus size={18} /> Add products\r\n+            </button>\r\n+          )}\r\n         </div>\r\n \r\n         {productsLoading ? (\r\n           <div className=\"text-center text-pink-300 py-4\">\r\n"
+                },
+                {
+                    "date": 1763156469345,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -42,9 +42,9 @@\n       <div>\r\n         <div className=\"flex items-center justify-between mb-4\">\r\n           <h4 className=\"text-xl font-bold text-pink-300 flex items-center gap-2\">\r\n             <Package size={20} />\r\n-            Products ({trader[\"products-available-ids\"]?.length || 0})\r\n+            Products ({trader[\"products-available\"]?.length || 0})\r\n           </h4>\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader!, products!)}\r\n"
                 }
             ],
             "date": 1762249738197,

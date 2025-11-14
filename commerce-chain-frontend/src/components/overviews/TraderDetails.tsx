@@ -43,7 +43,7 @@ export default function TraderDetails({
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-xl font-bold text-pink-300 flex items-center gap-2">
             <Package size={20} />
-            Products ({trader["products-available-ids"]?.length || 0})
+            Products ({trader["products-available"]?.length || 0})
           </h4>
           {addProduct && (
             <button

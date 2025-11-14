@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 7,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -28,6 +28,14 @@
                 {
                     "date": 1762528749448,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,8 +96,14 @@\n   quantity?: string;\r\n   channel: string;\r\n }\r\n \r\n+export interface AddProductToTrader {\r\n+  traderId: string,\r\n+  productId: string,\r\n+  quantity: string\r\n+}\r\n+\r\n export function formatDate(date: string) {\r\n   const dateTime = new Date(date);\r\n \r\n   const year = dateTime.getFullYear();\r\n"
+                },
+                {
+                    "date": 1763156469350,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -72,9 +72,9 @@\n   id: string;\r\n   name: string;\r\n   \"trader-type\": string;\r\n   vat: string;\r\n-  \"products-available-ids\": Array<string>;\r\n+  \"products-available\": Array<string>;\r\n   \"receipts-ids\": Array<string>;\r\n   balance: number;\r\n }\r\n \r\n"
+                },
+                {
+                    "date": 1763156565409,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -66,8 +66,13 @@\n export interface TradersData {\r\n   Traders: Array<TraderData>;\r\n }\r\n \r\n+export interface ProductInventory {\r\n+  \"product-id\": string;\r\n+  quantity: number\r\n+}\r\n+\r\n export interface TraderData {\r\n   \"doc-type\": string;\r\n   id: string;\r\n   name: string;\r\n"
                 }
             ],
             "date": 1762249804506,
