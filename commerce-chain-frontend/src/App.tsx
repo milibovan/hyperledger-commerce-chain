@@ -98,7 +98,7 @@ export default function App() {
         </div>
 
         {/* Disconnect Button - Bottom Right */}
-        <div className="fixed bottom-8 right-8 z-50 group">
+        <div className="fixed bottom-3 right-4 z-50 group">
           <button
             onClick={handleDisconnect}
             disabled={loading}

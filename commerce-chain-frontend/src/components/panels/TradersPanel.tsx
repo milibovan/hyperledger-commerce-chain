@@ -20,7 +20,7 @@ import { useTraders } from "../customHooks/useTraders";
 import { useEntityActions } from "../customHooks/useEntityActions";
 import TraderDetails from "../overviews/TraderDetails";
 import TradersList from "../lists/TradersList";
-import AddProjectToTrader from "../forms/AddProjectToTrader";
+import AddProjectToTrader from "../forms/AddProductToTrader";
 
 export default function TradersPanel() {
   const modalRef = useRef<ModalHandle>(null);

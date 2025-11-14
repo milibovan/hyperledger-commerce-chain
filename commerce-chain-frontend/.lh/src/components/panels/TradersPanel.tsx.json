@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 163,
+            "activePatchIndex": 164,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -660,6 +660,10 @@
                 {
                     "date": 1762526711118,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -102,9 +102,9 @@\n           );\r\n \r\n         case \"addProduct\":\r\n           return (\r\n-            <AddProjectToTrader trader={selectedTrader} products={products} />\r\n+            <AddProjectToTrader trader={selectedTrader} tradersProducts={products} />\r\n           );\r\n         default:\r\n           if (viewDetails) {\r\n             return (\r\n"
+                },
+                {
+                    "date": 1763140127024,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,9 +19,9 @@\n import { useTraders } from \"../customHooks/useTraders\";\r\n import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n import TraderDetails from \"../overviews/TraderDetails\";\r\n import TradersList from \"../lists/TradersList\";\r\n-import AddProjectToTrader from \"../forms/AddProjectToTrader\";\r\n+import AddProjectToTrader from \"../forms/AddProductToTrader\";\r\n \r\n export default function TradersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n"
                 }
             ],
             "date": 1761645486253,

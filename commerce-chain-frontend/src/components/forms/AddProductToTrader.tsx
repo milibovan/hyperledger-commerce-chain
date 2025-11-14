@@ -1,21 +1,19 @@
-import { useEffect, useState } from "react";
-import { Send, ShoppingCart, AlertCircle } from "lucide-react";
-import type { TraderData, ProductData } from "../../utils/dataTypesUtils";
+import { useEffect, useRef, useState } from "react";
+import { Send, ShoppingCart, AlertCircle, Package } from "lucide-react";
+import type { AddProductProps } from "../../utils/propsUtils";
 import { useProducts } from "../customHooks/useProducts";
 import { traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 import { useEntityActions } from "../customHooks/useEntityActions";
+import Modal, { type ModalHandle } from "./DeleteModal";
+import { host, httpMethod } from "../../utils/utils";
 
 // interface SelectedProduct {
 //   productId: string;
 //   quantity: number;
 // }
 
-interface AddProjectProps {
-  trader: TraderData;
-  tradersProducts?: ProductData[];
-}
-
-export default function AddProductsToTrader({ trader }: AddProjectProps) {
+export default function AddProductsToTrader({ trader }: AddProductProps) {
+  const successModalRef = useRef<ModalHandle>(null);
   const { products, loading, fetchProducts } = useProducts();
   const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(
     new Map()
@@ -84,21 +82,49 @@ export default function AddProductsToTrader({ trader }: AddProjectProps) {
     });
   };
 
-  const handleSubmit = () => {
-    if (hasInsufficientFunds || errors.size > 0) return;
-
+  const handleConfirm = async () => {
     const productsToAdd = Array.from(selectedProducts.entries()).map(
       ([productId, quantity]) => ({
-        productId,
+        "product-id": productId,
         quantity,
       })
     );
 
-    console.log("Submitting:", {
-      traderId: trader.id,
-      products: productsToAdd,
-      totalCost,
-    });
+    try {
+      // Your API call here
+      const response = await fetch(
+        `${host}/traders-products/channel-a`,
+        {
+          method: httpMethod.POST,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            products: productsToAdd,
+            "trader-id": trader.id
+          }),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Data: ", data.Message)
+        successModalRef.current?.close();
+        resetActions();
+        // Show success message or redirect
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || "Failed to add products");
+        successModalRef.current?.close();
+      }
+    } catch (err) {
+      alert(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      successModalRef.current?.close();
+    }
+  };
+
+  const handleSubmit = () => {
+    if (hasInsufficientFunds || errors.size > 0 || selectedProducts.size === 0)
+      return;
+    successModalRef.current?.open();
   };
 
   const isSubmitDisabled =
@@ -109,6 +135,91 @@ export default function AddProductsToTrader({ trader }: AddProjectProps) {
 
   return (
     <div className="space-y-6">
+      {/* Confirmation Modal */}
+      <Modal
+        ref={successModalRef}
+        onConfirm={handleConfirm}
+        onCancel={() => successModalRef.current?.close()}
+        confirmLabel="Confirm Purchase"
+        cancelLabel="Review Again"
+        confirmClassName="px-6 py-3 bg-pink-600 hover:bg-pink-500 rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50 text-white font-semibold"
+        cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-pink-300 font-semibold"
+        dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-3xl w-full"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 bg-pink-900/30 rounded-full">
+            <Package size={24} className="text-pink-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-pink-400">Confirm Purchase</h2>
+        </div>
+
+        <p className="text-gray-300 mb-6">
+          You are about to add the following products to{" "}
+          <span className="font-semibold text-pink-300">{trader.name}</span>'s
+          inventory:
+        </p>
+
+        {/* Products List in Modal */}
+        <div className="bg-gray-900/50 border border-pink-500/30 rounded-lg p-4 mb-6 max-h-64 overflow-y-auto">
+          <div className="space-y-3">
+            {Array.from(selectedProducts.entries()).map(
+              ([productId, quantity]) => {
+                const product = products.find((p) => p.id === productId);
+                if (!product) return null;
+                const itemTotal = product.price * quantity;
+
+                return (
+                  <div
+                    key={productId}
+                    className="flex items-center justify-between p-3 bg-gray-800/50 rounded border border-pink-500/20"
+                  >
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-pink-300">
+                        {product.name}
+                      </h4>
+                      <p className="text-xs text-gray-400">
+                        ${product.price.toFixed(2)} × {quantity} units
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-bold text-pink-300">
+                        ${itemTotal.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+            )}
+          </div>
+        </div>
+
+        {/* Summary */}
+        <div className="bg-pink-900/20 border-2 border-pink-500 rounded-lg p-4">
+          <div className="space-y-2">
+            <div className="flex justify-between text-gray-300">
+              <span>Current Balance:</span>
+              <span className="font-semibold">
+                ${trader.balance.toFixed(2)}
+              </span>
+            </div>
+            <div className="flex justify-between text-yellow-400">
+              <span>Total Cost:</span>
+              <span className="font-bold">-${totalCost.toFixed(2)}</span>
+            </div>
+            <div className="h-px bg-pink-500/30 my-2"></div>
+            <div className="flex justify-between text-lg">
+              <span className="font-semibold text-pink-300">New Balance:</span>
+              <span className="font-bold text-green-400">
+                ${remainingBalance.toFixed(2)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-sm text-gray-400 mt-4 text-center">
+          This will update your inventory and deduct funds from your balance.
+        </p>
+      </Modal>
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-pink-400 mb-2">
