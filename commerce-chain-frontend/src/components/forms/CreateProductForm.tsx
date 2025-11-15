@@ -91,7 +91,7 @@ export default function CreateProductForm({ onSuccess }: CreateFormsProps) {
   return (
     <div className="w-full max-w-2xl">
       <div className="bg-gray-800 border-2 border-cyan-500 rounded-lg p-8 shadow-2xl shadow-cyan-500/50 space-y-6">
-        <h3 className="text-3xl font-bold text-cyan-400 mb-6">Create User</h3>
+        <h3 className="text-3xl font-bold text-cyan-400 mb-6">Create Product</h3>
 
         {/* Channel Selection */}
         <div>
@@ -222,7 +222,7 @@ export default function CreateProductForm({ onSuccess }: CreateFormsProps) {
           className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-cyan-300 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
         >
           <Send size={20} />
-          {loading ? "Creating..." : "Create User"}
+          {loading ? "Creating..." : "Create Product"}
         </button>
       </div>
     </div>

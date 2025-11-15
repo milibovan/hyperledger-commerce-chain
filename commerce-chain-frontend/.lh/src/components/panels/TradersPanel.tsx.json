@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 179,
+            "activePatchIndex": 180,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -724,6 +724,10 @@
                 {
                     "date": 1763221612376,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -178,9 +178,9 @@\n             className=\"flex gap-2 my-4 justify-start\"\r\n             onClick={(e) => e.stopPropagation()}\r\n           >\r\n             <button\r\n-              onClick={resetActions}\r\n+              onClick={handleBackClick}\r\n               className=\"mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-pink-300 font-semibold rounded border-2 border-gray-600 transition-all\"\r\n             >\r\n               ← Back to Traders\r\n             </button>\r\n"
+                },
+                {
+                    "date": 1763222948959,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -115,8 +115,20 @@\n           return (\r\n             <AddProjectToTrader\r\n               trader={selectedTrader}\r\n               tradersProducts={products}\r\n+              onSuccess={async () => {\r\n+              // Refresh trader data\r\n+              await fetchTraders();\r\n+              // Refresh products if needed\r\n+              if (selectedTrader) {\r\n+                await fetchProductsByIds(\r\n+                  selectedTrader[\"products-available\"].map(\r\n+                    product => product[\"product-id\"]\r\n+                  ) || []\r\n+                );\r\n+              }\r\n+            }}\r\n             />\r\n           );\r\n         default:\r\n           if (viewProductDetails && selectedProduct) {\r\n"
                 }
             ],
             "date": 1761645486253,

@@ -116,6 +116,16 @@ export default function TradersPanel() {
             <AddProjectToTrader
               trader={selectedTrader}
               tradersProducts={products}
+              onSuccess={async () => {
+                await fetchTraders();
+                if (selectedTrader) {
+                  await fetchProductsByIds(
+                    selectedTrader["products-available"].map(
+                      (product) => product["product-id"]
+                    ) || []
+                  );
+                }
+              }}
             />
           );
         default:

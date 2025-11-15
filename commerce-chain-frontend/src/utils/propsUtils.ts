@@ -69,4 +69,13 @@ export interface IncreaseQuantityProps {
 export interface AddProductProps {
   trader: TraderData;
   tradersProducts?: ProductData[];
+  onSuccess?: () => Promise<void>;
+}
+
+export interface ModalProps {
+  trader: TraderData;
+  selectedProducts: Map<string, number>;
+  totalCost: number;
+  remainingBalance: number;
+  products?: ProductData[];
 }

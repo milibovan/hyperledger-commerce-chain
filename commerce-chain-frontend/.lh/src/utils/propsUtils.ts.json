@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 22,
+            "activePatchIndex": 27,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -96,6 +96,26 @@
                 {
                     "date": 1763220939672,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,8 +16,9 @@\n     date?: string;\r\n     products?: ProductData[];\r\n     productsLoading?: boolean;\r\n     addProduct?: (trader: TraderData, products?: ProductData[]) => void;\r\n+    onProductClick?: (product: ProductData) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1763222918243,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -68,5 +68,6 @@\n \r\n export interface AddProductProps {\r\n   trader: TraderData;\r\n   tradersProducts?: ProductData[];\r\n+  onSuccess?: () => Promise<void>;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763223704366,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -69,5 +69,12 @@\n export interface AddProductProps {\r\n   trader: TraderData;\r\n   tradersProducts?: ProductData[];\r\n   onSuccess?: () => Promise<void>;\r\n+}\r\n+\r\n+export interface SuccessProductAddingModalProps {\r\n+  trader: TraderData;\r\n+  selectedProducts: ProductData[];\r\n+  totalCost: number;\r\n+  remainingBalance: number;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763223737484,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -73,8 +73,8 @@\n }\r\n \r\n export interface SuccessProductAddingModalProps {\r\n   trader: TraderData;\r\n-  selectedProducts: ProductData[];\r\n+  selectedProducts: Map<string, number>;\r\n   totalCost: number;\r\n   remainingBalance: number;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763223851781,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -71,9 +71,9 @@\n   tradersProducts?: ProductData[];\r\n   onSuccess?: () => Promise<void>;\r\n }\r\n \r\n-export interface SuccessProductAddingModalProps {\r\n+export interface ModalProps {\r\n   trader: TraderData;\r\n   selectedProducts: Map<string, number>;\r\n   totalCost: number;\r\n   remainingBalance: number;\r\n"
+                },
+                {
+                    "date": 1763223901704,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,5 +76,6 @@\n   trader: TraderData;\r\n   selectedProducts: Map<string, number>;\r\n   totalCost: number;\r\n   remainingBalance: number;\r\n+  products?: ProductData[];\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762248920808,
