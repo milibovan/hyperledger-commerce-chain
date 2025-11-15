@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1762250537070,
@@ -20,6 +20,34 @@
                 {
                     "date": 1762250765895,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,5 +26,14 @@\n     setAction(null);\r\n     setSelectedEntity(null);\r\n     setViewDetails(false);\r\n   }\r\n+\r\n+  return {\r\n+    action,\r\n+    selectedEntity,\r\n+    viewDetails,\r\n+    handleAction,\r\n+    viewEntityDetails,\r\n+    resetActions,\r\n+  };\r\n }\r\n"
+                },
+                {
+                    "date": 1763221251527,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,15 +5,19 @@\n   const [action, setAction] = useState<ActionType>(null);\r\n   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);\r\n   const [viewDetails, setViewDetails] = useState(false);\r\n \r\n+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | null>(null);\r\n+  const [viewNestedDetails, setViewNestedDetails] = useState(false);\r\n+\r\n   const handleAction = (actionType: ActionType, entity?: T) => {\r\n     setAction(actionType);\r\n     if (entity) {\r\n       setSelectedEntity(entity);\r\n     }\r\n     if (actionType !== null) {\r\n       setViewDetails(false);\r\n+      setViewNestedDetails(false);\r\n     }\r\n   };\r\n \r\n   const viewEntityDetails = (entity: T) => {\r\n"
+                },
+                {
+                    "date": 1763221260751,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,8 +23,9 @@\n   const viewEntityDetails = (entity: T) => {\r\n     setSelectedEntity(entity);\r\n     setViewDetails(true);\r\n     setAction(null);\r\n+    setViewNestedDetails(false);\r\n   };\r\n \r\n   const resetActions = () => {\r\n     setAction(null);\r\n"
+                },
+                {
+                    "date": 1763221280053,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,12 +26,18 @@\n     setAction(null);\r\n     setViewNestedDetails(false);\r\n   };\r\n \r\n+  const viewNestedEntityDetails = (nestedEntity: P) => {\r\n+    setSelectedNestedEntity(nestedEntity);\r\n+    setViewNestedDetails(true);\r\n+  };\r\n+\r\n   const resetActions = () => {\r\n     setAction(null);\r\n     setSelectedEntity(null);\r\n     setViewDetails(false);\r\n+    setViewNestedDetails(false);\r\n   }\r\n \r\n   return {\r\n     action,\r\n"
+                },
+                {
+                    "date": 1763221286322,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -38,8 +38,13 @@\n     setViewDetails(false);\r\n     setViewNestedDetails(false);\r\n   }\r\n \r\n+  const resetNestedView = () => {\r\n+    setSelectedNestedEntity(null);\r\n+    setViewNestedDetails(false);\r\n+  };\r\n+\r\n   return {\r\n     action,\r\n     selectedEntity,\r\n     viewDetails,\r\n"
+                },
+                {
+                    "date": 1763221293624,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -47,9 +47,13 @@\n   return {\r\n     action,\r\n     selectedEntity,\r\n     viewDetails,\r\n+    selectedNestedEntity,\r\n+    viewNestedDetails,\r\n     handleAction,\r\n     viewEntityDetails,\r\n+    viewNestedEntityDetails,\r\n     resetActions,\r\n+    resetNestedView,\r\n   };\r\n }\r\n"
+                },
+                {
+                    "date": 1763221312392,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useState } from \"react\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n \r\n-export function useEntityActions<T>() {\r\n+export function useEntityActions<T, P = any>() {\r\n   const [action, setAction] = useState<ActionType>(null);\r\n   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);\r\n   const [viewDetails, setViewDetails] = useState(false);\r\n \r\n"
+                },
+                {
+                    "date": 1763221321663,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useState } from \"react\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n \r\n-export function useEntityActions<T, P = any>() {\r\n+export function useEntityActions<T, P = unknown>() {\r\n   const [action, setAction] = useState<ActionType>(null);\r\n   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);\r\n   const [viewDetails, setViewDetails] = useState(false);\r\n \r\n"
                 }
             ],
             "date": 1762250537070,

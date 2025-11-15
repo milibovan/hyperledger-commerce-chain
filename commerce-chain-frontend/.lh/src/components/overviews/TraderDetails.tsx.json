@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 22,
+            "activePatchIndex": 29,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -96,6 +96,34 @@
                 {
                     "date": 1763218933038,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -61,25 +61,29 @@\n             Loading products...\r\n           </div>\r\n         ) : products && products.length > 0 ? (\r\n           <div className=\"space-y-2\">\r\n-            {products.map((product) => (\r\n-              <div\r\n-                key={product.id}\r\n-                className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n-              >\r\n-                <div className=\"flex-1\">\r\n-                  <h5 className={traderFontSemibold}>{product.name}</h5>\r\n-                  <p className=\"text-xs text-gray-400\">ID: {product.id}</p>\r\n+            {products.map((product) => {\r\n+              const quantity = trader[\"products-available\"].find(productItem => product.id === productItem[\"product-id\"])?.quantity\r\n+              return (\r\n+                <div\r\n+                  key={product.id}\r\n+                  className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n+                >\r\n+                  <div className=\"flex-1\">\r\n+                    <h5 className={traderFontSemibold}>{product.name}</h5>\r\n+                    <p className=\"text-xs text-gray-400\">ID: {product.id}</p>\r\n+                  </div>\r\n+                  <div className=\"text-right\">\r\n+                    <p className={traderFontBold}>Quantity: {quantity}</p>\r\n+                    <p className=\"text-xs text-gray-400\">\r\n+                      Expiry date:{\" \"}\r\n+                      {new Date(product[\"expiry-date\"]).toLocaleDateString()}\r\n+                    </p>\r\n+                  </div>\r\n                 </div>\r\n-                <div className=\"text-right\">\r\n-                  <p className={traderFontBold}>Quantity: {}</p>\r\n-                  <p className=\"text-xs text-gray-400\">\r\n-                    Expiry date: {new Date(product[\"expiry-date\"]).toLocaleDateString()}\r\n-                  </p>\r\n-                </div>\r\n-              </div>\r\n-            ))}\r\n+              );\r\n+            })}\r\n           </div>\r\n         ) : (\r\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n"
+                },
+                {
+                    "date": 1763220611879,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -66,8 +66,9 @@\n               const quantity = trader[\"products-available\"].find(productItem => product.id === productItem[\"product-id\"])?.quantity\r\n               return (\r\n                 <div\r\n                   key={product.id}\r\n+                  onClick={() => onProductClick(product)}\r\n                   className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n                 >\r\n                   <div className=\"flex-1\">\r\n                     <h5 className={traderFontSemibold}>{product.name}</h5>\r\n"
+                },
+                {
+                    "date": 1763220648687,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,8 +12,12 @@\n   products,\r\n   productsLoading,\r\n   addProduct,\r\n }: DetailsProps<TraderData>) {\r\n+  function onProductClick(product) {\r\n+    \r\n+  }\r\n+\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <h3 className=\"text-2xl font-bold text-pink-400\">Trader Details</h3>\r\n \r\n"
+                },
+                {
+                    "date": 1763220661170,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,17 +5,18 @@\n   traderFontSemibold,\r\n   addButtonStyle,\r\n } from \"../../utils/stylingUtils\";\r\n import { Package, Plus } from \"lucide-react\";\r\n+import ProductDetails from \"./ProductDetails\";\r\n \r\n export default function TraderDetails({\r\n   entity: trader,\r\n   products,\r\n   productsLoading,\r\n   addProduct,\r\n }: DetailsProps<TraderData>) {\r\n   function onProductClick(product) {\r\n-    \r\n+    return <ProductDetails entity={product} />\r\n   }\r\n \r\n   return (\r\n     <div className=\"space-y-6\">\r\n"
+                },
+                {
+                    "date": 1763220671447,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n+import type { ProductData, TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import {\r\n   traderFontBold,\r\n   traderFontSemibold,\r\n@@ -13,9 +13,9 @@\n   products,\r\n   productsLoading,\r\n   addProduct,\r\n }: DetailsProps<TraderData>) {\r\n-  function onProductClick(product) {\r\n+  function onProductClick(product: ProductData) {\r\n     return <ProductDetails entity={product} />\r\n   }\r\n \r\n   return (\r\n"
+                },
+                {
+                    "date": 1763220963232,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,13 +12,10 @@\n   entity: trader,\r\n   products,\r\n   productsLoading,\r\n   addProduct,\r\n+  onProductClick,\r\n }: DetailsProps<TraderData>) {\r\n-  function onProductClick(product: ProductData) {\r\n-    return <ProductDetails entity={product} />\r\n-  }\r\n-\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <h3 className=\"text-2xl font-bold text-pink-400\">Trader Details</h3>\r\n \r\n"
+                },
+                {
+                    "date": 1763220968504,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,12 @@\n-import type { ProductData, TraderData } from \"../../utils/dataTypesUtils\";\r\n+import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import {\r\n   traderFontBold,\r\n   traderFontSemibold,\r\n   addButtonStyle,\r\n } from \"../../utils/stylingUtils\";\r\n import { Package, Plus } from \"lucide-react\";\r\n-import ProductDetails from \"./ProductDetails\";\r\n \r\n export default function TraderDetails({\r\n   entity: trader,\r\n   products,\r\n"
+                },
+                {
+                    "date": 1763220977930,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -67,9 +67,9 @@\n               const quantity = trader[\"products-available\"].find(productItem => product.id === productItem[\"product-id\"])?.quantity\r\n               return (\r\n                 <div\r\n                   key={product.id}\r\n-                  onClick={() => onProductClick(product)}\r\n+                  onClick={() => onProductClick?.(product)}\r\n                   className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n                 >\r\n                   <div className=\"flex-1\">\r\n                     <h5 className={traderFontSemibold}>{product.name}</h5>\r\n"
                 }
             ],
             "date": 1762249738197,

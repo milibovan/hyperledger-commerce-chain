@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 21,
+            "activePatchIndex": 22,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -92,6 +92,10 @@
                 {
                     "date": 1763139929320,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -64,8 +64,8 @@\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n-interface AddProductProps {\r\n+export interface AddProductProps {\r\n   trader: TraderData;\r\n   tradersProducts?: ProductData[];\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763220939672,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,8 +16,9 @@\n     date?: string;\r\n     products?: ProductData[];\r\n     productsLoading?: boolean;\r\n     addProduct?: (trader: TraderData, products?: ProductData[]) => void;\r\n+    onProductClick?: (product: ProductData) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
                 }
             ],
             "date": 1762248920808,

@@ -12,6 +12,7 @@ export default function TraderDetails({
   products,
   productsLoading,
   addProduct,
+  onProductClick,
 }: DetailsProps<TraderData>) {
   return (
     <div className="space-y-6">
@@ -67,6 +68,7 @@ export default function TraderDetails({
               return (
                 <div
                   key={product.id}
+                  onClick={() => onProductClick?.(product)}
                   className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
                 >
                   <div className="flex-1">

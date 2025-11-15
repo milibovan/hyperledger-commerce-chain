@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 172,
+            "activePatchIndex": 179,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -696,6 +696,34 @@
                 {
                     "date": 1763157144180,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -51,9 +51,8 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n-      console.log(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]))\r\n       fetchProductsByIds(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]) || []);\r\n     } else {\r\n       clearProducts();\r\n     }\r\n"
+                },
+                {
+                    "date": 1763221389220,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useEffect, useRef } from \"react\";\r\n import CreateTraderForm from \"../forms/CreateTraderForm\";\r\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n+import type { ProductData, TraderData } from \"../../utils/dataTypesUtils\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n import UpdateTraderForm from \"../forms/UpdateTraderForm\";\r\n import Modal from \"../forms/DeleteModal\";\r\n import type { ModalHandle } from \"../forms/DeleteModal\";\r\n@@ -34,16 +34,21 @@\n     fetchProductsByIds,\r\n     clearProducts,\r\n     deleteTrader,\r\n   } = useTraders();\r\n+\r\n   const {\r\n     action,\r\n     selectedEntity: selectedTrader,\r\n     viewDetails,\r\n+    selectedNestedEntity: selectedProduct,\r\n+    viewNestedDetails: viewProductDetails,\r\n     handleAction,\r\n     viewEntityDetails,\r\n+    viewNestedEntityDetails,\r\n     resetActions,\r\n-  } = useEntityActions<TraderData>();\r\n+    resetNestedView,\r\n+  } = useEntityActions<TraderData, ProductData>();\r\n \r\n   // Fetch traders on mount\r\n   useEffect(() => {\r\n     fetchTraders();\r\n@@ -105,8 +110,12 @@\n           return (\r\n             <AddProjectToTrader trader={selectedTrader} tradersProducts={products} />\r\n           );\r\n         default:\r\n+          if (viewProductDetails && selectedProduct) {\r\n+            return <ProductDetails entity={selectedProduct} />;\r\n+          }\r\n+\r\n           if (viewDetails) {\r\n             return (\r\n               <TraderDetails\r\n                 entity={selectedTrader}\r\n"
+                },
+                {
+                    "date": 1763221396058,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,8 +20,9 @@\n import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n import TraderDetails from \"../overviews/TraderDetails\";\r\n import TradersList from \"../lists/TradersList\";\r\n import AddProjectToTrader from \"../forms/AddProductToTrader\";\r\n+import ProductDetails from \"../overviews/ProductDetails\";\r\n \r\n export default function TradersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n@@ -56,9 +57,13 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n-      fetchProductsByIds(selectedTrader[\"products-available\"].map(product => product[\"product-id\"]) || []);\r\n+      fetchProductsByIds(\r\n+        selectedTrader[\"products-available\"].map(\r\n+          (product) => product[\"product-id\"]\r\n+        ) || []\r\n+      );\r\n     } else {\r\n       clearProducts();\r\n     }\r\n   }, [selectedTrader, viewDetails, fetchProductsByIds, clearProducts]);\r\n@@ -107,9 +112,12 @@\n           );\r\n \r\n         case \"addProduct\":\r\n           return (\r\n-            <AddProjectToTrader trader={selectedTrader} tradersProducts={products} />\r\n+            <AddProjectToTrader\r\n+              trader={selectedTrader}\r\n+              tradersProducts={products}\r\n+            />\r\n           );\r\n         default:\r\n           if (viewProductDetails && selectedProduct) {\r\n             return <ProductDetails entity={selectedProduct} />;\r\n"
+                },
+                {
+                    "date": 1763221404479,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -129,8 +129,9 @@\n                 entity={selectedTrader}\r\n                 products={products}\r\n                 productsLoading={loading}\r\n                 addProduct={() => handleAction(\"addProduct\", selectedTrader)}\r\n+                onProductClick={viewNestedEntityDetails}\r\n               />\r\n             );\r\n           }\r\n       }\r\n"
+                },
+                {
+                    "date": 1763221417475,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -137,8 +137,16 @@\n       }\r\n     }\r\n   };\r\n \r\n+  const handleBackClick = () => {\r\n+    if (viewProductDetails) {\r\n+      resetNestedView();\r\n+    } else {\r\n+      resetActions();\r\n+    }\r\n+  };\r\n+\r\n   if (action || viewDetails) {\r\n     return (\r\n       <div className=\"bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50\">\r\n         <Modal\r\n"
+                },
+                {
+                    "date": 1763221462372,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -145,9 +145,9 @@\n       resetActions();\r\n     }\r\n   };\r\n \r\n-  if (action || viewDetails) {\r\n+  if (action || viewDetails || viewProductDetails) {\r\n     return (\r\n       <div className=\"bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50\">\r\n         <Modal\r\n           ref={modalRef}\r\n"
+                },
+                {
+                    "date": 1763221507599,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -184,9 +184,9 @@\n             >\r\n               ← Back to Traders\r\n             </button>\r\n           </div>\r\n-          {action === null && selectedTrader && (\r\n+          {action === null && selectedTrader && !viewProductDetails && (\r\n             <div className=\"flex gap-2 my-4 justify-end\">\r\n               <button\r\n                 onClick={() => handleAction(\"deposit\", selectedTrader)}\r\n                 className={addButtonStyle + \" mb-4\"}\r\n"
+                },
+                {
+                    "date": 1763221612376,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -178,9 +178,9 @@\n             className=\"flex gap-2 my-4 justify-start\"\r\n             onClick={(e) => e.stopPropagation()}\r\n           >\r\n             <button\r\n-              onClick={resetActions}\r\n+              onClick={handleBackClick}\r\n               className=\"mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-pink-300 font-semibold rounded border-2 border-gray-600 transition-all\"\r\n             >\r\n               ← Back to Traders\r\n             </button>\r\n"
                 }
             ],
             "date": 1761645486253,
