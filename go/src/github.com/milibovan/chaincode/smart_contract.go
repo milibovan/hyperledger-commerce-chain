@@ -179,6 +179,8 @@ func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextIn
 			return fmt.Errorf("Insufficient product %s inventory. Only %d available", productId, product.Quantity)
 		}
 
+		product.Quantity -= quantity
+
 		productJSON, err := json.Marshal(product)
 		if err != nil {
 			return err
