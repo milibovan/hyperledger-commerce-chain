@@ -62,23 +62,27 @@ export default function TraderDetails({
           </div>
         ) : products && products.length > 0 ? (
           <div className="space-y-2">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400"
-              >
-                <div className="flex-1">
-                  <h5 className={traderFontSemibold}>{product.name}</h5>
-                  <p className="text-xs text-gray-400">ID: {product.id}</p>
+            {products.map((product) => {
+              const quantity = trader["products-available"].find(productItem => product.id === productItem["product-id"])?.quantity
+              return (
+                <div
+                  key={product.id}
+                  className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
+                >
+                  <div className="flex-1">
+                    <h5 className={traderFontSemibold}>{product.name}</h5>
+                    <p className="text-xs text-gray-400">ID: {product.id}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className={traderFontBold}>Quantity: {quantity}</p>
+                    <p className="text-xs text-gray-400">
+                      Expiry date:{" "}
+                      {new Date(product["expiry-date"]).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className={traderFontBold}>${product.price.toFixed(2)}</p>
-                  <p className="text-xs text-gray-400">
-                    {new Date(product["expiry-date"]).toLocaleDateString()}
-                  </p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400">

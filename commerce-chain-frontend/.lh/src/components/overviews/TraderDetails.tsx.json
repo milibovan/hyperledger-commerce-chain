@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 16,
+            "activePatchIndex": 22,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -72,6 +72,30 @@
                 {
                     "date": 1763156469345,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -42,9 +42,9 @@\n       <div>\r\n         <div className=\"flex items-center justify-between mb-4\">\r\n           <h4 className=\"text-xl font-bold text-pink-300 flex items-center gap-2\">\r\n             <Package size={20} />\r\n-            Products ({trader[\"products-available-ids\"]?.length || 0})\r\n+            Products ({trader[\"products-available\"]?.length || 0})\r\n           </h4>\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader!, products!)}\r\n"
+                },
+                {
+                    "date": 1763217791327,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -64,9 +64,9 @@\n           <div className=\"space-y-2\">\r\n             {products.map((product) => (\r\n               <div\r\n                 key={product.id}\r\n-                className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400\"\r\n+                className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50\"\r\n               >\r\n                 <div className=\"flex-1\">\r\n                   <h5 className={traderFontSemibold}>{product.name}</h5>\r\n                   <p className=\"text-xs text-gray-400\">ID: {product.id}</p>\r\n"
+                },
+                {
+                    "date": 1763217812587,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -64,9 +64,9 @@\n           <div className=\"space-y-2\">\r\n             {products.map((product) => (\r\n               <div\r\n                 key={product.id}\r\n-                className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50\"\r\n+                className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n               >\r\n                 <div className=\"flex-1\">\r\n                   <h5 className={traderFontSemibold}>{product.name}</h5>\r\n                   <p className=\"text-xs text-gray-400\">ID: {product.id}</p>\r\n"
+                },
+                {
+                    "date": 1763217833176,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -73,9 +73,9 @@\n                 </div>\r\n                 <div className=\"text-right\">\r\n                   <p className={traderFontBold}>${product.price.toFixed(2)}</p>\r\n                   <p className=\"text-xs text-gray-400\">\r\n-                    {new Date(product[\"expiry-date\"]).toLocaleDateString()}\r\n+                    Expiry date: {new Date(product[\"expiry-date\"]).toLocaleDateString()}\r\n                   </p>\r\n                 </div>\r\n               </div>\r\n             ))}\r\n"
+                },
+                {
+                    "date": 1763218215596,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -71,9 +71,9 @@\n                   <h5 className={traderFontSemibold}>{product.name}</h5>\r\n                   <p className=\"text-xs text-gray-400\">ID: {product.id}</p>\r\n                 </div>\r\n                 <div className=\"text-right\">\r\n-                  <p className={traderFontBold}>${product.price.toFixed(2)}</p>\r\n+                  <p className={traderFontBold}>Quantity: {product.price.toFixed(2)}</p>\r\n                   <p className=\"text-xs text-gray-400\">\r\n                     Expiry date: {new Date(product[\"expiry-date\"]).toLocaleDateString()}\r\n                   </p>\r\n                 </div>\r\n"
+                },
+                {
+                    "date": 1763218259931,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -71,9 +71,9 @@\n                   <h5 className={traderFontSemibold}>{product.name}</h5>\r\n                   <p className=\"text-xs text-gray-400\">ID: {product.id}</p>\r\n                 </div>\r\n                 <div className=\"text-right\">\r\n-                  <p className={traderFontBold}>Quantity: {product.price.toFixed(2)}</p>\r\n+                  <p className={traderFontBold}>Quantity: {}</p>\r\n                   <p className=\"text-xs text-gray-400\">\r\n                     Expiry date: {new Date(product[\"expiry-date\"]).toLocaleDateString()}\r\n                   </p>\r\n                 </div>\r\n"
+                },
+                {
+                    "date": 1763218933038,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -61,25 +61,29 @@\n             Loading products...\r\n           </div>\r\n         ) : products && products.length > 0 ? (\r\n           <div className=\"space-y-2\">\r\n-            {products.map((product) => (\r\n-              <div\r\n-                key={product.id}\r\n-                className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n-              >\r\n-                <div className=\"flex-1\">\r\n-                  <h5 className={traderFontSemibold}>{product.name}</h5>\r\n-                  <p className=\"text-xs text-gray-400\">ID: {product.id}</p>\r\n+            {products.map((product) => {\r\n+              const quantity = trader[\"products-available\"].find(productItem => product.id === productItem[\"product-id\"])?.quantity\r\n+              return (\r\n+                <div\r\n+                  key={product.id}\r\n+                  className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n+                >\r\n+                  <div className=\"flex-1\">\r\n+                    <h5 className={traderFontSemibold}>{product.name}</h5>\r\n+                    <p className=\"text-xs text-gray-400\">ID: {product.id}</p>\r\n+                  </div>\r\n+                  <div className=\"text-right\">\r\n+                    <p className={traderFontBold}>Quantity: {quantity}</p>\r\n+                    <p className=\"text-xs text-gray-400\">\r\n+                      Expiry date:{\" \"}\r\n+                      {new Date(product[\"expiry-date\"]).toLocaleDateString()}\r\n+                    </p>\r\n+                  </div>\r\n                 </div>\r\n-                <div className=\"text-right\">\r\n-                  <p className={traderFontBold}>Quantity: {}</p>\r\n-                  <p className=\"text-xs text-gray-400\">\r\n-                    Expiry date: {new Date(product[\"expiry-date\"]).toLocaleDateString()}\r\n-                  </p>\r\n-                </div>\r\n-              </div>\r\n-            ))}\r\n+              );\r\n+            })}\r\n           </div>\r\n         ) : (\r\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n"
                 }
             ],
             "date": 1762249738197,
