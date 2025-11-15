@@ -63,7 +63,7 @@ func (t *Trader) ContainsProduct(id string) bool {
 func (t *Trader) UpdateProduct(productId string, quantity int) {
 	for i, item := range t.ProductsAvailable {
 		if item.ProductId == productId {
-			t.ProductsAvailable[i].Quantity = quantity
+			t.ProductsAvailable[i].Quantity += quantity
 		}
 	}
 }

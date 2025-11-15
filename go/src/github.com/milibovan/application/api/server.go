@@ -432,5 +432,5 @@ func addProductsToTrader(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"Message": fmt.Sprintf("Products added to trader %s %s", request.TraderId, blockNumber)})
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Products added to trader %s %d", request.TraderId, blockNumber)})
 }
