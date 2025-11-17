@@ -7,4 +7,4 @@ export enum httpMethod {
   DELETE = "DELETE",
 }
 
-export type ActionType = "create" | "update" | "deposit" | "delete" | "addProduct" | null;
+export type ActionType = "create" | "update" | "deposit" | "delete" | "addProduct" | "shop" | null;

@@ -14,3 +14,4 @@ export const modalCancelButtonStyle = "px-6 py-3 bg-gray-700 hover:bg-gray-600 r
 export const modalConfirmButtonStyle = "px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold"
 
 export const userFontSemibold = "font-semibold text-purple-300"
+export const createUserButton = "flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50"

@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/components/forms/BuyProduct.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1763396020997,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1763396068922,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,3 +1,5 @@\n export default function BuyProduct() {\r\n-    \r\n+    return (\r\n+        <div>Buying of products</div>\r\n+    )\r\n }\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1763396020997,
+            "name": "Commit-0",
+            "content": "export default function BuyProduct() {\r\n    \r\n}"
+        }
+    ]
+}

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 84,
+            "activePatchIndex": 99,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -344,6 +344,66 @@
                 {
                     "date": 1762378365735,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,10 +96,8 @@\n       <div className=\"bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50\">\r\n         <Modal\r\n           ref={modalRef}\r\n           onConfirm={handleDeleteConfirm}\r\n-          confirmLabel=\"Delete\"\r\n-          cancelLabel=\"Cancel\"\r\n           confirmClassName={modalConfirmButtonStyle}\r\n           cancelClassName={modalCancelButtonStyle + \" text-purple-300\"}\r\n         >\r\n           <h2 className=\"text-2xl font-bold text-purple-400 mb-4\">\r\n"
+                },
+                {
+                    "date": 1763395564805,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -152,8 +152,11 @@\n               </button>\r\n             </div>\r\n           )}\r\n         </div>\r\n+        <div>\r\n+          <button>Shop</button>\r\n+        </div>\r\n         {renderContent()}\r\n       </div>\r\n     );\r\n   }\r\n"
+                },
+                {
+                    "date": 1763395572548,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -152,12 +152,12 @@\n               </button>\r\n             </div>\r\n           )}\r\n         </div>\r\n+        {renderContent()}\r\n         <div>\r\n           <button>Shop</button>\r\n         </div>\r\n-        {renderContent()}\r\n       </div>\r\n     );\r\n   }\r\n \r\n"
+                },
+                {
+                    "date": 1763395584613,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -153,9 +153,9 @@\n             </div>\r\n           )}\r\n         </div>\r\n         {renderContent()}\r\n-        <div>\r\n+        <div className=\"flex gap-2 my-4 justify-end\">\r\n           <button>Shop</button>\r\n         </div>\r\n       </div>\r\n     );\r\n"
+                },
+                {
+                    "date": 1763395609261,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { useEffect, useRef } from \"react\";\r\n import type { UserData } from \"../../utils/dataTypesUtils\";\r\n-import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n+import { Plus, Edit, Trash2, ShoppingBag } from \"lucide-react\";\r\n import CreateUserForm from \"../forms/CreateUserForm\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n import UpdateUserForm from \"../forms/UpdateUserForm\";\r\n import type { ModalHandle } from \"../forms/DeleteModal\";\r\n@@ -154,9 +154,11 @@\n           )}\r\n         </div>\r\n         {renderContent()}\r\n         <div className=\"flex gap-2 my-4 justify-end\">\r\n-          <button>Shop</button>\r\n+          <button>\r\n+            <ShoppingBag />Shop\r\n+          </button>\r\n         </div>\r\n       </div>\r\n     );\r\n   }\r\n"
+                },
+                {
+                    "date": 1763395620529,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -155,9 +155,9 @@\n         </div>\r\n         {renderContent()}\r\n         <div className=\"flex gap-2 my-4 justify-end\">\r\n           <button>\r\n-            <ShoppingBag />Shop\r\n+            <ShoppingBag size={18}/>Shop\r\n           </button>\r\n         </div>\r\n       </div>\r\n     );\r\n"
+                },
+                {
+                    "date": 1763395629461,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -154,9 +154,9 @@\n           )}\r\n         </div>\r\n         {renderContent()}\r\n         <div className=\"flex gap-2 my-4 justify-end\">\r\n-          <button>\r\n+          <button className={deleteButtonStyle + \" mb-4\"}>\r\n             <ShoppingBag size={18}/>Shop\r\n           </button>\r\n         </div>\r\n       </div>\r\n"
+                },
+                {
+                    "date": 1763395657675,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,9 +11,10 @@\n   modalCancelButtonStyle,\r\n   modalConfirmButtonStyle,\r\n   updateButtonStyle,\r\n   userFontSemibold,\r\n-  deleteButtonStyle\r\n+  deleteButtonStyle,\r\n+  shopButtonStyle\r\n } from \"../../utils/stylingUtils\";\r\n import { useUsers } from \"../customHooks/useUsers\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n import UserDetails from \"../overviews/UserDetails\";\r\n@@ -154,9 +155,9 @@\n           )}\r\n         </div>\r\n         {renderContent()}\r\n         <div className=\"flex gap-2 my-4 justify-end\">\r\n-          <button className={deleteButtonStyle + \" mb-4\"}>\r\n+          <button className={shopButtonStyle + \" mb-4\"}>\r\n             <ShoppingBag size={18}/>Shop\r\n           </button>\r\n         </div>\r\n       </div>\r\n"
+                },
+                {
+                    "date": 1763395780337,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,10 @@\n   modalConfirmButtonStyle,\r\n   updateButtonStyle,\r\n   userFontSemibold,\r\n   deleteButtonStyle,\r\n-  shopButtonStyle\r\n+  shopButtonStyle,\r\n+  createUserButton\r\n } from \"../../utils/stylingUtils\";\r\n import { useUsers } from \"../customHooks/useUsers\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n import UserDetails from \"../overviews/UserDetails\";\r\n@@ -155,9 +156,9 @@\n           )}\r\n         </div>\r\n         {renderContent()}\r\n         <div className=\"flex gap-2 my-4 justify-end\">\r\n-          <button className={shopButtonStyle + \" mb-4\"}>\r\n+          <button className={createUserButton + \" mb-4\"}>\r\n             <ShoppingBag size={18}/>Shop\r\n           </button>\r\n         </div>\r\n       </div>\r\n"
+                },
+                {
+                    "date": 1763395788225,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,8 @@\n   modalConfirmButtonStyle,\r\n   updateButtonStyle,\r\n   userFontSemibold,\r\n   deleteButtonStyle,\r\n-  shopButtonStyle,\r\n   createUserButton\r\n } from \"../../utils/stylingUtils\";\r\n import { useUsers } from \"../customHooks/useUsers\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n"
+                },
+                {
+                    "date": 1763395873165,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n   modalConfirmButtonStyle,\r\n   updateButtonStyle,\r\n   userFontSemibold,\r\n   deleteButtonStyle,\r\n-  createUserButton\r\n+  createUserButton,\r\n } from \"../../utils/stylingUtils\";\r\n import { useUsers } from \"../customHooks/useUsers\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n import UserDetails from \"../overviews/UserDetails\";\r\n@@ -156,9 +156,10 @@\n         </div>\r\n         {renderContent()}\r\n         <div className=\"flex gap-2 my-4 justify-end\">\r\n           <button className={createUserButton + \" mb-4\"}>\r\n-            <ShoppingBag size={18}/>Shop\r\n+            <ShoppingBag size={18} />\r\n+            Shop\r\n           </button>\r\n         </div>\r\n       </div>\r\n     );\r\n"
+                },
+                {
+                    "date": 1763395903398,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -82,8 +82,13 @@\n               handleBackToList={resetActions}\r\n             />\r\n           );\r\n \r\n+          case \"shop\":\r\n+            return (\r\n+              <div>Something</div>\r\n+            )\r\n+\r\n         default:\r\n           if (viewDetails) {\r\n             return <UserDetails entity={selectedUser} />;\r\n           }\r\n"
+                },
+                {
+                    "date": 1763395930258,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -82,12 +82,10 @@\n               handleBackToList={resetActions}\r\n             />\r\n           );\r\n \r\n-          case \"shop\":\r\n-            return (\r\n-              <div>Something</div>\r\n-            )\r\n+        case \"shop\":\r\n+          return <div>Something</div>;\r\n \r\n         default:\r\n           if (viewDetails) {\r\n             return <UserDetails entity={selectedUser} />;\r\n"
+                },
+                {
+                    "date": 1763395957806,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -158,9 +158,11 @@\n           )}\r\n         </div>\r\n         {renderContent()}\r\n         <div className=\"flex gap-2 my-4 justify-end\">\r\n-          <button className={createUserButton + \" mb-4\"}>\r\n+          <button \r\n+          onClick={() => handleAction(\"shop\", selectedUser!)}\r\n+          className={createUserButton + \" mb-4\"}>\r\n             <ShoppingBag size={18} />\r\n             Shop\r\n           </button>\r\n         </div>\r\n"
+                },
+                {
+                    "date": 1763395989165,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -157,16 +157,19 @@\n             </div>\r\n           )}\r\n         </div>\r\n         {renderContent()}\r\n-        <div className=\"flex gap-2 my-4 justify-end\">\r\n-          <button \r\n-          onClick={() => handleAction(\"shop\", selectedUser!)}\r\n-          className={createUserButton + \" mb-4\"}>\r\n-            <ShoppingBag size={18} />\r\n-            Shop\r\n-          </button>\r\n-        </div>\r\n+        {action === null && selectedUser && (\r\n+          <div className=\"flex gap-2 my-4 justify-end\">\r\n+            <button\r\n+              onClick={() => handleAction(\"shop\", selectedUser!)}\r\n+              className={createUserButton + \" mb-4\"}\r\n+            >\r\n+              <ShoppingBag size={18} />\r\n+              Shop\r\n+            </button>\r\n+          </div>\r\n+        )}\r\n       </div>\r\n     );\r\n   }\r\n \r\n"
+                },
+                {
+                    "date": 1763396086631,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,8 +19,9 @@\n import type { ActionType } from \"../../utils/utils\";\r\n import UserDetails from \"../overviews/UserDetails\";\r\n import UsersList from \"../lists/UsersList\";\r\n import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n+import BuyProduct from \"../forms/BuyProduct\";\r\n \r\n export default function UsersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n@@ -83,9 +84,11 @@\n             />\r\n           );\r\n \r\n         case \"shop\":\r\n-          return <div>Something</div>;\r\n+          return (\r\n+            <BuyProduct />\r\n+          )\r\n \r\n         default:\r\n           if (viewDetails) {\r\n             return <UserDetails entity={selectedUser} />;\r\n"
                 }
             ],
             "date": 1761645579091,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 12,
+            "activePatchIndex": 13,
             "patches": [
                 {
                     "date": 1762356156385,
@@ -56,6 +56,10 @@
                 {
                     "date": 1762356576732,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n import type { UserData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n-import { addButtonSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, updateButtonSm, deleteButtonSm, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n \r\n \r\n export default function UsersList({\r\n   entities: users,\r\n"
+                },
+                {
+                    "date": 1763395762020,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n import type { UserData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n-import { addButtonSm, updateButtonSm, deleteButtonSm, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, updateButtonSm, deleteButtonSm, entitiesNotFound, createUserButton} from \"../../utils/stylingUtils\";\r\n \r\n \r\n export default function UsersList({\r\n   entities: users,\r\n@@ -19,9 +19,9 @@\n       <div className=\"flex justify-between items-center mb-6\">\r\n         <h3 className=\"text-3xl font-bold text-purple-400\">Users</h3>\r\n         <button\r\n           onClick={onCreateClick}\r\n-          className=\"flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\"\r\n+          className={createUserButton}\r\n         >\r\n           <Plus size={20} />\r\n           Create User\r\n         </button>\r\n"
                 }
             ],
             "date": 1762356156385,

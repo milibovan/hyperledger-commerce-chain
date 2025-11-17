@@ -1,7 +1,7 @@
 import { Plus, Edit, Trash2 } from "lucide-react";
 import type { UserData } from "../../utils/dataTypesUtils";
 import type { ListProps } from "../../utils/propsUtils";
-import { addButtonSm, updateButtonSm, deleteButtonSm, entitiesNotFound} from "../../utils/stylingUtils";
+import { addButtonSm, updateButtonSm, deleteButtonSm, entitiesNotFound, createUserButton} from "../../utils/stylingUtils";
 
 
 export default function UsersList({
@@ -20,7 +20,7 @@ export default function UsersList({
         <h3 className="text-3xl font-bold text-purple-400">Users</h3>
         <button
           onClick={onCreateClick}
-          className="flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50"
+          className={createUserButton}
         >
           <Plus size={20} />
           Create User

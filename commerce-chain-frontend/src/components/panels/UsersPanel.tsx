@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { UserData } from "../../utils/dataTypesUtils";
-import { Plus, Edit, Trash2 } from "lucide-react";
+import { Plus, Edit, Trash2, ShoppingBag } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateUserForm from "../forms/UpdateUserForm";
@@ -12,13 +12,15 @@ import {
   modalConfirmButtonStyle,
   updateButtonStyle,
   userFontSemibold,
-  deleteButtonStyle
+  deleteButtonStyle,
+  createUserButton,
 } from "../../utils/stylingUtils";
 import { useUsers } from "../customHooks/useUsers";
 import type { ActionType } from "../../utils/utils";
 import UserDetails from "../overviews/UserDetails";
 import UsersList from "../lists/UsersList";
 import { useEntityActions } from "../customHooks/useEntityActions";
+import BuyProduct from "../forms/BuyProduct";
 
 export default function UsersPanel() {
   const modalRef = useRef<ModalHandle>(null);
@@ -81,6 +83,11 @@ export default function UsersPanel() {
               handleBackToList={resetActions}
             />
           );
+
+        case "shop":
+          return (
+            <BuyProduct />
+          )
 
         default:
           if (viewDetails) {
@@ -154,6 +161,17 @@ export default function UsersPanel() {
           )}
         </div>
         {renderContent()}
+        {action === null && selectedUser && (
+          <div className="flex gap-2 my-4 justify-end">
+            <button
+              onClick={() => handleAction("shop", selectedUser!)}
+              className={createUserButton + " mb-4"}
+            >
+              <ShoppingBag size={18} />
+              Shop
+            </button>
+          </div>
+        )}
       </div>
     );
   }
