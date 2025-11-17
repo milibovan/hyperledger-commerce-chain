@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Send, ShoppingCart, AlertCircle } from "lucide-react";
-import type { AddProductProps } from "../../utils/propsUtils";
+import type { AddOrBuyProductProps } from "../../utils/propsUtils";
 import { useProducts } from "../customHooks/useProducts";
 import { traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 import { useEntityActions } from "../customHooks/useEntityActions";
@@ -8,11 +8,12 @@ import Modal, { type ModalHandle } from "./DeleteModal";
 import { host, httpMethod } from "../../utils/utils";
 import SuccessProductAddingModal from "../modals/SuccessProductAddingModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
+import type { TraderData } from "../../utils/dataTypesUtils";
 
 export default function AddProductsToTrader({
   trader,
   onSuccess,
-}: AddProductProps) {
+}: AddOrBuyProductProps<TraderData>) {
   const successModalRef = useRef<ModalHandle>(null);
   const confirmModalRef = useRef<ModalHandle>(null);
   const { products, loading, fetchProducts } = useProducts();

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 99,
+            "activePatchIndex": 102,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -404,6 +404,18 @@
                 {
                     "date": 1763396086631,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,8 +19,9 @@\n import type { ActionType } from \"../../utils/utils\";\r\n import UserDetails from \"../overviews/UserDetails\";\r\n import UsersList from \"../lists/UsersList\";\r\n import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n+import BuyProduct from \"../forms/BuyProduct\";\r\n \r\n export default function UsersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n@@ -83,9 +84,11 @@\n             />\r\n           );\r\n \r\n         case \"shop\":\r\n-          return <div>Something</div>;\r\n+          return (\r\n+            <BuyProduct />\r\n+          )\r\n \r\n         default:\r\n           if (viewDetails) {\r\n             return <UserDetails entity={selectedUser} />;\r\n"
+                },
+                {
+                    "date": 1763396799873,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -85,9 +85,11 @@\n           );\r\n \r\n         case \"shop\":\r\n           return (\r\n-            <BuyProduct />\r\n+            <BuyProduct \r\n+              trader={selectedUser}\r\n+            />\r\n           )\r\n \r\n         default:\r\n           if (viewDetails) {\r\n"
+                },
+                {
+                    "date": 1763397415703,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -161,9 +161,8 @@\n               </button>\r\n             </div>\r\n           )}\r\n         </div>\r\n-        {renderContent()}\r\n         {action === null && selectedUser && (\r\n           <div className=\"flex gap-2 my-4 justify-end\">\r\n             <button\r\n               onClick={() => handleAction(\"shop\", selectedUser!)}\r\n@@ -173,8 +172,9 @@\n               Shop\r\n             </button>\r\n           </div>\r\n         )}\r\n+        {renderContent()}\r\n       </div>\r\n     );\r\n   }\r\n \r\n"
+                },
+                {
+                    "date": 1763397425460,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -161,8 +161,9 @@\n               </button>\r\n             </div>\r\n           )}\r\n         </div>\r\n+        {renderContent()}\r\n         {action === null && selectedUser && (\r\n           <div className=\"flex gap-2 my-4 justify-end\">\r\n             <button\r\n               onClick={() => handleAction(\"shop\", selectedUser!)}\r\n@@ -172,9 +173,8 @@\n               Shop\r\n             </button>\r\n           </div>\r\n         )}\r\n-        {renderContent()}\r\n       </div>\r\n     );\r\n   }\r\n \r\n"
                 }
             ],
             "date": 1761645579091,

@@ -86,7 +86,9 @@ export default function UsersPanel() {
 
         case "shop":
           return (
-            <BuyProduct />
+            <BuyProduct 
+              trader={selectedUser}
+            />
           )
 
         default:

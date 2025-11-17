@@ -66,8 +66,8 @@ export interface IncreaseQuantityProps {
   handleBackToList: () => void;
 }
 
-export interface AddProductProps {
-  trader: TraderData;
+export interface AddOrBuyProductProps<T> {
+  trader: T;
   tradersProducts?: ProductData[];
   onSuccess?: () => Promise<void>;
 }
