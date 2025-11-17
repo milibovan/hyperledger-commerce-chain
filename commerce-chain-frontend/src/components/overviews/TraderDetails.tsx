@@ -3,7 +3,7 @@ import type { DetailsProps } from "../../utils/propsUtils";
 import {
   traderFontBold,
   traderFontSemibold,
-  addButtonStyle,
+  createTraderButton,
 } from "../../utils/stylingUtils";
 import { Package, Plus } from "lucide-react";
 
@@ -49,7 +49,7 @@ export default function TraderDetails({
           {addProduct && (
             <button
               onClick={() => addProduct(trader!, products!)}
-              className={addButtonStyle}
+              className={createTraderButton}
               title="Add products"
             >
               <Plus size={18} /> Add products

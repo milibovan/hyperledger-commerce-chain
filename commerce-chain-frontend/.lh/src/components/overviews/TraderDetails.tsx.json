@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 29,
+            "activePatchIndex": 31,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -124,6 +124,14 @@
                 {
                     "date": 1763220977930,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -67,9 +67,9 @@\n               const quantity = trader[\"products-available\"].find(productItem => product.id === productItem[\"product-id\"])?.quantity\r\n               return (\r\n                 <div\r\n                   key={product.id}\r\n-                  onClick={() => onProductClick(product)}\r\n+                  onClick={() => onProductClick?.(product)}\r\n                   className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n                 >\r\n                   <div className=\"flex-1\">\r\n                     <h5 className={traderFontSemibold}>{product.name}</h5>\r\n"
+                },
+                {
+                    "date": 1763396365054,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,8 +3,9 @@\n import {\r\n   traderFontBold,\r\n   traderFontSemibold,\r\n   addButtonStyle,\r\n+  createTraderButton,\r\n } from \"../../utils/stylingUtils\";\r\n import { Package, Plus } from \"lucide-react\";\r\n \r\n export default function TraderDetails({\r\n@@ -48,9 +49,9 @@\n           </h4>\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader!, products!)}\r\n-              className={addButtonStyle}\r\n+              className={createTraderButton}\r\n               title=\"Add products\"\r\n             >\r\n               <Plus size={18} /> Add products\r\n             </button>\r\n"
+                },
+                {
+                    "date": 1763396388530,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,8 @@\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import {\r\n   traderFontBold,\r\n   traderFontSemibold,\r\n-  addButtonStyle,\r\n   createTraderButton,\r\n } from \"../../utils/stylingUtils\";\r\n import { Package, Plus } from \"lucide-react\";\r\n \r\n"
                 }
             ],
             "date": 1762249738197,

@@ -1,5 +1,5 @@
 import { Plus, Edit, Trash2 } from "lucide-react";
-import { addButtonSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from "../../utils/stylingUtils";
+import { addButtonSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound, createTraderButton} from "../../utils/stylingUtils";
 import type { TraderData } from "../../utils/dataTypesUtils";
 import type { ListProps } from "../../utils/propsUtils";
 
@@ -19,7 +19,7 @@ export default function TradersList({
           <h3 className="text-3xl font-bold text-pink-400">Traders</h3>
           <button
             onClick={onCreateClick}
-            className="flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50"
+            className={createTraderButton}
           >
             <Plus size={20} />
             Create Trader

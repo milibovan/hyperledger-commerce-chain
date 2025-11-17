@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 19,
+            "activePatchIndex": 20,
             "patches": [
                 {
                     "date": 1762248870264,
@@ -84,6 +84,10 @@
                 {
                     "date": 1762356547099,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import { addButtonStyleSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n@@ -66,9 +66,9 @@\n                     onClick={(e) => e.stopPropagation()}\r\n                   >\r\n                     <button\r\n                       onClick={() =>onDepositClick(trader)}\r\n-                      className={addButtonStyleSm}\r\n+                      className={addButtonSm}\r\n                       title=\"Deposit Money\"\r\n                     >\r\n                       <Plus size={18} />\r\n                     </button>\r\n"
+                },
+                {
+                    "date": 1763396350909,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import { addButtonSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound} from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, updateButtonSm, deleteButtonSm, traderFontBold, entitiesNotFound, createTraderButton} from \"../../utils/stylingUtils\";\r\n import type { TraderData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function TradersList({\r\n@@ -18,9 +18,9 @@\n         <div className=\"flex justify-between items-center mb-6\">\r\n           <h3 className=\"text-3xl font-bold text-pink-400\">Traders</h3>\r\n           <button\r\n             onClick={onCreateClick}\r\n-            className=\"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\r\n+            className={createTraderButton}\r\n           >\r\n             <Plus size={20} />\r\n             Create Trader\r\n           </button>\r\n"
                 }
             ],
             "date": 1762248870264,
