@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 29,
+            "activePatchIndex": 39,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -124,6 +124,46 @@
                 {
                     "date": 1763396625955,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -65,9 +65,9 @@\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n }\r\n \r\n-export interface AddProductProps<T> {\r\n+export interface AddOrBuyProductProps<T> {\r\n   trader: T;\r\n   tradersProducts?: ProductData[];\r\n   onSuccess?: () => Promise<void>;\r\n }\r\n"
+                },
+                {
+                    "date": 1763489548227,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -77,5 +77,10 @@\n   selectedProducts: Map<string, number>;\r\n   totalCost: number;\r\n   remainingBalance: number;\r\n   products?: ProductData[];\r\n+}\r\n+\r\n+export interface ProductsTabsProps {\r\n+  user: UserData;\r\n+  products: ProductData[];\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763489622742,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -82,5 +82,7 @@\n \r\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n+  loading: boolean;\r\n+  resetActions: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763489670284,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -80,9 +80,8 @@\n   products?: ProductData[];\r\n }\r\n \r\n export interface ProductsTabsProps {\r\n-  user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n   resetActions: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490047236,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -80,8 +80,9 @@\n   products?: ProductData[];\r\n }\r\n \r\n export interface ProductsTabsProps {\r\n+  user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n   resetActions: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490151827,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,6 +83,5 @@\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n-  resetActions: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490320077,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,5 +83,6 @@\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n+  onSuccess: () => void\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490382384,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,6 +83,6 @@\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n-  onSuccess: () => void\r\n+  onSuccess: () => Promise<void>\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490398657,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,6 +83,6 @@\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n-  onSuccess: () => Promise<void>\r\n+  onSuccess: () => Promise<void> | undefined\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490417561,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,6 +83,6 @@\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n-  onSuccess: () => Promise<void> | undefined\r\n+  onSuccess: () => (() => Promise<void>) | undefined\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490430261,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,6 +83,6 @@\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n-  onSuccess: () => (() => Promise<void>) | undefined\r\n+  onSuccess: (() => Promise<void>) | undefined\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762248920808,

@@ -20,7 +20,7 @@ import type { ActionType } from "../../utils/utils";
 import UserDetails from "../overviews/UserDetails";
 import UsersList from "../lists/UsersList";
 import { useEntityActions } from "../customHooks/useEntityActions";
-import BuyProduct from "../forms/BuyProduct";
+import BuyProduct from "../forms/BuyProductMenu";
 
 export default function UsersPanel() {
   const modalRef = useRef<ModalHandle>(null);

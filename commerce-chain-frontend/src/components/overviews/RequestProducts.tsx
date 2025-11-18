@@ -1,30 +1,28 @@
-import { useEffect, useRef, useState } from "react";
-import type { UserData } from "../../utils/dataTypesUtils";
-import type { AddOrBuyProductProps } from "../../utils/propsUtils";
-import { userFontBold, userFontSemibold } from "../../utils/stylingUtils";
-import { useProducts } from "../customHooks/useProducts";
+import { Send, ShoppingCart } from "lucide-react";
+import type { ProductsTabsProps } from "../../utils/propsUtils";
+import { useRef, useState } from "react";
+import type { ModalHandle } from "../forms/DeleteModal";
+import Modal from "../forms/DeleteModal";
 import { useEntityActions } from "../customHooks/useEntityActions";
-import { AlertCircle, Send, ShoppingCart } from "lucide-react";
-import Modal, { type ModalHandle } from "./DeleteModal";
 import { host, httpMethod } from "../../utils/utils";
+import { userFontBold } from "../../utils/stylingUtils";
 
-export default function BuyProduct({
-  trader: user,
-  onSuccess,
-}: AddOrBuyProductProps<UserData>) {
-  const successModalRef = useRef<ModalHandle>(null);
-  const confirmModalRef = useRef<ModalHandle>(null);
-  const { products, loading, fetchProducts } = useProducts();
+export default function RequestProducts({
+  user,
+  products,
+  loading,
+  onSuccess
+}: ProductsTabsProps) {
   const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(
     new Map()
   );
+
   const [errors, setErrors] = useState<Map<string, string>>(new Map());
   const { resetActions, resetNestedView } = useEntityActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
+  const successModalRef = useRef<ModalHandle>(null);
+  const confirmModalRef = useRef<ModalHandle>(null);
 
   const calculateTotal = (): number => {
     let total = 0;
@@ -40,48 +38,6 @@ export default function BuyProduct({
   const totalCost = calculateTotal();
   const remainingBalance = user.balance - totalCost;
   const hasInsufficientFunds = remainingBalance < 0;
-
-  const toggleProduct = (productId: string) => {
-    setSelectedProducts((prev) => {
-      const newMap = new Map(prev);
-      if (newMap.has(productId)) {
-        newMap.delete(productId);
-        setErrors((prevErrors) => {
-          const newErrors = new Map(prevErrors);
-          newErrors.delete(productId);
-          return newErrors;
-        });
-      } else {
-        newMap.set(productId, 1);
-      }
-      return newMap;
-    });
-  };
-
-  const updateQuantity = (productId: string, quantity: number) => {
-    const product = products.find((p) => p.id === productId);
-    if (!product) return;
-
-    setSelectedProducts((prev) => {
-      const newMap = new Map(prev);
-      if (quantity > 0) {
-        newMap.set(productId, quantity);
-      } else {
-        newMap.delete(productId);
-      }
-      return newMap;
-    });
-
-    setErrors((prev) => {
-      const newErrors = new Map(prev);
-      if (quantity > product.quantity) {
-        newErrors.set(productId, `Only ${product.quantity} available`);
-      } else {
-        newErrors.delete(productId);
-      }
-      return newErrors;
-    });
-  };
 
   const handleConfirm = async () => {
     const productsToAdd = Array.from(selectedProducts.entries()).map(
@@ -139,8 +95,50 @@ export default function BuyProduct({
     hasInsufficientFunds ||
     errors.size > 0;
 
+  const toggleProduct = (productId: string) => {
+    setSelectedProducts((prev) => {
+      const newMap = new Map(prev);
+      if (newMap.has(productId)) {
+        newMap.delete(productId);
+        setErrors((prevErrors) => {
+          const newErrors = new Map(prevErrors);
+          newErrors.delete(productId);
+          return newErrors;
+        });
+      } else {
+        newMap.set(productId, 1);
+      }
+      return newMap;
+    });
+  };
+
+  const updateQuantity = (productId: string, quantity: number) => {
+    const product = products.find((p) => p.id === productId);
+    if (!product) return;
+
+    setSelectedProducts((prev) => {
+      const newMap = new Map(prev);
+      if (quantity > 0) {
+        newMap.set(productId, quantity);
+      } else {
+        newMap.delete(productId);
+      }
+      return newMap;
+    });
+
+    setErrors((prev) => {
+      const newErrors = new Map(prev);
+      if (quantity > product.quantity) {
+        newErrors.set(productId, `Only ${product.quantity} available`);
+      } else {
+        newErrors.delete(productId);
+      }
+      return newErrors;
+    });
+  };
+
   return (
-    <div className="space-y-6">
+    <div>
       <Modal
         ref={successModalRef}
         onConfirm={() => {
@@ -182,52 +180,6 @@ export default function BuyProduct({
           products={products}
         /> */}
       </Modal>
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-purple-400 mb-2">
-          Buy Products
-        </h1>
-        <p className="text-xl text-gray-300">
-          <span className={userFontSemibold}>User:</span> {user.name}
-        </p>
-      </div>
-
-      {/* Balance Summary Card */}
-      <div className="bg-gray-800 border-2 border-purple-400 rounded-lg p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-          <div>
-            <p className="text-sm text-gray-400 mb-1">Current Balance</p>
-            <p className="text-2xl font-bold text-green-400">
-              ${user.balance.toFixed(2)}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-400 mb-1">Total Cost</p>
-            <p className="text-2xl font-bold text-yellow-400">
-              -${totalCost.toFixed(2)}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-gray-400 mb-1">Remaining Balance</p>
-            <p
-              className={`text-2xl font-bold ${
-                hasInsufficientFunds ? "text-red-500" : "text-green-400"
-              }`}
-            >
-              ${remainingBalance.toFixed(2)}
-            </p>
-          </div>
-        </div>
-
-        {hasInsufficientFunds && (
-          <div className="mt-4 flex items-center gap-2 px-4 py-3 bg-red-900/30 border border-red-500 rounded text-red-300">
-            <AlertCircle size={20} />
-            <span className="font-semibold">
-              Insufficient Funds! Reduce quantities or remove products.
-            </span>
-          </div>
-        )}
-      </div>
       {/* Products Grid */}
       <div className="mb-6">
         <h2 className="text-xl font-bold text-purple-300 mb-4 flex items-center gap-2">

@@ -79,3 +79,10 @@ export interface ModalProps {
   remainingBalance: number;
   products?: ProductData[];
 }
+
+export interface ProductsTabsProps {
+  user: UserData;
+  products: ProductData[];
+  loading: boolean;
+  onSuccess: (() => Promise<void>) | undefined
+}

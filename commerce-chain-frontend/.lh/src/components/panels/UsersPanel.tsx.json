@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 102,
+            "activePatchIndex": 103,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -416,6 +416,10 @@
                 {
                     "date": 1763397425460,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -161,8 +161,9 @@\n               </button>\r\n             </div>\r\n           )}\r\n         </div>\r\n+        {renderContent()}\r\n         {action === null && selectedUser && (\r\n           <div className=\"flex gap-2 my-4 justify-end\">\r\n             <button\r\n               onClick={() => handleAction(\"shop\", selectedUser!)}\r\n@@ -172,9 +173,8 @@\n               Shop\r\n             </button>\r\n           </div>\r\n         )}\r\n-        {renderContent()}\r\n       </div>\r\n     );\r\n   }\r\n \r\n"
+                },
+                {
+                    "date": 1763489445093,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,9 +19,9 @@\n import type { ActionType } from \"../../utils/utils\";\r\n import UserDetails from \"../overviews/UserDetails\";\r\n import UsersList from \"../lists/UsersList\";\r\n import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n-import BuyProduct from \"../forms/BuyProduct\";\r\n+import BuyProduct from \"../forms/BuyProductMenu\";\r\n \r\n export default function UsersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n"
                 }
             ],
             "date": 1761645579091,
