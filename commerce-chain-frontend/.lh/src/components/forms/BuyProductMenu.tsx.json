@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 24,
+            "activePatchIndex": 31,
             "patches": [
                 {
                     "date": 1763489585123,
@@ -104,6 +104,34 @@
                 {
                     "date": 1763491342705,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -105,9 +105,9 @@\n           </div>\r\n           <div>\r\n             <p className=\"text-sm text-gray-400 mb-1\">Total Cost</p>\r\n             <p className=\"text-2xl font-bold text-yellow-400\">\r\n-              {/* -${totalCost.toFixed(2)} */}\r\n+              -${totalCost.toFixed(2)}\r\n             </p>\r\n           </div>\r\n           <div>\r\n             <p className=\"text-sm text-gray-400 mb-1\">Remaining Balance</p>\r\n"
+                },
+                {
+                    "date": 1763491563930,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,14 +5,16 @@\n import { useProducts } from \"../customHooks/useProducts\";\r\n import { AlertCircle } from \"lucide-react\";\r\n import AvailableProducts from \"../overviews/AvailableProducts\";\r\n import RequestProducts from \"../overviews/RequestProducts\";\r\n+import { useTraders } from \"../customHooks/useTraders\";\r\n \r\n export default function BuyProduct({\r\n   trader: user,\r\n   onSuccess,\r\n }: AddOrBuyProductProps<UserData>) {\r\n   const { products, loading, fetchProducts } = useProducts();\r\n+  const { avaliableProducts } = useTraders();\r\n   const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(\r\n     new Map()\r\n   );\r\n \r\n@@ -161,9 +163,18 @@\n \r\n       {/* Content */}\r\n       <div className=\"bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50\">\r\n         {activeTab === \"available\" ? (\r\n-          <AvailableProducts />\r\n+          <AvailableProducts \r\n+          user={user}\r\n+            products={products}\r\n+            loading={loading}\r\n+            onSuccess={onSuccess}\r\n+            selectedProducts={selectedProducts}\r\n+            hasInsufficientFunds={hasInsufficientFunds}\r\n+            errors={errors}\r\n+            toggleProduct={toggleProduct}\r\n+            updateQuantity={updateQuantity}/>\r\n         ) : (\r\n           <RequestProducts\r\n             user={user}\r\n             products={products}\r\n"
+                },
+                {
+                    "date": 1763491642889,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -163,18 +163,19 @@\n \r\n       {/* Content */}\r\n       <div className=\"bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50\">\r\n         {activeTab === \"available\" ? (\r\n-          <AvailableProducts \r\n-          user={user}\r\n+          <AvailableProducts\r\n+            user={user}\r\n             products={products}\r\n             loading={loading}\r\n             onSuccess={onSuccess}\r\n             selectedProducts={selectedProducts}\r\n             hasInsufficientFunds={hasInsufficientFunds}\r\n             errors={errors}\r\n             toggleProduct={toggleProduct}\r\n-            updateQuantity={updateQuantity}/>\r\n+            updateQuantity={updateQuantity}\r\n+          />\r\n         ) : (\r\n           <RequestProducts\r\n             user={user}\r\n             products={products}\r\n"
+                },
+                {
+                    "date": 1763491648418,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -165,9 +165,9 @@\n       <div className=\"bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50\">\r\n         {activeTab === \"available\" ? (\r\n           <AvailableProducts\r\n             user={user}\r\n-            products={products}\r\n+            products={avaliableProducts}\r\n             loading={loading}\r\n             onSuccess={onSuccess}\r\n             selectedProducts={selectedProducts}\r\n             hasInsufficientFunds={hasInsufficientFunds}\r\n"
+                },
+                {
+                    "date": 1763491693309,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n   trader: user,\r\n   onSuccess,\r\n }: AddOrBuyProductProps<UserData>) {\r\n   const { products, loading, fetchProducts } = useProducts();\r\n-  const { avaliableProducts } = useTraders();\r\n+  const { products: availableProducts } = useTraders();\r\n   const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(\r\n     new Map()\r\n   );\r\n \r\n@@ -165,9 +165,9 @@\n       <div className=\"bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50\">\r\n         {activeTab === \"available\" ? (\r\n           <AvailableProducts\r\n             user={user}\r\n-            products={avaliableProducts}\r\n+            products={availableProducts}\r\n             loading={loading}\r\n             onSuccess={onSuccess}\r\n             selectedProducts={selectedProducts}\r\n             hasInsufficientFunds={hasInsufficientFunds}\r\n"
+                },
+                {
+                    "date": 1763492141863,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n import { userFontSemibold } from \"../../utils/stylingUtils\";\r\n import { useProducts } from \"../customHooks/useProducts\";\r\n import { AlertCircle } from \"lucide-react\";\r\n import AvailableProducts from \"../overviews/AvailableProducts\";\r\n-import RequestProducts from \"../overviews/RequestProducts\";\r\n+import RequestProducts from \"../overviews/ProductsTabs\";\r\n import { useTraders } from \"../customHooks/useTraders\";\r\n \r\n export default function BuyProduct({\r\n   trader: user,\r\n"
+                },
+                {
+                    "date": 1763492153919,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n import { userFontSemibold } from \"../../utils/stylingUtils\";\r\n import { useProducts } from \"../customHooks/useProducts\";\r\n import { AlertCircle } from \"lucide-react\";\r\n import AvailableProducts from \"../overviews/AvailableProducts\";\r\n-import RequestProducts from \"../overviews/ProductsTabs\";\r\n+import ProductsTabs from \"../overviews/ProductsTabs\";\r\n import { useTraders } from \"../customHooks/useTraders\";\r\n \r\n export default function BuyProduct({\r\n   trader: user,\r\n@@ -175,9 +175,9 @@\n             toggleProduct={toggleProduct}\r\n             updateQuantity={updateQuantity}\r\n           />\r\n         ) : (\r\n-          <RequestProducts\r\n+          <ProductsTabs\r\n             user={user}\r\n             products={products}\r\n             loading={loading}\r\n             onSuccess={onSuccess}\r\n"
+                },
+                {
+                    "date": 1763492167343,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -163,9 +163,9 @@\n \r\n       {/* Content */}\r\n       <div className=\"bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50\">\r\n         {activeTab === \"available\" ? (\r\n-          <AvailableProducts\r\n+          <ProductsTabs\r\n             user={user}\r\n             products={availableProducts}\r\n             loading={loading}\r\n             onSuccess={onSuccess}\r\n"
                 }
             ],
             "date": 1763489585123,

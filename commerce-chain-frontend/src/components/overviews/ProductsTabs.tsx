@@ -7,7 +7,7 @@ import { useEntityActions } from "../customHooks/useEntityActions";
 import { host, httpMethod } from "../../utils/utils";
 import { userFontBold } from "../../utils/stylingUtils";
 
-export default function RequestProducts({
+export default function ProductsTabs({
   user,
   products,
   loading,

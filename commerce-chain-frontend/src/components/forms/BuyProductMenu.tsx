@@ -4,14 +4,15 @@ import type { AddOrBuyProductProps } from "../../utils/propsUtils";
 import { userFontSemibold } from "../../utils/stylingUtils";
 import { useProducts } from "../customHooks/useProducts";
 import { AlertCircle } from "lucide-react";
-import AvailableProducts from "../overviews/AvailableProducts";
-import RequestProducts from "../overviews/RequestProducts";
+import ProductsTabs from "../overviews/ProductsTabs";
+import { useTraders } from "../customHooks/useTraders";
 
 export default function BuyProduct({
   trader: user,
   onSuccess,
 }: AddOrBuyProductProps<UserData>) {
   const { products, loading, fetchProducts } = useProducts();
+  const { products: availableProducts } = useTraders();
   const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(
     new Map()
   );
@@ -162,9 +163,19 @@ export default function BuyProduct({
       {/* Content */}
       <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
         {activeTab === "available" ? (
-          <AvailableProducts />
+          <ProductsTabs
+            user={user}
+            products={availableProducts}
+            loading={loading}
+            onSuccess={onSuccess}
+            selectedProducts={selectedProducts}
+            hasInsufficientFunds={hasInsufficientFunds}
+            errors={errors}
+            toggleProduct={toggleProduct}
+            updateQuantity={updateQuantity}
+          />
         ) : (
-          <RequestProducts
+          <ProductsTabs
             user={user}
             products={products}
             loading={loading}
