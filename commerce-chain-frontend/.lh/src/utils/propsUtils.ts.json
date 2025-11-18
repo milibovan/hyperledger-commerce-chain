@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 39,
+            "activePatchIndex": 46,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -164,6 +164,34 @@
                 {
                     "date": 1763490430261,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,6 +83,6 @@\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n-  onSuccess: () => (() => Promise<void>) | undefined\r\n+  onSuccess: (() => Promise<void>) | undefined\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490772202,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,6 +83,8 @@\n export interface ProductsTabsProps {\r\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n-  onSuccess: (() => Promise<void>) | undefined\r\n+  onSuccess: (() => Promise<void>) | undefined;\r\n+  selectedProducts: Map<string, number>\r\n+  setSelectedProducts: () => void\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763490804961,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -85,6 +85,6 @@\n   products: ProductData[];\r\n   loading: boolean;\r\n   onSuccess: (() => Promise<void>) | undefined;\r\n   selectedProducts: Map<string, number>\r\n-  setSelectedProducts: () => void\r\n+  setSelectedProducts: Dispatch<SetStateAction<Map<string, number>>>\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763491033125,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -84,7 +84,8 @@\n   user: UserData;\r\n   products: ProductData[];\r\n   loading: boolean;\r\n   onSuccess: (() => Promise<void>) | undefined;\r\n-  selectedProducts: Map<string, number>\r\n+  selectedProducts: Map<string, number>;\r\n+  hasInsufficientFunds: boolean;\r\n   setSelectedProducts: Dispatch<SetStateAction<Map<string, number>>>\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763491143652,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -86,6 +86,6 @@\n   loading: boolean;\r\n   onSuccess: (() => Promise<void>) | undefined;\r\n   selectedProducts: Map<string, number>;\r\n   hasInsufficientFunds: boolean;\r\n-  setSelectedProducts: Dispatch<SetStateAction<Map<string, number>>>\r\n+  errors: Map<string, string>\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763491233440,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,14 +11,14 @@\n   onDeleteClick: (trader: T) => void;\r\n }\r\n \r\n export interface DetailsProps<T> {\r\n-    entity: T;\r\n-    date?: string;\r\n-    products?: ProductData[];\r\n-    productsLoading?: boolean;\r\n-    addProduct?: (trader: TraderData, products?: ProductData[]) => void;\r\n-    onProductClick?: (product: ProductData) => void;\r\n+  entity: T;\r\n+  date?: string;\r\n+  products?: ProductData[];\r\n+  productsLoading?: boolean;\r\n+  addProduct?: (trader: TraderData, products?: ProductData[]) => void;\r\n+  onProductClick?: (product: ProductData) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n@@ -86,6 +86,8 @@\n   loading: boolean;\r\n   onSuccess: (() => Promise<void>) | undefined;\r\n   selectedProducts: Map<string, number>;\r\n   hasInsufficientFunds: boolean;\r\n-  errors: Map<string, string>\r\n-}\n\\ No newline at end of file\n+  errors: Map<string, string>;\r\n+  toggleProduct: () => Promise<void>;\r\n+  updateQuantity: () => Promise<void>;\r\n+}\r\n"
+                },
+                {
+                    "date": 1763491245447,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -87,7 +87,7 @@\n   onSuccess: (() => Promise<void>) | undefined;\r\n   selectedProducts: Map<string, number>;\r\n   hasInsufficientFunds: boolean;\r\n   errors: Map<string, string>;\r\n-  toggleProduct: () => Promise<void>;\r\n+  toggleProduct: (productId: string) => void;\r\n   updateQuantity: () => Promise<void>;\r\n }\r\n"
+                },
+                {
+                    "date": 1763491254653,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -88,6 +88,6 @@\n   selectedProducts: Map<string, number>;\r\n   hasInsufficientFunds: boolean;\r\n   errors: Map<string, string>;\r\n   toggleProduct: (productId: string) => void;\r\n-  updateQuantity: () => Promise<void>;\r\n+  updateQuantity: (productId: string, quantity: number) => void;\r\n }\r\n"
                 }
             ],
             "date": 1762248920808,

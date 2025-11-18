@@ -3,7 +3,7 @@ import type { UserData } from "../../utils/dataTypesUtils";
 import type { AddOrBuyProductProps } from "../../utils/propsUtils";
 import { userFontSemibold } from "../../utils/stylingUtils";
 import { useProducts } from "../customHooks/useProducts";
-// import { AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import AvailableProducts from "../overviews/AvailableProducts";
 import RequestProducts from "../overviews/RequestProducts";
 
@@ -12,10 +12,71 @@ export default function BuyProduct({
   onSuccess,
 }: AddOrBuyProductProps<UserData>) {
   const { products, loading, fetchProducts } = useProducts();
+  const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(
+    new Map()
+  );
 
+  const [errors, setErrors] = useState<Map<string, string>>(new Map());
   const [activeTab, setActiveTab] = useState<"available" | "request">(
     "available"
   );
+
+  const calculateTotal = (): number => {
+    let total = 0;
+    selectedProducts.forEach((quantity, productId) => {
+      const product = products.find((p) => p.id === productId);
+      if (product && quantity > 0) {
+        total += product.price * quantity;
+      }
+    });
+    return total;
+  };
+
+  const totalCost = calculateTotal();
+  const remainingBalance = user.balance - totalCost;
+  const hasInsufficientFunds = remainingBalance < 0;
+
+  const toggleProduct = (productId: string) => {
+    setSelectedProducts((prev: Map<string, number>) => {
+      const newMap = new Map(prev);
+      if (newMap.has(productId)) {
+        newMap.delete(productId);
+        setErrors((prevErrors) => {
+          const newErrors = new Map(prevErrors);
+          newErrors.delete(productId);
+          return newErrors;
+        });
+      } else {
+        newMap.set(productId, 1);
+      }
+      return newMap;
+    });
+  };
+
+  const updateQuantity = (productId: string, quantity: number) => {
+    const product = products.find((p) => p.id === productId);
+    if (!product) return;
+
+    setSelectedProducts((prev: Map<string, number>) => {
+      const newMap = new Map(prev);
+      if (quantity > 0) {
+        newMap.set(productId, quantity);
+      } else {
+        newMap.delete(productId);
+      }
+      return newMap;
+    });
+
+    setErrors((prev) => {
+      const newErrors = new Map(prev);
+      if (quantity > product.quantity) {
+        newErrors.set(productId, `Only ${product.quantity} available`);
+      } else {
+        newErrors.delete(productId);
+      }
+      return newErrors;
+    });
+  };
 
   useEffect(() => {
     fetchProducts();
@@ -45,29 +106,29 @@ export default function BuyProduct({
           <div>
             <p className="text-sm text-gray-400 mb-1">Total Cost</p>
             <p className="text-2xl font-bold text-yellow-400">
-              {/* -${totalCost.toFixed(2)} */}
+              -${totalCost.toFixed(2)}
             </p>
           </div>
           <div>
             <p className="text-sm text-gray-400 mb-1">Remaining Balance</p>
             <p
-            // className={`text-2xl font-bold ${
-            //   hasInsufficientFunds ? "text-red-500" : "text-green-400"
-            // }`}
+              className={`text-2xl font-bold ${
+                hasInsufficientFunds ? "text-red-500" : "text-green-400"
+              }`}
             >
-              {/* ${remainingBalance.toFixed(2)} */}
+              ${remainingBalance.toFixed(2)}
             </p>
           </div>
         </div>
 
-        {/* {hasInsufficientFunds && (
+        {hasInsufficientFunds && (
           <div className="mt-4 flex items-center gap-2 px-4 py-3 bg-red-900/30 border border-red-500 rounded text-red-300">
             <AlertCircle size={20} />
             <span className="font-semibold">
               Insufficient Funds! Reduce quantities or remove products.
             </span>
           </div>
-        )} */}
+        )}
       </div>
       <div className="flex gap-2 border-b-2 border-purple-500">
         <button
@@ -108,6 +169,11 @@ export default function BuyProduct({
             products={products}
             loading={loading}
             onSuccess={onSuccess}
+            selectedProducts={selectedProducts}
+            hasInsufficientFunds={hasInsufficientFunds}
+            errors={errors}
+            toggleProduct={toggleProduct}
+            updateQuantity={updateQuantity}
           />
         )}
       </div>

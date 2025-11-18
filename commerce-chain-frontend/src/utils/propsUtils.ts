@@ -12,12 +12,12 @@ export interface ListProps<T> {
 }
 
 export interface DetailsProps<T> {
-    entity: T;
-    date?: string;
-    products?: ProductData[];
-    productsLoading?: boolean;
-    addProduct?: (trader: TraderData, products?: ProductData[]) => void;
-    onProductClick?: (product: ProductData) => void;
+  entity: T;
+  date?: string;
+  products?: ProductData[];
+  productsLoading?: boolean;
+  addProduct?: (trader: TraderData, products?: ProductData[]) => void;
+  onProductClick?: (product: ProductData) => void;
 }
 
 export interface CreateFormsProps {
@@ -84,5 +84,10 @@ export interface ProductsTabsProps {
   user: UserData;
   products: ProductData[];
   loading: boolean;
-  onSuccess: (() => Promise<void>) | undefined
+  onSuccess: (() => Promise<void>) | undefined;
+  selectedProducts: Map<string, number>;
+  hasInsufficientFunds: boolean;
+  errors: Map<string, string>;
+  toggleProduct: (productId: string) => void;
+  updateQuantity: (productId: string, quantity: number) => void;
 }
