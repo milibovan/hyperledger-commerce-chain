@@ -12,7 +12,12 @@ export default function BuyProduct({
   onSuccess,
 }: AddOrBuyProductProps<UserData>) {
   const { products, loading, fetchProducts } = useProducts();
-  const { products: availableProducts } = useTraders();
+  const {
+    traders,
+    products: availableProducts,
+    fetchProductsByIds,
+    fetchTraders,
+  } = useTraders();
   const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(
     new Map()
   );
@@ -81,7 +86,39 @@ export default function BuyProduct({
 
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]);
+    fetchTraders();
+  }, [fetchProducts, fetchTraders]);
+
+  useEffect(() => {
+    if (traders.length > 0) {
+      const productIds = traders.flatMap((trader) =>
+        trader["products-available"].map((product) => product["product-id"])
+      );
+
+      fetchProductsByIds(productIds);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchProductsByIds, traders.length]);
+
+  const productQuantityMap = new Map<string, number>();
+
+  traders.forEach((trader) => {
+    trader["products-available"].forEach((inventoryItem) => {
+      const productId = inventoryItem["product-id"];
+      const quantity = inventoryItem.quantity;
+
+      const currentTotal = productQuantityMap.get(productId) || 0;
+      productQuantityMap.set(productId, currentTotal + quantity);
+    });
+  });
+
+  availableProducts.forEach((availableProduct) => {
+    const productId = availableProduct.id;
+
+    const totalQuantity = productQuantityMap.get(productId) || 0;
+
+    availableProduct.quantity = totalQuantity;
+  });
 
   return (
     <div className="space-y-6">

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 46,
+            "activePatchIndex": 50,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -192,6 +192,22 @@
                 {
                     "date": 1763491254653,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -88,6 +88,6 @@\n   selectedProducts: Map<string, number>;\r\n   hasInsufficientFunds: boolean;\r\n   errors: Map<string, string>;\r\n   toggleProduct: (productId: string) => void;\r\n-  updateQuantity: () => Promise<void>;\r\n+  updateQuantity: (productId: string, quantity: number) => void;\r\n }\r\n"
+                },
+                {
+                    "date": 1763569244633,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, Trader } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n@@ -89,5 +89,6 @@\n   hasInsufficientFunds: boolean;\r\n   errors: Map<string, string>;\r\n   toggleProduct: (productId: string) => void;\r\n   updateQuantity: (productId: string, quantity: number) => void;\r\n+  traders?: TraderData[]\r\n }\r\n"
+                },
+                {
+                    "date": 1763569265298,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -89,6 +89,6 @@\n   hasInsufficientFunds: boolean;\r\n   errors: Map<string, string>;\r\n   toggleProduct: (productId: string) => void;\r\n   updateQuantity: (productId: string, quantity: number) => void;\r\n-  traders?: TraderData[]\r\n+  traders?: TraderData[];\r\n }\r\n"
+                },
+                {
+                    "date": 1763569272076,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData, Trader } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
+                },
+                {
+                    "date": 1763569325888,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -89,6 +89,5 @@\n   hasInsufficientFunds: boolean;\r\n   errors: Map<string, string>;\r\n   toggleProduct: (productId: string) => void;\r\n   updateQuantity: (productId: string, quantity: number) => void;\r\n-  traders?: TraderData[];\r\n }\r\n"
                 }
             ],
             "date": 1762248920808,
