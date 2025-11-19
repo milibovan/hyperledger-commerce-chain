@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import type { UserData } from "../../utils/dataTypesUtils";
 import type { AddOrBuyProductProps } from "../../utils/propsUtils";
 import { userFontSemibold } from "../../utils/stylingUtils";
-import { useProducts } from "../customHooks/useProducts";
+import { useProducts } from "../hooks/useProducts";
 import { AlertCircle } from "lucide-react";
 import ProductsTabs from "../overviews/ProductsTabs";
-import { useTraders } from "../customHooks/useTraders";
+import { useTraders } from "../hooks/useTraders";
 
 export default function BuyProduct({
   trader: user,

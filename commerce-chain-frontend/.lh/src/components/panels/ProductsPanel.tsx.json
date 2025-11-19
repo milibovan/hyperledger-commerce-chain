@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 154,
+            "activePatchIndex": 155,
             "patches": [
                 {
                     "date": 1761645570981,
@@ -624,6 +624,10 @@
                 {
                     "date": 1762448118547,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,8 +17,9 @@\n   modalDialogClassName,\r\n   updateButtonStyle,\r\n } from \"../../utils/stylingUtils\";\r\n import ProductsList from \"../lists/ProductsList\";\r\n+import IncreaseProductQuantity from \"../forms/IncreaseProductQuantity\";\r\n \r\n export default function ProductsPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n@@ -61,12 +62,13 @@\n     if (selectedProduct) {\r\n       switch (action) {\r\n         case \"deposit\":\r\n           return (\r\n-            <div className=\"text-gray-300\">\r\n-              Increase quantity form for {selectedProduct?.name}{\" \"}\r\n-              {selectedProduct?.id}\r\n-            </div>\r\n+            <IncreaseProductQuantity\r\n+              product={selectedProduct}\r\n+              onSuccess={fetchProducts}\r\n+              handleBackToList={resetActions}\r\n+            />\r\n           );\r\n         case \"update\":\r\n           return (\r\n             <UpdateProductForm\r\n@@ -185,16 +187,20 @@\n         <p className=\"text-sm text-red-400 mt-4\">\r\n           This action cannot be undone.\r\n         </p>\r\n       </Modal>\r\n-      <ProductsList \r\n+      <ProductsList\r\n         entities={products}\r\n         loading={loading}\r\n         error={error}\r\n         onCreateClick={() => handleAction(\"create\")}\r\n         onEntityClick={viewEntityDetails}\r\n-        onDepositClick={(product: ProductData) => handleAction(\"deposit\", product)}\r\n-        onUpdateClick={(product: ProductData) => handleAction(\"update\", product)}\r\n+        onDepositClick={(product: ProductData) =>\r\n+          handleAction(\"deposit\", product)\r\n+        }\r\n+        onUpdateClick={(product: ProductData) =>\r\n+          handleAction(\"update\", product)\r\n+        }\r\n         onDeleteClick={handleDeleteClick}\r\n       />\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1763564673976,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,10 @@\n import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n import UpdateProductForm from \"../forms/UpdateProductForm\";\r\n import Modal from \"../forms/DeleteModal\";\r\n import type { ModalHandle } from \"../forms/DeleteModal\";\r\n-import { useProducts } from \"../customHooks/useProducts\";\r\n-import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n+import { useProducts } from \"../hooks/useProducts\";\r\n+import { useEntityActions } from \"../hooks/useEntityActions\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n import ProductDetails from \"../overviews/ProductDetails\";\r\n import {\r\n   addButtonStyle,\r\n"
                 }
             ],
             "date": 1761645570981,

@@ -5,8 +5,8 @@ import type { ProductData } from "../../utils/dataTypesUtils";
 import UpdateProductForm from "../forms/UpdateProductForm";
 import Modal from "../forms/DeleteModal";
 import type { ModalHandle } from "../forms/DeleteModal";
-import { useProducts } from "../customHooks/useProducts";
-import { useEntityActions } from "../customHooks/useEntityActions";
+import { useProducts } from "../hooks/useProducts";
+import { useEntityActions } from "../hooks/useEntityActions";
 import type { ActionType } from "../../utils/utils";
 import ProductDetails from "../overviews/ProductDetails";
 import {

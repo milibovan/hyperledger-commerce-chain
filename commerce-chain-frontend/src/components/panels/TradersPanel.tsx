@@ -16,8 +16,8 @@ import {
   traderFontSemibold,
   updateButtonStyle,
 } from "../../utils/stylingUtils";
-import { useTraders } from "../customHooks/useTraders";
-import { useEntityActions } from "../customHooks/useEntityActions";
+import { useTraders } from "../hooks/useTraders";
+import { useEntityActions } from "../hooks/useEntityActions";
 import TraderDetails from "../overviews/TraderDetails";
 import TradersList from "../lists/TradersList";
 import AddProjectToTrader from "../forms/AddProductToTrader";

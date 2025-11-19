@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 180,
+            "activePatchIndex": 181,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -728,6 +728,10 @@
                 {
                     "date": 1763222948959,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -115,8 +115,20 @@\n           return (\r\n             <AddProjectToTrader\r\n               trader={selectedTrader}\r\n               tradersProducts={products}\r\n+              onSuccess={async () => {\r\n+              // Refresh trader data\r\n+              await fetchTraders();\r\n+              // Refresh products if needed\r\n+              if (selectedTrader) {\r\n+                await fetchProductsByIds(\r\n+                  selectedTrader[\"products-available\"].map(\r\n+                    product => product[\"product-id\"]\r\n+                  ) || []\r\n+                );\r\n+              }\r\n+            }}\r\n             />\r\n           );\r\n         default:\r\n           if (viewProductDetails && selectedProduct) {\r\n"
+                },
+                {
+                    "date": 1763564674370,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,10 +15,10 @@\n   modalDialogClassName,\r\n   traderFontSemibold,\r\n   updateButtonStyle,\r\n } from \"../../utils/stylingUtils\";\r\n-import { useTraders } from \"../customHooks/useTraders\";\r\n-import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n+import { useTraders } from \"../hooks/useTraders\";\r\n+import { useEntityActions } from \"../hooks/useEntityActions\";\r\n import TraderDetails from \"../overviews/TraderDetails\";\r\n import TradersList from \"../lists/TradersList\";\r\n import AddProjectToTrader from \"../forms/AddProductToTrader\";\r\n import ProductDetails from \"../overviews/ProductDetails\";\r\n@@ -116,19 +116,17 @@\n             <AddProjectToTrader\r\n               trader={selectedTrader}\r\n               tradersProducts={products}\r\n               onSuccess={async () => {\r\n-              // Refresh trader data\r\n-              await fetchTraders();\r\n-              // Refresh products if needed\r\n-              if (selectedTrader) {\r\n-                await fetchProductsByIds(\r\n-                  selectedTrader[\"products-available\"].map(\r\n-                    product => product[\"product-id\"]\r\n-                  ) || []\r\n-                );\r\n-              }\r\n-            }}\r\n+                await fetchTraders();\r\n+                if (selectedTrader) {\r\n+                  await fetchProductsByIds(\r\n+                    selectedTrader[\"products-available\"].map(\r\n+                      (product) => product[\"product-id\"]\r\n+                    ) || []\r\n+                  );\r\n+                }\r\n+              }}\r\n             />\r\n           );\r\n         default:\r\n           if (viewProductDetails && selectedProduct) {\r\n"
                 }
             ],
             "date": 1761645486253,

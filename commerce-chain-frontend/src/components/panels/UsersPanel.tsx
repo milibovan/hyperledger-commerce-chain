@@ -15,11 +15,11 @@ import {
   deleteButtonStyle,
   createUserButton,
 } from "../../utils/stylingUtils";
-import { useUsers } from "../customHooks/useUsers";
+import { useUsers } from "../hooks/useUsers";
 import type { ActionType } from "../../utils/utils";
 import UserDetails from "../overviews/UserDetails";
 import UsersList from "../lists/UsersList";
-import { useEntityActions } from "../customHooks/useEntityActions";
+import { useEntityActions } from "../hooks/useEntityActions";
 import BuyProduct from "../forms/BuyProductMenu";
 
 export default function UsersPanel() {

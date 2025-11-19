@@ -3,7 +3,7 @@ import type { ProductsTabsProps } from "../../utils/propsUtils";
 import { useRef, useState } from "react";
 import type { ModalHandle } from "../forms/DeleteModal";
 import Modal from "../forms/DeleteModal";
-import { useEntityActions } from "../customHooks/useEntityActions";
+import { useEntityActions } from "../hooks/useEntityActions";
 import { host, httpMethod } from "../../utils/utils";
 import { userFontBold } from "../../utils/stylingUtils";
 
