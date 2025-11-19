@@ -156,7 +156,9 @@ export default function ProductsTabs({
                           : "bg-gray-800 border-gray-600 hover:border-purple-400/50 cursor-pointer"
                       }
                     `}
-                  onClick={() => !isSelected && !isOutOfStock && toggleProduct(product.id)}
+                  onClick={() =>
+                    !isSelected && !isOutOfStock && toggleProduct(product.id)
+                  }
                 >
                   {/* Product Header */}
                   <div className="flex items-start justify-between mb-3">
@@ -168,8 +170,14 @@ export default function ProductsTabs({
                       <p className={userFontBold}>
                         ${product.price.toFixed(2)}
                       </p>
-                      <p className={`text-xs ${isOutOfStock ? 'text-red-400 font-semibold' : 'text-gray-400'}`}>
-                        Stock: {product.quantity - quantity}
+                      <p
+                        className={`text-xs ${
+                          isOutOfStock
+                            ? "text-red-400 font-semibold"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        Stock: {quantity >= 0 && product.quantity - quantity}
                       </p>
                     </div>
                   </div>
@@ -184,7 +192,7 @@ export default function ProductsTabs({
                   )}
 
                   {/* Quantity Input (shown when selected) */}
-                  {isSelected && !isOutOfStock &&(
+                  {isSelected && !isOutOfStock && (
                     <div
                       className="space-y-2"
                       onClick={(e) => e.stopPropagation()}
@@ -202,13 +210,14 @@ export default function ProductsTabs({
                               parseInt(e.target.value) || 0
                             )
                           }
-                          min="0"
                           max={product.quantity}
                           className={`
                               flex-1 px-3 py-2 bg-gray-700 text-white rounded font-semibold
                               transition-all duration-200 focus:outline-none
                               ${
-                                error || (hasInsufficientFunds && quantity > 0)
+                                error ||
+                                (hasInsufficientFunds && quantity > 0) ||
+                                quantity < 0
                                   ? "border-2 border-red-500 focus:border-red-400"
                                   : "border-2 border-purple-500 focus:border-purple-300"
                               }
@@ -228,18 +237,22 @@ export default function ProductsTabs({
                         </p>
                       )}
 
-                      <div className="flex justify-between items-center pt-2 border-t border-gray-700">
-                        <span className="text-sm text-gray-400">Subtotal:</span>
-                        <span
-                          className={`text-lg font-bold ${
-                            hasInsufficientFunds && quantity > 0
-                              ? "text-red-400"
-                              : "text-purple-300"
-                          }`}
-                        >
-                          ${productTotal.toFixed(2)}
-                        </span>
-                      </div>
+                      {quantity > 0 && product.quantity > quantity && (
+                        <div className="flex justify-between items-center pt-2 border-t border-gray-700">
+                          <span className="text-sm text-gray-400">
+                            Subtotal:
+                          </span>
+                          <span
+                            className={`text-lg font-bold ${
+                              hasInsufficientFunds && quantity > 0
+                                ? "text-red-400"
+                                : "text-purple-300"
+                            }`}
+                          >
+                            ${productTotal.toFixed(2)}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -258,34 +271,35 @@ export default function ProductsTabs({
       </div>
 
       {/* Selected Products Summary */}
-      {selectedProducts.size > 0 && (
-        <div className="bg-gray-800 border-2 border-purple-400 rounded-lg p-4 mb-6">
-          <h3 className="text-lg font-bold text-purple-300 mb-3">
-            Selected Products ({selectedProducts.size})
-          </h3>
-          <div className="space-y-2">
-            {Array.from(selectedProducts.entries()).map(
-              ([productId, quantity]) => {
-                const product = products.find((p) => p.id === productId);
-                if (!product) return null;
-                return (
-                  <div
-                    key={productId}
-                    className="flex justify-between items-center text-sm text-gray-300"
-                  >
-                    <span>
-                      {product.name} × {quantity}
-                    </span>
-                    <span className="font-bold text-purple-300">
-                      ${(product.price * quantity).toFixed(2)}
-                    </span>
-                  </div>
-                );
-              }
-            )}
+      {selectedProducts.size > 0 &&
+        [...selectedProducts.values()].every((quantity) => quantity > 0) && (
+          <div className="bg-gray-800 border-2 border-purple-400 rounded-lg p-4 mb-6">
+            <h3 className="text-lg font-bold text-purple-300 mb-3">
+              Selected Products ({selectedProducts.size})
+            </h3>
+            <div className="space-y-2">
+              {Array.from(selectedProducts.entries()).map(
+                ([productId, quantity]) => {
+                  const product = products.find((p) => p.id === productId);
+                  if (!product) return null;
+                  return (
+                    <div
+                      key={productId}
+                      className="flex justify-between items-center text-sm text-gray-300"
+                    >
+                      <span>
+                        {product.name} × {quantity}
+                      </span>
+                      <span className="font-bold text-purple-300">
+                        ${(product.price * quantity).toFixed(2)}
+                      </span>
+                    </div>
+                  );
+                }
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       <div className="flex gap-3 pt-4 border-t-2 border-purple-400">
         <button

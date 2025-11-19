@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 53,
+            "activePatchIndex": 61,
             "patches": [
                 {
                     "date": 1763489585123,
@@ -220,6 +220,38 @@
                 {
                     "date": 1763585636993,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -59,15 +59,10 @@\n     });\r\n   };\r\n \r\n   const updateQuantity = (productId: string, quantity: number) => {\r\n-    let product = undefined;\r\n-\r\n-    if (activeTab === \"available\") {\r\n-      product = availableProducts.find((p) => p.id === productId);\r\n-    } else {\r\n-      product = products.find((p) => p.id === productId);\r\n-    }\r\n+    \r\n+    const product = products.find((p) => p.id === productId);\r\n     if (!product) return;\r\n \r\n     setSelectedProducts((prev: Map<string, number>) => {\r\n       const newMap = new Map(prev);\r\n"
+                },
+                {
+                    "date": 1763587291602,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -59,10 +59,16 @@\n     });\r\n   };\r\n \r\n   const updateQuantity = (productId: string, quantity: number) => {\r\n-    \r\n-    const product = products.find((p) => p.id === productId);\r\n+    let product = undefined;\r\n+\r\n+    if (activeTab === \"available\") {\r\n+      product = availableProducts.find((p) => p.id === productId);\r\n+    } else {\r\n+      product = products.find((p) => p.id === productId);\r\n+    }\r\n+    product = products.find((p) => p.id === productId);\r\n     if (!product) return;\r\n \r\n     setSelectedProducts((prev: Map<string, number>) => {\r\n       const newMap = new Map(prev);\r\n"
+                },
+                {
+                    "date": 1763587296822,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -67,8 +67,9 @@\n     } else {\r\n       product = products.find((p) => p.id === productId);\r\n     }\r\n     product = products.find((p) => p.id === productId);\r\n+\r\n     if (!product) return;\r\n \r\n     setSelectedProducts((prev: Map<string, number>) => {\r\n       const newMap = new Map(prev);\r\n"
+                },
+                {
+                    "date": 1763587433912,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -66,9 +66,8 @@\n       product = availableProducts.find((p) => p.id === productId);\r\n     } else {\r\n       product = products.find((p) => p.id === productId);\r\n     }\r\n-    product = products.find((p) => p.id === productId);\r\n \r\n     if (!product) return;\r\n \r\n     setSelectedProducts((prev: Map<string, number>) => {\r\n"
+                },
+                {
+                    "date": 1763587703262,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -71,13 +71,10 @@\n     if (!product) return;\r\n \r\n     setSelectedProducts((prev: Map<string, number>) => {\r\n       const newMap = new Map(prev);\r\n-      if (quantity > 0) {\r\n-        newMap.set(productId, quantity);\r\n-      } else {\r\n-        newMap.delete(productId);\r\n-      }\r\n+      newMap.set(productId, quantity);\r\n+\r\n       return newMap;\r\n     });\r\n \r\n     setErrors((prev) => {\r\n"
+                },
+                {
+                    "date": 1763587838762,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -71,11 +71,11 @@\n     if (!product) return;\r\n \r\n     setSelectedProducts((prev: Map<string, number>) => {\r\n       const newMap = new Map(prev);\r\n-      newMap.set(productId, quantity);\r\n-\r\n-      return newMap;\r\n+      const validQuantity = isNaN(quantity) ? 0 : Math.max(0, quantity);\r\n+      selectedProducts.set(productId, validQuantity);\r\n+      return newMap\r\n     });\r\n \r\n     setErrors((prev) => {\r\n       const newErrors = new Map(prev);\r\n"
+                },
+                {
+                    "date": 1763587851189,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -71,11 +71,11 @@\n     if (!product) return;\r\n \r\n     setSelectedProducts((prev: Map<string, number>) => {\r\n       const newMap = new Map(prev);\r\n-      const validQuantity = isNaN(quantity) ? 0 : Math.max(0, quantity);\r\n-      selectedProducts.set(productId, validQuantity);\r\n-      return newMap\r\n+      newMap.set(productId, quantity);\r\n+\r\n+      return newMap;\r\n     });\r\n \r\n     setErrors((prev) => {\r\n       const newErrors = new Map(prev);\r\n"
+                },
+                {
+                    "date": 1763588056204,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -80,8 +80,10 @@\n     setErrors((prev) => {\r\n       const newErrors = new Map(prev);\r\n       if (quantity > product.quantity) {\r\n         newErrors.set(productId, `Only ${product.quantity} available`);\r\n+      } else if (quantity < 0) {\r\n+        newErrors.set(productId, `Only ${product.quantity} available`);\r\n       } else {\r\n         newErrors.delete(productId);\r\n       }\r\n       return newErrors;\r\n"
+                },
+                {
+                    "date": 1763588090416,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -81,9 +81,9 @@\n       const newErrors = new Map(prev);\r\n       if (quantity > product.quantity) {\r\n         newErrors.set(productId, `Only ${product.quantity} available`);\r\n       } else if (quantity < 0) {\r\n-        newErrors.set(productId, `Only ${product.quantity} available`);\r\n+        newErrors.set(productId, `Negative values aren't allowed`);\r\n       } else {\r\n         newErrors.delete(productId);\r\n       }\r\n       return newErrors;\r\n"
                 }
             ],
             "date": 1763489585123,

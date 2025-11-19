@@ -60,17 +60,20 @@ export default function BuyProduct({
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
-    
-    const product = products.find((p) => p.id === productId);
+    let product = undefined;
+
+    if (activeTab === "available") {
+      product = availableProducts.find((p) => p.id === productId);
+    } else {
+      product = products.find((p) => p.id === productId);
+    }
+
     if (!product) return;
 
     setSelectedProducts((prev: Map<string, number>) => {
       const newMap = new Map(prev);
-      if (quantity > 0) {
-        newMap.set(productId, quantity);
-      } else {
-        newMap.delete(productId);
-      }
+      newMap.set(productId, quantity);
+
       return newMap;
     });
 
@@ -78,6 +81,8 @@ export default function BuyProduct({
       const newErrors = new Map(prev);
       if (quantity > product.quantity) {
         newErrors.set(productId, `Only ${product.quantity} available`);
+      } else if (quantity < 0) {
+        newErrors.set(productId, `Negative values aren't allowed`);
       } else {
         newErrors.delete(productId);
       }
