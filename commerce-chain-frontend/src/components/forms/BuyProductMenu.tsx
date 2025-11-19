@@ -60,6 +60,7 @@ export default function BuyProduct({
   };
 
   const updateQuantity = (productId: string, quantity: number) => {
+    
     const product = products.find((p) => p.id === productId);
     if (!product) return;
 
@@ -170,7 +171,10 @@ export default function BuyProduct({
       </div>
       <div className="flex gap-2 border-b-2 border-purple-500">
         <button
-          onClick={() => setActiveTab("available")}
+          onClick={() => {
+            setActiveTab("available");
+            setSelectedProducts(new Map());
+          }}
           className={`px-6 py-3 font-semibold transition-all ${
             activeTab === "available"
               ? "text-purple-300 border-b-4 border-purple-400 -mb-0.5"
@@ -183,7 +187,10 @@ export default function BuyProduct({
           </span>
         </button>
         <button
-          onClick={() => setActiveTab("request")}
+          onClick={() => {
+            setActiveTab("request");
+            setSelectedProducts(new Map());
+          }}
           className={`px-6 py-3 font-semibold transition-all ${
             activeTab === "request"
               ? "text-purple-300 border-b-4 border-purple-400 -mb-0.5"

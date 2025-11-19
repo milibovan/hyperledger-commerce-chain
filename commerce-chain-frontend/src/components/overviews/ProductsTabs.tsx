@@ -141,19 +141,22 @@ export default function ProductsTabs({
               const quantity = selectedProducts.get(product.id) || 0;
               const error = errors.get(product.id);
               const productTotal = product.price * quantity;
+              const isOutOfStock = product.quantity === 0;
 
               return (
                 <div
                   key={product.id}
                   className={`
-                      border-2 rounded-lg p-4 transition-all duration-200 cursor-pointer
+                      border-2 rounded-lg p-4 transition-all duration-200
                       ${
-                        isSelected
-                          ? "bg-purple-900/20 border-purple-400 shadow-lg shadow-purple-400/20"
-                          : "bg-gray-800 border-gray-600 hover:border-purple-400/50"
+                        isOutOfStock
+                          ? "bg-gray-900/50 border-gray-700 opacity-60 cursor-not-allowed"
+                          : isSelected
+                          ? "bg-purple-900/20 border-purple-400 shadow-lg shadow-purple-400/20 cursor-pointer"
+                          : "bg-gray-800 border-gray-600 hover:border-purple-400/50 cursor-pointer"
                       }
                     `}
-                  onClick={() => !isSelected && toggleProduct(product.id)}
+                  onClick={() => !isSelected && !isOutOfStock && toggleProduct(product.id)}
                 >
                   {/* Product Header */}
                   <div className="flex items-start justify-between mb-3">
@@ -165,14 +168,23 @@ export default function ProductsTabs({
                       <p className={userFontBold}>
                         ${product.price.toFixed(2)}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className={`text-xs ${isOutOfStock ? 'text-red-400 font-semibold' : 'text-gray-400'}`}>
                         Stock: {product.quantity - quantity}
                       </p>
                     </div>
                   </div>
 
+                  {/* Out of Stock Badge */}
+                  {isOutOfStock && (
+                    <div className="text-center pt-2 border-t border-gray-700">
+                      <span className="text-sm text-red-400 font-semibold">
+                        Out of Stock
+                      </span>
+                    </div>
+                  )}
+
                   {/* Quantity Input (shown when selected) */}
-                  {isSelected && (
+                  {isSelected && !isOutOfStock &&(
                     <div
                       className="space-y-2"
                       onClick={(e) => e.stopPropagation()}
@@ -190,7 +202,7 @@ export default function ProductsTabs({
                               parseInt(e.target.value) || 0
                             )
                           }
-                          min="1"
+                          min="0"
                           max={product.quantity}
                           className={`
                               flex-1 px-3 py-2 bg-gray-700 text-white rounded font-semibold
@@ -231,7 +243,7 @@ export default function ProductsTabs({
                     </div>
                   )}
 
-                  {!isSelected && (
+                  {!isSelected && !isOutOfStock && (
                     <div className="text-center pt-2 border-t border-gray-700">
                       <span className="text-sm text-purple-300 font-semibold">
                         Click to add

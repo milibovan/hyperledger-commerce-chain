@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 13,
             "patches": [
                 {
                     "date": 1763492153825,
@@ -12,6 +12,54 @@
                 {
                     "date": 1763564673326,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,9 @@\n import type { ProductsTabsProps } from \"../../utils/propsUtils\";\r\n import { useRef, useState } from \"react\";\r\n import type { ModalHandle } from \"../forms/DeleteModal\";\r\n import Modal from \"../forms/DeleteModal\";\r\n-import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n+import { useEntityActions } from \"../hooks/useEntityActions\";\r\n import { host, httpMethod } from \"../../utils/utils\";\r\n import { userFontBold } from \"../../utils/stylingUtils\";\r\n \r\n export default function ProductsTabs({\r\n"
+                },
+                {
+                    "date": 1763585668816,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -282,9 +282,9 @@\n         >\r\n           Cancel\r\n         </button>\r\n         <button\r\n-          onClick={handleSubmit}\r\n+          // onClick={handleSubmit}\r\n           disabled={isSubmitDisabled}\r\n           className=\"flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-purple-300 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-600 disabled:to-gray-700\"\r\n         >\r\n           <Send size={20} />\r\n"
+                },
+                {
+                    "date": 1763585677756,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -282,9 +282,9 @@\n         >\r\n           Cancel\r\n         </button>\r\n         <button\r\n-          // onClick={handleSubmit}\r\n+          onClick={handleSubmit}\r\n           disabled={isSubmitDisabled}\r\n           className=\"flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-purple-300 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-600 disabled:to-gray-700\"\r\n         >\r\n           <Send size={20} />\r\n"
+                },
+                {
+                    "date": 1763585746678,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -230,9 +230,9 @@\n                       </div>\r\n                     </div>\r\n                   )}\r\n \r\n-                  {!isSelected && (\r\n+                  {!isSelected && quantity > 0 && (\r\n                     <div className=\"text-center pt-2 border-t border-gray-700\">\r\n                       <span className=\"text-sm text-purple-300 font-semibold\">\r\n                         Click to add\r\n                       </span>\r\n"
+                },
+                {
+                    "date": 1763585767407,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -230,9 +230,9 @@\n                       </div>\r\n                     </div>\r\n                   )}\r\n \r\n-                  {!isSelected && quantity > 0 && (\r\n+                  {!isSelected && (\r\n                     <div className=\"text-center pt-2 border-t border-gray-700\">\r\n                       <span className=\"text-sm text-purple-300 font-semibold\">\r\n                         Click to add\r\n                       </span>\r\n"
+                },
+                {
+                    "date": 1763585781454,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -189,9 +189,9 @@\n                               product.id,\r\n                               parseInt(e.target.value) || 0\r\n                             )\r\n                           }\r\n-                          min=\"1\"\r\n+                          min=\"0\"\r\n                           max={product.quantity}\r\n                           className={`\r\n                               flex-1 px-3 py-2 bg-gray-700 text-white rounded font-semibold\r\n                               transition-all duration-200 focus:outline-none\r\n"
+                },
+                {
+                    "date": 1763586901330,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -140,18 +140,21 @@\n               const isSelected = selectedProducts.has(product.id);\r\n               const quantity = selectedProducts.get(product.id) || 0;\r\n               const error = errors.get(product.id);\r\n               const productTotal = product.price * quantity;\r\n+              const isOutOfStock = product.quantity === 0;\r\n \r\n               return (\r\n                 <div\r\n                   key={product.id}\r\n                   className={`\r\n-                      border-2 rounded-lg p-4 transition-all duration-200 cursor-pointer\r\n+                      border-2 rounded-lg p-4 transition-all duration-200\r\n                       ${\r\n-                        isSelected\r\n-                          ? \"bg-purple-900/20 border-purple-400 shadow-lg shadow-purple-400/20\"\r\n-                          : \"bg-gray-800 border-gray-600 hover:border-purple-400/50\"\r\n+                        isOutOfStock\r\n+                          ? \"bg-gray-900/50 border-gray-700 opacity-60 cursor-not-allowed\"\r\n+                          : isSelected\r\n+                          ? \"bg-purple-900/20 border-purple-400 shadow-lg shadow-purple-400/20 cursor-pointer\"\r\n+                          : \"bg-gray-800 border-gray-600 hover:border-purple-400/50 cursor-pointer\"\r\n                       }\r\n                     `}\r\n                   onClick={() => !isSelected && toggleProduct(product.id)}\r\n                 >\r\n"
+                },
+                {
+                    "date": 1763586917047,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -155,9 +155,9 @@\n                           ? \"bg-purple-900/20 border-purple-400 shadow-lg shadow-purple-400/20 cursor-pointer\"\r\n                           : \"bg-gray-800 border-gray-600 hover:border-purple-400/50 cursor-pointer\"\r\n                       }\r\n                     `}\r\n-                  onClick={() => !isSelected && toggleProduct(product.id)}\r\n+                  onClick={() => !isSelected && !isOutOfStock && toggleProduct(product.id)}\r\n                 >\r\n                   {/* Product Header */}\r\n                   <div className=\"flex items-start justify-between mb-3\">\r\n                     <div className=\"flex-1\">\r\n"
+                },
+                {
+                    "date": 1763586932644,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -167,9 +167,9 @@\n                     <div className=\"text-right\">\r\n                       <p className={userFontBold}>\r\n                         ${product.price.toFixed(2)}\r\n                       </p>\r\n-                      <p className=\"text-xs text-gray-400\">\r\n+                      <p className={`text-xs ${isOutOfStock ? 'text-red-400 font-semibold' : 'text-gray-400'}`}>\r\n                         Stock: {product.quantity - quantity}\r\n                       </p>\r\n                     </div>\r\n                   </div>\r\n"
+                },
+                {
+                    "date": 1763586943214,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -173,8 +173,17 @@\n                       </p>\r\n                     </div>\r\n                   </div>\r\n \r\n+                  {/* Out of Stock Badge */}\r\n+                  {isOutOfStock && (\r\n+                    <div className=\"text-center pt-2 border-t border-gray-700\">\r\n+                      <span className=\"text-sm text-red-400 font-semibold\">\r\n+                        Out of Stock\r\n+                      </span>\r\n+                    </div>\r\n+                  )}\r\n+\r\n                   {/* Quantity Input (shown when selected) */}\r\n                   {isSelected && (\r\n                     <div\r\n                       className=\"space-y-2\"\r\n"
+                },
+                {
+                    "date": 1763586958018,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -183,9 +183,9 @@\n                     </div>\r\n                   )}\r\n \r\n                   {/* Quantity Input (shown when selected) */}\r\n-                  {isSelected && (\r\n+                  {isSelected && !isOutOfStock &&(\r\n                     <div\r\n                       className=\"space-y-2\"\r\n                       onClick={(e) => e.stopPropagation()}\r\n                     >\r\n"
+                },
+                {
+                    "date": 1763586972799,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -242,9 +242,9 @@\n                       </div>\r\n                     </div>\r\n                   )}\r\n \r\n-                  {!isSelected && (\r\n+                  {!isSelected && !isOutOfStock (\r\n                     <div className=\"text-center pt-2 border-t border-gray-700\">\r\n                       <span className=\"text-sm text-purple-300 font-semibold\">\r\n                         Click to add\r\n                       </span>\r\n"
+                },
+                {
+                    "date": 1763586981076,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -242,9 +242,9 @@\n                       </div>\r\n                     </div>\r\n                   )}\r\n \r\n-                  {!isSelected && !isOutOfStock (\r\n+                  {!isSelected && !isOutOfStock && (\r\n                     <div className=\"text-center pt-2 border-t border-gray-700\">\r\n                       <span className=\"text-sm text-purple-300 font-semibold\">\r\n                         Click to add\r\n                       </span>\r\n"
                 }
             ],
             "date": 1763492153825,
