@@ -1,11 +1,13 @@
 import { Send, ShoppingCart } from "lucide-react";
 import type { ProductsTabsProps } from "../../utils/propsUtils";
 import { useRef, useState } from "react";
-import type { ModalHandle } from "../forms/DeleteModal";
-import Modal from "../forms/DeleteModal";
+import type { ModalHandle } from "../modals/DeleteModal";
+import Modal from "../modals/DeleteModal";
 import { useEntityActions } from "../hooks/useEntityActions";
 import { host, httpMethod } from "../../utils/utils";
 import { userFontBold } from "../../utils/stylingUtils";
+import ConfirmationModal from "../modals/ConfirmationModal";
+import SuccessProductAddingModal from "../modals/SuccessProductAddingModal";
 
 export default function ProductsTabs({
   user,
@@ -17,6 +19,8 @@ export default function ProductsTabs({
   errors,
   toggleProduct,
   updateQuantity,
+  totalCost,
+  remainingBalance
 }: ProductsTabsProps) {
   const { resetActions, resetNestedView } = useEntityActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,15 +36,20 @@ export default function ProductsTabs({
       })
     );
 
+    const receipt = {
+      "user-id": user.id,
+      products: productsToAdd,
+      date: new Date(),
+    };
+
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${host}/traders-products/channel-a`, {
+      const response = await fetch(`${host}/receipt/channel-a`, {
         method: httpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          products: productsToAdd,
-          "user-id": user.id,
+          receipt,
         }),
       });
 
@@ -57,7 +66,7 @@ export default function ProductsTabs({
         successModalRef.current?.open();
       } else {
         const errorData = await response.json();
-        alert(errorData.error || "Failed to add products");
+        alert(errorData.error || "Failed to create receipt");
         successModalRef.current?.close();
       }
     } catch (err) {
@@ -94,13 +103,12 @@ export default function ProductsTabs({
         confirmClassName="px-6 py-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all duration-200 hover:shadow-lg hover:shadow-green-400/50 text-white font-semibold"
         dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50 max-w-2xl w-full"
       >
-        {/* <SuccessProductAddingModal
-          trader={trader}
+        <SuccessProductAddingModal
+          trader={user}
           selectedProducts={selectedProducts}
           totalCost={totalCost}
           remainingBalance={remainingBalance}
-        /> */}
-        <h1>Some modal 3</h1>
+        />
       </Modal>
 
       {/* Confirmation Modal */}
@@ -114,14 +122,13 @@ export default function ProductsTabs({
         cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-purple-300 font-semibold"
         dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50 max-w-3xl w-full"
       >
-        <h1>Some modal</h1>
-        {/* <ConfirmationModal
-        //   trader={trader}
+        <ConfirmationModal
+          trader={user}
           selectedProducts={selectedProducts}
           totalCost={totalCost}
           remainingBalance={remainingBalance}
           products={products}
-        /> */}
+        />
       </Modal>
       {/* Products Grid */}
       <div className="mb-6">

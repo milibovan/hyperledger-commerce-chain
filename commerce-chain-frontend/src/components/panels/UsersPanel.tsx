@@ -4,8 +4,8 @@ import { Plus, Edit, Trash2, ShoppingBag } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateUserForm from "../forms/UpdateUserForm";
-import type { ModalHandle } from "../forms/DeleteModal";
-import Modal from "../forms/DeleteModal";
+import type { ModalHandle } from "../modals/DeleteModal";
+import Modal from "../modals/DeleteModal";
 import {
   addButtonStyle,
   modalCancelButtonStyle,

@@ -222,6 +222,8 @@ export default function BuyProduct({
             errors={errors}
             toggleProduct={toggleProduct}
             updateQuantity={updateQuantity}
+            totalCost={totalCost}
+            remainingBalance={remainingBalance}
           />
         ) : (
           <ProductsTabs
@@ -234,6 +236,8 @@ export default function BuyProduct({
             errors={errors}
             toggleProduct={toggleProduct}
             updateQuantity={updateQuantity}
+            totalCost={totalCost}
+            remainingBalance={remainingBalance}
           />
         )}
       </div>

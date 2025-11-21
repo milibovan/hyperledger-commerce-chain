@@ -73,12 +73,14 @@ export interface AddOrBuyProductProps<T> {
 }
 
 export interface ModalProps {
-  trader: TraderData;
+  trader: TraderData | UserData;
   selectedProducts: Map<string, number>;
   totalCost: number;
   remainingBalance: number;
   products?: ProductData[];
 }
+
+
 
 export interface ProductsTabsProps {
   user: UserData;
@@ -90,4 +92,6 @@ export interface ProductsTabsProps {
   errors: Map<string, string>;
   toggleProduct: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
+  totalCost: number,
+  remainingBalance: number
 }

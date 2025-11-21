@@ -4,8 +4,8 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import type { ProductData, TraderData } from "../../utils/dataTypesUtils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateTraderForm from "../forms/UpdateTraderForm";
-import Modal from "../forms/DeleteModal";
-import type { ModalHandle } from "../forms/DeleteModal";
+import Modal from "../modals/DeleteModal";
+import type { ModalHandle } from "../modals/DeleteModal";
 import { type ActionType } from "../../utils/utils";
 import {
   addButtonStyle,

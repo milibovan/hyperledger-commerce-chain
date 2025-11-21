@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 7,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -36,6 +36,18 @@
                 {
                     "date": 1763156565409,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -66,8 +66,13 @@\n export interface TradersData {\r\n   Traders: Array<TraderData>;\r\n }\r\n \r\n+export interface ProductInventory {\r\n+  \"product-id\": string;\r\n+  quantity: number\r\n+}\r\n+\r\n export interface TraderData {\r\n   \"doc-type\": string;\r\n   id: string;\r\n   name: string;\r\n"
+                },
+                {
+                    "date": 1763760592767,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -77,9 +77,9 @@\n   id: string;\r\n   name: string;\r\n   \"trader-type\": string;\r\n   vat: string;\r\n-  \"products-available\": Array<string>;\r\n+  \"products-available\": Array<ProductInventory>;\r\n   \"receipts-ids\": Array<string>;\r\n   balance: number;\r\n }\r\n \r\n@@ -132,4 +132,8 @@\n   });\r\n \r\n   return formatedDate;\r\n }\r\n+\r\n+export function isUserData(trader: UserData | TraderData) {\r\n+  return Object.hasOwn(trader, \"trader-type\")\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763760602209,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -134,6 +134,6 @@\n   return formatedDate;\r\n }\r\n \r\n export function isUserData(trader: UserData | TraderData) {\r\n-  return Object.hasOwn(trader, \"trader-type\")\r\n+  return !Object.hasOwn(trader, \"trader-type\")\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1763760608050,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -68,9 +68,9 @@\n }\r\n \r\n export interface ProductInventory {\r\n   \"product-id\": string;\r\n-  quantity: number\r\n+  quantity: number;\r\n }\r\n \r\n export interface TraderData {\r\n   \"doc-type\": string;\r\n@@ -102,11 +102,11 @@\n   channel: string;\r\n }\r\n \r\n export interface AddProductToTrader {\r\n-  traderId: string,\r\n-  productId: string,\r\n-  quantity: string\r\n+  traderId: string;\r\n+  productId: string;\r\n+  quantity: string;\r\n }\r\n \r\n export function formatDate(date: string) {\r\n   const dateTime = new Date(date);\r\n@@ -134,6 +134,6 @@\n   return formatedDate;\r\n }\r\n \r\n export function isUserData(trader: UserData | TraderData) {\r\n-  return !Object.hasOwn(trader, \"trader-type\")\r\n-}\n\\ No newline at end of file\n+  return !Object.hasOwn(trader, \"trader-type\");\r\n+}\r\n"
                 }
             ],
             "date": 1762249804506,

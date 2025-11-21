@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 104,
+            "activePatchIndex": 105,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -424,6 +424,10 @@
                 {
                     "date": 1763564673646,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,13 +14,13 @@\n   userFontSemibold,\r\n   deleteButtonStyle,\r\n   createUserButton,\r\n } from \"../../utils/stylingUtils\";\r\n-import { useUsers } from \"../customHooks/useUsers\";\r\n+import { useUsers } from \"../hooks/useUsers\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n import UserDetails from \"../overviews/UserDetails\";\r\n import UsersList from \"../lists/UsersList\";\r\n-import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n+import { useEntityActions } from \"../hooks/useEntityActions\";\r\n import BuyProduct from \"../forms/BuyProductMenu\";\r\n \r\n export default function UsersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n"
+                },
+                {
+                    "date": 1763759979729,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,10 +3,10 @@\n import { Plus, Edit, Trash2, ShoppingBag } from \"lucide-react\";\r\n import CreateUserForm from \"../forms/CreateUserForm\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n import UpdateUserForm from \"../forms/UpdateUserForm\";\r\n-import type { ModalHandle } from \"../forms/DeleteModal\";\r\n-import Modal from \"../forms/DeleteModal\";\r\n+import type { ModalHandle } from \"../modals/DeleteModal\";\r\n+import Modal from \"../modals/DeleteModal\";\r\n import {\r\n   addButtonStyle,\r\n   modalCancelButtonStyle,\r\n   modalConfirmButtonStyle,\r\n"
                 }
             ],
             "date": 1761645579091,

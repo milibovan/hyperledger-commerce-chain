@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1763223575846,
@@ -20,6 +20,14 @@
                 {
                     "date": 1763224316235,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,9 +31,9 @@\n             </span>\r\n           </div>\r\n           <div className=\"flex justify-between text-gray-300\">\r\n             <span>Total Cost:</span>\r\n-            <span className=\"font-bold text-green-300\">\r\n+            <span className=\"font-bold text-red-300\">\r\n               ${totalCost.toFixed(2)}\r\n             </span>\r\n           </div>\r\n           <div className=\"flex justify-between text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1763761027819,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,17 @@\n import { Package } from \"lucide-react\";\r\n import type { ModalProps } from \"../../utils/propsUtils\";\r\n+import { isUserData } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function SuccessProductAddingModal({\r\n   trader,\r\n   selectedProducts,\r\n   totalCost,\r\n   remainingBalance,\r\n }: ModalProps) {\r\n+  const isUser = isUserData(trader);\r\n+  const themeColor = isUser ? \"purple\" : \"pink\";\r\n+\r\n   return (\r\n     <div>\r\n       <div className=\"flex items-center gap-3 mb-4\">\r\n         <div className=\"p-3 bg-green-900/30 rounded-full\">\r\n"
+                },
+                {
+                    "date": 1763761046659,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,17 +1,13 @@\n import { Package } from \"lucide-react\";\r\n import type { ModalProps } from \"../../utils/propsUtils\";\r\n-import { isUserData } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function SuccessProductAddingModal({\r\n   trader,\r\n   selectedProducts,\r\n   totalCost,\r\n   remainingBalance,\r\n }: ModalProps) {\r\n-  const isUser = isUserData(trader);\r\n-  const themeColor = isUser ? \"purple\" : \"pink\";\r\n-\r\n   return (\r\n     <div>\r\n       <div className=\"flex items-center gap-3 mb-4\">\r\n         <div className=\"p-3 bg-green-900/30 rounded-full\">\r\n"
                 }
             ],
             "date": 1763223575846,

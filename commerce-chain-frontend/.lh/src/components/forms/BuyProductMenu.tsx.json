@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 61,
+            "activePatchIndex": 62,
             "patches": [
                 {
                     "date": 1763489585123,
@@ -252,6 +252,10 @@
                 {
                     "date": 1763588090416,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -81,9 +81,9 @@\n       const newErrors = new Map(prev);\r\n       if (quantity > product.quantity) {\r\n         newErrors.set(productId, `Only ${product.quantity} available`);\r\n       } else if (quantity < 0) {\r\n-        newErrors.set(productId, `Only ${product.quantity} available`);\r\n+        newErrors.set(productId, `Negative values aren't allowed`);\r\n       } else {\r\n         newErrors.delete(productId);\r\n       }\r\n       return newErrors;\r\n"
+                },
+                {
+                    "date": 1763759698680,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -221,8 +221,10 @@\n             hasInsufficientFunds={hasInsufficientFunds}\r\n             errors={errors}\r\n             toggleProduct={toggleProduct}\r\n             updateQuantity={updateQuantity}\r\n+            totalCost={totalCost}\r\n+            remainingBalance={remainingBalance}\r\n           />\r\n         ) : (\r\n           <ProductsTabs\r\n             user={user}\r\n"
                 }
             ],
             "date": 1763489585123,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 155,
+            "activePatchIndex": 156,
             "patches": [
                 {
                     "date": 1761645570981,
@@ -628,6 +628,10 @@
                 {
                     "date": 1763564673976,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,10 @@\n import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n import UpdateProductForm from \"../forms/UpdateProductForm\";\r\n import Modal from \"../forms/DeleteModal\";\r\n import type { ModalHandle } from \"../forms/DeleteModal\";\r\n-import { useProducts } from \"../customHooks/useProducts\";\r\n-import { useEntityActions } from \"../customHooks/useEntityActions\";\r\n+import { useProducts } from \"../hooks/useProducts\";\r\n+import { useEntityActions } from \"../hooks/useEntityActions\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n import ProductDetails from \"../overviews/ProductDetails\";\r\n import {\r\n   addButtonStyle,\r\n"
+                },
+                {
+                    "date": 1763759981615,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,10 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n import CreateProductForm from \"../forms/CreateProductForm\";\r\n import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n import UpdateProductForm from \"../forms/UpdateProductForm\";\r\n-import Modal from \"../forms/DeleteModal\";\r\n-import type { ModalHandle } from \"../forms/DeleteModal\";\r\n+import Modal from \"../modals/DeleteModal\";\r\n+import type { ModalHandle } from \"../modals/DeleteModal\";\r\n import { useProducts } from \"../hooks/useProducts\";\r\n import { useEntityActions } from \"../hooks/useEntityActions\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n import ProductDetails from \"../overviews/ProductDetails\";\r\n"
                 }
             ],
             "date": 1761645570981,

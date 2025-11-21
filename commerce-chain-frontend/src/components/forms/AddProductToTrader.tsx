@@ -4,7 +4,7 @@ import type { AddOrBuyProductProps } from "../../utils/propsUtils";
 import { useProducts } from "../hooks/useProducts";
 import { traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 import { useEntityActions } from "../hooks/useEntityActions";
-import Modal, { type ModalHandle } from "./DeleteModal";
+import Modal, { type ModalHandle } from "../modals/DeleteModal";
 import { host, httpMethod } from "../../utils/utils";
 import SuccessProductAddingModal from "../modals/SuccessProductAddingModal";
 import ConfirmationModal from "../modals/ConfirmationModal";

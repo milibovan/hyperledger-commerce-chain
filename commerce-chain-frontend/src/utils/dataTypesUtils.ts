@@ -69,7 +69,7 @@ export interface TradersData {
 
 export interface ProductInventory {
   "product-id": string;
-  quantity: number
+  quantity: number;
 }
 
 export interface TraderData {
@@ -103,9 +103,9 @@ export interface Deposit {
 }
 
 export interface AddProductToTrader {
-  traderId: string,
-  productId: string,
-  quantity: string
+  traderId: string;
+  productId: string;
+  quantity: string;
 }
 
 export function formatDate(date: string) {
@@ -132,4 +132,8 @@ export function getFormattedDate(product: ProductData) {
   });
 
   return formatedDate;
+}
+
+export function isUserData(trader: UserData | TraderData) {
+  return !Object.hasOwn(trader, "trader-type");
 }
