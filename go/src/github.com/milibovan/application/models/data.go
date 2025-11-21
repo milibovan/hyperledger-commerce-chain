@@ -90,7 +90,7 @@ type DepositObject struct {
 	Amount float64 `json:"amount"`
 }
 
-type IncreaseObject struct {
+type ProductInventory struct {
 	ProductId string `json:"product-id"`
 	Quantity  int32  `json:"quantity"`
 }

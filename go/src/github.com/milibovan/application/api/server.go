@@ -52,6 +52,7 @@ func CreateServer() {
 	router.POST("/user/:channel", createUser)
 	router.POST("/trader/:channel", createTrader)
 	router.POST("/product/:channel", createProduct)
+	router.POST("/receipt/:channel", createReceipt)
 
 	router.GET("/users/:channel", getUsers)
 	router.GET("/traders/:channel", getTraders)
@@ -168,6 +169,28 @@ func createProduct(c *gin.Context) {
 	blockNumber, ID := client.CreateProduct(activeGW, channel, Product.Name, Product.ExpiryDate.Format("2006-01-02 15:04:05"), fmt.Sprint(Product.Price), strconv.Itoa(Product.Quantity), string(Product.TraderType))
 
 	c.JSON(201, gin.H{"Message": fmt.Sprintf("Product created %d %s", blockNumber, ID)})
+}
+func createReceipt(c *gin.Context) {
+	var receiptData struct {
+		UserId   string                    `json:"user-id"`
+		Products []models.ProductInventory `json:"products"`
+		Date     string                    `json:"date"`
+	}
+
+	var channel string
+
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&receiptData); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
+		return
+	}
+	fmt.Println(receiptData)
+	fmt.Println(channel)
+
+	//blockNumber, ID := client.CreateProduct(activeGW, channel, Receipt.Name, Receipt.ExpiryDate.Format("2006-01-02 15:04:05"), fmt.Sprint(Receipt.Price), strconv.Itoa(Receipt.Quantity), string(Receipt.TraderType))
+
+	//c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s", blockNumber, ID)})
 }
 
 func getUsers(c *gin.Context) {
@@ -352,7 +375,7 @@ func depositMoney(c *gin.Context) {
 }
 func increaseQuantity(c *gin.Context) {
 	var channel string
-	var increaseObject models.IncreaseObject
+	var increaseObject models.ProductInventory
 	channel = c.Param("channel")
 
 	if err := c.BindJSON(&increaseObject); err != nil {
@@ -402,14 +425,9 @@ func getTradersProducts(c *gin.Context) {
 	})
 }
 func addProductsToTrader(c *gin.Context) {
-	type products struct {
-		ProductId string `json:"product-id"`
-		Quantity  int    `json:"quantity"`
-	}
-
 	var request struct {
-		Products []products `json:"products"`
-		TraderId string     `json:"trader-id"`
+		Products []models.ProductInventory `json:"products"`
+		TraderId string                    `json:"trader-id"`
 	}
 	var channel string
 	channel = c.Param("channel")
@@ -423,7 +441,7 @@ func addProductsToTrader(c *gin.Context) {
 
 	for _, p := range request.Products {
 		args = append(args, p.ProductId)
-		args = append(args, strconv.Itoa(p.Quantity))
+		args = append(args, strconv.Itoa(int(p.Quantity)))
 	}
 
 	blockNumber, err := client.AddProductsToTrader(activeGW, channel, args)
