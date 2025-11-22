@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 39,
+            "activePatchIndex": 41,
             "patches": [
                 {
                     "date": 1763492153825,
@@ -164,6 +164,14 @@
                 {
                     "date": 1763846148490,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -243,9 +243,9 @@\n                           {error}\r\n                         </p>\r\n                       )}\r\n \r\n-                      {quantity > 0 && !hasInsufficientFunds && !error && (\r\n+                      {quantity > 0 && !error && (\r\n                         <div className=\"flex justify-between items-center pt-2 border-t border-gray-700\">\r\n                           <span className=\"text-sm text-gray-400\">\r\n                             Subtotal:\r\n                           </span>\r\n"
+                },
+                {
+                    "date": 1763847315618,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,9 +19,9 @@\n   errors,\r\n   toggleProduct,\r\n   updateQuantity,\r\n   totalCost,\r\n-  remainingBalance\r\n+  remainingBalance,\r\n }: ProductsTabsProps) {\r\n   const { resetActions, resetNestedView } = useEntityActions();\r\n   const [isSubmitting, setIsSubmitting] = useState(false);\r\n \r\n@@ -35,22 +35,18 @@\n         quantity,\r\n       })\r\n     );\r\n \r\n-    const receipt = {\r\n-      \"user-id\": user.id,\r\n-      products: productsToAdd,\r\n-      date: new Date(),\r\n-    };\r\n-\r\n     setIsSubmitting(true);\r\n \r\n     try {\r\n       const response = await fetch(`${host}/receipt/channel-a`, {\r\n         method: httpMethod.POST,\r\n         headers: { \"Content-Type\": \"application/json\" },\r\n         body: JSON.stringify({\r\n-          receipt,\r\n+          \"user-id\": user.id,\r\n+          products: productsToAdd,\r\n+          date: new Date(),\r\n         }),\r\n       });\r\n \r\n       if (response.ok) {\r\n"
+                },
+                {
+                    "date": 1763847691223,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,9 +44,8 @@\n         headers: { \"Content-Type\": \"application/json\" },\r\n         body: JSON.stringify({\r\n           \"user-id\": user.id,\r\n           products: productsToAdd,\r\n-          date: new Date(),\r\n         }),\r\n       });\r\n \r\n       if (response.ok) {\r\n"
                 }
             ],
             "date": 1763492153825,

@@ -20,7 +20,7 @@ export default function ProductsTabs({
   toggleProduct,
   updateQuantity,
   totalCost,
-  remainingBalance
+  remainingBalance,
 }: ProductsTabsProps) {
   const { resetActions, resetNestedView } = useEntityActions();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,12 +36,6 @@ export default function ProductsTabs({
       })
     );
 
-    const receipt = {
-      "user-id": user.id,
-      products: productsToAdd,
-      date: new Date(),
-    };
-
     setIsSubmitting(true);
 
     try {
@@ -49,7 +43,8 @@ export default function ProductsTabs({
         method: httpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          receipt,
+          "user-id": user.id,
+          products: productsToAdd,
         }),
       });
 
