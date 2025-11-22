@@ -130,13 +130,13 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().PutState(product.Id, productJSON)
 }
 
-func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, id, traderId, userId string, productIds []string) (string, error) {
+func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
 	receipt := structs.Receipt{
 		DocType:    "receipt",
 		Id:         id,
-		TraderId:   traderId,
-		UserId:     userId,
-		ProductIDs: productIds,
+		TraderId:   "traderId",
+		UserId:     "userId",
+		ProductIDs: []string{},
 		Date:       time.Now().Format("2006-01-02 15:04:05"),
 	}
 

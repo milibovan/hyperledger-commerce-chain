@@ -174,7 +174,6 @@ func createReceipt(c *gin.Context) {
 	var receiptData struct {
 		UserId   string                    `json:"user-id"`
 		Products []models.ProductInventory `json:"products"`
-		Date     string                    `json:"date"`
 	}
 
 	var channel string
@@ -185,12 +184,17 @@ func createReceipt(c *gin.Context) {
 		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
 		return
 	}
-	fmt.Println(receiptData)
-	fmt.Println(channel)
 
-	//blockNumber, ID := client.CreateProduct(activeGW, channel, Receipt.Name, Receipt.ExpiryDate.Format("2006-01-02 15:04:05"), fmt.Sprint(Receipt.Price), strconv.Itoa(Receipt.Quantity), string(Receipt.TraderType))
+	args := []string{receiptData.UserId}
 
-	//c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s", blockNumber, ID)})
+	for _, p := range receiptData.Products {
+		args = append(args, p.ProductId)
+		args = append(args, strconv.Itoa(int(p.Quantity)))
+	}
+
+	blockNumber, ID := client.CreateReceipt(activeGW, channel, args)
+
+	c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s", blockNumber, ID)})
 }
 
 func getUsers(c *gin.Context) {

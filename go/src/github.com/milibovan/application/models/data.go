@@ -18,13 +18,13 @@ type Product struct {
 }
 
 type Receipt struct {
-	DocType    string    `json:"doc-type"`
-	Id         string    `json:"id"`
-	TraderId   string    `json:"trader-id"`
-	UserId     string    `json:"user-id"`
-	ProductIDs []string  `json:"products-ids"`
-	Date       time.Time `json:"date"`
-	Deleted    bool      `json:"deleted"`
+	DocType    string     `json:"doc-type"`
+	Id         string     `json:"id"`
+	TraderId   string     `json:"trader-id"`
+	UserId     string     `json:"user-id"`
+	ProductIDs []string   `json:"products-ids"`
+	Date       CustomTime `json:"date"`
+	Deleted    bool       `json:"deleted"`
 }
 
 type TraderType string
