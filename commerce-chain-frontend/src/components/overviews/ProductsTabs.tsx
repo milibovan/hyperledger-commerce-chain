@@ -244,7 +244,7 @@ export default function ProductsTabs({
                         </p>
                       )}
 
-                      {quantity > 0 && product.quantity > quantity && (
+                      {quantity > 0 && !error && (
                         <div className="flex justify-between items-center pt-2 border-t border-gray-700">
                           <span className="text-sm text-gray-400">
                             Subtotal:
