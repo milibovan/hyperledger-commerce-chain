@@ -192,9 +192,13 @@ func createReceipt(c *gin.Context) {
 		args = append(args, strconv.Itoa(int(p.Quantity)))
 	}
 
+	//fmt.Println(args[0])
+	//fmt.Println(channel)
+
 	blockNumber, ID := client.CreateReceipt(activeGW, channel, args)
 
 	c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s", blockNumber, ID)})
+	//c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s")})
 }
 
 func getUsers(c *gin.Context) {

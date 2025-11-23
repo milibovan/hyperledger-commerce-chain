@@ -5,6 +5,7 @@
       "id",
       "trader-id",
       "user-id",
+      "products",
       "date",
       "deleted"
     ]

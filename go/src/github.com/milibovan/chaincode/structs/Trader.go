@@ -60,6 +60,24 @@ func (t *Trader) ContainsProduct(id string) bool {
 	return isAvailable
 }
 
+func (t *Trader) ContainsProductAndRequestedQuantity(product ProductInventory) (bool, int) {
+	isAvailable := t.ContainsProduct(product.ProductId)
+
+	if isAvailable {
+		for _, item := range t.ProductsAvailable {
+			if product.ProductId == item.ProductId {
+				if item.Quantity >= product.Quantity {
+					return true, 0
+				}
+
+				return true, item.Quantity
+			}
+		}
+	}
+
+	return isAvailable, 0
+}
+
 func (t *Trader) UpdateProduct(productId string, quantity int) {
 	for i, item := range t.ProductsAvailable {
 		if item.ProductId == productId {

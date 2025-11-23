@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
@@ -131,13 +132,48 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 }
 
 func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
+	exists, err := s.AssetExists(ctx, id)
+
+	if err != nil {
+		return "", err
+	}
+	if exists {
+		return "", fmt.Errorf("Receipt %s already exists", id)
+	}
+
+	if len(args) < 4 || (len(args)-2)%2 != 0 {
+		return "", fmt.Errorf("incorrect number of arguments. Expecting UserID, followed by productID/quantity pairs")
+	}
+
+	arguments := strings.Split(args, ",")
+	userId := arguments[0]
+
+	var products []structs.ProductInventory
+
+	for i := 1; i < len(products); i += 2 {
+		productId := arguments[i]
+		quantityStr := arguments[i+1]
+
+		quantity, err := strconv.Atoi(quantityStr)
+		if err != nil {
+			return "", fmt.Errorf("invalid quantity format: %w", err)
+		}
+
+		product := structs.ProductInventory{
+			ProductId: productId,
+			Quantity:  quantity,
+		}
+
+		products = append(products, product)
+	}
+
 	receipt := structs.Receipt{
-		DocType:    "receipt",
-		Id:         id,
-		TraderId:   "traderId",
-		UserId:     "userId",
-		ProductIDs: []string{},
-		Date:       time.Now().Format("2006-01-02 15:04:05"),
+		DocType:  "receipt",
+		Id:       id,
+		TraderId: "traderId",
+		UserId:   userId,
+		Products: products,
+		Date:     time.Now().Format("2006-01-02 15:04:05"),
 	}
 
 	receiptJSON, err := json.Marshal(receipt)
