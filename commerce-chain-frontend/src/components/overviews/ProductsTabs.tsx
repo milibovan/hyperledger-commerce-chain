@@ -39,7 +39,7 @@ export default function ProductsTabs({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${host}/receipt/channel-a`, {
+      const response = await fetch(`${host}/order/channel-a`, {
         method: httpMethod.POST,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
