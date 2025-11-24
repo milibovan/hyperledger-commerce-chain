@@ -1,0 +1,14 @@
+{
+  "index": {
+    "fields": [
+      "doc-type",
+      "user-id",
+      "products",
+      "receipts-ids",
+      "deleted"
+    ]
+  },
+  "ddoc": "indexOrderDoc",
+  "name": "indexOrder",
+  "type": "json"
+}

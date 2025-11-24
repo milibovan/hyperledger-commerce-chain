@@ -17,9 +17,9 @@ type SmartContract struct {
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
 	// Users
 	users := []structs.User{
-		{DocType: "user", Id: "USER_1", Name: "Alice", Surname: "Smith", Email: "alice@example.com", ReceiptsIDs: []string{}, Balance: 1000.0},
-		{DocType: "user", Id: "USER_2", Name: "Bob", Surname: "Jones", Email: "bob@example.com", ReceiptsIDs: []string{}, Balance: 500.0},
-		{DocType: "user", Id: "USER_3", Name: "Carol", Surname: "Philips", Email: "carol@example.com", ReceiptsIDs: []string{}, Balance: 2000.0},
+		{DocType: "user", Id: "USER_1", Name: "Alice", Surname: "Smith", Email: "alice@example.com", OrdersIDs: []string{}, Balance: 1000.0},
+		{DocType: "user", Id: "USER_2", Name: "Bob", Surname: "Jones", Email: "bob@example.com", OrdersIDs: []string{}, Balance: 500.0},
+		{DocType: "user", Id: "USER_3", Name: "Carol", Surname: "Philips", Email: "carol@example.com", OrdersIDs: []string{}, Balance: 2000.0},
 	}
 
 	for _, user := range users {
@@ -254,8 +254,8 @@ func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextIn
 //		return err
 //	}
 //
-//	user.ReceiptsIDs = append(user.ReceiptsIDs, receiptId)
-//	trader.ReceiptsIDs = append(trader.ReceiptsIDs, receiptId)
+//	user.OrdersIDs = append(user.OrdersIDs, receiptId)
+//	trader.OrdersIDs = append(trader.OrdersIDs, receiptId)
 //
 //	userJSON, err := json.Marshal(user)
 //	if err != nil {

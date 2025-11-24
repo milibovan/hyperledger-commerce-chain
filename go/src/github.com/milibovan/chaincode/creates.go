@@ -26,13 +26,13 @@ func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, 
 	}
 
 	user := structs.User{
-		DocType:     "user",
-		Id:          id,
-		Name:        name,
-		Surname:     surname,
-		Email:       email,
-		ReceiptsIDs: []string{},
-		Balance:     balanceFl,
+		DocType:   "user",
+		Id:        id,
+		Name:      name,
+		Surname:   surname,
+		Email:     email,
+		OrdersIDs: []string{},
+		Balance:   balanceFl,
 	}
 
 	userJSON, err := json.Marshal(user)

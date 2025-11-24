@@ -52,7 +52,7 @@ func CreateServer() {
 	router.POST("/user/:channel", createUser)
 	router.POST("/trader/:channel", createTrader)
 	router.POST("/product/:channel", createProduct)
-	router.POST("/receipt/:channel", createReceipt)
+	router.POST("/order/:channel", createOrder)
 
 	router.GET("/users/:channel", getUsers)
 	router.GET("/traders/:channel", getTraders)
@@ -170,8 +170,8 @@ func createProduct(c *gin.Context) {
 
 	c.JSON(201, gin.H{"Message": fmt.Sprintf("Product created %d %s", blockNumber, ID)})
 }
-func createReceipt(c *gin.Context) {
-	var receiptData struct {
+func createOrder(c *gin.Context) {
+	var orderData struct {
 		UserId   string                    `json:"user-id"`
 		Products []models.ProductInventory `json:"products"`
 	}
@@ -180,14 +180,14 @@ func createReceipt(c *gin.Context) {
 
 	channel = c.Param("channel")
 
-	if err := c.BindJSON(&receiptData); err != nil {
+	if err := c.BindJSON(&orderData); err != nil {
 		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
 		return
 	}
 
-	args := []string{receiptData.UserId}
+	args := []string{orderData.UserId}
 
-	for _, p := range receiptData.Products {
+	for _, p := range orderData.Products {
 		args = append(args, p.ProductId)
 		args = append(args, strconv.Itoa(int(p.Quantity)))
 	}
@@ -195,7 +195,7 @@ func createReceipt(c *gin.Context) {
 	//fmt.Println(args[0])
 	//fmt.Println(channel)
 
-	blockNumber, ID := client.CreateReceipt(activeGW, channel, args)
+	blockNumber, ID := client.CreateOrder(activeGW, channel, args)
 
 	c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s", blockNumber, ID)})
 	//c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s")})

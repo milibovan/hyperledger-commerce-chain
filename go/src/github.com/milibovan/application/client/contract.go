@@ -122,17 +122,17 @@ func CreateProduct(gw *fabricClient.Gateway, channel, name, expiryDate, price, q
 
 	return status.BlockNumber, ID
 }
-func CreateReceipt(gw *fabricClient.Gateway, channel string, args []string) (uint64, string) {
+func CreateOrder(gw *fabricClient.Gateway, channel string, args []string) (uint64, string) {
 	var now = time.Now()
-	var ID = fmt.Sprintf("RECEIPT_%d", now.UnixNano())
+	var ID = fmt.Sprintf("ORDER_%d", now.UnixNano())
 
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
-	fmt.Printf("\n--> Submit transaction: CreateReceipt, ID: %s on channel %s\n", ID, channel)
+	fmt.Printf("\n--> Submit transaction: CreateOrder, ID: %s on channel %s\n", ID, channel)
 
 	//fmt.Printf("%s %s %s %s %s %s", ID, name, expiryDate, price, quantity, traderTypeStr)
-	_, commit, err := ccContract.SubmitAsync("CreateReceipt", fabricClient.WithArguments(ID, strings.Join(args, ",")))
+	_, commit, err := ccContract.SubmitAsync("CreateOrder", fabricClient.WithArguments(ID, strings.Join(args, ",")))
 	if err != nil {
 		panic(fmt.Errorf("failed to submit transaction: %w", err))
 	}
@@ -146,7 +146,7 @@ func CreateReceipt(gw *fabricClient.Gateway, channel string, args []string) (uin
 		panic(fmt.Errorf("failed to commit transaction with status code %v", status.Code))
 	}
 
-	fmt.Println("\n*** CreateReceipt committed successfully")
+	fmt.Println("\n*** CreateOrder committed successfully")
 
 	return status.BlockNumber, ID
 }

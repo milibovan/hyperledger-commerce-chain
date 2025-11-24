@@ -2,9 +2,10 @@
   "index": {
     "fields": [
       "doc-type",
+      "name",
       "surname",
       "email",
-      "receipts-ids",
+      "orders-ids",
       "balance",
       "deleted"
     ]
