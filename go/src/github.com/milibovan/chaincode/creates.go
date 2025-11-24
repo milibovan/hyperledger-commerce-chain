@@ -131,14 +131,14 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().PutState(product.Id, productJSON)
 }
 
-func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
+func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
 	exists, err := s.AssetExists(ctx, id)
 
 	if err != nil {
 		return "", err
 	}
 	if exists {
-		return "", fmt.Errorf("Receipt %s already exists", id)
+		return "", fmt.Errorf("Order %s already exists", id)
 	}
 
 	if len(args) < 4 || (len(args)-2)%2 != 0 {
@@ -167,19 +167,78 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		products = append(products, product)
 	}
 
-	receipt := structs.Receipt{
-		DocType:  "receipt",
-		Id:       id,
-		TraderId: "traderId",
-		UserId:   userId,
-		Products: products,
-		Date:     time.Now().Format("2006-01-02 15:04:05"),
-	}
-
-	receiptJSON, err := json.Marshal(receipt)
+	receiptIds, err := s.CreateReceipt(ctx, userId, products)
 	if err != nil {
 		return "", err
 	}
 
-	return id, ctx.GetStub().PutState(receipt.Id, receiptJSON)
+	order := structs.Order{
+		DocType:     "order",
+		Id:          id,
+		UserId:      userId,
+		Products:    products,
+		ReceiptsIds: receiptIds,
+		Deleted:     false,
+	}
+
+	orderJSON, err := json.Marshal(order)
+	if err != nil {
+		return "", err
+	}
+
+	return id, ctx.GetStub().PutState(order.Id, orderJSON)
+}
+
+func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, userId string, products []structs.ProductInventory) ([]string, error) {
+	type traderQuantity struct {
+		Quantity int
+		TraderId string
+	}
+
+	var receiptsIds []string
+	var traderProducts map[string]traderQuantity
+
+	traders, err := s.GetAllTraders(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(traders) != 0 {
+		for _, product := range products {
+			for _, trader := range traders {
+				isAvailable, quantity := trader.ContainsProductAndRequestedQuantity(product)
+				if isAvailable && quantity == 0 {
+					var now = time.Now()
+					var id = fmt.Sprintf("RECEIPT_%d", now.UnixNano())
+					receiptsIds = append(receiptsIds, id)
+
+					traderProducts[product.ProductId] = traderQuantity{TraderId: trader.Id, Quantity: 0}
+
+				} else if isAvailable {
+					var now = time.Now()
+					var id = fmt.Sprintf("RECEIPT_%d", now.UnixNano())
+					receiptsIds = append(receiptsIds, id)
+
+					traderProducts[product.ProductId] = traderQuantity{TraderId: trader.Id, Quantity: product.Quantity - quantity}
+				}
+			}
+		}
+
+	}
+	//receipt := structs.Receipt{
+	//	DocType:  "receipt",
+	//	Id:       id,
+	//	TraderId: trader.Id,
+	//	UserId:   userId,
+	//	Products: products,
+	//	Date:     now.String(),
+	//	Deleted:  false,
+	//}
+
+	//receiptJSON, err := json.Marshal(receipt)
+	//if err != nil {
+	//	return []string{}, err
+	//}
+
+	return receiptsIds, nil
 }
