@@ -24,6 +24,12 @@ func formatJSON(data []byte) string {
 	return result.String()
 }
 
+func createId(entity string) string {
+	var now = time.Now()
+	var ID = fmt.Sprintf("%s_%d", entity, now.UnixNano())
+	return ID
+}
+
 func unmarshalEntityArray[T any](resultBytes []byte) ([]*T, error) {
 	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
 		return []*T{}, nil
@@ -122,9 +128,9 @@ func CreateProduct(gw *fabricClient.Gateway, channel, name, expiryDate, price, q
 
 	return status.BlockNumber, ID
 }
+
 func CreateOrder(gw *fabricClient.Gateway, channel string, args []string) (uint64, string) {
-	var now = time.Now()
-	var ID = fmt.Sprintf("ORDER_%d", now.UnixNano())
+	ID := createId("ORDER")
 
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)

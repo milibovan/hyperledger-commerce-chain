@@ -249,7 +249,7 @@ func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextIn
 //		trader.ProductsAvailable = trader.RemoveProductId(product.Id)
 //	}
 //
-//	receiptId, err := s.CreateReceipt(ctx, id, traderId, userId, []string{productId})
+//	receiptId, err := s.FindAndCreateAllReceipts(ctx, id, traderId, userId, []string{productId})
 //	if err != nil {
 //		return err
 //	}

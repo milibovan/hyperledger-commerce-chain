@@ -77,6 +77,21 @@ func (t *Trader) ContainsProductAndRequestedQuantity(product ProductInventory) (
 
 	return isAvailable, 0
 }
+func (t *Trader) ContainsProductsAndRequestedQuantities(products []ProductInventory) (bool, []ProductInventory) {
+	var availableProducts []ProductInventory
+	for _, product := range products {
+		isAvailable, quantity := t.ContainsProductAndRequestedQuantity(product)
+		if isAvailable && quantity == 0 {
+			availableProducts = append(availableProducts, product)
+		}
+	}
+
+	if len(availableProducts) == len(products) {
+		return true, availableProducts
+	}
+	return false, availableProducts
+
+}
 
 func (t *Trader) UpdateProduct(productId string, quantity int) {
 	for i, item := range t.ProductsAvailable {

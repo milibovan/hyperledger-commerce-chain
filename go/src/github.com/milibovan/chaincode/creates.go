@@ -11,6 +11,12 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
 )
 
+func createId(entity string) string {
+	var now = time.Now()
+	var ID = fmt.Sprintf("%s_%d", entity, now.UnixNano())
+	return ID
+}
+
 func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, id, name, surname, email, balance string) error {
 	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
@@ -167,7 +173,7 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 		products = append(products, product)
 	}
 
-	receiptIds, err := s.CreateReceipt(ctx, userId, products)
+	receiptIds, err := s.FindAndCreateAllReceipts(ctx, userId, products)
 	if err != nil {
 		return "", err
 	}
@@ -189,56 +195,104 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 	return id, ctx.GetStub().PutState(order.Id, orderJSON)
 }
 
-func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, userId string, products []structs.ProductInventory) ([]string, error) {
-	type traderQuantity struct {
-		Quantity int
-		TraderId string
-	}
-
-	var receiptsIds []string
-	var traderProducts map[string]traderQuantity
-
+func (s *SmartContract) FindAndCreateAllReceipts(ctx contractapi.TransactionContextInterface, userId string, products []structs.ProductInventory) ([]string, error) {
 	traders, err := s.GetAllTraders(ctx)
+	var receiptsIds []string
+
 	if err != nil {
 		return nil, err
 	}
 
-	if len(traders) != 0 {
-		for _, product := range products {
-			for _, trader := range traders {
-				isAvailable, quantity := trader.ContainsProductAndRequestedQuantity(product)
-				if isAvailable && quantity == 0 {
-					var now = time.Now()
-					var id = fmt.Sprintf("RECEIPT_%d", now.UnixNano())
-					receiptsIds = append(receiptsIds, id)
+	hasSingleTraderAll, traderId := hasSingleTraderAllProducts(traders, products)
 
-					traderProducts[product.ProductId] = traderQuantity{TraderId: trader.Id, Quantity: 0}
-
-				} else if isAvailable {
-					var now = time.Now()
-					var id = fmt.Sprintf("RECEIPT_%d", now.UnixNano())
-					receiptsIds = append(receiptsIds, id)
-
-					traderProducts[product.ProductId] = traderQuantity{TraderId: trader.Id, Quantity: product.Quantity - quantity}
+	if !hasSingleTraderAll {
+		haveAllProducts, tradersIds := findTradersThatHaveAllProducts(traders, products)
+		if haveAllProducts {
+			for _, id := range tradersIds {
+				var receiptId string
+				receiptId, err = s.CreateReceipt(ctx, userId, id, products)
+				if err != nil {
+					return nil, err
 				}
+
+				receiptsIds = append(receiptsIds, receiptId)
 			}
+		} else {
+			return []string{}, fmt.Errorf("There is no traders that can fulfil order")
+		}
+	} else {
+		var receiptId string
+		receiptId, err = s.CreateReceipt(ctx, userId, traderId, products)
+		if err != nil {
+			return nil, err
 		}
 
+		receiptsIds = append(receiptsIds, receiptId)
 	}
-	//receipt := structs.Receipt{
-	//	DocType:  "receipt",
-	//	Id:       id,
-	//	TraderId: trader.Id,
-	//	UserId:   userId,
-	//	Products: products,
-	//	Date:     now.String(),
-	//	Deleted:  false,
-	//}
-
-	//receiptJSON, err := json.Marshal(receipt)
-	//if err != nil {
-	//	return []string{}, err
-	//}
 
 	return receiptsIds, nil
+}
+
+func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, userId, traderId string, products []structs.ProductInventory) (string, error) {
+	id := createId("RECEIPT")
+
+	receipt := structs.Receipt{
+		DocType:  "receipt",
+		Id:       id,
+		TraderId: traderId,
+		UserId:   userId,
+		Products: products,
+		Date:     time.Now().String(),
+		Deleted:  false,
+	}
+
+	receiptJSON, err := json.Marshal(receipt)
+	if err != nil {
+		return "", err
+	}
+
+	err = ctx.GetStub().PutState(receipt.Id, receiptJSON)
+	if err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
+func hasSingleTraderAllProducts(traders []*structs.Trader, products []structs.ProductInventory) (bool, string) {
+	for _, trader := range traders {
+		containsAllProducts, _ := trader.ContainsProductsAndRequestedQuantities(products)
+		if containsAllProducts {
+			return true, trader.Id
+		}
+	}
+
+	return false, ""
+}
+
+func findTradersThatHaveAllProducts(traders []*structs.Trader, products []structs.ProductInventory) (bool, []string) {
+	var traderIds []string
+	for _, trader := range traders {
+		_, availableProducts := trader.ContainsProductsAndRequestedQuantities(products)
+		products = removeItems(products, availableProducts)
+		traderIds = append(traderIds, trader.Id)
+		if len(products) == 0 {
+			return true, traderIds
+		}
+	}
+	return false, traderIds
+}
+
+func removeItems(mainSlice, itemsToRemove []structs.ProductInventory) []structs.ProductInventory {
+	removeMap := make(map[string]bool)
+	for _, item := range itemsToRemove {
+		removeMap[item.ProductId] = true
+	}
+
+	var result []structs.ProductInventory
+	for _, item := range mainSlice {
+		if !removeMap[item.ProductId] {
+			result = append(result, item)
+		}
+	}
+	return result
 }
