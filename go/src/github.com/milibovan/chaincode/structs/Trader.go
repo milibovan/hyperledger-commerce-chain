@@ -40,63 +40,97 @@ func GetTraderTypeFromString(input string) (TraderType, error) {
 	}
 }
 
-func (t *Trader) RemoveProductId(id string) []ProductInventory {
-	for i, item := range t.ProductsAvailable {
-		if item.ProductId == id {
-			return append(t.ProductsAvailable[:i], t.ProductsAvailable[i+1:]...)
-		}
-	}
-	return t.ProductsAvailable
-}
-
-func (t *Trader) ContainsProduct(id string) bool {
-	isAvailable := false
+// ContainsProduct checks if trader has a specific product
+func (t *Trader) ContainsProduct(productId string) bool {
 	for _, item := range t.ProductsAvailable {
-		if item.ProductId == id {
-			isAvailable = true
-			break
+		if item.ProductId == productId {
+			return true
 		}
 	}
-	return isAvailable
+	return false
 }
 
+// GetProduct returns the product inventory if it exists
+func (t *Trader) GetProduct(productId string) (*ProductInventory, bool) {
+	for i := range t.ProductsAvailable {
+		if t.ProductsAvailable[i].ProductId == productId {
+			return &t.ProductsAvailable[i], true
+		}
+	}
+	return nil, false
+}
+
+// ContainsProductAndRequestedQuantity checks if trader has product with sufficient quantity
+// Returns (hasProduct, availableQuantity)
+// If availableQuantity == requestedQuantity, the trader can fully fulfill the request
 func (t *Trader) ContainsProductAndRequestedQuantity(product ProductInventory) (bool, int) {
-	isAvailable := t.ContainsProduct(product.ProductId)
-
-	if isAvailable {
-		for _, item := range t.ProductsAvailable {
-			if product.ProductId == item.ProductId {
-				if item.Quantity >= product.Quantity {
-					return true, 0
-				}
-
-				return true, item.Quantity
-			}
-		}
+	item, found := t.GetProduct(product.ProductId)
+	if !found {
+		return false, 0
 	}
 
-	return isAvailable, 0
+	if item.Quantity >= product.Quantity {
+		return true, product.Quantity // Can fulfill completely
+	}
+
+	return true, item.Quantity // Has product but insufficient quantity
 }
+
+// ContainsProductsAndRequestedQuantities checks if trader can fulfill all requested products
+// Returns (canFulfillAll, availableProducts)
 func (t *Trader) ContainsProductsAndRequestedQuantities(products []ProductInventory) (bool, []ProductInventory) {
-	var availableProducts []ProductInventory
+	availableProducts := make([]ProductInventory, 0, len(products))
+
 	for _, product := range products {
-		isAvailable, quantity := t.ContainsProductAndRequestedQuantity(product)
-		if isAvailable && quantity == 0 {
+		hasProduct, availableQty := t.ContainsProductAndRequestedQuantity(product)
+
+		// Only include if trader has the product with sufficient quantity
+		if hasProduct && availableQty >= product.Quantity {
 			availableProducts = append(availableProducts, product)
 		}
 	}
 
-	if len(availableProducts) == len(products) {
-		return true, availableProducts
-	}
-	return false, availableProducts
-
+	canFulfillAll := len(availableProducts) == len(products)
+	return canFulfillAll, availableProducts
 }
 
-func (t *Trader) UpdateProduct(productId string, quantity int) {
-	for i, item := range t.ProductsAvailable {
-		if item.ProductId == productId {
-			t.ProductsAvailable[i].Quantity += quantity
+// DeductProduct reduces the quantity of a product in trader's inventory
+func (t *Trader) DeductProduct(productId string, quantity int) error {
+	if quantity <= 0 {
+		return fmt.Errorf("quantity to deduct must be positive, got %d", quantity)
+	}
+
+	for i := range t.ProductsAvailable {
+		if t.ProductsAvailable[i].ProductId == productId {
+			if t.ProductsAvailable[i].Quantity < quantity {
+				return fmt.Errorf("insufficient quantity for product %s: available=%d, requested=%d",
+					productId, t.ProductsAvailable[i].Quantity, quantity)
+			}
+			t.ProductsAvailable[i].Quantity -= quantity
+			return nil
 		}
 	}
+
+	return fmt.Errorf("product %s not found in trader's inventory", productId)
+}
+
+// AddProduct adds quantity to an existing product or creates new product entry
+func (t *Trader) AddProduct(productId string, quantity int) error {
+	if quantity <= 0 {
+		return fmt.Errorf("quantity to add must be positive, got %d", quantity)
+	}
+
+	for i := range t.ProductsAvailable {
+		if t.ProductsAvailable[i].ProductId == productId {
+			t.ProductsAvailable[i].Quantity += quantity
+			return nil
+		}
+	}
+
+	// Product doesn't exist, add it
+	t.ProductsAvailable = append(t.ProductsAvailable, ProductInventory{
+		ProductId: productId,
+		Quantity:  quantity,
+	})
+	return nil
 }

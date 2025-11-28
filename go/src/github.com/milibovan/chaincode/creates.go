@@ -11,6 +11,12 @@ import (
 	"github.com/hyperledger/fabric-contract-api-go/v2/contractapi"
 )
 
+// TraderAllocation represents products allocated to a specific trader
+type TraderAllocation struct {
+	TraderId string
+	Products []structs.ProductInventory
+}
+
 func createId(entity string) string {
 	var now = time.Now()
 	var ID = fmt.Sprintf("%s_%d", entity, now.UnixNano())
@@ -138,46 +144,34 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 }
 
 func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
+	// Check if order already exists
 	exists, err := s.AssetExists(ctx, id)
-
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to check order existence: %w", err)
 	}
 	if exists {
-		return "", fmt.Errorf("Order %s already exists", id)
+		return "", fmt.Errorf("order %s already exists", id)
 	}
 
-	if len(args) < 4 || (len(args)-2)%2 != 0 {
-		return "", fmt.Errorf("incorrect number of arguments. Expecting UserID, followed by productID/quantity pairs")
-	}
-
-	arguments := strings.Split(args, ",")
-	userId := arguments[0]
-
-	var products []structs.ProductInventory
-
-	for i := 1; i < len(products); i += 2 {
-		productId := arguments[i]
-		quantityStr := arguments[i+1]
-
-		quantity, err := strconv.Atoi(quantityStr)
-		if err != nil {
-			return "", fmt.Errorf("invalid quantity format: %w", err)
-		}
-
-		product := structs.ProductInventory{
-			ProductId: productId,
-			Quantity:  quantity,
-		}
-
-		products = append(products, product)
-	}
-
-	receiptIds, err := s.FindAndCreateAllReceipts(ctx, userId, products)
+	// Parse and validate arguments
+	products, userId, err := parseOrderArguments(args)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("invalid order arguments: %w", err)
 	}
 
+	// Validate user exists
+	user, err := s.ReadUser(ctx, userId)
+	if err != nil {
+		return "", fmt.Errorf("failed to read user: %w", err)
+	}
+
+	// Find optimal trader allocation and create receipts
+	receiptIds, err := s.FindAndCreateOptimalReceipts(ctx, userId, products)
+	if err != nil {
+		return "", fmt.Errorf("failed to create receipts: %w", err)
+	}
+
+	// Create order
 	order := structs.Order{
 		DocType:     "order",
 		Id:          id,
@@ -187,112 +181,247 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 		Deleted:     false,
 	}
 
+	// Update user's order list
+	user.OrdersIDs = append(user.OrdersIDs, id)
+
+	// Marshal and save both order and user
 	orderJSON, err := json.Marshal(order)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to marshal order: %w", err)
 	}
 
-	return id, ctx.GetStub().PutState(order.Id, orderJSON)
-}
-
-func (s *SmartContract) FindAndCreateAllReceipts(ctx contractapi.TransactionContextInterface, userId string, products []structs.ProductInventory) ([]string, error) {
-	traders, err := s.GetAllTraders(ctx)
-	var receiptsIds []string
-
+	userJSON, err := json.Marshal(user)
 	if err != nil {
-		return nil, err
+		return "", fmt.Errorf("failed to marshal user: %w", err)
 	}
 
-	hasSingleTraderAll, traderId := hasSingleTraderAllProducts(traders, products)
-
-	if !hasSingleTraderAll {
-		haveAllProducts, tradersIds := findTradersThatHaveAllProducts(traders, products)
-		if haveAllProducts {
-			for _, id := range tradersIds {
-				var receiptId string
-				receiptId, err = s.CreateReceipt(ctx, userId, id, products)
-				if err != nil {
-					return nil, err
-				}
-
-				receiptsIds = append(receiptsIds, receiptId)
-			}
-		} else {
-			return []string{}, fmt.Errorf("There is no traders that can fulfil order")
-		}
-	} else {
-		var receiptId string
-		receiptId, err = s.CreateReceipt(ctx, userId, traderId, products)
-		if err != nil {
-			return nil, err
-		}
-
-		receiptsIds = append(receiptsIds, receiptId)
+	if err := ctx.GetStub().PutState(user.Id, userJSON); err != nil {
+		return "", fmt.Errorf("failed to save user: %w", err)
 	}
 
-	return receiptsIds, nil
+	if err := ctx.GetStub().PutState(order.Id, orderJSON); err != nil {
+		return "", fmt.Errorf("failed to save order: %w", err)
+	}
+
+	return id, nil
 }
 
 func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, userId, traderId string, products []structs.ProductInventory) (string, error) {
 	id := createId("RECEIPT")
 
+	// Read trader and validate they can fulfill the products
+	trader, err := s.ReadTrader(ctx, traderId)
+	if err != nil {
+		return "", fmt.Errorf("failed to read trader: %w", err)
+	}
+
+	// Validate trader has sufficient inventory before creating receipt
+	canFulfill, _ := trader.ContainsProductsAndRequestedQuantities(products)
+	if !canFulfill {
+		return "", fmt.Errorf("trader %s cannot fulfill requested products", traderId)
+	}
+
+	// Create receipt
 	receipt := structs.Receipt{
 		DocType:  "receipt",
 		Id:       id,
 		TraderId: traderId,
 		UserId:   userId,
 		Products: products,
-		Date:     time.Now().String(),
+		Date:     time.Now().Format(time.RFC3339),
 		Deleted:  false,
 	}
 
-	receiptJSON, err := json.Marshal(receipt)
-	if err != nil {
-		return "", err
+	// Update trader: add receipt and deduct inventory
+	trader.ReceiptsIDs = append(trader.ReceiptsIDs, id)
+	for _, product := range products {
+		if err := trader.DeductProduct(product.ProductId, product.Quantity); err != nil {
+			return "", fmt.Errorf("failed to deduct product %s: %w", product.ProductId, err)
+		}
 	}
 
-	err = ctx.GetStub().PutState(receipt.Id, receiptJSON)
+	// Marshal and save trader
+	traderJSON, err := json.Marshal(trader)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to marshal trader: %w", err)
 	}
+
+	if err := ctx.GetStub().PutState(trader.Id, traderJSON); err != nil {
+		return "", fmt.Errorf("failed to save trader: %w", err)
+	}
+
+	// Marshal and save receipt
+	receiptJSON, err := json.Marshal(receipt)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal receipt: %w", err)
+	}
+
+	if err := ctx.GetStub().PutState(receipt.Id, receiptJSON); err != nil {
+		return "", fmt.Errorf("failed to save receipt: %w", err)
+	}
+
 	return id, nil
 }
 
-func hasSingleTraderAllProducts(traders []*structs.Trader, products []structs.ProductInventory) (bool, string) {
+// FindAndCreateOptimalReceipts finds the minimum set of traders and creates receipts
+func (s *SmartContract) FindAndCreateOptimalReceipts(ctx contractapi.TransactionContextInterface, userId string, products []structs.ProductInventory) ([]string, error) {
+	traders, err := s.GetAllTraders(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get traders: %w", err)
+	}
+
+	if len(traders) == 0 {
+		return nil, fmt.Errorf("no traders available")
+	}
+
+	// Find optimal trader allocation
+	allocations, err := findOptimalTraderAllocation(traders, products)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create receipts for each allocation
+	receiptIds := make([]string, 0, len(allocations))
+	for _, allocation := range allocations {
+		receiptId, err := s.CreateReceipt(ctx, userId, allocation.TraderId, allocation.Products)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create receipt for trader %s: %w", allocation.TraderId, err)
+		}
+		receiptIds = append(receiptIds, receiptId)
+	}
+
+	return receiptIds, nil
+}
+
+// findOptimalTraderAllocation finds the minimum number of traders to fulfill the order
+func findOptimalTraderAllocation(traders []*structs.Trader, products []structs.ProductInventory) ([]TraderAllocation, error) {
+	// Strategy 1: Check if a single trader can fulfill entire order
 	for _, trader := range traders {
-		containsAllProducts, _ := trader.ContainsProductsAndRequestedQuantities(products)
-		if containsAllProducts {
-			return true, trader.Id
+		if canFulfillAll, _ := trader.ContainsProductsAndRequestedQuantities(products); canFulfillAll {
+			return []TraderAllocation{{
+				TraderId: trader.Id,
+				Products: products,
+			}}, nil
 		}
 	}
 
-	return false, ""
+	// Strategy 2: Greedy algorithm - pick traders that cover most remaining products
+	return greedyTraderSelection(traders, products)
 }
 
-func findTradersThatHaveAllProducts(traders []*structs.Trader, products []structs.ProductInventory) (bool, []string) {
-	var traderIds []string
+// greedyTraderSelection uses greedy approach to minimize trader count
+func greedyTraderSelection(traders []*structs.Trader, products []structs.ProductInventory) ([]TraderAllocation, error) {
+	remaining := cloneProductInventory(products)
+	allocations := []TraderAllocation{}
+
+	for len(remaining) > 0 {
+		bestTrader, bestProducts := findBestTraderForRemaining(traders, remaining)
+
+		if bestTrader == nil || len(bestProducts) == 0 {
+			return nil, fmt.Errorf("no traders available to fulfill order. Missing products: %v", formatProductList(remaining))
+		}
+
+		allocations = append(allocations, TraderAllocation{
+			TraderId: bestTrader.Id,
+			Products: bestProducts,
+		})
+
+		remaining = removeFulfilledProducts(remaining, bestProducts)
+	}
+
+	return allocations, nil
+}
+
+// findBestTraderForRemaining finds the trader that can fulfill the most remaining products
+func findBestTraderForRemaining(traders []*structs.Trader, remaining []structs.ProductInventory) (*structs.Trader, []structs.ProductInventory) {
+	var bestTrader *structs.Trader
+	var bestProducts []structs.ProductInventory
+	maxCoverage := 0
+
 	for _, trader := range traders {
-		_, availableProducts := trader.ContainsProductsAndRequestedQuantities(products)
-		products = removeItems(products, availableProducts)
-		traderIds = append(traderIds, trader.Id)
-		if len(products) == 0 {
-			return true, traderIds
+		_, availableProducts := trader.ContainsProductsAndRequestedQuantities(remaining)
+
+		if len(availableProducts) > maxCoverage {
+			maxCoverage = len(availableProducts)
+			bestTrader = trader
+			bestProducts = availableProducts
 		}
 	}
-	return false, traderIds
+
+	return bestTrader, bestProducts
 }
 
-func removeItems(mainSlice, itemsToRemove []structs.ProductInventory) []structs.ProductInventory {
-	removeMap := make(map[string]bool)
-	for _, item := range itemsToRemove {
-		removeMap[item.ProductId] = true
+// removeFulfilledProducts removes fulfilled products from the remaining list
+func removeFulfilledProducts(remaining, fulfilled []structs.ProductInventory) []structs.ProductInventory {
+	fulfilledMap := make(map[string]bool, len(fulfilled))
+	for _, product := range fulfilled {
+		fulfilledMap[product.ProductId] = true
 	}
 
-	var result []structs.ProductInventory
-	for _, item := range mainSlice {
-		if !removeMap[item.ProductId] {
-			result = append(result, item)
+	result := make([]structs.ProductInventory, 0, len(remaining))
+	for _, product := range remaining {
+		if !fulfilledMap[product.ProductId] {
+			result = append(result, product)
 		}
 	}
 	return result
+}
+
+// cloneProductInventory creates a deep copy of product inventory slice
+func cloneProductInventory(products []structs.ProductInventory) []structs.ProductInventory {
+	clone := make([]structs.ProductInventory, len(products))
+	copy(clone, products)
+	return clone
+}
+
+// formatProductList formats product list for error messages
+func formatProductList(products []structs.ProductInventory) string {
+	parts := make([]string, len(products))
+	for i, p := range products {
+		parts[i] = fmt.Sprintf("%s(qty:%d)", p.ProductId, p.Quantity)
+	}
+	return strings.Join(parts, ", ")
+}
+
+// parseOrderArguments extracts userId and products from comma-separated args
+func parseOrderArguments(args string) ([]structs.ProductInventory, string, error) {
+	arguments := strings.Split(args, ",")
+
+	if len(arguments) < 3 || len(arguments)%2 == 0 {
+		return nil, "", fmt.Errorf("incorrect number of arguments. Expected: UserID,ProductID1,Quantity1[,ProductID2,Quantity2...]")
+	}
+
+	userId := strings.TrimSpace(arguments[0])
+	if userId == "" {
+		return nil, "", fmt.Errorf("userId cannot be empty")
+	}
+
+	products := make([]structs.ProductInventory, 0, (len(arguments)-1)/2)
+	seenProducts := make(map[string]bool)
+
+	for i := 1; i < len(arguments); i += 2 {
+		productId := strings.TrimSpace(arguments[i])
+		quantityStr := strings.TrimSpace(arguments[i+1])
+
+		// Check for duplicate products
+		if seenProducts[productId] {
+			return nil, "", fmt.Errorf("duplicate product '%s' in order", productId)
+		}
+		seenProducts[productId] = true
+
+		quantity, err := strconv.Atoi(quantityStr)
+		if err != nil {
+			return nil, "", fmt.Errorf("invalid quantity '%s' for product '%s': %w", quantityStr, productId, err)
+		}
+		if quantity <= 0 {
+			return nil, "", fmt.Errorf("quantity must be positive for product '%s'", productId)
+		}
+
+		products = append(products, structs.ProductInventory{
+			ProductId: productId,
+			Quantity:  quantity,
+		})
+	}
+
+	return products, userId, nil
 }

@@ -159,7 +159,10 @@ func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextIn
 		hasTraderProduct := trader.ContainsProduct(productId)
 
 		if hasTraderProduct {
-			trader.UpdateProduct(product.Id, quantity)
+			err = trader.AddProduct(product.Id, quantity)
+			if err != nil {
+				return err
+			}
 		} else {
 			newAvaliableProduct := structs.ProductInventory{
 				product.Id,
