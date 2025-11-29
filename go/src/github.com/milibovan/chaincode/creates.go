@@ -17,12 +17,6 @@ type TraderAllocation struct {
 	Products []structs.ProductInventory
 }
 
-func createId(entity string) string {
-	var now = time.Now()
-	var ID = fmt.Sprintf("%s_%d", entity, now.UnixNano())
-	return ID
-}
-
 func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, id, name, surname, email, balance string) error {
 	exists, err := s.AssetExists(ctx, id)
 	if err != nil {
@@ -207,7 +201,9 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 }
 
 func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, userId, traderId string, products []structs.ProductInventory) (string, error) {
-	id := createId("RECEIPT")
+	// Generate deterministic ID using transaction ID and trader ID
+	txID := ctx.GetStub().GetTxID()
+	id := fmt.Sprintf("RECEIPT_%s_%s", txID, traderId)
 
 	// Read trader and validate they can fulfill the products
 	trader, err := s.ReadTrader(ctx, traderId)
@@ -310,12 +306,16 @@ func findOptimalTraderAllocation(traders []*structs.Trader, products []structs.P
 }
 
 // greedyTraderSelection uses greedy approach to minimize trader count
+// Supports partial fulfillment - splits products across traders if needed
 func greedyTraderSelection(traders []*structs.Trader, products []structs.ProductInventory) ([]TraderAllocation, error) {
 	remaining := cloneProductInventory(products)
 	allocations := []TraderAllocation{}
+	maxIterations := len(traders) * len(products) // Prevent infinite loops
 
-	for len(remaining) > 0 {
-		bestTrader, bestProducts := findBestTraderForRemaining(traders, remaining)
+	for len(remaining) > 0 && maxIterations > 0 {
+		maxIterations--
+
+		bestTrader, bestProducts := findBestTraderForRemainingWithPartial(traders, remaining)
 
 		if bestTrader == nil || len(bestProducts) == 0 {
 			return nil, fmt.Errorf("no traders available to fulfill order. Missing products: %v", formatProductList(remaining))
@@ -326,10 +326,57 @@ func greedyTraderSelection(traders []*structs.Trader, products []structs.Product
 			Products: bestProducts,
 		})
 
-		remaining = removeFulfilledProducts(remaining, bestProducts)
+		remaining = reduceRemainingQuantities(remaining, bestProducts)
+	}
+
+	if len(remaining) > 0 {
+		return nil, fmt.Errorf("could not fulfill order after maximum iterations. Missing: %v", formatProductList(remaining))
 	}
 
 	return allocations, nil
+}
+
+// findBestTraderForRemainingWithPartial finds trader that can provide most value
+// Supports partial quantities - trader doesn't need full amount
+func findBestTraderForRemainingWithPartial(traders []*structs.Trader, remaining []structs.ProductInventory) (*structs.Trader, []structs.ProductInventory) {
+	var bestTrader *structs.Trader
+	var bestProducts []structs.ProductInventory
+	bestScore := 0
+
+	for _, trader := range traders {
+		products, score := trader.GetAvailableProductsPartial(remaining)
+
+		if score > bestScore {
+			bestScore = score
+			bestTrader = trader
+			bestProducts = products
+		}
+	}
+
+	return bestTrader, bestProducts
+}
+
+// reduceRemainingQuantities subtracts fulfilled quantities from remaining
+// If a product is fully fulfilled, it's removed from the list
+func reduceRemainingQuantities(remaining, fulfilled []structs.ProductInventory) []structs.ProductInventory {
+	fulfilledMap := make(map[string]int)
+	for _, product := range fulfilled {
+		fulfilledMap[product.ProductId] = product.Quantity
+	}
+
+	result := make([]structs.ProductInventory, 0, len(remaining))
+	for _, product := range remaining {
+		fulfilledQty := fulfilledMap[product.ProductId]
+		remainingQty := product.Quantity - fulfilledQty
+
+		if remainingQty > 0 {
+			result = append(result, structs.ProductInventory{
+				ProductId: product.ProductId,
+				Quantity:  remainingQty,
+			})
+		}
+	}
+	return result
 }
 
 // findBestTraderForRemaining finds the trader that can fulfill the most remaining products

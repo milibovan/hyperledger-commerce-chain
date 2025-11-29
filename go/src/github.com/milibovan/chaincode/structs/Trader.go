@@ -76,8 +76,40 @@ func (t *Trader) ContainsProductAndRequestedQuantity(product ProductInventory) (
 	return true, item.Quantity // Has product but insufficient quantity
 }
 
-// ContainsProductsAndRequestedQuantities checks if trader can fulfill all requested products
+// GetAvailableProductsPartial returns products this trader can provide (full or partial)
+// Returns (products, score) where score represents fulfillment value
+// Score = number of distinct products covered + total quantity percentage
+func (t *Trader) GetAvailableProductsPartial(requested []ProductInventory) ([]ProductInventory, int) {
+	available := make([]ProductInventory, 0, len(requested))
+	score := 0
+
+	for _, reqProduct := range requested {
+		item, found := t.GetProduct(reqProduct.ProductId)
+		if !found || item.Quantity <= 0 {
+			continue
+		}
+
+		// Take whatever is available (up to requested amount)
+		quantityToProvide := reqProduct.Quantity
+		if item.Quantity < reqProduct.Quantity {
+			quantityToProvide = item.Quantity
+		}
+
+		available = append(available, ProductInventory{
+			ProductId: reqProduct.ProductId,
+			Quantity:  quantityToProvide,
+		})
+
+		// Score: +100 per distinct product + quantity provided
+		score += 100 + quantityToProvide
+	}
+
+	return available, score
+}
+
+// ContainsProductsAndRequestedQuantities checks if trader can FULLY fulfill all requested products
 // Returns (canFulfillAll, availableProducts)
+// Used for validation - ensures trader has complete inventory before creating receipt
 func (t *Trader) ContainsProductsAndRequestedQuantities(products []ProductInventory) (bool, []ProductInventory) {
 	availableProducts := make([]ProductInventory, 0, len(products))
 
