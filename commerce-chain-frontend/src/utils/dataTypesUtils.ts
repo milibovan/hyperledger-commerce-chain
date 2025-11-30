@@ -46,7 +46,7 @@ export interface UserData {
   name: string;
   surname: string;
   email: string;
-  "receipts-ids": Array<string>;
+  "orders-ids": Array<string>;
   balance: number;
 }
 
@@ -92,7 +92,7 @@ export interface ReceiptData {
   id: string;
   "trader-id": string;
   "user-id": string;
-  "products-ids": Array<string>;
+  "products": Array<ProductInventory>;
   date: Date;
 }
 
@@ -121,8 +121,8 @@ export function formatDate(date: string) {
   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 }
 
-export function getFormattedDate(product: ProductData) {
-  const expiryDate: Date = new Date(product["expiry-date"]);
+export function getFormattedDate(date: Date) {
+  const expiryDate: Date = new Date(date);
   const formatedDate: string = expiryDate.toLocaleString("en-US", {
     year: "numeric",
     month: "long",

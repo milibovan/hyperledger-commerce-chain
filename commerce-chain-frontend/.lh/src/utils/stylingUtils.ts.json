@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 22,
+            "activePatchIndex": 25,
             "patches": [
                 {
                     "date": 1762204899059,
@@ -96,6 +96,18 @@
                 {
                     "date": 1763397157499,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,7 +13,8 @@\n export const modalCancelButtonStyle = \"px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 font-semibold\"\r\n export const modalConfirmButtonStyle = \"px-6 py-3 bg-red-600 hover:bg-red-500 rounded border-2 border-red-400 transition-all duration-200 hover:shadow-lg hover:shadow-red-400/50 text-white font-semibold\"\r\n \r\n export const userFontSemibold = \"font-semibold text-purple-300\"\r\n+export const userFontBold = \"font-bold text-purple-300\"\r\n export const createUserButton = \"flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\"\r\n \r\n export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764533165484,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,6 +15,7 @@\n \r\n export const userFontSemibold = \"font-semibold text-purple-300\"\r\n export const userFontBold = \"font-bold text-purple-300\"\r\n export const createUserButton = \"flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\"\r\n+export const createReceiptButton = \"flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all duration-200 hover:shadow-lg hover:shadow-green-400/50\"\r\n \r\n export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764534172211,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,6 +16,7 @@\n export const userFontSemibold = \"font-semibold text-purple-300\"\r\n export const userFontBold = \"font-bold text-purple-300\"\r\n export const createUserButton = \"flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\"\r\n export const createReceiptButton = \"flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all duration-200 hover:shadow-lg hover:shadow-green-400/50\"\r\n+export const receiptFontSemibold = \"font-semibold text-green-300\"\r\n \r\n export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764536136978,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,6 +17,7 @@\n export const userFontBold = \"font-bold text-purple-300\"\r\n export const createUserButton = \"flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded border-2 border-purple-400 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50\"\r\n export const createReceiptButton = \"flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all duration-200 hover:shadow-lg hover:shadow-green-400/50\"\r\n export const receiptFontSemibold = \"font-semibold text-green-300\"\r\n+export const receiptFontBold = \"font-bold text-green-300\"\r\n \r\n export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762204899059,

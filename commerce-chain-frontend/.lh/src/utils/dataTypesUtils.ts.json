@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 10,
+            "activePatchIndex": 13,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -48,6 +48,18 @@
                 {
                     "date": 1763760608050,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -68,9 +68,9 @@\n }\r\n \r\n export interface ProductInventory {\r\n   \"product-id\": string;\r\n-  quantity: number\r\n+  quantity: number;\r\n }\r\n \r\n export interface TraderData {\r\n   \"doc-type\": string;\r\n@@ -102,11 +102,11 @@\n   channel: string;\r\n }\r\n \r\n export interface AddProductToTrader {\r\n-  traderId: string,\r\n-  productId: string,\r\n-  quantity: string\r\n+  traderId: string;\r\n+  productId: string;\r\n+  quantity: string;\r\n }\r\n \r\n export function formatDate(date: string) {\r\n   const dateTime = new Date(date);\r\n@@ -134,6 +134,6 @@\n   return formatedDate;\r\n }\r\n \r\n export function isUserData(trader: UserData | TraderData) {\r\n-  return !Object.hasOwn(trader, \"trader-type\")\r\n-}\n\\ No newline at end of file\n+  return !Object.hasOwn(trader, \"trader-type\");\r\n+}\r\n"
+                },
+                {
+                    "date": 1764532341065,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -45,9 +45,9 @@\n   id: string;\r\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n-  \"receipts-ids\": Array<string>;\r\n+  \"orders-ids\": Array<string>;\r\n   balance: number;\r\n }\r\n \r\n export interface ProductsData {\r\n"
+                },
+                {
+                    "date": 1764533526619,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -91,9 +91,9 @@\n   \"doc-type\": string;\r\n   id: string;\r\n   \"trader-id\": string;\r\n   \"user-id\": string;\r\n-  \"products-ids\": Array<string>;\r\n+  \"products\": Array<ProductInventory>;\r\n   date: Date;\r\n }\r\n \r\n export interface Deposit {\r\n"
+                },
+                {
+                    "date": 1764536536921,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -120,10 +120,10 @@\n \r\n   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;\r\n }\r\n \r\n-export function getFormattedDate(product: ProductData) {\r\n-  const expiryDate: Date = new Date(product[\"expiry-date\"]);\r\n+export function getFormattedDate(date: Date) {\r\n+  const expiryDate: Date = new Date(date);\r\n   const formatedDate: string = expiryDate.toLocaleString(\"en-US\", {\r\n     year: \"numeric\",\r\n     month: \"long\",\r\n     day: \"numeric\",\r\n"
                 }
             ],
             "date": 1762249804506,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1762377172897,
@@ -44,6 +44,10 @@
                 {
                     "date": 1762377860388,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,16 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import type { ProductData, getFormattedDate } from \"../../utils/dataTypesUtils\";\r\n+import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n import {\r\n   addButtonSm,\r\n   updateButtonSm,\r\n   deleteButtonSm,\r\n   entitiesNotFound,\r\n } from \"../../utils/stylingUtils\";\r\n+import { getFormattedDate } from \"../../utils/dataTypesUtils\";\r\n \r\n+\r\n export default function ProductsList({\r\n   entities: products,\r\n   loading,\r\n   error,\r\n"
+                },
+                {
+                    "date": 1764536572896,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -58,9 +58,9 @@\n                 <h4 className=\"font-bold text-lg text-cyan-300\">\r\n                   {product.name}\r\n                 </h4>\r\n                 <p className=\"text-sm text-gray-400\">\r\n-                  {getFormattedDate(product)}\r\n+                  {getFormattedDate(product[\"expiry-date\"])}\r\n                 </p>\r\n               </div>\r\n               <div className=\"flex items-center gap-6\">\r\n                 <div className=\"text-right\">\r\n"
                 }
             ],
             "date": 1762377172897,

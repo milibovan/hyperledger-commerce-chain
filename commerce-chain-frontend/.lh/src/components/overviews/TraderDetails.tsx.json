@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 31,
+            "activePatchIndex": 38,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -132,6 +132,34 @@
                 {
                     "date": 1763396388530,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,8 @@\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import {\r\n   traderFontBold,\r\n   traderFontSemibold,\r\n-  addButtonStyle,\r\n   createTraderButton,\r\n } from \"../../utils/stylingUtils\";\r\n import { Package, Plus } from \"lucide-react\";\r\n \r\n"
+                },
+                {
+                    "date": 1764532533343,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -104,9 +104,8 @@\n               <div\r\n                 key={receiptId}\r\n                 className=\"px-3 py-2 bg-gray-700 rounded border border-pink-400 text-sm text-gray-300\"\r\n               >\r\n-                {receiptId}\r\n               </div>\r\n             ))}\r\n           </div>\r\n         ) : (\r\n"
+                },
+                {
+                    "date": 1764532556696,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -104,8 +104,9 @@\n               <div\r\n                 key={receiptId}\r\n                 className=\"px-3 py-2 bg-gray-700 rounded border border-pink-400 text-sm text-gray-300\"\r\n               >\r\n+                {receiptId}\r\n               </div>\r\n             ))}\r\n           </div>\r\n         ) : (\r\n"
+                },
+                {
+                    "date": 1764532575823,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -102,10 +102,10 @@\n           <div className=\"grid grid-cols-3 gap-2\">\r\n             {trader[\"receipts-ids\"].map((receiptId) => (\r\n               <div\r\n                 key={receiptId}\r\n-                className=\"px-3 py-2 bg-gray-700 rounded border border-pink-400 text-sm text-gray-300\"\r\n-              >\r\n+                className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n+                >\r\n                 {receiptId}\r\n               </div>\r\n             ))}\r\n           </div>\r\n"
+                },
+                {
+                    "date": 1764532615821,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,10 +103,11 @@\n             {trader[\"receipts-ids\"].map((receiptId) => (\r\n               <div\r\n                 key={receiptId}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n-                >\r\n-                {receiptId}\r\n+              >\r\n+                <p className=\"{receiptId}\">{receiptId}</p>\r\n+                \r\n               </div>\r\n             ))}\r\n           </div>\r\n         ) : (\r\n"
+                },
+                {
+                    "date": 1764532636155,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -104,9 +104,9 @@\n               <div\r\n                 key={receiptId}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n               >\r\n-                <p className=\"{receiptId}\">{receiptId}</p>\r\n+                <p className={traderFontSemibold}>{receiptId}</p>\r\n                 \r\n               </div>\r\n             ))}\r\n           </div>\r\n"
+                },
+                {
+                    "date": 1764532699834,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -93,9 +93,9 @@\n         )}\r\n       </div>\r\n \r\n       {/* Receipts Section */}\r\n-      <div className=\"pt-4 border-t-2 border-pink-400\">\r\n+      <div className=\"space-y-2\">\r\n         <h4 className=\"text-xl font-bold text-pink-300 mb-2\">\r\n           Receipts ({trader[\"receipts-ids\"]?.length || 0})\r\n         </h4>\r\n         {trader[\"receipts-ids\"]?.length > 0 ? (\r\n@@ -104,9 +104,9 @@\n               <div\r\n                 key={receiptId}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n               >\r\n-                <p className={traderFontSemibold}>{receiptId}</p>\r\n+                <h5 className={traderFontSemibold}>{receiptId}</h5>\r\n                 \r\n               </div>\r\n             ))}\r\n           </div>\r\n"
+                },
+                {
+                    "date": 1764532745400,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -93,14 +93,14 @@\n         )}\r\n       </div>\r\n \r\n       {/* Receipts Section */}\r\n-      <div className=\"space-y-2\">\r\n+      <div className=\"pt-4 border-t-2 border-pink-400\">\r\n         <h4 className=\"text-xl font-bold text-pink-300 mb-2\">\r\n           Receipts ({trader[\"receipts-ids\"]?.length || 0})\r\n         </h4>\r\n         {trader[\"receipts-ids\"]?.length > 0 ? (\r\n-          <div className=\"grid grid-cols-3 gap-2\">\r\n+          <div className=\"space-y-2\">\r\n             {trader[\"receipts-ids\"].map((receiptId) => (\r\n               <div\r\n                 key={receiptId}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n"
                 }
             ],
             "date": 1762249738197,

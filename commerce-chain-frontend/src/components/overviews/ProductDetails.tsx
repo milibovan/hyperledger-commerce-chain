@@ -16,7 +16,7 @@ export default function ProductDetails({entity: product}: DetailsProps<ProductDa
         </div>
         <div>
           <span className="font-semibold text-cyan-300">Expiry Date:</span>{" "}
-          {getFormattedDate(product)}
+          {getFormattedDate(product["expiry-date"])}
         </div>
         <div>
           <span className="font-semibold text-cyan-300">Price:</span> $

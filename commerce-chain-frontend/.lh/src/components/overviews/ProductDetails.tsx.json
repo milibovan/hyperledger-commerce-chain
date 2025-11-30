@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 5,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1762377383218,
@@ -28,6 +28,10 @@
                 {
                     "date": 1762377904401,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { ProductData } from \"../../utils/dataTypesUtils\";\r\n+import { getFormattedDate, type ProductData } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n \r\n export default function ProductDetails({entity: product}: DetailsProps<ProductData> ) {\r\n   return (\r\n@@ -15,9 +15,9 @@\n           {product.name}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Expiry Date:</span>{\" \"}\r\n-          {formattedDate}\r\n+          {getFormattedDate(product)}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Price:</span> $\r\n           {product.price.toFixed(2)}\r\n"
+                },
+                {
+                    "date": 1764536593786,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n           {product.name}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Expiry Date:</span>{\" \"}\r\n-          {getFormattedDate(product)}\r\n+          {getFormattedDate(product[\"expiry-date\"])}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Price:</span> $\r\n           {product.price.toFixed(2)}\r\n"
                 }
             ],
             "date": 1762377383218,

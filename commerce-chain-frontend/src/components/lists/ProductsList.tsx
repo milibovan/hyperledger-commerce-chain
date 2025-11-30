@@ -59,7 +59,7 @@ export default function ProductsList({
                   {product.name}
                 </h4>
                 <p className="text-sm text-gray-400">
-                  {getFormattedDate(product)}
+                  {getFormattedDate(product["expiry-date"])}
                 </p>
               </div>
               <div className="flex items-center gap-6">

@@ -25,16 +25,22 @@ export default function UserDetails({ entity: user }: DetailsProps<UserData>) {
       </div>
       <div className="pt-4 border-t-2 border-purple-400">
         <h4 className="text-xl font-bold text-purple-300 mb-2">
-          Receipts ({user["receipts-ids"]?.length || 0})
+          Orders ({user["orders-ids"]?.length || 0})
         </h4>
-        {user["receipts-ids"]?.length > 0 ? (
-          <div className="grid grid-cols-3 gap-2">
-            {user["receipts-ids"].map((receiptId) => (
+        {user["orders-ids"]?.length > 0 ? (
+          <div className="space-y-2">
+            {user["orders-ids"].map((orderId) => (
               <div
-                key={receiptId}
-                className="px-3 py-2 bg-gray-700 rounded border border-purple-400 text-sm text-gray-300"
+                key={orderId}
+                className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-purple-400 hover:shadow-lg hover:shadow-purple-400/50 hover:bg-gray-600"
+
               >
-                {receiptId}
+                <div className="flex-1">
+                  {/* TODO When fetched products */}
+                  {/* <h5 className={receiptFontSemibold}>{product.name}</h5> */}
+                  {/* <p className="text-xs text-gray-400">ID: {product["product-id"]}</p> */}
+                  <h5 className={userFontSemibold}>ID: {orderId}</h5>
+                </div>
               </div>
             ))}
           </div>
