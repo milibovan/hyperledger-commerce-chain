@@ -93,6 +93,7 @@ export default function TraderDetails({
         )}
       </div>
 
+        {/* TODO Set Icon */}
       {/* Receipts Section */}
       <div className="pt-4 border-t-2 border-pink-400">
         <h4 className="text-xl font-bold text-pink-300 mb-2">
