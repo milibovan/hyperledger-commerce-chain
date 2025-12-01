@@ -71,6 +71,8 @@ func CreateServer() {
 	router.POST("/deposit-money/:channel", depositMoney)
 	router.POST("/increase-quantity/:channel", increaseQuantity)
 	router.POST("/traders/:channel/products", getTradersProducts)
+	router.POST("/receipts/:channel", getReceiptsByIds)
+	router.POST("/receipts/:channel", getOrdersByIds)
 	router.POST("/traders-products/:channel", addProductsToTrader)
 
 	router.Run("localhost:8080")
@@ -412,8 +414,8 @@ func getTradersProducts(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("Request:", request)
-	fmt.Println("Product IDs:", request.ProductIds)
+	//fmt.Println("Request:", request)
+	//fmt.Println("Product IDs:", request.ProductIds)
 
 	products, err := client.GetProductsByIds(activeGW, channel, request.ProductIds)
 	if err != nil {
@@ -430,6 +432,72 @@ func getTradersProducts(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"Message":  "Products retrieved successfully",
 		"Products": string(productsJSON),
+	})
+}
+func getReceiptsByIds(c *gin.Context) {
+	var request struct {
+		ReceiptIds []string `json:"receipt-ids"`
+	}
+
+	var channel string
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	//fmt.Println("Request:", request)
+	//fmt.Println("Request IDs:", request.ReceiptIds)
+
+	receipts, err := client.GetReceiptsByIds(activeGW, channel, request.ReceiptIds)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	receiptsJSON, err := json.Marshal(receipts)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to marshal products"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"Message":  "Receipts retrieved successfully",
+		"Receipts": string(receiptsJSON),
+	})
+}
+func getOrdersByIds(c *gin.Context) {
+	var request struct {
+		OrdersIds []string `json:"orders-ids"`
+	}
+
+	var channel string
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	//fmt.Println("Request:", request)
+	//fmt.Println("Order IDs:", request.OrdersIds)
+
+	orders, err := client.GetOrdersByIds(activeGW, channel, request.OrdersIds)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	ordersJSON, err := json.Marshal(orders)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "Failed to marshal orders"})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"Message": "Orders retrieved successfully",
+		"Orders":  string(ordersJSON),
 	})
 }
 func addProductsToTrader(c *gin.Context) {

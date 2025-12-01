@@ -339,6 +339,62 @@ func (t *SmartContract) GetProductsByIds(ctx contractapi.TransactionContextInter
 	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
+func (t *SmartContract) GetReceiptsByIds(ctx contractapi.TransactionContextInterface, receiptIdsJSON string) ([]*structs.Receipt, error) {
+	var receiptIds []string
+	err := json.Unmarshal([]byte(receiptIdsJSON), &receiptIds)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal receipt IDs: %w", err)
+	}
+
+	selector := map[string]interface{}{
+		"doc-type": "receipt",
+		"id": map[string]interface{}{
+			"$in": receiptIds,
+		},
+		"deleted": map[string]interface{}{"$ne": true},
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getReceiptQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) GetOrdersByIds(ctx contractapi.TransactionContextInterface, orderIdsJSON string) ([]*structs.Order, error) {
+	var orderIds []string
+	err := json.Unmarshal([]byte(orderIdsJSON), &orderIds)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal order IDs: %w", err)
+	}
+
+	selector := map[string]interface{}{
+		"doc-type": "order",
+		"id": map[string]interface{}{
+			"$in": orderIds,
+		},
+		"deleted": map[string]interface{}{"$ne": true},
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getOrderQueryResultForQueryString(ctx, queryString)
+}
+
 // getProductQueryResultForQueryString executes the passed in query string.
 // The result set is built and returned as a byte array containing the JSON results.
 func getProductQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.Product, error) {
