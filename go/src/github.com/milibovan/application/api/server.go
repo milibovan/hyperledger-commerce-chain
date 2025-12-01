@@ -72,7 +72,7 @@ func CreateServer() {
 	router.POST("/increase-quantity/:channel", increaseQuantity)
 	router.POST("/traders/:channel/products", getTradersProducts)
 	router.POST("/receipts/:channel", getReceiptsByIds)
-	router.POST("/receipts/:channel", getOrdersByIds)
+	router.POST("/orders/:channel", getOrdersByIds)
 	router.POST("/traders-products/:channel", addProductsToTrader)
 
 	router.Run("localhost:8080")
