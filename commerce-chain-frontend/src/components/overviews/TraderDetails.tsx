@@ -5,7 +5,7 @@ import {
   traderFontSemibold,
   createTraderButton,
 } from "../../utils/stylingUtils";
-import { Package, Plus } from "lucide-react";
+import { Package, Plus, Receipt } from "lucide-react";
 
 export default function TraderDetails({
   entity: trader,
@@ -93,10 +93,10 @@ export default function TraderDetails({
         )}
       </div>
 
-        {/* TODO Set Icon */}
       {/* Receipts Section */}
       <div className="pt-4 border-t-2 border-pink-400">
-        <h4 className="text-xl font-bold text-pink-300 mb-2">
+        <h4 className="text-xl font-bold text-pink-300 mb-2 flex items-center gap-2">
+          <Receipt size={20}/>
           Receipts ({trader["receipts-ids"]?.length || 0})
         </h4>
         {trader["receipts-ids"]?.length > 0 ? (
@@ -104,6 +104,7 @@ export default function TraderDetails({
             {trader["receipts-ids"].map((receiptId) => (
               <div
                 key={receiptId}
+                  // onClick={() => onProductClick?.(receipt)}
                 className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
               >
                 <h5 className={traderFontSemibold}>{receiptId}</h5>

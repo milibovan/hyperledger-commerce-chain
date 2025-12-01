@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 182,
+            "activePatchIndex": 185,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -736,6 +736,18 @@
                 {
                     "date": 1763759981077,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,10 +3,10 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n import type { ProductData, TraderData } from \"../../utils/dataTypesUtils\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n import UpdateTraderForm from \"../forms/UpdateTraderForm\";\r\n-import Modal from \"../forms/DeleteModal\";\r\n-import type { ModalHandle } from \"../forms/DeleteModal\";\r\n+import Modal from \"../modals/DeleteModal\";\r\n+import type { ModalHandle } from \"../modals/DeleteModal\";\r\n import { type ActionType } from \"../../utils/utils\";\r\n import {\r\n   addButtonStyle,\r\n   deleteButtonStyle,\r\n"
+                },
+                {
+                    "date": 1764622094683,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -132,8 +132,10 @@\n           if (viewProductDetails && selectedProduct) {\r\n             return <ProductDetails entity={selectedProduct} />;\r\n           }\r\n \r\n+          \r\n+\r\n           if (viewDetails) {\r\n             return (\r\n               <TraderDetails\r\n                 entity={selectedTrader}\r\n"
+                },
+                {
+                    "date": 1764622148798,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -129,13 +129,13 @@\n             />\r\n           );\r\n         default:\r\n           if (viewProductDetails && selectedProduct) {\r\n-            return <ProductDetails entity={selectedProduct} />;\r\n+            return <ProductDetails entity={selectedProduct as ProductData} />;\r\n           }\r\n \r\n-          \r\n \r\n+\r\n           if (viewDetails) {\r\n             return (\r\n               <TraderDetails\r\n                 entity={selectedTrader}\r\n"
+                },
+                {
+                    "date": 1764622186865,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useEffect, useRef } from \"react\";\r\n import CreateTraderForm from \"../forms/CreateTraderForm\";\r\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import type { ProductData, TraderData } from \"../../utils/dataTypesUtils\";\r\n+import type { ProductData, ReceiptData, TraderData } from \"../../utils/dataTypesUtils\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n import UpdateTraderForm from \"../forms/UpdateTraderForm\";\r\n import Modal from \"../modals/DeleteModal\";\r\n import type { ModalHandle } from \"../modals/DeleteModal\";\r\n@@ -47,9 +47,9 @@\n     viewEntityDetails,\r\n     viewNestedEntityDetails,\r\n     resetActions,\r\n     resetNestedView,\r\n-  } = useEntityActions<TraderData, ProductData>();\r\n+  } = useEntityActions<TraderData, ProductData, ReceiptData>();\r\n \r\n   // Fetch traders on mount\r\n   useEffect(() => {\r\n     fetchTraders();\r\n"
                 }
             ],
             "date": 1761645486253,

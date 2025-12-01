@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import type { ProductData, TraderData } from "../../utils/dataTypesUtils";
+import type { ProductData, ReceiptData, TraderData } from "../../utils/dataTypesUtils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateTraderForm from "../forms/UpdateTraderForm";
 import Modal from "../modals/DeleteModal";
@@ -48,7 +48,7 @@ export default function TradersPanel() {
     viewNestedEntityDetails,
     resetActions,
     resetNestedView,
-  } = useEntityActions<TraderData, ProductData>();
+  } = useEntityActions<TraderData, ProductData, ReceiptData>();
 
   // Fetch traders on mount
   useEffect(() => {
@@ -130,8 +130,10 @@ export default function TradersPanel() {
           );
         default:
           if (viewProductDetails && selectedProduct) {
-            return <ProductDetails entity={selectedProduct} />;
+            return <ProductDetails entity={selectedProduct as ProductData} />;
           }
+
+
 
           if (viewDetails) {
             return (

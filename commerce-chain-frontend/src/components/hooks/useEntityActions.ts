@@ -1,12 +1,12 @@
 import { useState } from "react";
 import type { ActionType } from "../../utils/utils";
 
-export function useEntityActions<T, P = unknown>() {
+export function useEntityActions<T, P = unknown, R = unknown>() {
   const [action, setAction] = useState<ActionType>(null);
   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);
   const [viewDetails, setViewDetails] = useState(false);
 
-  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | null>(null);
+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | R | null>(null);
   const [viewNestedDetails, setViewNestedDetails] = useState(false);
 
   const handleAction = (actionType: ActionType, entity?: T) => {
@@ -27,7 +27,7 @@ export function useEntityActions<T, P = unknown>() {
     setViewNestedDetails(false);
   };
 
-  const viewNestedEntityDetails = (nestedEntity: P) => {
+  const viewNestedEntityDetails = (nestedEntity: P | R) => {
     setSelectedNestedEntity(nestedEntity);
     setViewNestedDetails(true);
   };

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 39,
+            "activePatchIndex": 43,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -164,6 +164,22 @@
                 {
                     "date": 1764621533025,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -92,8 +92,9 @@\n           </div>\r\n         )}\r\n       </div>\r\n \r\n+        {/* TODO Set Icon */}\r\n       {/* Receipts Section */}\r\n       <div className=\"pt-4 border-t-2 border-pink-400\">\r\n         <h4 className=\"text-xl font-bold text-pink-300 mb-2\">\r\n           Receipts ({trader[\"receipts-ids\"]?.length || 0})\r\n"
+                },
+                {
+                    "date": 1764621968745,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n   traderFontBold,\r\n   traderFontSemibold,\r\n   createTraderButton,\r\n } from \"../../utils/stylingUtils\";\r\n-import { Package, Plus } from \"lucide-react\";\r\n+import { Package, Plus, Receipt } from \"lucide-react\";\r\n \r\n export default function TraderDetails({\r\n   entity: trader,\r\n   products,\r\n@@ -96,8 +96,9 @@\n         {/* TODO Set Icon */}\r\n       {/* Receipts Section */}\r\n       <div className=\"pt-4 border-t-2 border-pink-400\">\r\n         <h4 className=\"text-xl font-bold text-pink-300 mb-2\">\r\n+          <Receipt size={20}/>\r\n           Receipts ({trader[\"receipts-ids\"]?.length || 0})\r\n         </h4>\r\n         {trader[\"receipts-ids\"]?.length > 0 ? (\r\n           <div className=\"space-y-2\">\r\n"
+                },
+                {
+                    "date": 1764621991771,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -95,9 +95,9 @@\n \r\n         {/* TODO Set Icon */}\r\n       {/* Receipts Section */}\r\n       <div className=\"pt-4 border-t-2 border-pink-400\">\r\n-        <h4 className=\"text-xl font-bold text-pink-300 mb-2\">\r\n+        <h4 className=\"text-xl font-bold text-pink-300 mb-2 flex items-center gap-2\">\r\n           <Receipt size={20}/>\r\n           Receipts ({trader[\"receipts-ids\"]?.length || 0})\r\n         </h4>\r\n         {trader[\"receipts-ids\"]?.length > 0 ? (\r\n"
+                },
+                {
+                    "date": 1764622013913,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -92,9 +92,8 @@\n           </div>\r\n         )}\r\n       </div>\r\n \r\n-        {/* TODO Set Icon */}\r\n       {/* Receipts Section */}\r\n       <div className=\"pt-4 border-t-2 border-pink-400\">\r\n         <h4 className=\"text-xl font-bold text-pink-300 mb-2 flex items-center gap-2\">\r\n           <Receipt size={20}/>\r\n"
+                },
+                {
+                    "date": 1764622288238,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,8 +103,9 @@\n           <div className=\"space-y-2\">\r\n             {trader[\"receipts-ids\"].map((receiptId) => (\r\n               <div\r\n                 key={receiptId}\r\n+                  // onClick={() => onProductClick?.(receipt)}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n               >\r\n                 <h5 className={traderFontSemibold}>{receiptId}</h5>\r\n                 \r\n"
                 }
             ],
             "date": 1762249738197,
