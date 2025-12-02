@@ -113,7 +113,7 @@ func (t *SmartContract) QueryProductsByName(ctx contractapi.TransactionContextIn
 	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
-func (t *SmartContract) QueryProductsById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Product, error) {
+func (t *SmartContract) GetProductById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Product, error) {
 	selector := map[string]interface{}{
 		"doc-type": "product",
 	}
@@ -380,6 +380,91 @@ func (t *SmartContract) GetOrdersByIds(ctx contractapi.TransactionContextInterfa
 			"$in": orderIds,
 		},
 		"deleted": map[string]interface{}{"$ne": true},
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getOrderQueryResultForQueryString(ctx, queryString)
+}
+
+func (t *SmartContract) GetUserById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.User, error) {
+	selector := map[string]interface{}{
+		"doc-type": "user",
+	}
+
+	if id != "" {
+		selector["id"] = map[string]string{"$eq": id}
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getUserQueryResultForQueryString(ctx, queryString)
+}
+func (t *SmartContract) GetTraderById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Trader, error) {
+	selector := map[string]interface{}{
+		"doc-type": "trader",
+	}
+
+	if id != "" {
+		selector["id"] = map[string]string{"$eq": id}
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getTraderQueryResultForQueryString(ctx, queryString)
+}
+func (t *SmartContract) GetReceiptById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Receipt, error) {
+	selector := map[string]interface{}{
+		"doc-type": "receipt",
+	}
+
+	if id != "" {
+		selector["id"] = map[string]string{"$eq": id}
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getReceiptQueryResultForQueryString(ctx, queryString)
+}
+func (t *SmartContract) GetOrdersById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Order, error) {
+	selector := map[string]interface{}{
+		"doc-type": "order",
+	}
+
+	if id != "" {
+		selector["id"] = map[string]string{"$eq": id}
 	}
 
 	queryMap := map[string]interface{}{

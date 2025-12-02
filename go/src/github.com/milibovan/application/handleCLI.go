@@ -327,7 +327,7 @@ func handleCLIQueryProductsByName(channelName, name string) {
 }
 
 func handleCLIQueryProductsById(channelName, productId string) {
-	err := client.QueryProductsById(activeGW, channelName, productId)
+	err := client.GetProductById(activeGW, channelName, productId)
 	if err != nil {
 		return
 	}

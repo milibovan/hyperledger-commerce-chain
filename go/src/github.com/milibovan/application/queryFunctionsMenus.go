@@ -137,7 +137,7 @@ func handleQueryProductsById() error {
 		break
 	}
 
-	return client.QueryProductsById(activeGW, channelName, productId)
+	return client.GetProductById(activeGW, channelName, productId)
 }
 
 func handleQueryProductsByTraderType() error {

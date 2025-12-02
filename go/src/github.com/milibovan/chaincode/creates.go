@@ -165,6 +165,11 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 		return "", fmt.Errorf("failed to create receipts: %w", err)
 	}
 
+	totalCost, err := s.calculateTotalCost(ctx, products)
+	if err != nil {
+		return "", err
+	}
+
 	// Create order
 	order := structs.Order{
 		DocType:     "order",
@@ -172,6 +177,7 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 		UserId:      userId,
 		Products:    products,
 		ReceiptsIds: receiptIds,
+		TotalCost:   totalCost,
 		Deleted:     false,
 	}
 
@@ -217,15 +223,20 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		return "", fmt.Errorf("trader %s cannot fulfill requested products", traderId)
 	}
 
+	totalCost, err := s.calculateTotalCost(ctx, products)
+	if err != nil {
+		return "", err
+	}
 	// Create receipt
 	receipt := structs.Receipt{
-		DocType:  "receipt",
-		Id:       id,
-		TraderId: traderId,
-		UserId:   userId,
-		Products: products,
-		Date:     time.Now().Format(time.RFC3339),
-		Deleted:  false,
+		DocType:   "receipt",
+		Id:        id,
+		TraderId:  traderId,
+		UserId:    userId,
+		Products:  products,
+		Date:      time.Now().Format(time.RFC3339),
+		TotalCost: totalCost,
+		Deleted:   false,
 	}
 
 	// Update trader: add receipt and deduct inventory
@@ -379,41 +390,6 @@ func reduceRemainingQuantities(remaining, fulfilled []structs.ProductInventory) 
 	return result
 }
 
-// findBestTraderForRemaining finds the trader that can fulfill the most remaining products
-func findBestTraderForRemaining(traders []*structs.Trader, remaining []structs.ProductInventory) (*structs.Trader, []structs.ProductInventory) {
-	var bestTrader *structs.Trader
-	var bestProducts []structs.ProductInventory
-	maxCoverage := 0
-
-	for _, trader := range traders {
-		_, availableProducts := trader.ContainsProductsAndRequestedQuantities(remaining)
-
-		if len(availableProducts) > maxCoverage {
-			maxCoverage = len(availableProducts)
-			bestTrader = trader
-			bestProducts = availableProducts
-		}
-	}
-
-	return bestTrader, bestProducts
-}
-
-// removeFulfilledProducts removes fulfilled products from the remaining list
-func removeFulfilledProducts(remaining, fulfilled []structs.ProductInventory) []structs.ProductInventory {
-	fulfilledMap := make(map[string]bool, len(fulfilled))
-	for _, product := range fulfilled {
-		fulfilledMap[product.ProductId] = true
-	}
-
-	result := make([]structs.ProductInventory, 0, len(remaining))
-	for _, product := range remaining {
-		if !fulfilledMap[product.ProductId] {
-			result = append(result, product)
-		}
-	}
-	return result
-}
-
 // cloneProductInventory creates a deep copy of product inventory slice
 func cloneProductInventory(products []structs.ProductInventory) []structs.ProductInventory {
 	clone := make([]structs.ProductInventory, len(products))
@@ -471,4 +447,19 @@ func parseOrderArguments(args string) ([]structs.ProductInventory, string, error
 	}
 
 	return products, userId, nil
+}
+
+// calculateTotalCost calculates total price of products
+func (s *SmartContract) calculateTotalCost(ctx contractapi.TransactionContextInterface, products []structs.ProductInventory) (float64, error) {
+	totalCost := 0.0
+	for _, productItem := range products {
+		if productItem.Quantity > 0 {
+			product, err := s.ReadProduct(ctx, productItem.ProductId)
+			if err != nil {
+				return 0.0, fmt.Errorf("There is no product with id %s", productItem.ProductId)
+			}
+			totalCost += product.Price * float64(productItem.Quantity)
+		}
+	}
+	return totalCost, nil
 }

@@ -6,6 +6,7 @@
       "trader-id",
       "user-id",
       "products",
+      "total-cost",
       "date",
       "deleted"
     ]

@@ -75,6 +75,10 @@ func CreateServer() {
 	router.POST("/orders/:channel", getOrdersByIds)
 	router.POST("/traders-products/:channel", addProductsToTrader)
 
+	router.GET("/users/details/:userId/:channel", getUserDetails)
+	router.GET("/traders/details/:traderId/:channel", getTraderDetails)
+	router.GET("/receipts/details/:receiptId/:channel", getReceiptDetails)
+
 	router.Run("localhost:8080")
 }
 
@@ -528,3 +532,7 @@ func addProductsToTrader(c *gin.Context) {
 
 	c.JSON(200, gin.H{"Message": fmt.Sprintf("Products added to trader %s %d", request.TraderId, blockNumber)})
 }
+
+func getUserDetails(c *gin.Context)    {}
+func getTraderDetails(c *gin.Context)  {}
+func getReceiptDetails(c *gin.Context) {}

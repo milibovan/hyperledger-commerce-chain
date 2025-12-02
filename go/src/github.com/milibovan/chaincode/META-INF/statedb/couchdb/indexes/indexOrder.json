@@ -5,6 +5,7 @@
       "user-id",
       "products",
       "receipts-ids",
+      "total-cost",
       "deleted"
     ]
   },

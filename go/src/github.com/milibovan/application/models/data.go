@@ -24,6 +24,7 @@ type Receipt struct {
 	UserId     string     `json:"user-id"`
 	ProductIDs []string   `json:"products-ids"`
 	Date       CustomTime `json:"date"`
+	TotalCost  float64    `json:"total-cost"`
 	Deleted    bool       `json:"deleted"`
 }
 
@@ -33,6 +34,7 @@ type Order struct {
 	UserId      string             `json:"user-id"`
 	Products    []ProductInventory `json:"products"`
 	ReceiptsIds []string           `json:"receipts-ids"`
+	TotalCost   float64            `json:"total-cost"`
 	Deleted     bool               `json:"deleted"`
 }
 type TraderType string
