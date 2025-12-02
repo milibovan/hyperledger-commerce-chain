@@ -5,6 +5,8 @@ import (
 	"commerce-sdk/models"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -533,6 +535,227 @@ func addProductsToTrader(c *gin.Context) {
 	c.JSON(200, gin.H{"Message": fmt.Sprintf("Products added to trader %s %d", request.TraderId, blockNumber)})
 }
 
-func getUserDetails(c *gin.Context)    {}
-func getTraderDetails(c *gin.Context)  {}
-func getReceiptDetails(c *gin.Context) {}
+// getUserDetails fetches all necessary entities for User Details
+func getUserDetails(c *gin.Context) {
+	var channel, userId string
+	channel = c.Param("channel")
+	userId = c.Param("userId")
+
+	// Get user by id
+	user, err := client.GetUserById(activeGW, channel, userId)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+
+	// Get its orders
+	orders, err := client.GetOrdersByIds(activeGW, channel, user.OrdersIds)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+
+	// Get unique productIds and receipts ids
+	productsIds, receiptsIds := getUniqueProductIdsAndReceiptIds(orders)
+
+	// Get products
+	products, err := client.GetProductsByIds(activeGW, channel, productsIds)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get receipts
+	receipts, err := client.GetReceiptsByIds(activeGW, channel, receiptsIds)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Build response
+	response := models.UserDetailsResponse{
+		User:   user,
+		Orders: buildOrdersWithDetails(orders, products, receipts),
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+// getTraderDetails fetches all necessary entities for Trader Details
+func getTraderDetails(c *gin.Context) {
+	var channel, traderId string
+	channel = c.Param("channel")
+	traderId = c.Param("traderId")
+
+	// Get trader by id
+	trader, err := client.GetTraderById(activeGW, channel, traderId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get trader's receipts
+	receipts, err := client.GetReceiptsByIds(activeGW, channel, trader.ReceiptsIDs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	productIds := getAllTradersProducts(receipts, trader)
+
+	// Get all products
+	products, err := client.GetProductsByIds(activeGW, channel, productIds)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var receiptsProducts, availableProducts []*models.Product
+	for _, product := range products {
+		for _, receipt := range receipts {
+			if slices.Contains(receipt.ProductIDs, product.Id) {
+				receiptsProducts = append(receiptsProducts, product)
+			}
+		}
+
+		if slices.Contains(trader.ProductsAvailable, product.Id) {
+			availableProducts = append(availableProducts, product)
+		}
+	}
+
+	// Build response
+	response := models.TraderDetailsResponse{
+		Trader:            trader,
+		Receipts:          receipts,
+		ReceiptsProducts:  receiptsProducts,
+		AvailableProducts: availableProducts,
+	}
+
+	c.JSON(http.StatusOK, response)
+
+}
+
+// getReceiptDetails fetches all necessary entities for Receipt Details
+func getReceiptDetails(c *gin.Context) {
+	var channel, receiptId string
+	channel = c.Param("channel")
+	receiptId = c.Param("receiptId")
+
+	// Get receipt
+	receipt, err := client.GetReceiptById(activeGW, channel, receiptId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get products
+	products, err := client.GetProductsByIds(activeGW, channel, receipt.ProductIDs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Get trader and user info
+	trader, err := client.GetTraderById(activeGW, channel, receipt.TraderId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, err := client.GetUserById(activeGW, channel, receipt.UserId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Build response
+	response := models.ReceiptDetailsResponse{
+		Receipt:  receipt,
+		Products: products,
+		Trader:   trader,
+		User:     user,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+// buildOrdersWithDetails helper function for building response
+func buildOrdersWithDetails(orders []*models.Order, allProducts []*models.Product, allReceipts []*models.Receipt) []models.OrderWithDetails {
+	// Create maps for quick lookup
+	productMap := make(map[string]*models.Product)
+	for _, p := range allProducts {
+		productMap[p.Id] = p
+	}
+
+	receiptMap := make(map[string]*models.Receipt)
+	for _, r := range allReceipts {
+		receiptMap[r.Id] = r
+	}
+
+	// Build detailed orders
+	result := make([]models.OrderWithDetails, 0, len(orders))
+	for _, order := range orders {
+		orderProducts := make([]*models.Product, 0)
+		for _, productItem := range order.Products {
+			if p, exists := productMap[productItem.ProductId]; exists {
+				orderProducts = append(orderProducts, p)
+			}
+		}
+
+		orderReceipts := make([]*models.Receipt, 0)
+		for _, rid := range order.ReceiptsIds {
+			if r, exists := receiptMap[rid]; exists {
+				orderReceipts = append(orderReceipts, r)
+			}
+		}
+
+		result = append(result, models.OrderWithDetails{
+			Order:    order,
+			Products: orderProducts,
+			Receipts: orderReceipts,
+		})
+	}
+
+	return result
+}
+
+// getUniqueProductIdsAndReceiptIds For fetching unique product ids and receipt ids from orders
+func getUniqueProductIdsAndReceiptIds(orders []*models.Order) ([]string, []string) {
+	// For each order, collect product IDs and receipt IDs
+	productIDsMap := make(map[string]bool)
+	var allReceiptIDs []string
+
+	for _, order := range orders {
+		for _, productItem := range order.Products {
+			productIDsMap[productItem.ProductId] = true
+		}
+		allReceiptIDs = append(allReceiptIDs, order.ReceiptsIds...)
+	}
+
+	// Get all unique products
+	productIDs := make([]string, 0, len(productIDsMap))
+	for id := range productIDsMap {
+		productIDs = append(productIDs, id)
+	}
+	return productIDs, allReceiptIDs
+}
+
+// getAllTradersProducts Collects all products ids
+func getAllTradersProducts(receipts []*models.Receipt, trader *models.Trader) []string {
+	// Collect product IDs from receipts
+	productIDsMap := make(map[string]bool)
+	for _, receipt := range receipts {
+		for _, productId := range receipt.ProductIDs {
+			productIDsMap[productId] = true
+		}
+	}
+
+	// Add trader's available products
+	for _, productId := range trader.ProductsAvailable {
+		productIDsMap[productId] = true
+	}
+
+	productIDs := make([]string, 0, len(productIDsMap))
+	for id := range productIDsMap {
+		productIDs = append(productIDs, id)
+	}
+	return productIDs
+}

@@ -183,6 +183,7 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 
 	// Update user's order list
 	user.OrdersIDs = append(user.OrdersIDs, id)
+	user.Balance -= totalCost
 
 	// Marshal and save both order and user
 	orderJSON, err := json.Marshal(order)
