@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 13,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -60,6 +60,22 @@
                 {
                     "date": 1764536536921,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -120,10 +120,10 @@\n \r\n   return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;\r\n }\r\n \r\n-export function getFormattedDate(product: ProductData) {\r\n-  const expiryDate: Date = new Date(product[\"expiry-date\"]);\r\n+export function getFormattedDate(date: Date) {\r\n+  const expiryDate: Date = new Date(date);\r\n   const formatedDate: string = expiryDate.toLocaleString(\"en-US\", {\r\n     year: \"numeric\",\r\n     month: \"long\",\r\n     day: \"numeric\",\r\n"
+                },
+                {
+                    "date": 1764869301951,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -92,8 +92,9 @@\n   id: string;\r\n   \"trader-id\": string;\r\n   \"user-id\": string;\r\n   \"products\": Array<ProductInventory>;\r\n+  \"total-cost\": number;\r\n   date: Date;\r\n }\r\n \r\n export interface Deposit {\r\n"
+                },
+                {
+                    "date": 1764869490739,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,8 +96,18 @@\n   \"total-cost\": number;\r\n   date: Date;\r\n }\r\n \r\n+export interface Order {\r\n+\t\"doc-type\" :    string;            \r\n+\tid:        string;            \r\n+\t\"user-id\":      string;            \r\n+\tproducts:    []ProductInventory\r\n+\t\"receipts-ids\": []string;          \r\n+\t\"total-cost\":   float64           \r\n+\t\"deleted\":     boolean              \r\n+}\r\n+\r\n export interface Deposit {\r\n   amount?: string;\r\n   quantity?: string;\r\n   channel: string;\r\n"
+                },
+                {
+                    "date": 1764869525251,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -100,12 +100,12 @@\n export interface Order {\r\n \t\"doc-type\" :    string;            \r\n \tid:        string;            \r\n \t\"user-id\":      string;            \r\n-\tproducts:    []ProductInventory\r\n-\t\"receipts-ids\": []string;          \r\n-\t\"total-cost\":   float64           \r\n-\t\"deleted\":     boolean              \r\n+\tproducts:    Array<ProductInventory>;\r\n+\t\"receipts-ids\": Array<string>;          \r\n+\t\"total-cost\":   number;           \r\n+\t\"deleted\":     boolean;              \r\n }\r\n \r\n export interface Deposit {\r\n   amount?: string;\r\n"
+                },
+                {
+                    "date": 1764869616553,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,9 +96,13 @@\n   \"total-cost\": number;\r\n   date: Date;\r\n }\r\n \r\n-export interface Order {\r\n+export interface OrdersData {\r\n+  Receipts: Array<OrderData>;\r\n+}\r\n+\r\n+export interface OrderData {\r\n \t\"doc-type\" :    string;            \r\n \tid:        string;            \r\n \t\"user-id\":      string;            \r\n \tproducts:    Array<ProductInventory>;\r\n"
                 }
             ],
             "date": 1762249804506,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 11,
             "patches": [
                 {
                     "date": 1761555960720,
@@ -44,6 +44,14 @@
                 {
                     "date": 1763222465578,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -221,9 +221,9 @@\n           disabled={loading}\r\n           className=\"w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-cyan-300 transition-all duration-200 hover:shadow-lg hover:shadow-cyan-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide\"\r\n         >\r\n           <Send size={20} />\r\n-          {loading ? \"Creating...\" : \"Create User\"}\r\n+          {loading ? \"Creating...\" : \"Create Product\"}\r\n         </button>\r\n       </div>\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1764708066631,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -46,8 +46,9 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n+      console.log(formData.expiryDate)\r\n       const response = await fetch(\r\n         `http://localhost:8080/product/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n"
+                },
+                {
+                    "date": 1764708095347,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -46,9 +46,8 @@\n \r\n     setLoading(true);\r\n \r\n     try {\r\n-      console.log(formData.expiryDate)\r\n       const response = await fetch(\r\n         `http://localhost:8080/product/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n"
                 }
             ],
             "date": 1761555960720,

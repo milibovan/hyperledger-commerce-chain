@@ -93,7 +93,22 @@ export interface ReceiptData {
   "trader-id": string;
   "user-id": string;
   "products": Array<ProductInventory>;
+  "total-cost": number;
   date: Date;
+}
+
+export interface OrdersData {
+  Receipts: Array<OrderData>;
+}
+
+export interface OrderData {
+	"doc-type" :    string;            
+	id:        string;            
+	"user-id":      string;            
+	products:    Array<ProductInventory>;
+	"receipts-ids": Array<string>;          
+	"total-cost":   number;           
+	"deleted":     boolean;              
 }
 
 export interface Deposit {
