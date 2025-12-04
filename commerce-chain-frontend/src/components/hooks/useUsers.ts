@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
-import type { UsersData } from "../../utils/dataTypesUtils";
+import type { UserDetails, UsersData } from "../../utils/dataTypesUtils";
 import { host, httpMethod } from "../../utils/utils";
 
 export function useUsers(channel: string = "channel-a") {
   const [data, setData] = useState<UsersData | null>(null);
+  const [detailedData, setDetailedData] = useState<UserDetails>();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -54,6 +55,39 @@ export function useUsers(channel: string = "channel-a") {
     }
   }, [channel]);
 
+  const fetchUserDetails = useCallback(async (userId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${host}/users/details/${userId}/${channel}`, {
+        method: httpMethod.GET,
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+      const responseData = await response.json();
+      
+      const parsedData = {
+        user: responseData.user,  
+        orders: responseData.orders || [], 
+      };
+
+      setDetailedData(parsedData);
+    } else {
+      const errorData = await response.json();
+      setError(errorData.Message || "Failed to fetch user details");
+    }
+    } catch (err) {
+      setError(
+        `Error connecting to server: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [channel])
+
   const deleteUser = useCallback(
     async (userId: string) => {
       try {
@@ -84,9 +118,11 @@ export function useUsers(channel: string = "channel-a") {
 
   return {
     users: data?.Users || [],
+    userDetails: detailedData,
     loading,
     error,
     fetchUsers,
     deleteUser,
+    fetchUserDetails
   };
 }

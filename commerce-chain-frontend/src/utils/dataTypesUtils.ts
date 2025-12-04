@@ -152,3 +152,28 @@ export function getFormattedDate(date: Date) {
 export function isUserData(trader: UserData | TraderData) {
   return !Object.hasOwn(trader, "trader-type");
 }
+
+export interface UserDetails {
+  user: UserData,
+  orders: Array<OrderDetails>
+}
+
+export interface OrderDetails {
+  order: OrderData,
+  products: ProductsData,
+  receipts: ReceiptsData
+}
+
+export interface TraderDetails {
+  trader: TraderData,
+  receipts: ReceiptsData,
+  "receipts-products": ProductsData,
+  "available-products": ProductsData
+}
+
+export interface ReceiptDetails {
+  receipt: ReceiptData,
+  products: ProductsData,
+  trader: TraderData,
+  user: UserData
+}

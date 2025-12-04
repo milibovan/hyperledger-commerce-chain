@@ -1,35 +1,35 @@
-import type { UserData } from "../../utils/dataTypesUtils";
+import type { UserDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import { userFontSemibold } from "../../utils/stylingUtils";
 
-export default function UserDetails({ entity: user }: DetailsProps<UserData>) {
+export default function UserDetails({ entity: userDetails }: DetailsProps<UserDetails>) {
   return (
     <div className="space-y-4">
       <h3 className="text-2xl font-bold text-purple-400">User Details</h3>
       <div className="grid grid-cols-2 gap-4 text-gray-300">
         <div>
-          <span className={userFontSemibold}>ID:</span> {user.id}
+          <span className={userFontSemibold}>ID:</span> {userDetails.user.id}
         </div>
         <div>
           <span className={userFontSemibold}>Email:</span>{" "}
-          {user.email}
+          {userDetails.user.email}
         </div>
         <div>
           <span className={userFontSemibold}>Name:</span>{" "}
-          {user.name} {user.surname}
+          {userDetails.user.name} {userDetails.user.surname}
         </div>
         <div>
           <span className={userFontSemibold}>Balance:</span> $
-          {user.balance.toFixed(2)}
+          {userDetails.user.balance.toFixed(2)}
         </div>
       </div>
       <div className="pt-4 border-t-2 border-purple-400">
         <h4 className="text-xl font-bold text-purple-300 mb-2">
-          Orders ({user["orders-ids"]?.length || 0})
+          Orders ({userDetails.user["orders-ids"]?.length || 0})
         </h4>
-        {user["orders-ids"]?.length > 0 ? (
+        {userDetails.user["orders-ids"]?.length > 0 ? (
           <div className="space-y-2">
-            {user["orders-ids"].map((orderId) => (
+            {userDetails.user["orders-ids"].map((orderId) => (
               <div
                 key={orderId}
                 className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-purple-400 hover:shadow-lg hover:shadow-purple-400/50 hover:bg-gray-600"

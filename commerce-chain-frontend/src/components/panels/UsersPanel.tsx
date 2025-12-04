@@ -25,7 +25,7 @@ import BuyProduct from "../forms/BuyProductMenu";
 export default function UsersPanel() {
   const modalRef = useRef<ModalHandle>(null);
 
-  const { users, loading, error, fetchUsers, deleteUser } = useUsers();
+  const { users, loading, error, fetchUsers, deleteUser, userDetails, fetchUserDetails } = useUsers();
 
   const {
     action,
@@ -39,6 +39,12 @@ export default function UsersPanel() {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  useEffect(() => {
+    if (selectedUser) {
+      fetchUserDetails(selectedUser.id)
+    }
+  }, [selectedUser, fetchUserDetails])
 
   const handleDeleteClick = (user: UserData) => {
     handleAction("delete", user);
@@ -55,6 +61,8 @@ export default function UsersPanel() {
       resetActions();
     }
   };
+
+  console.log(userDetails)
 
   const renderContent = () => {
     if (action === "create") {
@@ -86,14 +94,14 @@ export default function UsersPanel() {
 
         case "shop":
           return (
-            <BuyProduct 
+            <BuyProduct
               trader={selectedUser}
             />
           )
 
         default:
-          if (viewDetails) {
-            return <UserDetails entity={selectedUser} />;
+          if (viewDetails && userDetails) {
+            return <UserDetails entity={userDetails} />;
           }
           return null;
       }

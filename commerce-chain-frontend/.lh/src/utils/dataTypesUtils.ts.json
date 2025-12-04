@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 17,
+            "activePatchIndex": 36,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -76,6 +76,82 @@
                 {
                     "date": 1764869616553,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,9 +96,13 @@\n   \"total-cost\": number;\r\n   date: Date;\r\n }\r\n \r\n-export interface Order {\r\n+export interface OrdersData {\r\n+  Receipts: Array<OrderData>;\r\n+}\r\n+\r\n+export interface OrderData {\r\n \t\"doc-type\" :    string;            \r\n \tid:        string;            \r\n \t\"user-id\":      string;            \r\n \tproducts:    Array<ProductInventory>;\r\n"
+                },
+                {
+                    "date": 1764870729689,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -151,4 +151,9 @@\n \r\n export function isUserData(trader: UserData | TraderData) {\r\n   return !Object.hasOwn(trader, \"trader-type\");\r\n }\r\n+\r\n+export interface UserDetails {\r\n+  User: UserData,\r\n+  Orders: OrderData\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870776309,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -155,5 +155,9 @@\n \r\n export interface UserDetails {\r\n   User: UserData,\r\n   Orders: OrderData\r\n+}\r\n+\r\n+export interface OrderDetails {\r\n+  \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870789060,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -158,6 +158,6 @@\n   Orders: OrderData\r\n }\r\n \r\n export interface OrderDetails {\r\n-  \r\n+  Order: \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870799077,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -158,6 +158,7 @@\n   Orders: OrderData\r\n }\r\n \r\n export interface OrderDetails {\r\n-  Order: \r\n+  Order: OrderData,\r\n+  Products: Product\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870809206,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -159,6 +159,7 @@\n }\r\n \r\n export interface OrderDetails {\r\n   Order: OrderData,\r\n-  Products: Product\r\n+  Products: ProductsData,\r\n+  Receipts: ReceiptsData\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870819618,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -154,9 +154,9 @@\n }\r\n \r\n export interface UserDetails {\r\n   User: UserData,\r\n-  Orders: OrderData\r\n+  Orders: Array<OrderDetails>\r\n }\r\n \r\n export interface OrderDetails {\r\n   Order: OrderData,\r\n"
+                },
+                {
+                    "date": 1764870832453,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -161,5 +161,9 @@\n export interface OrderDetails {\r\n   Order: OrderData,\r\n   Products: ProductsData,\r\n   Receipts: ReceiptsData\r\n+}\r\n+\r\n+export interface TraderDetails {\r\n+  \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870841526,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -164,6 +164,7 @@\n   Receipts: ReceiptsData\r\n }\r\n \r\n export interface TraderDetails {\r\n+  Trader: TraderData,\r\n   \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870857702,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -165,6 +165,7 @@\n }\r\n \r\n export interface TraderDetails {\r\n   Trader: TraderData,\r\n-  \r\n+  Receipts: ReceiptsData,\r\n+  ReceiptsProducts: \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870878921,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -153,10 +153,10 @@\n   return !Object.hasOwn(trader, \"trader-type\");\r\n }\r\n \r\n export interface UserDetails {\r\n-  User: UserData,\r\n-  Orders: Array<OrderDetails>\r\n+  user: UserData,\r\n+  orders: Array<OrderDetails>\r\n }\r\n \r\n export interface OrderDetails {\r\n   Order: OrderData,\r\n"
+                },
+                {
+                    "date": 1764870894103,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -158,14 +158,14 @@\n   orders: Array<OrderDetails>\r\n }\r\n \r\n export interface OrderDetails {\r\n-  Order: OrderData,\r\n-  Products: ProductsData,\r\n-  Receipts: ReceiptsData\r\n+  order: OrderData,\r\n+  products: ProductsData,\r\n+  receipts: ReceiptsData\r\n }\r\n \r\n export interface TraderDetails {\r\n-  Trader: TraderData,\r\n-  Receipts: ReceiptsData,\r\n+  trader: TraderData,\r\n+  receipts: ReceiptsData,\r\n   ReceiptsProducts: \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870907234,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -166,6 +166,6 @@\n \r\n export interface TraderDetails {\r\n   trader: TraderData,\r\n   receipts: ReceiptsData,\r\n-  ReceiptsProducts: \r\n+  \"receipts_products\": \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870935413,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -166,6 +166,7 @@\n \r\n export interface TraderDetails {\r\n   trader: TraderData,\r\n   receipts: ReceiptsData,\r\n-  \"receipts_products\": \r\n+  \"receipts-products\": ProductsData,\r\n+  \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870950125,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -167,6 +167,6 @@\n export interface TraderDetails {\r\n   trader: TraderData,\r\n   receipts: ReceiptsData,\r\n   \"receipts-products\": ProductsData,\r\n-  \r\n+  \"available-products\": ProductsData\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870961998,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -168,5 +168,9 @@\n   trader: TraderData,\r\n   receipts: ReceiptsData,\r\n   \"receipts-products\": ProductsData,\r\n   \"available-products\": ProductsData\r\n+}\r\n+\r\n+export interface ReceiptDetails {\r\n+  \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870970154,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -171,6 +171,7 @@\n   \"available-products\": ProductsData\r\n }\r\n \r\n export interface ReceiptDetails {\r\n+  receipt: ReceiptData,\r\n   \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870980486,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -172,6 +172,7 @@\n }\r\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n+  products: ReceiptsData,\r\n   \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870989354,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -172,7 +172,7 @@\n }\r\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n-  products: ReceiptsData,\r\n+  products: ProductsData,\r\n   \r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1764870998773,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -173,6 +173,7 @@\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n   products: ProductsData,\r\n-  \r\n+  trader: TraderData,\r\n+  user: UserData\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762249804506,

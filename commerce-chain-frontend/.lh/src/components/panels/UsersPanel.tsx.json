@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 105,
+            "activePatchIndex": 113,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -428,6 +428,38 @@
                 {
                     "date": 1763759979729,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,10 +3,10 @@\n import { Plus, Edit, Trash2, ShoppingBag } from \"lucide-react\";\r\n import CreateUserForm from \"../forms/CreateUserForm\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n import UpdateUserForm from \"../forms/UpdateUserForm\";\r\n-import type { ModalHandle } from \"../forms/DeleteModal\";\r\n-import Modal from \"../forms/DeleteModal\";\r\n+import type { ModalHandle } from \"../modals/DeleteModal\";\r\n+import Modal from \"../modals/DeleteModal\";\r\n import {\r\n   addButtonStyle,\r\n   modalCancelButtonStyle,\r\n   modalConfirmButtonStyle,\r\n"
+                },
+                {
+                    "date": 1764871384289,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,9 +24,9 @@\n \r\n export default function UsersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n-  const { users, loading, error, fetchUsers, deleteUser } = useUsers();\r\n+  const { users, loading, error, fetchUsers, deleteUser, userDetails, fetchUserDetails } = useUsers();\r\n \r\n   const {\r\n     action,\r\n     selectedEntity: selectedUser,\r\n@@ -39,8 +39,14 @@\n   useEffect(() => {\r\n     fetchUsers();\r\n   }, [fetchUsers]);\r\n \r\n+  useEffect(() => {\r\n+    if (selectedUser) {\r\n+      fetchUserDetails(selectedUser.id)\r\n+    }\r\n+  }, [selectedUser, fetchUserDetails])\r\n+\r\n   const handleDeleteClick = (user: UserData) => {\r\n     handleAction(\"delete\", user);\r\n     modalRef.current?.open();\r\n   };\r\n"
+                },
+                {
+                    "date": 1764871390225,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -91,9 +91,9 @@\n           );\r\n \r\n         case \"shop\":\r\n           return (\r\n-            <BuyProduct \r\n+            <BuyProduct\r\n               trader={selectedUser}\r\n             />\r\n           )\r\n \r\n"
+                },
+                {
+                    "date": 1764871424053,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -61,8 +61,10 @@\n       resetActions();\r\n     }\r\n   };\r\n \r\n+  console.log(userDetails)\r\n+\r\n   const renderContent = () => {\r\n     if (action === \"create\") {\r\n       return <CreateUserForm onSuccess={fetchUsers} />;\r\n     }\r\n"
+                },
+                {
+                    "date": 1764878431880,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -100,9 +100,9 @@\n           )\r\n \r\n         default:\r\n           if (viewDetails) {\r\n-            return <UserDetails entity={selectedUser} />;\r\n+            return <UserDetails entity={userDetails!.user} />;\r\n           }\r\n           return null;\r\n       }\r\n     }\r\n"
+                },
+                {
+                    "date": 1764878459558,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -100,9 +100,9 @@\n           )\r\n \r\n         default:\r\n           if (viewDetails) {\r\n-            return <UserDetails entity={userDetails!.user} />;\r\n+            return <UserDetails entity={userDetails!} />;\r\n           }\r\n           return null;\r\n       }\r\n     }\r\n"
+                },
+                {
+                    "date": 1764878571065,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -100,9 +100,9 @@\n           )\r\n \r\n         default:\r\n           if (viewDetails) {\r\n-            return <UserDetails entity={userDetails!} />;\r\n+            return <UserDetails entity={selectedUser} />;\r\n           }\r\n           return null;\r\n       }\r\n     }\r\n"
+                },
+                {
+                    "date": 1764878621406,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -99,9 +99,10 @@\n             />\r\n           )\r\n \r\n         default:\r\n-          if (viewDetails) {\r\n+          if (viewDetails && userDetails\r\n+          ) {\r\n             return <UserDetails entity={selectedUser} />;\r\n           }\r\n           return null;\r\n       }\r\n"
+                },
+                {
+                    "date": 1764878633304,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -99,11 +99,10 @@\n             />\r\n           )\r\n \r\n         default:\r\n-          if (viewDetails && userDetails\r\n-          ) {\r\n-            return <UserDetails entity={selectedUser} />;\r\n+          if (viewDetails && userDetails) {\r\n+            return <UserDetails entity={userDetails} />;\r\n           }\r\n           return null;\r\n       }\r\n     }\r\n"
                 }
             ],
             "date": 1761645579091,
