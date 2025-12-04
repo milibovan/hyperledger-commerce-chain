@@ -113,26 +113,23 @@ func (t *SmartContract) QueryProductsByName(ctx contractapi.TransactionContextIn
 	return getProductQueryResultForQueryString(ctx, queryString)
 }
 
-func (t *SmartContract) GetProductById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Product, error) {
-	selector := map[string]interface{}{
-		"doc-type": "product",
-	}
-
-	if id != "" {
-		selector["id"] = map[string]string{"$eq": id}
-	}
-
-	queryMap := map[string]interface{}{
-		"selector": selector,
-	}
-
-	queryStringBytes, err := json.Marshal(queryMap)
+func (t *SmartContract) GetProductById(ctx contractapi.TransactionContextInterface, id string) (*structs.Product, error) {
+	productKey, err := ctx.GetStub().CreateCompositeKey("product", []string{id})
 	if err != nil {
 		return nil, err
 	}
-	queryString := string(queryStringBytes)
 
-	return getProductQueryResultForQueryString(ctx, queryString)
+	productBytes, err := ctx.GetStub().GetState(productKey)
+	if err != nil {
+		return nil, err
+	}
+	if productBytes == nil {
+		return nil, fmt.Errorf("product %s not found", id)
+	}
+
+	var product structs.Product
+	err = json.Unmarshal(productBytes, &product)
+	return &product, err
 }
 
 func (t *SmartContract) QueryProductsByTraderType(ctx contractapi.TransactionContextInterface, traderType string) ([]*structs.Product, error) {
@@ -395,89 +392,80 @@ func (t *SmartContract) GetOrdersByIds(ctx contractapi.TransactionContextInterfa
 	return getOrderQueryResultForQueryString(ctx, queryString)
 }
 
-func (t *SmartContract) GetUserById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.User, error) {
-	selector := map[string]interface{}{
-		"doc-type": "user",
-	}
-
-	if id != "" {
-		selector["id"] = map[string]string{"$eq": id}
-	}
-
-	queryMap := map[string]interface{}{
-		"selector": selector,
-	}
-
-	queryStringBytes, err := json.Marshal(queryMap)
+func (t *SmartContract) GetUserById(ctx contractapi.TransactionContextInterface, id string) (*structs.User, error) {
+	userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{id})
 	if err != nil {
 		return nil, err
 	}
-	queryString := string(queryStringBytes)
 
-	return getUserQueryResultForQueryString(ctx, queryString)
+	userBytes, err := ctx.GetStub().GetState(userKey)
+	if err != nil {
+		return nil, err
+	}
+	if userBytes == nil {
+		return nil, fmt.Errorf("user %s not found", id)
+	}
+
+	var user structs.User
+	err = json.Unmarshal(userBytes, &user)
+	return &user, err
 }
-func (t *SmartContract) GetTraderById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Trader, error) {
-	selector := map[string]interface{}{
-		"doc-type": "trader",
-	}
 
-	if id != "" {
-		selector["id"] = map[string]string{"$eq": id}
-	}
-
-	queryMap := map[string]interface{}{
-		"selector": selector,
-	}
-
-	queryStringBytes, err := json.Marshal(queryMap)
+func (t *SmartContract) GetTraderById(ctx contractapi.TransactionContextInterface, id string) (*structs.Trader, error) {
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{id})
 	if err != nil {
 		return nil, err
 	}
-	queryString := string(queryStringBytes)
 
-	return getTraderQueryResultForQueryString(ctx, queryString)
+	traderBytes, err := ctx.GetStub().GetState(traderKey)
+	if err != nil {
+		return nil, err
+	}
+	if traderBytes == nil {
+		return nil, fmt.Errorf("trader %s not found", id)
+	}
+
+	var trader structs.Trader
+	err = json.Unmarshal(traderBytes, &trader)
+	return &trader, err
 }
-func (t *SmartContract) GetReceiptById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Receipt, error) {
-	selector := map[string]interface{}{
-		"doc-type": "receipt",
-	}
 
-	if id != "" {
-		selector["id"] = map[string]string{"$eq": id}
-	}
-
-	queryMap := map[string]interface{}{
-		"selector": selector,
-	}
-
-	queryStringBytes, err := json.Marshal(queryMap)
+func (t *SmartContract) GetReceiptById(ctx contractapi.TransactionContextInterface, id string) (*structs.Receipt, error) {
+	receiptKey, err := ctx.GetStub().CreateCompositeKey("receipt", []string{id})
 	if err != nil {
 		return nil, err
 	}
-	queryString := string(queryStringBytes)
 
-	return getReceiptQueryResultForQueryString(ctx, queryString)
+	receiptBytes, err := ctx.GetStub().GetState(receiptKey)
+	if err != nil {
+		return nil, err
+	}
+	if receiptBytes == nil {
+		return nil, fmt.Errorf("receipt %s not found", id)
+	}
+
+	var receipt structs.Receipt
+	err = json.Unmarshal(receiptBytes, &receipt)
+	return &receipt, err
 }
-func (t *SmartContract) GetOrdersById(ctx contractapi.TransactionContextInterface, id string) ([]*structs.Order, error) {
-	selector := map[string]interface{}{
-		"doc-type": "order",
-	}
 
-	if id != "" {
-		selector["id"] = map[string]string{"$eq": id}
-	}
-
-	queryMap := map[string]interface{}{
-		"selector": selector,
-	}
-
-	queryStringBytes, err := json.Marshal(queryMap)
+func (t *SmartContract) GetOrdersById(ctx contractapi.TransactionContextInterface, id string) (*structs.Order, error) {
+	orderKey, err := ctx.GetStub().CreateCompositeKey("order", []string{id})
 	if err != nil {
 		return nil, err
 	}
-	queryString := string(queryStringBytes)
 
-	return getOrderQueryResultForQueryString(ctx, queryString)
+	orderBytes, err := ctx.GetStub().GetState(orderKey)
+	if err != nil {
+		return nil, err
+	}
+	if orderBytes == nil {
+		return nil, fmt.Errorf("order %s not found", id)
+	}
+
+	var order structs.Order
+	err = json.Unmarshal(orderBytes, &order)
+	return &order, err
 }
 
 // getProductQueryResultForQueryString executes the passed in query string.

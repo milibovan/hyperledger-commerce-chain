@@ -17,8 +17,8 @@ type OrderWithDetails struct {
 type TraderDetailsResponse struct {
 	Trader            *Trader    `json:"trader"`
 	Receipts          []*Receipt `json:"receipts"`
-	ReceiptsProducts  []*Product `json:"receipts_products"`
-	AvailableProducts []*Product `json:"available_products"`
+	ReceiptsProducts  []*Product `json:"receipts-products"`
+	AvailableProducts []*Product `json:"available-products"`
 }
 
 // ReceiptDetailsResponse Receipt detail page

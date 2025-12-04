@@ -9,7 +9,12 @@ import (
 )
 
 func (s *SmartContract) ReadTrader(ctx contractapi.TransactionContextInterface, id string) (*structs.Trader, error) {
-	traderJSON, err := ctx.GetStub().GetState(id)
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{id})
+	if err != nil {
+		return nil, err
+	}
+
+	traderJSON, err := ctx.GetStub().GetState(traderKey)
 	if err != nil {
 		return nil, err
 	}
@@ -26,7 +31,12 @@ func (s *SmartContract) ReadTrader(ctx contractapi.TransactionContextInterface, 
 }
 
 func (s *SmartContract) ReadUser(ctx contractapi.TransactionContextInterface, id string) (*structs.User, error) {
-	userJSON, err := ctx.GetStub().GetState(id)
+	userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{id})
+	if err != nil {
+		return nil, err
+	}
+
+	userJSON, err := ctx.GetStub().GetState(userKey)
 	if err != nil {
 		return nil, err
 	}
@@ -43,7 +53,12 @@ func (s *SmartContract) ReadUser(ctx contractapi.TransactionContextInterface, id
 }
 
 func (s *SmartContract) ReadProduct(ctx contractapi.TransactionContextInterface, id string) (*structs.Product, error) {
-	productJSON, err := ctx.GetStub().GetState(id)
+	productKey, err := ctx.GetStub().CreateCompositeKey("product", []string{id})
+	if err != nil {
+		return nil, err
+	}
+
+	productJSON, err := ctx.GetStub().GetState(productKey)
 	if err != nil {
 		return nil, err
 	}
@@ -58,8 +73,14 @@ func (s *SmartContract) ReadProduct(ctx contractapi.TransactionContextInterface,
 	}
 	return product, nil
 }
+
 func (s *SmartContract) ReadReceipt(ctx contractapi.TransactionContextInterface, id string) (*structs.Receipt, error) {
-	receiptJSON, err := ctx.GetStub().GetState(id)
+	receiptKey, err := ctx.GetStub().CreateCompositeKey("receipt", []string{id})
+	if err != nil {
+		return nil, err
+	}
+
+	receiptJSON, err := ctx.GetStub().GetState(receiptKey)
 	if err != nil {
 		return nil, err
 	}
@@ -73,4 +94,26 @@ func (s *SmartContract) ReadReceipt(ctx contractapi.TransactionContextInterface,
 		return nil, err
 	}
 	return receipt, nil
+}
+
+func (s *SmartContract) ReadOrder(ctx contractapi.TransactionContextInterface, id string) (*structs.Order, error) {
+	orderKey, err := ctx.GetStub().CreateCompositeKey("order", []string{id})
+	if err != nil {
+		return nil, err
+	}
+
+	orderJSON, err := ctx.GetStub().GetState(orderKey)
+	if err != nil {
+		return nil, err
+	}
+	if orderJSON == nil {
+		return nil, fmt.Errorf("order %s does not exists", id)
+	}
+
+	var order *structs.Order
+	err = json.Unmarshal(orderJSON, &order)
+	if err != nil {
+		return nil, err
+	}
+	return order, nil
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"chaincode/structs"
 	"encoding/json"
 	"fmt"
 
@@ -8,7 +9,7 @@ import (
 )
 
 func (s *SmartContract) DeleteUser(ctx contractapi.TransactionContextInterface, id string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.UserET)
 	if err != nil {
 		return err
 	}
@@ -27,10 +28,14 @@ func (s *SmartContract) DeleteUser(ctx contractapi.TransactionContextInterface, 
 		return err
 	}
 
-	return ctx.GetStub().PutState(user.Id, userJSON)
+	userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{user.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(userKey, userJSON)
 }
 func (s *SmartContract) DeleteTrader(ctx contractapi.TransactionContextInterface, id string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.TraderET)
 	if err != nil {
 		return err
 	}
@@ -50,10 +55,14 @@ func (s *SmartContract) DeleteTrader(ctx contractapi.TransactionContextInterface
 		return err
 	}
 
-	return ctx.GetStub().PutState(trader.Id, traderJSON)
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(traderKey, traderJSON)
 }
 func (s *SmartContract) DeleteProduct(ctx contractapi.TransactionContextInterface, id string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.ProductET)
 	if err != nil {
 		return err
 	}
@@ -72,10 +81,14 @@ func (s *SmartContract) DeleteProduct(ctx contractapi.TransactionContextInterfac
 		return err
 	}
 
-	return ctx.GetStub().PutState(product.Id, productJSON)
+	productKey, err := ctx.GetStub().CreateCompositeKey("product", []string{product.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(productKey, productJSON)
 }
 func (s *SmartContract) DeleteReceipt(ctx contractapi.TransactionContextInterface, id string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.ReceiptET)
 	if err != nil {
 		return err
 	}
@@ -94,5 +107,36 @@ func (s *SmartContract) DeleteReceipt(ctx contractapi.TransactionContextInterfac
 		return err
 	}
 
-	return ctx.GetStub().PutState(receipt.Id, receiptJSON)
+	receiptKey, err := ctx.GetStub().CreateCompositeKey("receipt", []string{receipt.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(receiptKey, receiptJSON)
+}
+
+func (s *SmartContract) DeleteOrder(ctx contractapi.TransactionContextInterface, id string) error {
+	exists, err := s.AssetExists(ctx, id, structs.OrderET)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("Order %s doesn't exists", id)
+	}
+	order, err := s.ReadOrder(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	order.Deleted = true
+
+	orderJSON, err := json.Marshal(order)
+	if err != nil {
+		return err
+	}
+
+	orderKey, err := ctx.GetStub().CreateCompositeKey("order", []string{order.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(orderKey, orderJSON)
 }

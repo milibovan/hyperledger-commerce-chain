@@ -453,7 +453,7 @@ func GetUserById(gw *fabricClient.Gateway, channel, id string) (*models.User, er
 	}
 
 	var user models.User
-	if err := json.Unmarshal(resultBytes, &user); err != nil {
+	if err = json.Unmarshal(resultBytes, &user); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal user: %w", err)
 	}
 
@@ -472,7 +472,7 @@ func GetTraderById(gw *fabricClient.Gateway, channel, id string) (*models.Trader
 	}
 
 	var trader models.Trader
-	if err := json.Unmarshal(resultBytes, &trader); err != nil {
+	if err = json.Unmarshal(resultBytes, &trader); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal trader: %w", err)
 	}
 
@@ -498,13 +498,13 @@ func GetReceiptById(gw *fabricClient.Gateway, channel, id string) (*models.Recei
 	return &receipt, nil
 }
 
-func GetOrdersById(gw *fabricClient.Gateway, channel, id string) (*models.Order, error) {
+func GetOrderById(gw *fabricClient.Gateway, channel, id string) (*models.Order, error) {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
-	fmt.Printf("\n--> Evaluate Transaction: GetOrdersById from %s\n", channel)
+	fmt.Printf("\n--> Evaluate Transaction: GetOrderById from %s\n", channel)
 
-	resultBytes, err := ccContract.Evaluate("GetOrdersById", fabricClient.WithArguments(id))
+	resultBytes, err := ccContract.Evaluate("GetOrderById", fabricClient.WithArguments(id))
 	if err != nil {
 		return nil, fmt.Errorf("failed to evaluate transaction: %w", err)
 	}

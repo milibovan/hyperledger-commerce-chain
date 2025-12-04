@@ -11,7 +11,7 @@ import (
 )
 
 func (s *SmartContract) UpdateUser(ctx contractapi.TransactionContextInterface, id, name, surname, email string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.UserET)
 	if err != nil {
 		return err
 	}
@@ -47,10 +47,14 @@ func (s *SmartContract) UpdateUser(ctx contractapi.TransactionContextInterface, 
 		return err
 	}
 
-	return ctx.GetStub().PutState(user.Id, userJSON)
+	userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{user.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(userKey, userJSON)
 }
 func (s *SmartContract) UpdateTrader(ctx contractapi.TransactionContextInterface, id, name, vat, traderTypeStr string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.TraderET)
 	if err != nil {
 		return err
 	}
@@ -92,10 +96,14 @@ func (s *SmartContract) UpdateTrader(ctx contractapi.TransactionContextInterface
 		return err
 	}
 
-	return ctx.GetStub().PutState(trader.Id, traderJSON)
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(traderKey, traderJSON)
 }
 func (s *SmartContract) UpdateProduct(ctx contractapi.TransactionContextInterface, id, name, expiryDateStr, priceStr, traderTypeStr string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.ProductET)
 	if err != nil {
 		return err
 	}
@@ -152,5 +160,9 @@ func (s *SmartContract) UpdateProduct(ctx contractapi.TransactionContextInterfac
 		return err
 	}
 
-	return ctx.GetStub().PutState(product.Id, productJSON)
+	productKey, err := ctx.GetStub().CreateCompositeKey("product", []string{product.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(productKey, productJSON)
 }

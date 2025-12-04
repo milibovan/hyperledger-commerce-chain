@@ -18,7 +18,7 @@ type TraderAllocation struct {
 }
 
 func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, id, name, surname, email, balance string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.UserET)
 	if err != nil {
 		return err
 	}
@@ -46,11 +46,15 @@ func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, 
 		return err
 	}
 
-	return ctx.GetStub().PutState(user.Id, userJSON)
+	userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(userKey, userJSON)
 }
 
 func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id, name, traderTypeStr, vat, balance string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.TraderET)
 	if err != nil {
 		return err
 	}
@@ -84,11 +88,15 @@ func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface
 		return err
 	}
 
-	return ctx.GetStub().PutState(trader.Id, traderJSON)
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(traderKey, traderJSON)
 }
 
 func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterface, id, name, expiryDate, price, quantity, traderTypeStr string) error {
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.ProductET)
 
 	if err != nil {
 		return err
@@ -134,12 +142,16 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 		return err
 	}
 
-	return ctx.GetStub().PutState(product.Id, productJSON)
+	productKey, err := ctx.GetStub().CreateCompositeKey("product", []string{id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(productKey, productJSON)
 }
 
 func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
 	// Check if order already exists
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.OrderET)
 	if err != nil {
 		return "", fmt.Errorf("failed to check order existence: %w", err)
 	}
@@ -196,11 +208,18 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 		return "", fmt.Errorf("failed to marshal user: %w", err)
 	}
 
-	if err := ctx.GetStub().PutState(user.Id, userJSON); err != nil {
+	orderKey, err := ctx.GetStub().CreateCompositeKey("order", []string{id})
+	if err != nil {
+		return "", err
+	}
+	userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{user.Id})
+	if err != nil {
+		return "", err
+	}
+	if err = ctx.GetStub().PutState(userKey, userJSON); err != nil {
 		return "", fmt.Errorf("failed to save user: %w", err)
 	}
-
-	if err := ctx.GetStub().PutState(order.Id, orderJSON); err != nil {
+	if err = ctx.GetStub().PutState(orderKey, orderJSON); err != nil {
 		return "", fmt.Errorf("failed to save order: %w", err)
 	}
 
@@ -264,7 +283,18 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		return "", fmt.Errorf("failed to marshal receipt: %w", err)
 	}
 
-	if err := ctx.GetStub().PutState(receipt.Id, receiptJSON); err != nil {
+	receiptKey, err := ctx.GetStub().CreateCompositeKey("receipt", []string{id})
+	if err != nil {
+		return "", err
+	}
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
+	if err != nil {
+		return "", err
+	}
+	if err = ctx.GetStub().PutState(traderKey, traderJSON); err != nil {
+		return "", fmt.Errorf("failed to save trader: %w", err)
+	}
+	if err = ctx.GetStub().PutState(receiptKey, receiptJSON); err != nil {
 		return "", fmt.Errorf("failed to save receipt: %w", err)
 	}
 

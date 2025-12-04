@@ -2,6 +2,7 @@
   "index": {
     "fields": [
       "doc-type",
+      "id",
       "name",
       "surname",
       "email",

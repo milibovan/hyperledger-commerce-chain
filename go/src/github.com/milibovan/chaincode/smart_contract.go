@@ -117,13 +117,22 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 	return nil
 }
 
-func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {
-	assetJSON, err := ctx.GetStub().GetState(id)
+func (s *SmartContract) AssetExists(ctx contractapi.TransactionContextInterface, id, entityType string) (bool, error) {
+	key, err := ctx.GetStub().CreateCompositeKey(entityType, []string{id})
 	if err != nil {
-		return false, fmt.Errorf("failed to read from world state: %v", err)
+		return false, err
 	}
 
-	return assetJSON != nil, nil
+	assetJSON, err := ctx.GetStub().GetState(key)
+	if err != nil {
+		return false, err
+	}
+
+	if assetJSON != nil {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextInterface) error {
@@ -189,7 +198,11 @@ func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextIn
 			return err
 		}
 
-		err = ctx.GetStub().PutState(product.Id, productJSON)
+		productKey, err := ctx.GetStub().CreateCompositeKey("product", []string{product.Id})
+		if err != nil {
+			return err
+		}
+		err = ctx.GetStub().PutState(productKey, productJSON)
 		if err != nil {
 			return err
 		}
@@ -200,7 +213,11 @@ func (s *SmartContract) AddProductsToTrader(ctx contractapi.TransactionContextIn
 		return err
 	}
 
-	return ctx.GetStub().PutState(trader.Id, traderJSON)
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(traderKey, traderJSON)
 }
 
 //func (s *SmartContract) BuyProduct(ctx contractapi.TransactionContextInterface, id, userId, productId, traderId, quantity string) error {
@@ -296,7 +313,7 @@ func (s *SmartContract) DepositMoney(ctx contractapi.TransactionContextInterface
 		return err
 	}
 
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.UserET)
 	if err != nil {
 		return err
 	}
@@ -319,7 +336,11 @@ func (s *SmartContract) DepositMoney(ctx contractapi.TransactionContextInterface
 		if err != nil {
 			return err
 		}
-		return ctx.GetStub().PutState(id, userJSON)
+		userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{id})
+		if err != nil {
+			return err
+		}
+		return ctx.GetStub().PutState(userKey, userJSON)
 	}
 	trader, err := s.ReadTrader(ctx, id)
 	if err != nil {
@@ -331,7 +352,12 @@ func (s *SmartContract) DepositMoney(ctx contractapi.TransactionContextInterface
 	if err != nil {
 		return err
 	}
-	return ctx.GetStub().PutState(id, traderJSON)
+
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(traderKey, traderJSON)
 }
 
 func (s *SmartContract) IncreaseQuantity(ctx contractapi.TransactionContextInterface, id, quantity string) error {
@@ -340,7 +366,7 @@ func (s *SmartContract) IncreaseQuantity(ctx contractapi.TransactionContextInter
 		return err
 	}
 
-	exists, err := s.AssetExists(ctx, id)
+	exists, err := s.AssetExists(ctx, id, structs.ProductET)
 	if err != nil {
 		return err
 	}
@@ -363,5 +389,9 @@ func (s *SmartContract) IncreaseQuantity(ctx contractapi.TransactionContextInter
 	if err != nil {
 		return err
 	}
-	return ctx.GetStub().PutState(id, productJSON)
+	productKey, err := ctx.GetStub().CreateCompositeKey("product", []string{id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(productKey, productJSON)
 }
