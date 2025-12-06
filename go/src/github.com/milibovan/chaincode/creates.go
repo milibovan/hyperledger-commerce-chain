@@ -273,10 +273,6 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		return "", fmt.Errorf("failed to marshal trader: %w", err)
 	}
 
-	if err := ctx.GetStub().PutState(trader.Id, traderJSON); err != nil {
-		return "", fmt.Errorf("failed to save trader: %w", err)
-	}
-
 	// Marshal and save receipt
 	receiptJSON, err := json.Marshal(receipt)
 	if err != nil {
@@ -291,6 +287,7 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 	if err != nil {
 		return "", err
 	}
+
 	if err = ctx.GetStub().PutState(traderKey, traderJSON); err != nil {
 		return "", fmt.Errorf("failed to save trader: %w", err)
 	}

@@ -538,6 +538,10 @@ func addProductsToTrader(c *gin.Context) {
 // getUserDetails fetches all necessary entities for User Details
 func getUserDetails(c *gin.Context) {
 	var channel, userId string
+	var response models.UserDetailsResponse
+	var orders []*models.Order
+	var receipts []*models.Receipt
+	var products []*models.Product
 	channel = c.Param("channel")
 	userId = c.Param("userId")
 
@@ -548,30 +552,33 @@ func getUserDetails(c *gin.Context) {
 	}
 
 	// Get its orders
-	orders, err := client.GetOrdersByIds(activeGW, channel, user.OrdersIds)
-	if err != nil {
-		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	if len(user.OrdersIds) > 0 {
+
+		orders, err = client.GetOrdersByIds(activeGW, channel, user.OrdersIds)
+		if err != nil {
+			c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+		}
+
+		// Get unique productIds and receipts ids
+		productsIds, receiptsIds := getUniqueProductIdsAndReceiptIds(orders)
+
+		// Get products
+		products, err = client.GetProductsByIds(activeGW, channel, productsIds)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Get receipts
+		receipts, err = client.GetReceiptsByIds(activeGW, channel, receiptsIds)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
 	}
-
-	// Get unique productIds and receipts ids
-	productsIds, receiptsIds := getUniqueProductIdsAndReceiptIds(orders)
-
-	// Get products
-	products, err := client.GetProductsByIds(activeGW, channel, productsIds)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Get receipts
-	receipts, err := client.GetReceiptsByIds(activeGW, channel, receiptsIds)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
 	// Build response
-	response := models.UserDetailsResponse{
+	response = models.UserDetailsResponse{
 		User:   user,
 		Orders: buildOrdersWithDetails(orders, products, receipts),
 	}
@@ -582,6 +589,8 @@ func getUserDetails(c *gin.Context) {
 // getTraderDetails fetches all necessary entities for Trader Details
 func getTraderDetails(c *gin.Context) {
 	var channel, traderId string
+	var receipts []*models.Receipt
+	var receiptsProducts, availableProducts []*models.Product
 	channel = c.Param("channel")
 	traderId = c.Param("traderId")
 
@@ -592,35 +601,38 @@ func getTraderDetails(c *gin.Context) {
 		return
 	}
 
-	// Get trader's receipts
-	receipts, err := client.GetReceiptsByIds(activeGW, channel, trader.ReceiptsIDs)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+	if len(trader.ReceiptsIDs) > 0 {
 
-	productIds := getAllTradersProducts(receipts, trader)
+		// Get trader's receipts
+		receipts, err = client.GetReceiptsByIds(activeGW, channel, trader.ReceiptsIDs)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 
-	// Get all products
-	products, err := client.GetProductsByIds(activeGW, channel, productIds)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
+		productIds := getAllTradersProducts(receipts, trader)
 
-	var receiptsProducts, availableProducts []*models.Product
-	for _, product := range products {
-		for _, receipt := range receipts {
-			if slices.Contains(receipt.ProductIDs, product.Id) {
-				receiptsProducts = append(receiptsProducts, product)
+		// Get all products
+		products, err := client.GetProductsByIds(activeGW, channel, productIds)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		var receiptsProducts, availableProducts []*models.Product
+		for _, product := range products {
+			for _, receipt := range receipts {
+				if slices.Contains(receipt.ProductIDs, product.Id) {
+					receiptsProducts = append(receiptsProducts, product)
+				}
+			}
+
+			if slices.Contains(trader.ProductsAvailable, product.Id) {
+				availableProducts = append(availableProducts, product)
 			}
 		}
 
-		if slices.Contains(trader.ProductsAvailable, product.Id) {
-			availableProducts = append(availableProducts, product)
-		}
 	}
-
 	// Build response
 	response := models.TraderDetailsResponse{
 		Trader:            trader,
