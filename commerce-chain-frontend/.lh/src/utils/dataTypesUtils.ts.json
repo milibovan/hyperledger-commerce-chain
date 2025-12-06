@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 36,
+            "activePatchIndex": 38,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -152,6 +152,14 @@
                 {
                     "date": 1764870998773,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -173,6 +173,7 @@\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n   products: ProductsData,\r\n-  \r\n+  trader: TraderData,\r\n+  user: UserData\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765043283377,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,8 +50,9 @@\n   balance: number;\r\n }\r\n \r\n export interface ProductsData {\r\n+  [x: string]: ReactNode;\r\n   Products: Array<ProductData>;\r\n }\r\n \r\n export interface ProductData {\r\n"
+                },
+                {
+                    "date": 1765043291333,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,9 +50,8 @@\n   balance: number;\r\n }\r\n \r\n export interface ProductsData {\r\n-  [x: string]: ReactNode;\r\n   Products: Array<ProductData>;\r\n }\r\n \r\n export interface ProductData {\r\n"
                 }
             ],
             "date": 1762249804506,

@@ -1,4 +1,4 @@
-import type { TraderData, ProductData, UserData } from "./dataTypesUtils";
+import type { TraderData, ProductData, UserData, ProductsData } from "./dataTypesUtils";
 
 export interface ListProps<T> {
   entities: T[];
@@ -16,7 +16,7 @@ export interface DetailsProps<T> {
   date?: string;
   products?: ProductData[];
   productsLoading?: boolean;
-  addProduct?: (trader: TraderData, products?: ProductData[]) => void;
+  addProduct?: (trader: TraderData, products?: ProductsData) => void;
   onProductClick?: (product: ProductData) => void;
 }
 
@@ -68,7 +68,7 @@ export interface IncreaseQuantityProps {
 
 export interface AddOrBuyProductProps<T> {
   trader: T;
-  tradersProducts?: ProductData[];
+  tradersProducts?: ProductsData;
   onSuccess?: () => Promise<void>;
 }
 

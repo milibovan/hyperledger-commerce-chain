@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
-import type { TradersData, ProductData } from "../../utils/dataTypesUtils";
+import type { TradersData, ProductData, TraderDetails } from "../../utils/dataTypesUtils";
 import { host, httpMethod } from "../../utils/utils";
 
 export function useTraders(channel: string = "channel-a") {
   const [data, setData] = useState<TradersData | null>(null);
+  const [detailedData, setDetailedData] = useState<TraderDetails>();
   const [products, setProducts] = useState<ProductData[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -141,13 +142,50 @@ export function useTraders(channel: string = "channel-a") {
     setError(null);
   }, []);
 
+  const fetchTraderDetails = useCallback(async (traderId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${host}/traders/details/${traderId}/${channel}`, {
+        method: httpMethod.GET,
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+      const responseData = await response.json();
+      
+      const parsedData = {
+        trader: responseData.trader,  
+        receipts: responseData.receipts,
+        "receipts-products": responseData["receipts-products"],
+        "available-products": responseData["available-products"],
+      };
+
+      setDetailedData(parsedData);
+    } else {
+      const errorData = await response.json();
+      setError(errorData.Message || "Failed to fetch trader details");
+    }
+    } catch (err) {
+      setError(
+        `Error connecting to server: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [channel])
+
   return {
     traders: data?.Traders || [],
+    TraderDetails: detailedData,
     products: products,
     loading,
     error,
     fetchTraders,
     fetchProductsByIds,
+    fetchTraderDetails,
     clearProducts,
     deleteTrader,
   };

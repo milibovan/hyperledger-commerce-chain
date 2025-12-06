@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 56,
+            "activePatchIndex": 58,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -232,6 +232,14 @@
                 {
                     "date": 1763759682703,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -91,5 +91,7 @@\n   hasInsufficientFunds: boolean;\r\n   errors: Map<string, string>;\r\n   toggleProduct: (productId: string) => void;\r\n   updateQuantity: (productId: string, quantity: number) => void;\r\n+  totalCost: number,\r\n+  remainingBalance: number\r\n }\r\n"
+                },
+                {
+                    "date": 1765044272253,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n@@ -67,9 +67,9 @@\n }\r\n \r\n export interface AddOrBuyProductProps<T> {\r\n   trader: T;\r\n-  tradersProducts?: ProductData[];\r\n+  tradersProducts?: ProductsData;\r\n   onSuccess?: () => Promise<void>;\r\n }\r\n \r\n export interface ModalProps {\r\n"
+                },
+                {
+                    "date": 1765044427013,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n   entity: T;\r\n   date?: string;\r\n   products?: ProductData[];\r\n   productsLoading?: boolean;\r\n-  addProduct?: (trader: TraderData, products?: ProductData[]) => void;\r\n+  addProduct?: (trader: TraderData, products?: ProductsData) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n"
                 }
             ],
             "date": 1762248920808,

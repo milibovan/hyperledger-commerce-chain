@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 185,
+            "activePatchIndex": 191,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -748,6 +748,30 @@
                 {
                     "date": 1764622186865,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useEffect, useRef } from \"react\";\r\n import CreateTraderForm from \"../forms/CreateTraderForm\";\r\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import type { ProductData, TraderData } from \"../../utils/dataTypesUtils\";\r\n+import type { ProductData, ReceiptData, TraderData } from \"../../utils/dataTypesUtils\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n import UpdateTraderForm from \"../forms/UpdateTraderForm\";\r\n import Modal from \"../modals/DeleteModal\";\r\n import type { ModalHandle } from \"../modals/DeleteModal\";\r\n@@ -47,9 +47,9 @@\n     viewEntityDetails,\r\n     viewNestedEntityDetails,\r\n     resetActions,\r\n     resetNestedView,\r\n-  } = useEntityActions<TraderData, ProductData>();\r\n+  } = useEntityActions<TraderData, ProductData, ReceiptData>();\r\n \r\n   // Fetch traders on mount\r\n   useEffect(() => {\r\n     fetchTraders();\r\n"
+                },
+                {
+                    "date": 1765043962677,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -27,13 +27,15 @@\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n   const {\r\n     traders,\r\n+    traderDetails,\r\n     products,\r\n     loading,\r\n     error,\r\n     fetchTraders,\r\n     fetchProductsByIds,\r\n+    fetchTraderDetails,\r\n     clearProducts,\r\n     deleteTrader,\r\n   } = useTraders();\r\n \r\n"
+                },
+                {
+                    "date": 1765044032538,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,9 +32,8 @@\n     products,\r\n     loading,\r\n     error,\r\n     fetchTraders,\r\n-    fetchProductsByIds,\r\n     fetchTraderDetails,\r\n     clearProducts,\r\n     deleteTrader,\r\n   } = useTraders();\r\n@@ -59,12 +58,10 @@\n \r\n   // Fetch products when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n-      fetchProductsByIds(\r\n-        selectedTrader[\"products-available\"].map(\r\n-          (product) => product[\"product-id\"]\r\n-        ) || []\r\n+      fetchTraderDetails(\r\n+        selectedTrader.id\r\n       );\r\n     } else {\r\n       clearProducts();\r\n     }\r\n"
+                },
+                {
+                    "date": 1765044050690,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -61,12 +61,10 @@\n     if (selectedTrader && viewDetails) {\r\n       fetchTraderDetails(\r\n         selectedTrader.id\r\n       );\r\n-    } else {\r\n-      clearProducts();\r\n     }\r\n-  }, [selectedTrader, viewDetails, fetchProductsByIds, clearProducts]);\r\n+  }, [selectedTrader, viewDetails, fetchTraderDetails]);\r\n \r\n   const handleDeleteClick = (trader: TraderData) => {\r\n     handleAction(\"delete\", trader);\r\n     modalRef.current?.open();\r\n"
+                },
+                {
+                    "date": 1765044105126,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -28,14 +28,12 @@\n \r\n   const {\r\n     traders,\r\n     traderDetails,\r\n-    products,\r\n     loading,\r\n     error,\r\n     fetchTraders,\r\n     fetchTraderDetails,\r\n-    clearProducts,\r\n     deleteTrader,\r\n   } = useTraders();\r\n \r\n   const {\r\n@@ -55,9 +53,9 @@\n   useEffect(() => {\r\n     fetchTraders();\r\n   }, [fetchTraders]);\r\n \r\n-  // Fetch products when trader is selected and details view is shown\r\n+  // Fetch details when trader is selected and details view is shown\r\n   useEffect(() => {\r\n     if (selectedTrader && viewDetails) {\r\n       fetchTraderDetails(\r\n         selectedTrader.id\r\n"
+                },
+                {
+                    "date": 1765044223620,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -83,9 +83,9 @@\n     if (action === \"create\") {\r\n       return <CreateTraderForm onSuccess={fetchTraders} />;\r\n     }\r\n \r\n-    if (selectedTrader) {\r\n+    if (selectedTrader && traderDetails) {\r\n       switch (action) {\r\n         case \"deposit\":\r\n           return (\r\n             <DepositMoneyForm\r\n@@ -109,16 +109,14 @@\n         case \"addProduct\":\r\n           return (\r\n             <AddProjectToTrader\r\n               trader={selectedTrader}\r\n-              tradersProducts={products}\r\n+              tradersProducts={traderDetails[\"available-products\"]}\r\n               onSuccess={async () => {\r\n                 await fetchTraders();\r\n                 if (selectedTrader) {\r\n-                  await fetchProductsByIds(\r\n-                    selectedTrader[\"products-available\"].map(\r\n-                      (product) => product[\"product-id\"]\r\n-                    ) || []\r\n+                  await fetchTraderDetails(\r\n+                    selectedTrader.id\r\n                   );\r\n                 }\r\n               }}\r\n             />\r\n"
+                },
+                {
+                    "date": 1765044334945,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -127,14 +127,12 @@\n           }\r\n \r\n \r\n \r\n-          if (viewDetails) {\r\n+          if (viewDetails && traderDetails) {\r\n             return (\r\n               <TraderDetails\r\n-                entity={selectedTrader}\r\n-                products={products}\r\n-                productsLoading={loading}\r\n+                entity={traderDetails}\r\n                 addProduct={() => handleAction(\"addProduct\", selectedTrader)}\r\n                 onProductClick={viewNestedEntityDetails}\r\n               />\r\n             );\r\n"
                 }
             ],
             "date": 1761645486253,

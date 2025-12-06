@@ -1,4 +1,4 @@
-import type { TraderData } from "../../utils/dataTypesUtils";
+import type { TraderDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import {
   traderFontBold,
@@ -9,11 +9,9 @@ import { Package, Plus, Receipt } from "lucide-react";
 
 export default function TraderDetails({
   entity: trader,
-  products,
-  productsLoading,
   addProduct,
   onProductClick,
-}: DetailsProps<TraderData>) {
+}: DetailsProps<TraderDetails>) {
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold text-pink-400">Trader Details</h3>
@@ -21,21 +19,21 @@ export default function TraderDetails({
       {/* Basic Info */}
       <div className="grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400">
         <div>
-          <span className={traderFontSemibold}>ID:</span> {trader.id}
+          <span className={traderFontSemibold}>ID:</span> {trader.trader.id}
         </div>
         <div>
-          <span className={traderFontSemibold}>VAT:</span> {trader.vat}
+          <span className={traderFontSemibold}>VAT:</span> {trader.trader.vat}
         </div>
         <div>
-          <span className={traderFontSemibold}>Name:</span> {trader.name}
+          <span className={traderFontSemibold}>Name:</span> {trader.trader.name}
         </div>
         <div>
           <span className={traderFontSemibold}>Balance:</span> $
-          {trader.balance.toFixed(2)}
+          {trader.trader.balance.toFixed(2)}
         </div>
         <div>
           <span className={traderFontSemibold}>Type:</span>{" "}
-          {trader["trader-type"].toUpperCase()}
+          {trader.trader["trader-type"].toUpperCase()}
         </div>
       </div>
 
@@ -44,11 +42,11 @@ export default function TraderDetails({
         <div className="flex items-center justify-between mb-4">
           <h4 className="text-xl font-bold text-pink-300 flex items-center gap-2">
             <Package size={20} />
-            Products ({trader["products-available"]?.length || 0})
+            Products ({trader.trader["products-available"]?.length || 0})
           </h4>
           {addProduct && (
             <button
-              onClick={() => addProduct(trader!, products!)}
+              onClick={() => addProduct(trader.trader!, trader["available-products"]!)}
               className={createTraderButton}
               title="Add products"
             >
@@ -57,13 +55,9 @@ export default function TraderDetails({
           )}
         </div>
 
-        {productsLoading ? (
-          <div className="text-center text-pink-300 py-4">
-            Loading products...
-          </div>
-        ) : products && products.length > 0 ? (
+        {trader["available-products"] && trader["available-products"].length > 0 ? (
           <div className="space-y-2">
-            {products.map((product) => {
+            {trader["available-products"].map((product) => {
               const quantity = trader["products-available"].find(productItem => product.id === productItem["product-id"])?.quantity
               return (
                 <div
@@ -96,19 +90,19 @@ export default function TraderDetails({
       {/* Receipts Section */}
       <div className="pt-4 border-t-2 border-pink-400">
         <h4 className="text-xl font-bold text-pink-300 mb-2 flex items-center gap-2">
-          <Receipt size={20}/>
-          Receipts ({trader["receipts-ids"]?.length || 0})
+          <Receipt size={20} />
+          Receipts ({trader.trader["receipts-ids"]?.length || 0})
         </h4>
-        {trader["receipts-ids"]?.length > 0 ? (
+        {trader.trader["receipts-ids"]?.length > 0 ? (
           <div className="space-y-2">
-            {trader["receipts-ids"].map((receiptId) => (
+            {trader.receipts.map((receipt) => (
               <div
-                key={receiptId}
-                  // onClick={() => onProductClick?.(receipt)}
+                key={receipt}
+                // onClick={() => onProductClick?.(receipt)}
                 className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
               >
-                <h5 className={traderFontSemibold}>{receiptId}</h5>
-                
+                <h5 className={traderFontSemibold}>{receipt}</h5>
+
               </div>
             ))}
           </div>

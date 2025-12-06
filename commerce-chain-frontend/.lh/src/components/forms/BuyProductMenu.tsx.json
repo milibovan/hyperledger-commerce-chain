@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 62,
+            "activePatchIndex": 63,
             "patches": [
                 {
                     "date": 1763489585123,
@@ -256,6 +256,10 @@
                 {
                     "date": 1763759698680,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -221,8 +221,10 @@\n             hasInsufficientFunds={hasInsufficientFunds}\r\n             errors={errors}\r\n             toggleProduct={toggleProduct}\r\n             updateQuantity={updateQuantity}\r\n+            totalCost={totalCost}\r\n+            remainingBalance={remainingBalance}\r\n           />\r\n         ) : (\r\n           <ProductsTabs\r\n             user={user}\r\n"
+                },
+                {
+                    "date": 1765046335782,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,10 +13,8 @@\n }: AddOrBuyProductProps<UserData>) {\r\n   const { products, loading, fetchProducts } = useProducts();\r\n   const {\r\n     traders,\r\n-    products: availableProducts,\r\n-    fetchProductsByIds,\r\n     fetchTraders,\r\n   } = useTraders();\r\n   const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(\r\n     new Map()\r\n@@ -155,11 +153,10 @@\n           </div>\r\n           <div>\r\n             <p className=\"text-sm text-gray-400 mb-1\">Remaining Balance</p>\r\n             <p\r\n-              className={`text-2xl font-bold ${\r\n-                hasInsufficientFunds ? \"text-red-500\" : \"text-green-400\"\r\n-              }`}\r\n+              className={`text-2xl font-bold ${hasInsufficientFunds ? \"text-red-500\" : \"text-green-400\"\r\n+                }`}\r\n             >\r\n               ${remainingBalance.toFixed(2)}\r\n             </p>\r\n           </div>\r\n@@ -179,13 +176,12 @@\n           onClick={() => {\r\n             setActiveTab(\"available\");\r\n             setSelectedProducts(new Map());\r\n           }}\r\n-          className={`px-6 py-3 font-semibold transition-all ${\r\n-            activeTab === \"available\"\r\n+          className={`px-6 py-3 font-semibold transition-all ${activeTab === \"available\"\r\n               ? \"text-purple-300 border-b-4 border-purple-400 -mb-0.5\"\r\n               : \"text-gray-400 hover:text-purple-300\"\r\n-          }`}\r\n+            }`}\r\n         >\r\n           🛒 Available Products\r\n           <span className=\"ml-2 px-2 py-1 bg-green-600 rounded text-white text-xs\">\r\n             In Stock\r\n@@ -195,13 +191,12 @@\n           onClick={() => {\r\n             setActiveTab(\"request\");\r\n             setSelectedProducts(new Map());\r\n           }}\r\n-          className={`px-6 py-3 font-semibold transition-all ${\r\n-            activeTab === \"request\"\r\n+          className={`px-6 py-3 font-semibold transition-all ${activeTab === \"request\"\r\n               ? \"text-purple-300 border-b-4 border-purple-400 -mb-0.5\"\r\n               : \"text-gray-400 hover:text-purple-300\"\r\n-          }`}\r\n+            }`}\r\n         >\r\n           📦 Request Items\r\n           <span className=\"ml-2 px-2 py-1 bg-yellow-600 rounded text-white text-xs\">\r\n             Not Listed\r\n@@ -235,8 +230,10 @@\n             hasInsufficientFunds={hasInsufficientFunds}\r\n             errors={errors}\r\n             toggleProduct={toggleProduct}\r\n             updateQuantity={updateQuantity}\r\n+            totalCost={totalCost}\r\n+            remainingBalance={remainingBalance}\r\n           />\r\n         )}\r\n       </div>\r\n     </div>\r\n"
                 }
             ],
             "date": 1763489585123,

@@ -1,8 +1,9 @@
 import type { UserDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
-import { userFontSemibold } from "../../utils/stylingUtils";
+import { userFontBold, userFontSemibold } from "../../utils/stylingUtils";
 
 export default function UserDetails({ entity: userDetails }: DetailsProps<UserDetails>) {
+  console.log(userDetails)
   return (
     <div className="space-y-4">
       <h3 className="text-2xl font-bold text-purple-400">User Details</h3>
@@ -29,17 +30,22 @@ export default function UserDetails({ entity: userDetails }: DetailsProps<UserDe
         </h4>
         {userDetails.user["orders-ids"]?.length > 0 ? (
           <div className="space-y-2">
-            {userDetails.user["orders-ids"].map((orderId) => (
+            {userDetails.orders.map((order) => (
               <div
-                key={orderId}
+                key={order.order.id}
                 className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-purple-400 hover:shadow-lg hover:shadow-purple-400/50 hover:bg-gray-600"
-
               >
+                {/* TODO Solve errors */}
                 <div className="flex-1">
-                  {/* TODO When fetched products */}
-                  {/* <h5 className={receiptFontSemibold}>{product.name}</h5> */}
-                  {/* <p className="text-xs text-gray-400">ID: {product["product-id"]}</p> */}
-                  <h5 className={userFontSemibold}>ID: {orderId}</h5>
+                  <h5 className={userFontBold}>Products bought: {order.products.length}</h5>
+                  <p className="text-xs text-gray-400">ID: {order.order.id}</p>
+                </div>
+                <div className="text-right">
+                  <p className={userFontBold}>Total cost: ${order.order["total-cost"]}</p>
+                  <p className="text-xs text-gray-400">
+                    Order placed:{" "}
+                    {new Date(order.receipts[0].date).toLocaleDateString()}
+                  </p>
                 </div>
               </div>
             ))}

@@ -156,9 +156,8 @@ export default function BuyProduct({
           <div>
             <p className="text-sm text-gray-400 mb-1">Remaining Balance</p>
             <p
-              className={`text-2xl font-bold ${
-                hasInsufficientFunds ? "text-red-500" : "text-green-400"
-              }`}
+              className={`text-2xl font-bold ${hasInsufficientFunds ? "text-red-500" : "text-green-400"
+                }`}
             >
               ${remainingBalance.toFixed(2)}
             </p>
@@ -180,11 +179,10 @@ export default function BuyProduct({
             setActiveTab("available");
             setSelectedProducts(new Map());
           }}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "available"
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "available"
               ? "text-purple-300 border-b-4 border-purple-400 -mb-0.5"
               : "text-gray-400 hover:text-purple-300"
-          }`}
+            }`}
         >
           🛒 Available Products
           <span className="ml-2 px-2 py-1 bg-green-600 rounded text-white text-xs">
@@ -196,11 +194,10 @@ export default function BuyProduct({
             setActiveTab("request");
             setSelectedProducts(new Map());
           }}
-          className={`px-6 py-3 font-semibold transition-all ${
-            activeTab === "request"
+          className={`px-6 py-3 font-semibold transition-all ${activeTab === "request"
               ? "text-purple-300 border-b-4 border-purple-400 -mb-0.5"
               : "text-gray-400 hover:text-purple-300"
-          }`}
+            }`}
         >
           📦 Request Items
           <span className="ml-2 px-2 py-1 bg-yellow-600 rounded text-white text-xs">

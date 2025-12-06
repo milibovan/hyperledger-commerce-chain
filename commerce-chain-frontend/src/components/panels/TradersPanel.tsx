@@ -28,12 +28,11 @@ export default function TradersPanel() {
 
   const {
     traders,
-    products,
+    traderDetails,
     loading,
     error,
     fetchTraders,
-    fetchProductsByIds,
-    clearProducts,
+    fetchTraderDetails,
     deleteTrader,
   } = useTraders();
 
@@ -55,18 +54,14 @@ export default function TradersPanel() {
     fetchTraders();
   }, [fetchTraders]);
 
-  // Fetch products when trader is selected and details view is shown
+  // Fetch details when trader is selected and details view is shown
   useEffect(() => {
     if (selectedTrader && viewDetails) {
-      fetchProductsByIds(
-        selectedTrader["products-available"].map(
-          (product) => product["product-id"]
-        ) || []
+      fetchTraderDetails(
+        selectedTrader.id
       );
-    } else {
-      clearProducts();
     }
-  }, [selectedTrader, viewDetails, fetchProductsByIds, clearProducts]);
+  }, [selectedTrader, viewDetails, fetchTraderDetails]);
 
   const handleDeleteClick = (trader: TraderData) => {
     handleAction("delete", trader);
@@ -89,7 +84,7 @@ export default function TradersPanel() {
       return <CreateTraderForm onSuccess={fetchTraders} />;
     }
 
-    if (selectedTrader) {
+    if (selectedTrader && traderDetails) {
       switch (action) {
         case "deposit":
           return (
@@ -115,14 +110,12 @@ export default function TradersPanel() {
           return (
             <AddProjectToTrader
               trader={selectedTrader}
-              tradersProducts={products}
+              tradersProducts={traderDetails["available-products"]}
               onSuccess={async () => {
                 await fetchTraders();
                 if (selectedTrader) {
-                  await fetchProductsByIds(
-                    selectedTrader["products-available"].map(
-                      (product) => product["product-id"]
-                    ) || []
+                  await fetchTraderDetails(
+                    selectedTrader.id
                   );
                 }
               }}
@@ -135,12 +128,10 @@ export default function TradersPanel() {
 
 
 
-          if (viewDetails) {
+          if (viewDetails && traderDetails) {
             return (
               <TraderDetails
-                entity={selectedTrader}
-                products={products}
-                productsLoading={loading}
+                entity={traderDetails}
                 addProduct={() => handleAction("addProduct", selectedTrader)}
                 onProductClick={viewNestedEntityDetails}
               />
