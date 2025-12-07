@@ -8,14 +8,12 @@ import { deleteButtonStyle, modalCancelButtonStyle, modalConfirmButtonStyle, mod
 import Modal from "../modals/DeleteModal";
 import { useEntityActions } from "../hooks/useEntityActions";
 import ReceiptsList from "../lists/ReceiptList";
-import { useTraders } from "../hooks/useTraders";
 import ProductDetails from "../overviews/ProductDetails";
 
 export default function ReceiptsPanel() {
   const modalRef = useRef<ModalHandle>(null);
 
-  const { receipts, loading, error, fetchReceipts, deleteReceipt } = useReceipts();
-  const { products, fetchProductsByIds, clearProducts } = useTraders();
+  const { receipts, receiptDetails, loading, error, fetchReceipts, fetchReceiptDetails, deleteReceipt } = useReceipts();
 
   const {
     action,
@@ -35,16 +33,12 @@ export default function ReceiptsPanel() {
 
   // Fetch products when receipt is selected and details view is shown
   useEffect(() => {
-    if (selectedReceipt && viewDetails) {
-      fetchProductsByIds(
-        selectedReceipt.products.map(
-          (product) => product["product-id"]
-        ) || []
+    if (selectedReceipt) {
+      fetchReceiptDetails(
+        selectedReceipt.id
       );
-    } else {
-      clearProducts();
     }
-  }, [selectedReceipt, viewDetails, fetchProductsByIds, clearProducts]);
+  }, [selectedReceipt, fetchReceiptDetails]);
 
   const handleDeleteClick = (receipt: ReceiptData) => {
     handleAction("delete", receipt);
@@ -92,11 +86,11 @@ export default function ReceiptsPanel() {
           );
         default:
           if (viewProductDetails && selectedProduct) {
-            return <ProductDetails entity={selectedProduct} />;
+            return <ProductDetails entity={selectedProduct as ProductData} />;
           }
 
-          if (viewDetails) {
-            return <ReceiptDetails entity={selectedReceipt} products={products} productsLoading={loading} onProductClick={viewNestedEntityDetails} />;
+          if (viewDetails && receiptDetails) {
+            return <ReceiptDetails entity={receiptDetails} products={receiptDetails.products} productsLoading={loading} onProductClick={viewNestedEntityDetails} />;
           }
           return null;
       }
@@ -121,8 +115,8 @@ export default function ReceiptsPanel() {
           <div className="text-gray-300">
             Are you sure you want to delete{" "}
             <span className={receiptFontSemibold}>
-              <p>Receipt between:</p> User {selectedReceipt?.["user-id"]} and
-              <p>Trader {selectedReceipt?.["trader-id"]}</p>
+              <p>Receipt between:</p> User {receiptDetails?.user.name} {receiptDetails?.user.surname} and
+              <p>Trader {receiptDetails?.trader.name}</p>
               <p>created on {selectedReceipt?.date.toString()} ?</p>
             </span>
           </div>
@@ -185,8 +179,8 @@ export default function ReceiptsPanel() {
         <div className="text-gray-300">
           Are you sure you want to delete{" "}
           <span className={receiptFontSemibold}>
-            <p>Receipt between:</p> User {selectedReceipt?.["user-id"]} and
-            <p>Trader {selectedReceipt?.["trader-id"]}</p>
+            <p>Receipt between:</p> User {receiptDetails?.user.name} {receiptDetails?.user.surname} and
+            <p>Trader {receiptDetails?.trader.name}</p>
             <p>created on {selectedReceipt?.date.toString()} ?</p>
           </span>
         </div>
@@ -197,6 +191,7 @@ export default function ReceiptsPanel() {
       </Modal>
       <ReceiptsList
         entities={receipts}
+        entityDetails={receiptDetails}
         loading={loading}
         error={error}
         onCreateClick={() => handleAction("create")}

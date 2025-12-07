@@ -49,13 +49,13 @@ export default function ReceiptsList({
                                     Between
                                 </p>
                                 <h4 className="font-bold text-lg text-green-300">
-                                    {receipt["user-id"]}  
+                                    {receipt["user-id"]}
                                 </h4>
                                 <p className="text-gray-400">
                                     and
                                 </p>
                                 <h4 className="font-bold text-lg text-green-300">
-                                    {receipt["trader-id"]}  
+                                    {receipt["trader-id"]}
                                 </h4>
                                 <p className="text-sm text-gray-400">
                                     {getFormattedDate(receipt.date)}

@@ -1,9 +1,10 @@
 import { useCallback, useState } from "react";
-import type { ReceiptsData } from "../../utils/dataTypesUtils";
+import type { ReceiptDetails, ReceiptsData } from "../../utils/dataTypesUtils";
 import { host, httpMethod } from "../../utils/utils";
 
 export function useReceipts(channel: string = "channel-a") {
   const [data, setData] = useState<ReceiptsData | null>(null);
+  const [detailedData, setDetailedData] = useState<ReceiptDetails>();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -82,11 +83,48 @@ export function useReceipts(channel: string = "channel-a") {
     [channel, fetchReceipts]
   );
 
+  const fetchReceiptDetails = useCallback(async (receiptId: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`${host}/receipts/details/${receiptId}/${channel}`, {
+        method: httpMethod.GET,
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (response.ok) {
+      const responseData = await response.json();
+      
+      const parsedData = {
+        receipt: responseData.receipt,  
+        products: responseData.products,
+        trader: responseData.trader,
+        user: responseData.user,
+      };
+
+      setDetailedData(parsedData);
+    } else {
+      const errorData = await response.json();
+      setError(errorData.Message || "Failed to fetch receipt details");
+    }
+    } catch (err) {
+      setError(
+        `Error connecting to server: ${
+          err instanceof Error ? err.message : String(err)
+        }`
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [channel])
+
   return {
     receipts: data?.Receipts || [],
+    receiptDetails: detailedData,
     loading,
     error,
     fetchReceipts,
+    fetchReceiptDetails,
     deleteReceipt,
   };
 }

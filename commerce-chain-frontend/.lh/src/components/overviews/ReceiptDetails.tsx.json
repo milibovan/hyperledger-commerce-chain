@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 53,
+            "activePatchIndex": 62,
             "patches": [
                 {
                     "date": 1764533265388,
@@ -220,6 +220,42 @@
                 {
                     "date": 1764621684076,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { Package, Plus } from \"lucide-react\";\r\n+import { Package } from \"lucide-react\";\r\n import { getFormattedDate, type ReceiptData } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import { receiptFontBold, receiptFontSemibold } from \"../../utils/stylingUtils\";\r\n \r\n"
+                },
+                {
+                    "date": 1765139533590,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,25 +1,25 @@\n import { Package } from \"lucide-react\";\r\n-import { getFormattedDate, type ReceiptData } from \"../../utils/dataTypesUtils\";\r\n+import { getFormattedDate, type ReceiptDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import { receiptFontBold, receiptFontSemibold } from \"../../utils/stylingUtils\";\r\n \r\n-export default function ReceiptDetails({ entity: receipt, products, productsLoading, onProductClick }: DetailsProps<ReceiptData>) {\r\n+export default function ReceiptDetails({ entity: receipt, productsLoading, onProductClick }: DetailsProps<ReceiptDetails>) {\r\n     return (\r\n         <div className=\"space-y-6\">\r\n             <h3 className=\"text-2xl font-bold text-green-400\">Receipt Details</h3>\r\n             <div className=\"grid grid-cols-1 gap-4 text-gray-300 pb-4 border-b-2 border-green-400\">\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">ID:</span>{\" \"}\r\n-                    {receipt.id}\r\n+                    {receipt.receipt.id}\r\n                 </div>\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">User id:</span>{\" \"}\r\n-                    {receipt[\"user-id\"]}\r\n+                    {receipt.user.id}\r\n                 </div>\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">Trader id:</span>{\" \"}\r\n-                    {receipt[\"trader-id\"]}\r\n+                    {receipt.trader.id}\r\n                 </div>\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">Date created:</span>{\" \"}\r\n                     {getFormattedDate(receipt.date)}\r\n"
+                },
+                {
+                    "date": 1765139579457,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,9 +21,9 @@\n                     {receipt.trader.id}\r\n                 </div>\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">Date created:</span>{\" \"}\r\n-                    {getFormattedDate(receipt.date)}\r\n+                    {getFormattedDate(receipt.receipt.date)}\r\n                 </div>\r\n             </div>\r\n             {/* Products Section */}\r\n             <div>\r\n@@ -34,11 +34,11 @@\n                 {productsLoading ? (\r\n                     <div className=\"text-center text-green-300 py-4\">\r\n                         Loading products...\r\n                     </div>\r\n-                ) : products && products.length > 0 ? (\r\n+                ) : receipt.products && receipt.products.length > 0 ? (\r\n                     <div className=\"space-y-2\">\r\n-                        {products.map((product) => {\r\n+                        {receipt.products.map((product) => {\r\n                             const quantity = receipt.products.find(productItem => product.id === productItem[\"product-id\"])?.quantity\r\n                             return (\r\n                                 <div\r\n                                     key={product.id}\r\n"
+                },
+                {
+                    "date": 1765140993389,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -23,8 +23,12 @@\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">Date created:</span>{\" \"}\r\n                     {getFormattedDate(receipt.receipt.date)}\r\n                 </div>\r\n+                <div>\r\n+                    <span className=\"font-semibold text-green-300\">Trader id:</span>{\" \"}\r\n+                    {receipt.receipt[\"total-cost\"]}\r\n+                </div>\r\n             </div>\r\n             {/* Products Section */}\r\n             <div>\r\n                 <h4 className=\"text-xl font-bold text-green-300 flex items-center gap-2 mb-2\">\r\n"
+                },
+                {
+                    "date": 1765141002680,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,9 +24,9 @@\n                     <span className=\"font-semibold text-green-300\">Date created:</span>{\" \"}\r\n                     {getFormattedDate(receipt.receipt.date)}\r\n                 </div>\r\n                 <div>\r\n-                    <span className=\"font-semibold text-green-300\">Trader id:</span>{\" \"}\r\n+                    <span className=\"font-semibold text-green-300\">Total cost:</span>{\" \"}\r\n                     {receipt.receipt[\"total-cost\"]}\r\n                 </div>\r\n             </div>\r\n             {/* Products Section */}\r\n"
+                },
+                {
+                    "date": 1765141011527,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,9 +25,9 @@\n                     {getFormattedDate(receipt.receipt.date)}\r\n                 </div>\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">Total cost:</span>{\" \"}\r\n-                    {receipt.receipt[\"total-cost\"]}\r\n+                    ${receipt.receipt[\"total-cost\"]}\r\n                 </div>\r\n             </div>\r\n             {/* Products Section */}\r\n             <div>\r\n"
+                },
+                {
+                    "date": 1765141087076,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,8 +3,9 @@\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import { receiptFontBold, receiptFontSemibold } from \"../../utils/stylingUtils\";\r\n \r\n export default function ReceiptDetails({ entity: receipt, productsLoading, onProductClick }: DetailsProps<ReceiptDetails>) {\r\n+    console.log(receipt)\r\n     return (\r\n         <div className=\"space-y-6\">\r\n             <h3 className=\"text-2xl font-bold text-green-400\">Receipt Details</h3>\r\n             <div className=\"grid grid-cols-1 gap-4 text-gray-300 pb-4 border-b-2 border-green-400\">\r\n"
+                },
+                {
+                    "date": 1765141261172,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -42,9 +42,9 @@\n                     </div>\r\n                 ) : receipt.products && receipt.products.length > 0 ? (\r\n                     <div className=\"space-y-2\">\r\n                         {receipt.products.map((product) => {\r\n-                            const quantity = receipt.products.find(productItem => product.id === productItem[\"product-id\"])?.quantity\r\n+                            const quantity = receipt.products.find(productItem => product.id === productItem.id)?.quantity\r\n                             return (\r\n                                 <div\r\n                                     key={product.id}\r\n                                     onClick={() => onProductClick?.(product)}\r\n"
+                },
+                {
+                    "date": 1765141304867,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -42,9 +42,9 @@\n                     </div>\r\n                 ) : receipt.products && receipt.products.length > 0 ? (\r\n                     <div className=\"space-y-2\">\r\n                         {receipt.products.map((product) => {\r\n-                            const quantity = receipt.products.find(productItem => product.id === productItem.id)?.quantity\r\n+                            const quantity = receipt.receipt.products.find(productItem => product.id === productItem[\"product-id\"])?.quantity\r\n                             return (\r\n                                 <div\r\n                                     key={product.id}\r\n                                     onClick={() => onProductClick?.(product)}\r\n"
+                },
+                {
+                    "date": 1765141354215,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,8 +12,9 @@\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">ID:</span>{\" \"}\r\n                     {receipt.receipt.id}\r\n                 </div>\r\n+                // TODO user name surname and trader name and vat maybe\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">User id:</span>{\" \"}\r\n                     {receipt.user.id}\r\n                 </div>\r\n"
                 }
             ],
             "date": 1764533265388,

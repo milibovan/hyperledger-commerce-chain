@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 14,
+            "activePatchIndex": 22,
             "patches": [
                 {
                     "date": 1764533076474,
@@ -64,6 +64,38 @@
                 {
                     "date": 1764537053239,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -48,13 +48,16 @@\n                                 <p className=\"text-gray-400\">\r\n                                     Between\r\n                                 </p>\r\n                                 <h4 className=\"font-bold text-lg text-green-300\">\r\n-                                    {receipt[\"user-id\"]}  {receipt[\"trader-id\"]}\r\n+                                    {receipt[\"user-id\"]}  \r\n                                 </h4>\r\n                                 <p className=\"text-gray-400\">\r\n                                     and\r\n                                 </p>\r\n+                                <h4 className=\"font-bold text-lg text-green-300\">\r\n+                                    {receipt[\"trader-id\"]}  \r\n+                                </h4>\r\n                                 <p className=\"text-sm text-gray-400\">\r\n                                     {getFormattedDate(receipt.date)}\r\n                                 </p>\r\n                             </div>\r\n"
+                },
+                {
+                    "date": 1765140638009,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import { getFormattedDate, type ReceiptData } from \"../../utils/dataTypesUtils\";\r\n+import { getFormattedDate, type ReceiptData, type ReceiptDetails } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n import { updateButtonSm, deleteButtonSm, entitiesNotFound, createReceiptButton } from \"../../utils/stylingUtils\";\r\n \r\n \r\n@@ -11,9 +11,9 @@\n     onCreateClick,\r\n     onEntityClick: onReceiptClick,\r\n     onUpdateClick,\r\n     onDeleteClick,\r\n-}: ListProps<ReceiptData>) {\r\n+}: ListProps<ReceiptData, ReceiptDetails>) {\r\n     return (\r\n         <div className=\"bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50\">\r\n             <div className=\"flex justify-between items-center mb-6\">\r\n                 <h3 className=\"text-3xl font-bold text-green-400\">Receipts</h3>\r\n@@ -48,15 +48,15 @@\n                                 <p className=\"text-gray-400\">\r\n                                     Between\r\n                                 </p>\r\n                                 <h4 className=\"font-bold text-lg text-green-300\">\r\n-                                    {receipt[\"user-id\"]}  \r\n+                                    {receipt[\"user-id\"]}\r\n                                 </h4>\r\n                                 <p className=\"text-gray-400\">\r\n                                     and\r\n                                 </p>\r\n                                 <h4 className=\"font-bold text-lg text-green-300\">\r\n-                                    {receipt[\"trader-id\"]}  \r\n+                                    {receipt[\"trader-id\"]}\r\n                                 </h4>\r\n                                 <p className=\"text-sm text-gray-400\">\r\n                                     {getFormattedDate(receipt.date)}\r\n                                 </p>\r\n"
+                },
+                {
+                    "date": 1765140650660,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n \r\n \r\n export default function ReceiptsList({\r\n     entities: receipts,\r\n+    entityDetails: receiptDetails,\r\n     loading,\r\n     error,\r\n     onCreateClick,\r\n     onEntityClick: onReceiptClick,\r\n"
+                },
+                {
+                    "date": 1765140700847,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -49,9 +49,9 @@\n                                 <p className=\"text-gray-400\">\r\n                                     Between\r\n                                 </p>\r\n                                 <h4 className=\"font-bold text-lg text-green-300\">\r\n-                                    {receipt[\"user-id\"]}\r\n+                                    {receiptDetails?.user.name} {receiptDetails?.user.surname}\r\n                                 </h4>\r\n                                 <p className=\"text-gray-400\">\r\n                                     and\r\n                                 </p>\r\n"
+                },
+                {
+                    "date": 1765140711569,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,9 +32,9 @@\n                     <span className=\"font-semibold\">{error}</span>\r\n                 </div>\r\n             )}\r\n \r\n-            {loading ? (\r\n+            {loading && receiptDetails ? (\r\n                 <div className=\"text-center text-green-300 py-8\">Loading receipts...</div>\r\n             ) : receipts.length > 0 ? (\r\n                 <div className=\"space-y-3\">\r\n                     {receipts.map((receipt) => (\r\n"
+                },
+                {
+                    "date": 1765140730875,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -32,11 +32,11 @@\n                     <span className=\"font-semibold\">{error}</span>\r\n                 </div>\r\n             )}\r\n \r\n-            {loading && receiptDetails ? (\r\n+            {loading ? (\r\n                 <div className=\"text-center text-green-300 py-8\">Loading receipts...</div>\r\n-            ) : receipts.length > 0 ? (\r\n+            ) : receipts.length > 0 && receiptDetails ? (\r\n                 <div className=\"space-y-3\">\r\n                     {receipts.map((receipt) => (\r\n                         <div\r\n                             key={receipt.id}\r\n"
+                },
+                {
+                    "date": 1765140783204,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,9 +34,9 @@\n             )}\r\n \r\n             {loading ? (\r\n                 <div className=\"text-center text-green-300 py-8\">Loading receipts...</div>\r\n-            ) : receipts.length > 0 && receiptDetails ? (\r\n+            ) : receipts.length > 0 ? (\r\n                 <div className=\"space-y-3\">\r\n                     {receipts.map((receipt) => (\r\n                         <div\r\n                             key={receipt.id}\r\n"
+                },
+                {
+                    "date": 1765140795636,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,20 +1,19 @@\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import { getFormattedDate, type ReceiptData, type ReceiptDetails } from \"../../utils/dataTypesUtils\";\r\n+import { getFormattedDate, type ReceiptData } from \"../../utils/dataTypesUtils\";\r\n import type { ListProps } from \"../../utils/propsUtils\";\r\n import { updateButtonSm, deleteButtonSm, entitiesNotFound, createReceiptButton } from \"../../utils/stylingUtils\";\r\n \r\n \r\n export default function ReceiptsList({\r\n     entities: receipts,\r\n-    entityDetails: receiptDetails,\r\n     loading,\r\n     error,\r\n     onCreateClick,\r\n     onEntityClick: onReceiptClick,\r\n     onUpdateClick,\r\n     onDeleteClick,\r\n-}: ListProps<ReceiptData, ReceiptDetails>) {\r\n+}: ListProps<ReceiptData>) {\r\n     return (\r\n         <div className=\"bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50\">\r\n             <div className=\"flex justify-between items-center mb-6\">\r\n                 <h3 className=\"text-3xl font-bold text-green-400\">Receipts</h3>\r\n"
+                },
+                {
+                    "date": 1765140825454,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -48,9 +48,9 @@\n                                 <p className=\"text-gray-400\">\r\n                                     Between\r\n                                 </p>\r\n                                 <h4 className=\"font-bold text-lg text-green-300\">\r\n-                                    {receiptDetails?.user.name} {receiptDetails?.user.surname}\r\n+                                    {receipt[\"user-id\"]}\r\n                                 </h4>\r\n                                 <p className=\"text-gray-400\">\r\n                                     and\r\n                                 </p>\r\n"
                 }
             ],
             "date": 1764533076474,

@@ -1,28 +1,34 @@
 import { Package } from "lucide-react";
-import { getFormattedDate, type ReceiptData } from "../../utils/dataTypesUtils";
+import { getFormattedDate, type ReceiptDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import { receiptFontBold, receiptFontSemibold } from "../../utils/stylingUtils";
 
-export default function ReceiptDetails({ entity: receipt, products, productsLoading, onProductClick }: DetailsProps<ReceiptData>) {
+export default function ReceiptDetails({ entity: receipt, productsLoading, onProductClick }: DetailsProps<ReceiptDetails>) {
+    console.log(receipt)
     return (
         <div className="space-y-6">
             <h3 className="text-2xl font-bold text-green-400">Receipt Details</h3>
             <div className="grid grid-cols-1 gap-4 text-gray-300 pb-4 border-b-2 border-green-400">
                 <div>
                     <span className="font-semibold text-green-300">ID:</span>{" "}
-                    {receipt.id}
+                    {receipt.receipt.id}
                 </div>
+                // TODO user name surname and trader name and vat maybe
                 <div>
                     <span className="font-semibold text-green-300">User id:</span>{" "}
-                    {receipt["user-id"]}
+                    {receipt.user.id}
                 </div>
                 <div>
                     <span className="font-semibold text-green-300">Trader id:</span>{" "}
-                    {receipt["trader-id"]}
+                    {receipt.trader.id}
                 </div>
                 <div>
                     <span className="font-semibold text-green-300">Date created:</span>{" "}
-                    {getFormattedDate(receipt.date)}
+                    {getFormattedDate(receipt.receipt.date)}
+                </div>
+                <div>
+                    <span className="font-semibold text-green-300">Total cost:</span>{" "}
+                    ${receipt.receipt["total-cost"]}
                 </div>
             </div>
             {/* Products Section */}
@@ -35,10 +41,10 @@ export default function ReceiptDetails({ entity: receipt, products, productsLoad
                     <div className="text-center text-green-300 py-4">
                         Loading products...
                     </div>
-                ) : products && products.length > 0 ? (
+                ) : receipt.products && receipt.products.length > 0 ? (
                     <div className="space-y-2">
-                        {products.map((product) => {
-                            const quantity = receipt.products.find(productItem => product.id === productItem["product-id"])?.quantity
+                        {receipt.products.map((product) => {
+                            const quantity = receipt.receipt.products.find(productItem => product.id === productItem["product-id"])?.quantity
                             return (
                                 <div
                                     key={product.id}

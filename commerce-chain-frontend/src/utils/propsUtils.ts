@@ -14,7 +14,7 @@ export interface ListProps<T> {
 export interface DetailsProps<T> {
   entity: T;
   date?: string;
-  products?: ProductData[];
+  products?: ProductsData;
   productsLoading?: boolean;
   addProduct?: (trader: TraderData, products?: ProductsData) => void;
   onProductClick?: (product: ProductData) => void;

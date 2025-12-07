@@ -99,12 +99,12 @@ export default function TraderDetails({
             {trader.receipts.map((receipt) => (
               <div
                 key={receipt.id}
+                // TODO OnClick to show info
                 // onClick={() => onProductClick?.(receipt)}
                 className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
               >
-                {/* TODO Debug products fetching */}
                 <div className="flex-1">
-                  <h5 className={traderFontBold}>Products sold: </h5>
+                  <h5 className={traderFontBold}>Products sold: {trader["receipts-products"].length}</h5>
                   <p className="text-xs text-gray-400">Buyer id: {receipt["user-id"]}</p>
                 </div>
                 <div className="text-right">

@@ -3,11 +3,31 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1764532982043,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1765139097477,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,11 @@\n import { useCallback, useState } from \"react\";\r\n-import type { ReceiptsData } from \"../../utils/dataTypesUtils\";\r\n+import type { ReceiptDetails, ReceiptsData } from \"../../utils/dataTypesUtils\";\r\n import { host, httpMethod } from \"../../utils/utils\";\r\n \r\n export function useReceipts(channel: string = \"channel-a\") {\r\n   const [data, setData] = useState<ReceiptsData | null>(null);\r\n+    const [detailedData, setDetailedData] = useState<ReceiptDetails>();\r\n   const [error, setError] = useState<string | null>(null);\r\n   const [loading, setLoading] = useState(true);\r\n \r\n   const fetchReceipts = useCallback(async () => {\r\n"
+                },
+                {
+                    "date": 1765139104563,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,9 +3,9 @@\n import { host, httpMethod } from \"../../utils/utils\";\r\n \r\n export function useReceipts(channel: string = \"channel-a\") {\r\n   const [data, setData] = useState<ReceiptsData | null>(null);\r\n-    const [detailedData, setDetailedData] = useState<ReceiptDetails>();\r\n+  const [detailedData, setDetailedData] = useState<ReceiptDetails>();\r\n   const [error, setError] = useState<string | null>(null);\r\n   const [loading, setLoading] = useState(true);\r\n \r\n   const fetchReceipts = useCallback(async () => {\r\n"
+                },
+                {
+                    "date": 1765139162506,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -82,8 +82,43 @@\n     },\r\n     [channel, fetchReceipts]\r\n   );\r\n \r\n+  const fetchReceiptDetails = useCallback(async (receiptId: string) => {\r\n+    setLoading(true);\r\n+    setError(null);\r\n+    try {\r\n+      const response = await fetch(`${host}/receipts/details/${receiptId}/${channel}`, {\r\n+        method: httpMethod.GET,\r\n+        headers: { \"Content-Type\": \"application/json\" },\r\n+      });\r\n+\r\n+      if (response.ok) {\r\n+      const responseData = await response.json();\r\n+      \r\n+      const parsedData = {\r\n+        receipt: responseData.receipt,  \r\n+        receipts: responseData.receipts,\r\n+        \"receipts-products\": responseData[\"receipts-products\"],\r\n+        \"available-products\": responseData[\"available-products\"],\r\n+      };\r\n+\r\n+      setDetailedData(parsedData);\r\n+    } else {\r\n+      const errorData = await response.json();\r\n+      setError(errorData.Message || \"Failed to fetch receipt details\");\r\n+    }\r\n+    } catch (err) {\r\n+      setError(\r\n+        `Error connecting to server: ${\r\n+          err instanceof Error ? err.message : String(err)\r\n+        }`\r\n+      );\r\n+    } finally {\r\n+      setLoading(false);\r\n+    }\r\n+  }, [channel])\r\n+\r\n   return {\r\n     receipts: data?.Receipts || [],\r\n     loading,\r\n     error,\r\n"
+                },
+                {
+                    "date": 1765139197486,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,11 +96,11 @@\n       const responseData = await response.json();\r\n       \r\n       const parsedData = {\r\n         receipt: responseData.receipt,  \r\n-        receipts: responseData.receipts,\r\n-        \"receipts-products\": responseData[\"receipts-products\"],\r\n-        \"available-products\": responseData[\"available-products\"],\r\n+        products: responseData.products,\r\n+        trader: responseData.trader,\r\n+        user: responseData.user,\r\n       };\r\n \r\n       setDetailedData(parsedData);\r\n     } else {\r\n"
+                },
+                {
+                    "date": 1765139231221,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -119,10 +119,12 @@\n   }, [channel])\r\n \r\n   return {\r\n     receipts: data?.Receipts || [],\r\n+    receiptDetails: detailedData,\r\n     loading,\r\n     error,\r\n     fetchReceipts,\r\n+    fetchReceiptDetails,\r\n     deleteReceipt,\r\n   };\r\n }\r\n"
                 }
             ],
             "date": 1764532982043,
