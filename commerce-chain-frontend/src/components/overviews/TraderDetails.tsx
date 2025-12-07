@@ -12,6 +12,7 @@ export default function TraderDetails({
   addProduct,
   onProductClick,
 }: DetailsProps<TraderDetails>) {
+  console.log(trader)
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold text-pink-400">Trader Details</h3>
@@ -58,19 +59,19 @@ export default function TraderDetails({
         {trader["available-products"] && trader["available-products"].length > 0 ? (
           <div className="space-y-2">
             {trader["available-products"].map((product) => {
-              const quantity = trader["products-available"].find(productItem => product.id === productItem["product-id"])?.quantity
+              const quantity = trader.trader["products-available"].find(productItem => product.id === productItem["product-id"])?.quantity
               return (
                 <div
                   key={product.id}
                   onClick={() => onProductClick?.(product)}
-                  className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
+                  className={`flex items-center justify-between px-4 py-3 bg-gray-700 rounded border ${quantity === 0 ? "border-red-600" : "border-pink-400"} hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600`}
                 >
                   <div className="flex-1">
                     <h5 className={traderFontSemibold}>{product.name}</h5>
                     <p className="text-xs text-gray-400">ID: {product.id}</p>
                   </div>
                   <div className="text-right">
-                    <p className={traderFontBold}>Quantity: {quantity}</p>
+                    <p className={quantity === 0 ? "font-bold text-red-600" : traderFontBold}>Quantity: {quantity}</p>
                     <p className="text-xs text-gray-400">
                       Expiry date:{" "}
                       {new Date(product["expiry-date"]).toLocaleDateString()}
@@ -97,11 +98,22 @@ export default function TraderDetails({
           <div className="space-y-2">
             {trader.receipts.map((receipt) => (
               <div
-                key={receipt}
+                key={receipt.id}
                 // onClick={() => onProductClick?.(receipt)}
                 className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
               >
-                <h5 className={traderFontSemibold}>{receipt}</h5>
+                {/* TODO Debug products fetching */}
+                <div className="flex-1">
+                  <h5 className={traderFontBold}>Products sold: </h5>
+                  <p className="text-xs text-gray-400">Buyer id: {receipt["user-id"]}</p>
+                </div>
+                <div className="text-right">
+                  <p className={traderFontBold}>Total cost: ${receipt["total-cost"]}</p>
+                  <p className="text-xs text-gray-400">
+                    Order placed:{" "}
+                    {new Date(receipt.date).toLocaleDateString()}
+                  </p>
+                </div>
 
               </div>
             ))}

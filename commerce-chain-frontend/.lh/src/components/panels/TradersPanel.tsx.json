@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 191,
+            "activePatchIndex": 193,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -772,6 +772,14 @@
                 {
                     "date": 1765044334945,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -127,14 +127,12 @@\n           }\r\n \r\n \r\n \r\n-          if (viewDetails) {\r\n+          if (viewDetails && traderDetails) {\r\n             return (\r\n               <TraderDetails\r\n-                entity={selectedTrader}\r\n-                products={products}\r\n-                productsLoading={loading}\r\n+                entity={traderDetails}\r\n                 addProduct={() => handleAction(\"addProduct\", selectedTrader)}\r\n                 onProductClick={viewNestedEntityDetails}\r\n               />\r\n             );\r\n"
+                },
+                {
+                    "date": 1765109951793,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,9 +55,9 @@\n   }, [fetchTraders]);\r\n \r\n   // Fetch details when trader is selected and details view is shown\r\n   useEffect(() => {\r\n-    if (selectedTrader && viewDetails) {\r\n+    if (selectedTrader) {\r\n       fetchTraderDetails(\r\n         selectedTrader.id\r\n       );\r\n     }\r\n"
+                },
+                {
+                    "date": 1765109976285,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,9 +53,9 @@\n   useEffect(() => {\r\n     fetchTraders();\r\n   }, [fetchTraders]);\r\n \r\n-  // Fetch details when trader is selected and details view is shown\r\n+  // Fetch details when trader is selected\r\n   useEffect(() => {\r\n     if (selectedTrader) {\r\n       fetchTraderDetails(\r\n         selectedTrader.id\r\n"
                 }
             ],
             "date": 1761645486253,

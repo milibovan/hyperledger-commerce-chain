@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 39,
+            "activePatchIndex": 41,
             "patches": [
                 {
                     "date": 1762356648891,
@@ -164,6 +164,14 @@
                 {
                     "date": 1765043578524,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,8 +34,9 @@\n               <div\r\n                 key={order.order.id}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-purple-400 hover:shadow-lg hover:shadow-purple-400/50 hover:bg-gray-600\"\r\n               >\r\n+                {/* TODO Solve errors */}\r\n                 <div className=\"flex-1\">\r\n                   <h5 className={userFontBold}>Products bought: {order.products.length}</h5>\r\n                   <p className=\"text-xs text-gray-400\">ID: {order.order.id}</p>\r\n                 </div>\r\n"
+                },
+                {
+                    "date": 1765109868666,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,8 @@\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import { userFontBold, userFontSemibold } from \"../../utils/stylingUtils\";\r\n \r\n export default function UserDetails({ entity: userDetails }: DetailsProps<UserDetails>) {\r\n-  console.log(userDetails)\r\n   return (\r\n     <div className=\"space-y-4\">\r\n       <h3 className=\"text-2xl font-bold text-purple-400\">User Details</h3>\r\n       <div className=\"grid grid-cols-2 gap-4 text-gray-300\">\r\n"
+                },
+                {
+                    "date": 1765135790369,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,9 +50,9 @@\n             ))}\r\n           </div>\r\n         ) : (\r\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-purple-400\">\r\n-            No receipts\r\n+            No orders\r\n           </div>\r\n         )}\r\n       </div>\r\n     </div>\r\n"
                 }
             ],
             "date": 1762356648891,

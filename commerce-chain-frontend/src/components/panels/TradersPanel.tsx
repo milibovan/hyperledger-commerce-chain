@@ -54,14 +54,14 @@ export default function TradersPanel() {
     fetchTraders();
   }, [fetchTraders]);
 
-  // Fetch details when trader is selected and details view is shown
+  // Fetch details when trader is selected
   useEffect(() => {
-    if (selectedTrader && viewDetails) {
+    if (selectedTrader) {
       fetchTraderDetails(
         selectedTrader.id
       );
     }
-  }, [selectedTrader, viewDetails, fetchTraderDetails]);
+  }, [selectedTrader, fetchTraderDetails]);
 
   const handleDeleteClick = (trader: TraderData) => {
     handleAction("delete", trader);

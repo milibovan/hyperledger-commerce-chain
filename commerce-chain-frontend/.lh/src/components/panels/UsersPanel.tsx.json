@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 113,
+            "activePatchIndex": 114,
             "patches": [
                 {
                     "date": 1761645579091,
@@ -460,6 +460,10 @@
                 {
                     "date": 1764878633304,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -99,11 +99,10 @@\n             />\r\n           )\r\n \r\n         default:\r\n-          if (viewDetails && userDetails\r\n-          ) {\r\n-            return <UserDetails entity={selectedUser} />;\r\n+          if (viewDetails && userDetails) {\r\n+            return <UserDetails entity={userDetails} />;\r\n           }\r\n           return null;\r\n       }\r\n     }\r\n"
+                },
+                {
+                    "date": 1765109894656,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -61,10 +61,8 @@\n       resetActions();\r\n     }\r\n   };\r\n \r\n-  console.log(userDetails)\r\n-\r\n   const renderContent = () => {\r\n     if (action === \"create\") {\r\n       return <CreateUserForm onSuccess={fetchUsers} />;\r\n     }\r\n"
                 }
             ],
             "date": 1761645579091,

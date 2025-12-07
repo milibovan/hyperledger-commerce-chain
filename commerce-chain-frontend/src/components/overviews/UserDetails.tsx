@@ -3,7 +3,6 @@ import type { DetailsProps } from "../../utils/propsUtils";
 import { userFontBold, userFontSemibold } from "../../utils/stylingUtils";
 
 export default function UserDetails({ entity: userDetails }: DetailsProps<UserDetails>) {
-  console.log(userDetails)
   return (
     <div className="space-y-4">
       <h3 className="text-2xl font-bold text-purple-400">User Details</h3>
@@ -52,7 +51,7 @@ export default function UserDetails({ entity: userDetails }: DetailsProps<UserDe
           </div>
         ) : (
           <div className="text-center text-gray-400 py-4 bg-gray-700 rounded border border-purple-400">
-            No receipts
+            No orders
           </div>
         )}
       </div>

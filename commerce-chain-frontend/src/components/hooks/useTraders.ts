@@ -179,7 +179,7 @@ export function useTraders(channel: string = "channel-a") {
 
   return {
     traders: data?.Traders || [],
-    TraderDetails: detailedData,
+    traderDetails: detailedData,
     products: products,
     loading,
     error,

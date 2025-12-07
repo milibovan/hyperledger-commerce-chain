@@ -62,8 +62,6 @@ export default function UsersPanel() {
     }
   };
 
-  console.log(userDetails)
-
   const renderContent = () => {
     if (action === "create") {
       return <CreateUserForm onSuccess={fetchUsers} />;
