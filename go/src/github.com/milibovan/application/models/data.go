@@ -18,14 +18,14 @@ type Product struct {
 }
 
 type Receipt struct {
-	DocType    string     `json:"doc-type"`
-	Id         string     `json:"id"`
-	TraderId   string     `json:"trader-id"`
-	UserId     string     `json:"user-id"`
-	ProductIDs []string   `json:"products-ids"`
-	Date       CustomTime `json:"date"`
-	TotalCost  float64    `json:"total-cost"`
-	Deleted    bool       `json:"deleted"`
+	DocType   string             `json:"doc-type"`
+	Id        string             `json:"id"`
+	TraderId  string             `json:"trader-id"`
+	UserId    string             `json:"user-id"`
+	Products  []ProductInventory `json:"products"`
+	Date      string             `json:"date"`
+	TotalCost float64            `json:"total-cost"`
+	Deleted   bool               `json:"deleted"`
 }
 
 type Order struct {
@@ -48,15 +48,15 @@ const (
 )
 
 type Trader struct {
-	DocType           string     `json:"doc-type"`
-	Id                string     `json:"id"`
-	Name              string     `json:"name"`
-	TraderType        TraderType `json:"trader-type"`
-	VAT               string     `json:"vat"`
-	ProductsAvailable []string   `json:"products-available"`
-	ReceiptsIDs       []string   `json:"receipts-ids"`
-	Balance           float64    `json:"balance"`
-	Deleted           bool       `json:"deleted"`
+	DocType           string             `json:"doc-type"`
+	Id                string             `json:"id"`
+	Name              string             `json:"name"`
+	TraderType        TraderType         `json:"trader-type"`
+	VAT               string             `json:"vat"`
+	ProductsAvailable []ProductInventory `json:"products-available"`
+	ReceiptsIDs       []string           `json:"receipts-ids"`
+	Balance           float64            `json:"balance"`
+	Deleted           bool               `json:"deleted"`
 }
 
 type User struct {

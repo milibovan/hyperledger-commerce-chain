@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -602,37 +601,41 @@ func getTraderDetails(c *gin.Context) {
 	}
 
 	if len(trader.ReceiptsIDs) > 0 {
-
 		// Get trader's receipts
 		receipts, err = client.GetReceiptsByIds(activeGW, channel, trader.ReceiptsIDs)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+	}
+	productIds := getAllTradersProducts(receipts, trader)
 
-		productIds := getAllTradersProducts(receipts, trader)
+	// Get all products
+	products, err := client.GetProductsByIds(activeGW, channel, productIds)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-		// Get all products
-		products, err := client.GetProductsByIds(activeGW, channel, productIds)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		var receiptsProducts, availableProducts []*models.Product
-		for _, product := range products {
-			for _, receipt := range receipts {
-				if slices.Contains(receipt.ProductIDs, product.Id) {
+	for _, product := range products {
+		// Check if product is in receipts
+		for _, receipt := range receipts {
+			for _, receiptProduct := range receipt.Products {
+				if receiptProduct.ProductId == product.Id {
 					receiptsProducts = append(receiptsProducts, product)
 				}
 			}
-
-			if slices.Contains(trader.ProductsAvailable, product.Id) {
-				availableProducts = append(availableProducts, product)
-			}
 		}
 
+		// Check if product is available (fix this part)
+		for _, inv := range trader.ProductsAvailable {
+			if inv.ProductId == product.Id { // Changed
+				availableProducts = append(availableProducts, product)
+				break
+			}
+		}
 	}
+
 	// Build response
 	response := models.TraderDetailsResponse{
 		Trader:            trader,
@@ -642,7 +645,6 @@ func getTraderDetails(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
-
 }
 
 // getReceiptDetails fetches all necessary entities for Receipt Details
@@ -659,7 +661,7 @@ func getReceiptDetails(c *gin.Context) {
 	}
 
 	// Get products
-	products, err := client.GetProductsByIds(activeGW, channel, receipt.ProductIDs)
+	products, err := client.GetProductsByIds(activeGW, channel, getAllProductIds(receipt.Products))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -755,14 +757,14 @@ func getAllTradersProducts(receipts []*models.Receipt, trader *models.Trader) []
 	// Collect product IDs from receipts
 	productIDsMap := make(map[string]bool)
 	for _, receipt := range receipts {
-		for _, productId := range receipt.ProductIDs {
-			productIDsMap[productId] = true
+		for _, product := range receipt.Products {
+			productIDsMap[product.ProductId] = true
 		}
 	}
 
 	// Add trader's available products
-	for _, productId := range trader.ProductsAvailable {
-		productIDsMap[productId] = true
+	for _, product := range trader.ProductsAvailable {
+		productIDsMap[product.ProductId] = true
 	}
 
 	productIDs := make([]string, 0, len(productIDsMap))
@@ -770,4 +772,14 @@ func getAllTradersProducts(receipts []*models.Receipt, trader *models.Trader) []
 		productIDs = append(productIDs, id)
 	}
 	return productIDs
+}
+
+// getAllProductIds Get all products from products
+func getAllProductIds(products []models.ProductInventory) []string {
+	var productIds []string
+	for _, product := range products {
+		productIds = append(productIds, product.ProductId)
+	}
+
+	return productIds
 }

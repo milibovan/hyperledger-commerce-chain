@@ -226,10 +226,10 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 	return id, nil
 }
 
-func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, userId, traderId string, products []structs.ProductInventory) (string, error) {
+func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, userId, traderId string, products []structs.ProductInventory, index int) (string, error) {
 	// Generate deterministic ID using transaction ID and trader ID
 	txID := ctx.GetStub().GetTxID()
-	id := fmt.Sprintf("RECEIPT_%s_%s", txID, traderId)
+	id := fmt.Sprintf("RECEIPT_%s_%d", txID, index)
 
 	// Read trader and validate they can fulfill the products
 	trader, err := s.ReadTrader(ctx, traderId)
@@ -266,6 +266,9 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 			return "", fmt.Errorf("failed to deduct product %s: %w", product.ProductId, err)
 		}
 	}
+
+	// Update trader's balance
+	trader.Balance += totalCost
 
 	// Marshal and save trader
 	traderJSON, err := json.Marshal(trader)
@@ -317,8 +320,8 @@ func (s *SmartContract) FindAndCreateOptimalReceipts(ctx contractapi.Transaction
 
 	// Create receipts for each allocation
 	receiptIds := make([]string, 0, len(allocations))
-	for _, allocation := range allocations {
-		receiptId, err := s.CreateReceipt(ctx, userId, allocation.TraderId, allocation.Products)
+	for index, allocation := range allocations {
+		receiptId, err := s.CreateReceipt(ctx, userId, allocation.TraderId, allocation.Products, index)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create receipt for trader %s: %w", allocation.TraderId, err)
 		}
