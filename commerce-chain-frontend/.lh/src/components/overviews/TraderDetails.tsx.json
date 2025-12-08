@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 81,
+            "activePatchIndex": 90,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -332,6 +332,42 @@
                 {
                     "date": 1765215372151,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -90,9 +90,9 @@\n             {trader.receipts.map((receipt) => (\r\n               <div\r\n                 key={receipt.id}\r\n                 // TODO OnClick to show info\r\n-                onClick={() => onProductClick?.(receipt)}\r\n+                // onClick={() => onProductClick?.(receipt)}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n               >\r\n                 <div className=\"flex-1\">\r\n                   <h5 className={traderFontBold}>Products sold: {trader[\"receipts-products\"].length}</h5>\r\n"
+                },
+                {
+                    "date": 1765215782266,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,8 +76,18 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n+        <>\r\n+          {addProduct && (\r\n+            <button\r\n+              onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n+              className={createTraderButton}\r\n+              title=\"Add products\"\r\n+            >\r\n+              <Plus size={18} /> Add products\r\n+            </button>\r\n+          )}</>\r\n       </div>\r\n \r\n       {/* Receipts Section */}\r\n       <div className=\"pt-4 border-t-2 border-pink-400\">\r\n"
+                },
+                {
+                    "date": 1765215808511,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -48,17 +48,17 @@\n           <h4 className=\"text-xl font-bold text-pink-300 flex items-center gap-2\">\r\n             <Package size={20} />\r\n             Products ({trader.trader[\"products-available\"]?.length || 0})\r\n           </h4>\r\n-          {addProduct && (\r\n+          {/* {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n               title=\"Add products\"\r\n             >\r\n               <Plus size={18} /> Add products\r\n             </button>\r\n-          )}\r\n+          )} */}\r\n         </div>\r\n \r\n         {trader[\"available-products\"] && trader[\"available-products\"].length > 0 ? (\r\n           <div className=\"space-y-2\">\r\n@@ -76,18 +76,19 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n-        <>\r\n+        <div>\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n               title=\"Add products\"\r\n             >\r\n               <Plus size={18} /> Add products\r\n             </button>\r\n-          )}</>\r\n+          )}\r\n+        </div>\r\n       </div>\r\n \r\n       {/* Receipts Section */}\r\n       <div className=\"pt-4 border-t-2 border-pink-400\">\r\n"
+                },
+                {
+                    "date": 1765215830364,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,9 +76,9 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n-        <div>\r\n+        <div className=\"text-xl font-bold text-pink-300 flex items-center gap-2\">\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n"
+                },
+                {
+                    "date": 1765215843676,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,9 +76,9 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n-        <div className=\"text-xl font-bold text-pink-300 flex items-center gap-2\">\r\n+        <div className=\"flex items-center gap-2\">\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n"
+                },
+                {
+                    "date": 1765215852916,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,9 +76,9 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n-        <div className=\"flex items-center gap-2\">\r\n+        <div className=\"flex items-center gap-2 py-4\">\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n"
+                },
+                {
+                    "date": 1765215859680,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,9 +76,9 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n-        <div className=\"flex items-center gap-2 py-4\">\r\n+        <div className=\"flex items-center gap-2 pt-4\">\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n"
+                },
+                {
+                    "date": 1765215871262,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,9 +76,9 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n-        <div className=\"flex items-center gap-2 pt-4\">\r\n+        <div className=\"flex items-end gap-2 pt-4\">\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n"
+                },
+                {
+                    "date": 1765215893560,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,9 +76,9 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n-        <div className=\"flex items-end gap-2 pt-4\">\r\n+        <div className=\"flex place-items-end gap-2 pt-4\">\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n"
+                },
+                {
+                    "date": 1765215924580,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -76,9 +76,9 @@\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400\">\r\n             No products available\r\n           </div>\r\n         )}\r\n-        <div className=\"flex place-items-end gap-2 pt-4\">\r\n+        <div className=\"flex gap-2 my-4 justify-end\">\r\n           {addProduct && (\r\n             <button\r\n               onClick={() => addProduct(trader.trader!, trader[\"available-products\"]!)}\r\n               className={createTraderButton}\r\n"
                 }
             ],
             "date": 1762249738197,

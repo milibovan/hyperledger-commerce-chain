@@ -49,7 +49,7 @@ export default function TraderDetails({
             <Package size={20} />
             Products ({trader.trader["products-available"]?.length || 0})
           </h4>
-          {addProduct && (
+          {/* {addProduct && (
             <button
               onClick={() => addProduct(trader.trader!, trader["available-products"]!)}
               className={createTraderButton}
@@ -57,7 +57,7 @@ export default function TraderDetails({
             >
               <Plus size={18} /> Add products
             </button>
-          )}
+          )} */}
         </div>
 
         {trader["available-products"] && trader["available-products"].length > 0 ? (
@@ -77,6 +77,17 @@ export default function TraderDetails({
             No products available
           </div>
         )}
+        <div className="flex gap-2 my-4 justify-end">
+          {addProduct && (
+            <button
+              onClick={() => addProduct(trader.trader!, trader["available-products"]!)}
+              className={createTraderButton}
+              title="Add products"
+            >
+              <Plus size={18} /> Add products
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Receipts Section */}
