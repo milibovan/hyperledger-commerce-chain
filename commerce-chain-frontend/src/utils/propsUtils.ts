@@ -95,3 +95,17 @@ export interface ProductsTabsProps {
   totalCost: number,
   remainingBalance: number
 }
+
+export interface InfoSectionProps {
+    title: string;
+    id: string;
+    label: string;
+    value: string;
+}
+
+export interface ProductCardProps {
+    product: ProductData;
+    quantity: number | undefined;
+    onClick?: () => void;
+  colorScheme?: "green" | "pink";
+}

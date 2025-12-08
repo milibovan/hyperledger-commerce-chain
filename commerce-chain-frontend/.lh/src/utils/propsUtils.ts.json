@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 63,
+            "activePatchIndex": 66,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -260,6 +260,18 @@
                 {
                     "date": 1765210714583,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n   entity: T;\r\n   date?: string;\r\n   products?: ProductsData;\r\n   productsLoading?: boolean;\r\n-  addProduct?: (trader: TraderData, products?: ProductsData) => void;\r\n+  addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n"
+                },
+                {
+                    "date": 1765214280534,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -94,4 +94,11 @@\n   updateQuantity: (productId: string, quantity: number) => void;\r\n   totalCost: number,\r\n   remainingBalance: number\r\n }\r\n+\r\n+export interface InfoSectionProps {\r\n+    title: string;\r\n+    id: string;\r\n+    label: string;\r\n+    value: string;\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765214301694,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -100,5 +100,11 @@\n     title: string;\r\n     id: string;\r\n     label: string;\r\n     value: string;\r\n+}\r\n+\r\n+export interface ProductCardProps {\r\n+    product: ProductData;\r\n+    quantity: number | undefined;\r\n+    onClick?: () => void;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765215132846,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,5 +106,6 @@\n export interface ProductCardProps {\r\n     product: ProductData;\r\n     quantity: number | undefined;\r\n     onClick?: () => void;\r\n+  colorScheme?: \"green\" | \"pink\";\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762248920808,

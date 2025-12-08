@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/components/reusables/LoadingSkeleton.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1765214382599,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1765214382599,
+            "name": "Commit-0",
+            "content": "export default function LoadingSkeleton() {\r\n    return (\r\n        <div className=\"space-y-2\">\r\n            {[1, 2, 3].map((i) => (\r\n                <div\r\n                    key={i}\r\n                    className=\"h-20 bg-gray-700 rounded border border-green-400 animate-pulse\"\r\n                />\r\n            ))}\r\n        </div>\r\n    );\r\n}"
+        }
+    ]
+}

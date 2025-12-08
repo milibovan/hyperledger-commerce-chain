@@ -1,0 +1,18 @@
+{
+    "sourceFile": "src/components/reusables/InfoSection.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1765214457057,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1765214457057,
+            "name": "Commit-0",
+            "content": "import type { InfoSectionProps } from \"../../utils/propsUtils\";\r\nimport { GRID_RESPONSIVE, receiptFontSemibold, SECTION_BORDER } from \"../../utils/stylingUtils\";\r\n\r\nexport default function InfoSection({ title, id, label, value }: InfoSectionProps) {\r\n    return (\r\n        <>\r\n            <span className=\"text-xl font-bold text-green-400\">{title}</span>\r\n            <div className={`grid ${GRID_RESPONSIVE} gap-4 text-gray-300 py-4 ${SECTION_BORDER}`}>\r\n                <div>\r\n                    <span className=\"text-sm text-gray-400\">ID:</span>{\" \"}\r\n                    <span className={receiptFontSemibold}>{id}</span>\r\n                </div>\r\n                <div>\r\n                    <span className={receiptFontSemibold}>{label}:</span> {value}\r\n                </div>\r\n            </div>\r\n        </>\r\n    );\r\n}"
+        }
+    ]
+}

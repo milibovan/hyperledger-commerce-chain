@@ -6,13 +6,17 @@ import {
   createTraderButton,
 } from "../../utils/stylingUtils";
 import { Package, Plus, Receipt } from "lucide-react";
+import ProductCard from "../reusables/ProductCard";
 
 export default function TraderDetails({
   entity: trader,
   addProduct,
   onProductClick,
 }: DetailsProps<TraderDetails>) {
-  console.log(trader)
+  const getProductQuantity = (productId: string) => {
+    return trader.trader["products-available"].find(productItem => productId === productItem["product-id"])?.quantity;
+  };
+
   return (
     <div className="space-y-6">
       <h3 className="text-2xl font-bold text-pink-400">Trader Details</h3>
@@ -58,28 +62,15 @@ export default function TraderDetails({
 
         {trader["available-products"] && trader["available-products"].length > 0 ? (
           <div className="space-y-2">
-            {trader["available-products"].map((product) => {
-              const quantity = trader.trader["products-available"].find(productItem => product.id === productItem["product-id"])?.quantity
-              return (
-                <div
-                  key={product.id}
-                  onClick={() => onProductClick?.(product)}
-                  className={`flex items-center justify-between px-4 py-3 bg-gray-700 rounded border ${quantity === 0 ? "border-red-600" : "border-pink-400"} hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600`}
-                >
-                  <div className="flex-1">
-                    <h5 className={traderFontSemibold}>{product.name}</h5>
-                    <p className="text-xs text-gray-400">ID: {product.id}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className={quantity === 0 ? "font-bold text-red-600" : traderFontBold}>Quantity: {quantity}</p>
-                    <p className="text-xs text-gray-400">
-                      Expiry date:{" "}
-                      {new Date(product["expiry-date"]).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+            {trader["available-products"].map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                quantity={getProductQuantity(product.id)}
+                onClick={() => onProductClick?.(product)}
+                colorScheme="pink"
+              />
+            ))}
           </div>
         ) : (
           <div className="text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400">
