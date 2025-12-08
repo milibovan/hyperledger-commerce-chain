@@ -16,7 +16,7 @@ export interface DetailsProps<T> {
   date?: string;
   products?: ProductsData;
   productsLoading?: boolean;
-  addProduct?: (trader: TraderData, products?: ProductsData) => void;
+  addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;
   onProductClick?: (product: ProductData) => void;
 }
 

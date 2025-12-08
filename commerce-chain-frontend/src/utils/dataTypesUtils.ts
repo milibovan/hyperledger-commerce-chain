@@ -160,20 +160,20 @@ export interface UserDetails {
 
 export interface OrderDetails {
   order: OrderData,
-  products: ProductsData,
-  receipts: ReceiptsData
+  products: ProductData[],
+  receipts: ReceiptData[]
 }
 
 export interface TraderDetails {
   trader: TraderData,
-  receipts: ReceiptsData,
-  "receipts-products": ProductsData,
-  "available-products": ProductsData
+  receipts: ReceiptData[],
+  "receipts-products": ProductData[],
+  "available-products": ProductData[]
 }
 
 export interface ReceiptDetails {
   receipt: ReceiptData,
-  products: ProductsData,
+  products: ProductData[],
   trader: TraderData,
   user: UserData
 }

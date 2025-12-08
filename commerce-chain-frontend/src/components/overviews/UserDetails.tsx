@@ -34,7 +34,6 @@ export default function UserDetails({ entity: userDetails }: DetailsProps<UserDe
                 key={order.order.id}
                 className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-purple-400 hover:shadow-lg hover:shadow-purple-400/50 hover:bg-gray-600"
               >
-                {/* TODO Solve errors */}
                 <div className="flex-1">
                   <h5 className={userFontBold}>Products bought: {order.products.length}</h5>
                   <p className="text-xs text-gray-400">ID: {order.order.id}</p>

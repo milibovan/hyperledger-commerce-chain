@@ -13,7 +13,7 @@ export default function ReceiptDetails({ entity: receipt, productsLoading, onPro
                     <span className="font-semibold text-green-300">ID:</span>{" "}
                     {receipt.receipt.id}
                 </div>
-                // TODO user name surname and trader name and vat maybe
+                {/* // TODO user name surname and trader name and vat maybe */}
                 <div>
                     <span className="font-semibold text-green-300">User id:</span>{" "}
                     {receipt.user.id}

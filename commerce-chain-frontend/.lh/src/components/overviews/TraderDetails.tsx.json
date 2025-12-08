@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 71,
+            "activePatchIndex": 73,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -292,6 +292,14 @@
                 {
                     "date": 1765140439698,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,9 +103,9 @@\n                 // onClick={() => onProductClick?.(receipt)}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n               >\r\n                 <div className=\"flex-1\">\r\n-                  <h5 className={traderFontBold}>Products sold: {trader[\"receipts-products\"].lenght}</h5>\r\n+                  <h5 className={traderFontBold}>Products sold: {trader[\"receipts-products\"].length}</h5>\r\n                   <p className=\"text-xs text-gray-400\">Buyer id: {receipt[\"user-id\"]}</p>\r\n                 </div>\r\n                 <div className=\"text-right\">\r\n                   <p className={traderFontBold}>Total cost: ${receipt[\"total-cost\"]}</p>\r\n"
+                },
+                {
+                    "date": 1765210656003,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderDetails } from \"../../utils/dataTypesUtils\";\r\n+import type { ProductsData, TraderDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import {\r\n   traderFontBold,\r\n   traderFontSemibold,\r\n"
+                },
+                {
+                    "date": 1765210663052,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { ProductsData, TraderDetails } from \"../../utils/dataTypesUtils\";\r\n+import type { TraderDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import {\r\n   traderFontBold,\r\n   traderFontSemibold,\r\n"
                 }
             ],
             "date": 1762249738197,

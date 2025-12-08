@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 40,
+            "activePatchIndex": 42,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -168,6 +168,14 @@
                 {
                     "date": 1765141202124,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,9 +50,9 @@\n   balance: number;\r\n }\r\n \r\n export interface ProductsData {\r\n-  Products: ProductData[];\r\n+  Products: Array<ProductData>;\r\n }\r\n \r\n export interface ProductData {\r\n   \"doc-type\": string;\r\n"
+                },
+                {
+                    "date": 1765210586667,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -159,17 +159,17 @@\n }\r\n \r\n export interface OrderDetails {\r\n   order: OrderData,\r\n-  products: ProductsData,\r\n-  receipts: ReceiptsData\r\n+  products: ProductData[],\r\n+  receipts: ReceiptData[]\r\n }\r\n \r\n export interface TraderDetails {\r\n   trader: TraderData,\r\n-  receipts: ReceiptsData,\r\n-  \"receipts-products\": ProductsData,\r\n-  \"available-products\": ProductsData\r\n+  receipts: ReceiptData[],\r\n+  \"receipts-products\": ProductData[],\r\n+  \"available-products\": ProductData[]\r\n }\r\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n"
+                },
+                {
+                    "date": 1765210594305,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -172,8 +172,8 @@\n }\r\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n-  products: ProductsData,\r\n+  products: ProductData[],\r\n   trader: TraderData,\r\n   user: UserData\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762249804506,

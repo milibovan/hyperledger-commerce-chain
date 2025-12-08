@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 62,
+            "activePatchIndex": 63,
             "patches": [
                 {
                     "date": 1764533265388,
@@ -256,6 +256,10 @@
                 {
                     "date": 1765141354215,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,8 +12,9 @@\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">ID:</span>{\" \"}\r\n                     {receipt.receipt.id}\r\n                 </div>\r\n+                // TODO user name surname and trader name and vat maybe\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">User id:</span>{\" \"}\r\n                     {receipt.user.id}\r\n                 </div>\r\n"
+                },
+                {
+                    "date": 1765141435864,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">ID:</span>{\" \"}\r\n                     {receipt.receipt.id}\r\n                 </div>\r\n-                // TODO user name surname and trader name and vat maybe\r\n+                {/* // TODO user name surname and trader name and vat maybe */}\r\n                 <div>\r\n                     <span className=\"font-semibold text-green-300\">User id:</span>{\" \"}\r\n                     {receipt.user.id}\r\n                 </div>\r\n"
                 }
             ],
             "date": 1764533265388,

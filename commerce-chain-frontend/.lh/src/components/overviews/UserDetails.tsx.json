@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 41,
+            "activePatchIndex": 42,
             "patches": [
                 {
                     "date": 1762356648891,
@@ -172,6 +172,10 @@
                 {
                     "date": 1765135790369,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -50,9 +50,9 @@\n             ))}\r\n           </div>\r\n         ) : (\r\n           <div className=\"text-center text-gray-400 py-4 bg-gray-700 rounded border border-purple-400\">\r\n-            No receipts\r\n+            No orders\r\n           </div>\r\n         )}\r\n       </div>\r\n     </div>\r\n"
+                },
+                {
+                    "date": 1765210676040,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,9 +33,8 @@\n               <div\r\n                 key={order.order.id}\r\n                 className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-purple-400 hover:shadow-lg hover:shadow-purple-400/50 hover:bg-gray-600\"\r\n               >\r\n-                {/* TODO Solve errors */}\r\n                 <div className=\"flex-1\">\r\n                   <h5 className={userFontBold}>Products bought: {order.products.length}</h5>\r\n                   <p className=\"text-xs text-gray-400\">ID: {order.order.id}</p>\r\n                 </div>\r\n"
                 }
             ],
             "date": 1762356648891,
