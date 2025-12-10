@@ -10,6 +10,7 @@ export default function ReceiptDetails({
     entity: receipt,
     productsLoading,
     onProductClick,
+    onEntityClick
 }: DetailsProps<ReceiptDetails>) {
     const getProductQuantity = (productId: string) => {
         return receipt.receipt.products.find(
@@ -35,22 +36,28 @@ export default function ReceiptDetails({
                     {receipt.receipt["total-cost"]}
                 </div>
             </div>
+            <div className={`grid grid-cols-2 gap-4 text-gray-300 py-4`}>
+                {/* User Info Section */}
+                <InfoSection
+                    title="User Info"
+                    id={receipt.user.id}
+                    entity={receipt.user}
+                    label="User"
+                    value={`${receipt.user.name} ${receipt.user.surname}`}
+                    onEntityClick={onEntityClick!}
+                />
 
-            {/* User Info Section */}
-            <InfoSection
-                title="User Info"
-                id={receipt.user.id}
-                label="User"
-                value={`${receipt.user.name} ${receipt.user.surname}`}
-            />
+                {/* Trader Info Section */}
+                <InfoSection
+                    title="Trader Info"
+                    id={receipt.trader.id}
+                    entity={receipt.trader}
+                    label="Trader"
+                    value={receipt.trader.name}
+                    onEntityClick={onEntityClick!}
+                />
+            </div>
 
-            {/* Trader Info Section */}
-            <InfoSection
-                title="Trader Info"
-                id={receipt.trader.id}
-                label="Trader"
-                value={receipt.trader.name}
-            />
 
             {/* Products Section */}
             <div>

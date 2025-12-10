@@ -22,5 +22,5 @@ export const receiptFontBold = "font-bold text-green-300"
 
 export const createTraderButton = "flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50"
 
-export const SECTION_BORDER = "border-y-2 border-green-400";
+export const SECTION_BORDER = "border-2 p-3 border-green-400";
 export const GRID_RESPONSIVE = "grid-cols-1 sm:grid-cols-2";

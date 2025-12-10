@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 66,
+            "activePatchIndex": 78,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -272,6 +272,54 @@
                 {
                     "date": 1765215132846,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -106,5 +106,6 @@\n export interface ProductCardProps {\r\n     product: ProductData;\r\n     quantity: number | undefined;\r\n     onClick?: () => void;\r\n+  colorScheme?: \"green\" | \"pink\";\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765402298464,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData, ProductsData } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, UserDetails, TraderDetails } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n@@ -17,8 +17,9 @@\n   products?: ProductsData;\r\n   productsLoading?: boolean;\r\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n+  onEntityClick?: (entity: UserDetails | TraderDetails)\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1765402317652,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n   products?: ProductsData;\r\n   productsLoading?: boolean;\r\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n-  onEntityClick?: (entity: UserDetails | TraderDetails)\r\n+  onEntityClick?: (entity: UserDetails | TraderDetails) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1765402392214,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -101,8 +101,9 @@\n     title: string;\r\n     id: string;\r\n     label: string;\r\n     value: string;\r\n+    onEntityClick: () => void;\r\n }\r\n \r\n export interface ProductCardProps {\r\n     product: ProductData;\r\n"
+                },
+                {
+                    "date": 1765402420016,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -101,9 +101,9 @@\n     title: string;\r\n     id: string;\r\n     label: string;\r\n     value: string;\r\n-    onEntityClick: () => void;\r\n+    onEntityClick?: (entity: UserDetails | TraderDetails) => void;\r\n }\r\n \r\n export interface ProductCardProps {\r\n     product: ProductData;\r\n"
+                },
+                {
+                    "date": 1765402528812,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,9 @@\n \r\n export interface DetailsProps<T> {\r\n   entity: T;\r\n   date?: string;\r\n-  products?: ProductsData;\r\n+  products?: ProductData[];\r\n   productsLoading?: boolean;\r\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n   onEntityClick?: (entity: UserDetails | TraderDetails) => void;\r\n"
+                },
+                {
+                    "date": 1765402716331,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -98,9 +98,9 @@\n }\r\n \r\n export interface InfoSectionProps {\r\n     title: string;\r\n-    id: string;\r\n+    entity: UserDetails | TraderDetails;\r\n     label: string;\r\n     value: string;\r\n     onEntityClick?: (entity: UserDetails | TraderDetails) => void;\r\n }\r\n"
+                },
+                {
+                    "date": 1765402760736,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -98,8 +98,9 @@\n }\r\n \r\n export interface InfoSectionProps {\r\n     title: string;\r\n+    id: string;\r\n     entity: UserDetails | TraderDetails;\r\n     label: string;\r\n     value: string;\r\n     onEntityClick?: (entity: UserDetails | TraderDetails) => void;\r\n"
+                },
+                {
+                    "date": 1765402780886,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -102,9 +102,9 @@\n     id: string;\r\n     entity: UserDetails | TraderDetails;\r\n     label: string;\r\n     value: string;\r\n-    onEntityClick?: (entity: UserDetails | TraderDetails) => void;\r\n+    onEntityClick: (entity: UserDetails | TraderDetails) => void;\r\n }\r\n \r\n export interface ProductCardProps {\r\n     product: ProductData;\r\n"
+                },
+                {
+                    "date": 1765402833665,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData, ProductsData, UserDetails, TraderDetails } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, UserDetails, TraderDetails, Trader } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n@@ -99,12 +99,12 @@\n \r\n export interface InfoSectionProps {\r\n     title: string;\r\n     id: string;\r\n-    entity: UserDetails | TraderDetails;\r\n+    entity: UserData | TraderData;\r\n     label: string;\r\n     value: string;\r\n-    onEntityClick: (entity: UserDetails | TraderDetails) => void;\r\n+    onEntityClick: (entity: UserData | TraderData) => void;\r\n }\r\n \r\n export interface ProductCardProps {\r\n     product: ProductData;\r\n"
+                },
+                {
+                    "date": 1765402840733,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData, ProductsData, UserDetails, TraderDetails, Trader } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, UserDetails, TraderDetails } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
+                },
+                {
+                    "date": 1765402858817,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n   products?: ProductData[];\r\n   productsLoading?: boolean;\r\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n-  onEntityClick?: (entity: UserDetails | TraderDetails) => void;\r\n+  onEntityClick?: (entity: UserData | TraderData) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1765402866972,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData, ProductsData, UserDetails, TraderDetails } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
                 }
             ],
             "date": 1762248920808,

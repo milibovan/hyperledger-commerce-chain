@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 26,
+            "activePatchIndex": 30,
             "patches": [
                 {
                     "date": 1762204899059,
@@ -112,6 +112,22 @@
                 {
                     "date": 1765214242859,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -19,5 +19,8 @@\n export const createReceiptButton = \"flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all duration-200 hover:shadow-lg hover:shadow-green-400/50\"\r\n export const receiptFontSemibold = \"font-semibold text-green-300\"\r\n export const receiptFontBold = \"font-bold text-green-300\"\r\n \r\n-export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\n\\ No newline at end of file\n+export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\r\n+\r\n+export const SECTION_BORDER = \"border-y-2 border-green-400\";\r\n+export const GRID_RESPONSIVE = \"grid-cols-1 sm:grid-cols-2\";\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765401767591,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,6 +21,6 @@\n export const receiptFontBold = \"font-bold text-green-300\"\r\n \r\n export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\r\n \r\n-export const SECTION_BORDER = \"border-y-2 border-green-400\";\r\n+export const SECTION_BORDER = \"border-2 border-green-400\";\r\n export const GRID_RESPONSIVE = \"grid-cols-1 sm:grid-cols-2\";\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765401776543,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,6 +21,6 @@\n export const receiptFontBold = \"font-bold text-green-300\"\r\n \r\n export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\r\n \r\n-export const SECTION_BORDER = \"border-2 border-green-400\";\r\n+export const SECTION_BORDER = \"border-2 p-4 border-green-400\";\r\n export const GRID_RESPONSIVE = \"grid-cols-1 sm:grid-cols-2\";\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765401783266,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,6 +21,6 @@\n export const receiptFontBold = \"font-bold text-green-300\"\r\n \r\n export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\r\n \r\n-export const SECTION_BORDER = \"border-2 p-4 border-green-400\";\r\n+export const SECTION_BORDER = \"border-2 p-2 border-green-400\";\r\n export const GRID_RESPONSIVE = \"grid-cols-1 sm:grid-cols-2\";\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765401907713,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,6 +21,6 @@\n export const receiptFontBold = \"font-bold text-green-300\"\r\n \r\n export const createTraderButton = \"flex items-center gap-2 px-6 py-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50\"\r\n \r\n-export const SECTION_BORDER = \"border-2 p-2 border-green-400\";\r\n+export const SECTION_BORDER = \"border-2 p-3 border-green-400\";\r\n export const GRID_RESPONSIVE = \"grid-cols-1 sm:grid-cols-2\";\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762204899059,

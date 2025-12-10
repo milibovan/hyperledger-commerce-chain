@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 123,
+            "activePatchIndex": 127,
             "patches": [
                 {
                     "date": 1764533265388,
@@ -500,6 +500,22 @@
                 {
                     "date": 1765215175957,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -68,8 +68,9 @@\n                                 key={product.id}\r\n                                 product={product}\r\n                                 quantity={getProductQuantity(product.id)}\r\n                                 onClick={() => onProductClick?.(product)}\r\n+                                colorScheme=\"green\"\r\n                             />\r\n                         ))}\r\n                     </div>\r\n                 ) : (\r\n"
+                },
+                {
+                    "date": 1765401585744,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,25 +34,28 @@\n                     <span className={receiptFontSemibold}>Total cost:</span> $\r\n                     {receipt.receipt[\"total-cost\"]}\r\n                 </div>\r\n             </div>\r\n+            <div className={`grid grid-cols-2 gap-4 text-gray-300 py-4 ${SECTION_BORDER}`}>\r\n \r\n-            {/* User Info Section */}\r\n-            <InfoSection\r\n-                title=\"User Info\"\r\n-                id={receipt.user.id}\r\n-                label=\"User\"\r\n-                value={`${receipt.user.name} ${receipt.user.surname}`}\r\n-            />\r\n+                {/* User Info Section */}\r\n+                <InfoSection\r\n+                    title=\"User Info\"\r\n+                    id={receipt.user.id}\r\n+                    label=\"User\"\r\n+                    value={`${receipt.user.name} ${receipt.user.surname}`}\r\n+                />\r\n \r\n-            {/* Trader Info Section */}\r\n-            <InfoSection\r\n-                title=\"Trader Info\"\r\n-                id={receipt.trader.id}\r\n-                label=\"Trader\"\r\n-                value={receipt.trader.name}\r\n-            />\r\n+                {/* Trader Info Section */}\r\n+                <InfoSection\r\n+                    title=\"Trader Info\"\r\n+                    id={receipt.trader.id}\r\n+                    label=\"Trader\"\r\n+                    value={receipt.trader.name}\r\n+                />\r\n+            </div>\r\n \r\n+\r\n             {/* Products Section */}\r\n             <div>\r\n                 <h4 className=\"text-xl font-bold text-green-300 flex items-center gap-2 mb-4\">\r\n                     <Package size={20} />\r\n"
+                },
+                {
+                    "date": 1765401605879,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,10 +34,9 @@\n                     <span className={receiptFontSemibold}>Total cost:</span> $\r\n                     {receipt.receipt[\"total-cost\"]}\r\n                 </div>\r\n             </div>\r\n-            <div className={`grid grid-cols-2 gap-4 text-gray-300 py-4 ${SECTION_BORDER}`}>\r\n-\r\n+            <div className={`grid grid-cols-1 gap-4 text-gray-300 py-4 ${SECTION_BORDER}`}>\r\n                 {/* User Info Section */}\r\n                 <InfoSection\r\n                     title=\"User Info\"\r\n                     id={receipt.user.id}\r\n"
+                },
+                {
+                    "date": 1765401816802,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -34,9 +34,9 @@\n                     <span className={receiptFontSemibold}>Total cost:</span> $\r\n                     {receipt.receipt[\"total-cost\"]}\r\n                 </div>\r\n             </div>\r\n-            <div className={`grid grid-cols-2 gap-4 text-gray-300 py-4 ${SECTION_BORDER}`}>\r\n+            <div className={`grid grid-cols-2 gap-4 text-gray-300 py-4`}>\r\n                 {/* User Info Section */}\r\n                 <InfoSection\r\n                     title=\"User Info\"\r\n                     id={receipt.user.id}\r\n"
+                },
+                {
+                    "date": 1765402341545,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -9,8 +9,9 @@\n export default function ReceiptDetails({\r\n     entity: receipt,\r\n     productsLoading,\r\n     onProductClick,\r\n+    onEntityClick\r\n }: DetailsProps<ReceiptDetails>) {\r\n     const getProductQuantity = (productId: string) => {\r\n         return receipt.receipt.products.find(\r\n             (productItem) => productItem[\"product-id\"] === productId\r\n"
                 }
             ],
             "date": 1764533265388,

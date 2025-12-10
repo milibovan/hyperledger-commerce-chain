@@ -14,10 +14,11 @@ export interface ListProps<T> {
 export interface DetailsProps<T> {
   entity: T;
   date?: string;
-  products?: ProductsData;
+  products?: ProductData[];
   productsLoading?: boolean;
   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;
   onProductClick?: (product: ProductData) => void;
+  onEntityClick?: (entity: UserData | TraderData) => void;
 }
 
 export interface CreateFormsProps {
@@ -99,8 +100,10 @@ export interface ProductsTabsProps {
 export interface InfoSectionProps {
     title: string;
     id: string;
+    entity: UserData | TraderData;
     label: string;
     value: string;
+    onEntityClick: (entity: UserData | TraderData) => void;
 }
 
 export interface ProductCardProps {

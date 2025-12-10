@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1764622091261,
@@ -16,6 +16,14 @@
                 {
                     "date": 1764622237182,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,9 +26,9 @@\n     setAction(null);\r\n     setViewNestedDetails(false);\r\n   };\r\n \r\n-  const viewNestedEntityDetails = (nestedEntity: P) => {\r\n+  const viewNestedEntityDetails = (nestedEntity: P | R) => {\r\n     setSelectedNestedEntity(nestedEntity);\r\n     setViewNestedDetails(true);\r\n   };\r\n \r\n"
+                },
+                {
+                    "date": 1765403012182,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,13 +1,13 @@\n import { useState } from \"react\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n \r\n-export function useEntityActions<T, P = unknown, R = unknown>() {\r\n+export function useEntityActions<T, P = unknown, R = unknown, S = unknown>() {\r\n   const [action, setAction] = useState<ActionType>(null);\r\n   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);\r\n   const [viewDetails, setViewDetails] = useState(false);\r\n \r\n-  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | R | null>(null);\r\n+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | R | S | null>(null);\r\n   const [viewNestedDetails, setViewNestedDetails] = useState(false);\r\n \r\n   const handleAction = (actionType: ActionType, entity?: T) => {\r\n     setAction(actionType);\r\n"
+                },
+                {
+                    "date": 1765403023121,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,9 +26,9 @@\n     setAction(null);\r\n     setViewNestedDetails(false);\r\n   };\r\n \r\n-  const viewNestedEntityDetails = (nestedEntity: P | R) => {\r\n+  const viewNestedEntityDetails = (nestedEntity: P | R | S) => {\r\n     setSelectedNestedEntity(nestedEntity);\r\n     setViewNestedDetails(true);\r\n   };\r\n \r\n"
                 }
             ],
             "date": 1764622091261,

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Edit, Trash2 } from "lucide-react";
-import type { ProductData, ReceiptData } from "../../utils/dataTypesUtils";
+import type { ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
 import type { ModalHandle } from "../modals/DeleteModal";
 import { useReceipts } from "../hooks/useReceipts";
 import ReceiptDetails from "../overviews/ReceiptDetails";
@@ -9,6 +9,11 @@ import Modal from "../modals/DeleteModal";
 import { useEntityActions } from "../hooks/useEntityActions";
 import ReceiptsList from "../lists/ReceiptList";
 import ProductDetails from "../overviews/ProductDetails";
+import UserDetails from "../overviews/UserDetails";
+import TraderDetails from "../overviews/TraderDetails";
+import { useUsers } from "../hooks/useUsers";
+import { useTraders } from "../hooks/useTraders";
+import LoadingSkeleton from "../reusables/LoadingSkeleton";
 
 export default function ReceiptsPanel() {
   const modalRef = useRef<ModalHandle>(null);
@@ -19,13 +24,17 @@ export default function ReceiptsPanel() {
     action,
     selectedEntity: selectedReceipt,
     viewDetails,
-    selectedNestedEntity: selectedProduct,
-    viewNestedDetails: viewProductDetails,
+    selectedNestedEntity,
+    viewNestedDetails,
     handleAction,
     viewEntityDetails,
     viewNestedEntityDetails,
     resetActions,
-  } = useEntityActions<ReceiptData, ProductData>();
+    resetNestedView
+  } = useEntityActions<ReceiptData, ProductData, UserData, TraderData>();
+
+  const { userDetails, fetchUserDetails } = useUsers();
+  const { traderDetails, fetchTraderDetails } = useTraders();
 
   useEffect(() => {
     fetchReceipts();
@@ -39,6 +48,17 @@ export default function ReceiptsPanel() {
       );
     }
   }, [selectedReceipt, fetchReceiptDetails]);
+
+  useEffect(() => {
+    if (!selectedNestedEntity) return;
+
+    if ("surname" in selectedNestedEntity) {
+      fetchUserDetails(selectedNestedEntity.id);
+    }
+    else if (!("price" in selectedNestedEntity)) {
+      fetchTraderDetails(selectedNestedEntity.id);
+    }
+  }, [fetchTraderDetails, fetchUserDetails, selectedNestedEntity]);
 
   const handleDeleteClick = (receipt: ReceiptData) => {
     handleAction("delete", receipt);
@@ -85,12 +105,24 @@ export default function ReceiptsPanel() {
             </div>
           );
         default:
-          if (viewProductDetails && selectedProduct) {
-            return <ProductDetails entity={selectedProduct as ProductData} />;
+          if (viewNestedDetails && selectedNestedEntity) {
+            if ('price' in selectedNestedEntity) {
+              return <ProductDetails entity={selectedNestedEntity as ProductData} />;
+            } else if ('surname' in selectedNestedEntity) {
+              if (!userDetails) {
+                return <LoadingSkeleton />;
+              }
+              return <UserDetails entity={userDetails} />;
+            } else {
+              if (!traderDetails) {
+                return <LoadingSkeleton />;
+              }
+              return <TraderDetails entity={traderDetails} />;
+            }
           }
 
           if (viewDetails && receiptDetails) {
-            return <ReceiptDetails entity={receiptDetails} products={receiptDetails.products} productsLoading={loading} onProductClick={viewNestedEntityDetails} />;
+            return <ReceiptDetails entity={receiptDetails} products={receiptDetails.products} productsLoading={loading} onProductClick={viewNestedEntityDetails} onEntityClick={viewNestedEntityDetails} />;
           }
           return null;
       }
@@ -132,10 +164,16 @@ export default function ReceiptsPanel() {
           >
 
             <button
-              onClick={resetActions}
+              onClick={() => {
+                if (viewNestedDetails) {
+                  resetNestedView();
+                } else {
+                  resetActions();
+                }
+              }}
               className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-green-300 font-semibold rounded border-2 border-gray-600 transition-all"
             >
-              ← Back to Receipts
+              ← Back to {viewNestedDetails ? "Receipt" : "Receipts"}
             </button>
           </div>
           {action === null && selectedReceipt && (
@@ -191,7 +229,6 @@ export default function ReceiptsPanel() {
       </Modal>
       <ReceiptsList
         entities={receipts}
-        entityDetails={receiptDetails}
         loading={loading}
         error={error}
         onCreateClick={() => handleAction("create")}
