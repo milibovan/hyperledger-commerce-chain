@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 126,
+            "activePatchIndex": 128,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -512,6 +512,14 @@
                 {
                     "date": 1765481114297,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,9 +44,9 @@\n       <div className=\"grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400\">\r\n \r\n         {/* Products Section */}\r\n         <div className=\"border-r-2 border-pink-300 pr-4\">\r\n-          <div className=\"flex items-center justify-between mb-4\">\r\n+          <div className=\"flex items-center justify-between mb-3.5\">\r\n             <h4 className=\"text-xl font-bold text-pink-300 flex items-center gap-2\">\r\n               <Package size={20} />\r\n               Products ({trader.trader[\"products-available\"]?.length || 0})\r\n             </h4>\r\n"
+                },
+                {
+                    "date": 1765481717288,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,8 +10,9 @@\n export default function TraderDetails({\r\n   entity: trader,\r\n   addProduct,\r\n   onProductClick,\r\n+  onEntityClick\r\n }: DetailsProps<TraderDetails>) {\r\n   const getProductQuantity = (productId: string) => {\r\n     return trader.trader[\"products-available\"].find(productItem => productId === productItem[\"product-id\"])?.quantity;\r\n   };\r\n@@ -102,9 +103,9 @@\n               {trader.receipts.map((receipt) => (\r\n                 <div\r\n                   key={receipt.id}\r\n                   // TODO OnClick to show info\r\n-                  // onClick={() => onProductClick?.(receipt)}\r\n+                  onClick={() => onEntityClick(receipt)}\r\n                   className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n                 >\r\n                   <div className=\"flex-1\">\r\n                     <h5 className={traderFontBold}>Products sold: {trader[\"receipts-products\"].length}</h5>\r\n"
+                },
+                {
+                    "date": 1765482108741,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -102,10 +102,9 @@\n             <div className=\"space-y-2\">\r\n               {trader.receipts.map((receipt) => (\r\n                 <div\r\n                   key={receipt.id}\r\n-                  // TODO OnClick to show info\r\n-                  onClick={() => onEntityClick(receipt)}\r\n+                  onClick={() => onEntityClick?.(receipt)}\r\n                   className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n                 >\r\n                   <div className=\"flex-1\">\r\n                     <h5 className={traderFontBold}>Products sold: {trader[\"receipts-products\"].length}</h5>\r\n"
                 }
             ],
             "date": 1762249738197,

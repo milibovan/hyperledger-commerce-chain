@@ -11,6 +11,7 @@ export default function TraderDetails({
   entity: trader,
   addProduct,
   onProductClick,
+  onEntityClick
 }: DetailsProps<TraderDetails>) {
   const getProductQuantity = (productId: string) => {
     return trader.trader["products-available"].find(productItem => productId === productItem["product-id"])?.quantity;
@@ -102,8 +103,7 @@ export default function TraderDetails({
               {trader.receipts.map((receipt) => (
                 <div
                   key={receipt.id}
-                  // TODO OnClick to show info
-                  // onClick={() => onProductClick?.(receipt)}
+                  onClick={() => onEntityClick?.(receipt)}
                   className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
                 >
                   <div className="flex-1">

@@ -6,7 +6,7 @@ export function useEntityActions<T, P = unknown, R = unknown, S = unknown>() {
   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);
   const [viewDetails, setViewDetails] = useState(false);
 
-  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | R | S | null>(null);
+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | R | S | T | null>(null);
   const [viewNestedDetails, setViewNestedDetails] = useState(false);
 
   const handleAction = (actionType: ActionType, entity?: T) => {
@@ -27,7 +27,7 @@ export function useEntityActions<T, P = unknown, R = unknown, S = unknown>() {
     setViewNestedDetails(false);
   };
 
-  const viewNestedEntityDetails = (nestedEntity: P | R | S) => {
+  const viewNestedEntityDetails = (nestedEntity: P | R | S | T) => {
     setSelectedNestedEntity(nestedEntity);
     setViewNestedDetails(true);
   };

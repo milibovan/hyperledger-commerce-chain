@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import type { ProductData, ReceiptData, TraderData } from "../../utils/dataTypesUtils";
+import type { ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateTraderForm from "../forms/UpdateTraderForm";
 import Modal from "../modals/DeleteModal";
@@ -22,6 +22,9 @@ import TraderDetails from "../overviews/TraderDetails";
 import TradersList from "../lists/TradersList";
 import AddProjectToTrader from "../forms/AddProductToTrader";
 import ProductDetails from "../overviews/ProductDetails";
+import { useReceipts } from "../hooks/useReceipts";
+import LoadingSkeleton from "../reusables/LoadingSkeleton";
+import ReceiptDetails from "../overviews/ReceiptDetails";
 
 export default function TradersPanel() {
   const modalRef = useRef<ModalHandle>(null);
@@ -36,18 +39,20 @@ export default function TradersPanel() {
     deleteTrader,
   } = useTraders();
 
+  const { receiptDetails, fetchReceiptDetails } = useReceipts();
+
   const {
     action,
     selectedEntity: selectedTrader,
     viewDetails,
-    selectedNestedEntity: selectedProduct,
-    viewNestedDetails: viewProductDetails,
+    selectedNestedEntity,
+    viewNestedDetails,
     handleAction,
     viewEntityDetails,
     viewNestedEntityDetails,
     resetActions,
     resetNestedView,
-  } = useEntityActions<TraderData, ProductData, ReceiptData>();
+  } = useEntityActions<TraderData, ProductData, ReceiptData, UserData>();
 
   // Fetch traders on mount
   useEffect(() => {
@@ -62,6 +67,14 @@ export default function TradersPanel() {
       );
     }
   }, [selectedTrader, fetchTraderDetails]);
+
+  useEffect(() => {
+    if (!selectedNestedEntity) return;
+
+    if ("trader-id" in selectedNestedEntity) {
+      fetchReceiptDetails(selectedNestedEntity.id);
+    }
+  }, [selectedNestedEntity, fetchReceiptDetails]);
 
   const handleDeleteClick = (trader: TraderData) => {
     handleAction("delete", trader);
@@ -122,8 +135,16 @@ export default function TradersPanel() {
             />
           );
         default:
-          if (viewProductDetails && selectedProduct) {
-            return <ProductDetails entity={selectedProduct as ProductData} />;
+          if (viewNestedDetails && selectedNestedEntity) {
+            console.log(selectedNestedEntity)
+            if ('price' in selectedNestedEntity) {
+              return <ProductDetails entity={selectedNestedEntity as ProductData} />;
+            } else if ("trader-id" in selectedNestedEntity) {
+              if (!receiptDetails) {
+                return <LoadingSkeleton />;
+              }
+              return <ReceiptDetails entity={receiptDetails} />;
+            }
           }
 
 
@@ -134,6 +155,7 @@ export default function TradersPanel() {
                 entity={traderDetails}
                 addProduct={() => handleAction("addProduct", selectedTrader)}
                 onProductClick={viewNestedEntityDetails}
+                onEntityClick={viewNestedEntityDetails}
               />
             );
           }
@@ -142,14 +164,14 @@ export default function TradersPanel() {
   };
 
   const handleBackClick = () => {
-    if (viewProductDetails) {
+    if (viewNestedDetails) {
       resetNestedView();
     } else {
       resetActions();
     }
   };
 
-  if (action || viewDetails || viewProductDetails) {
+  if (action || viewDetails || viewNestedDetails) {
     return (
       <div className="bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50">
         <Modal
@@ -188,7 +210,7 @@ export default function TradersPanel() {
               ← Back to Traders
             </button>
           </div>
-          {action === null && selectedTrader && !viewProductDetails && (
+          {action === null && selectedTrader && !viewNestedDetails && (
             <div className="flex gap-2 my-4 justify-end">
               <button
                 onClick={() => handleAction("deposit", selectedTrader)}

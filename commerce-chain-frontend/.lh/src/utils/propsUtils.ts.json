@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 78,
+            "activePatchIndex": 80,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -320,6 +320,14 @@
                 {
                     "date": 1765402866972,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData, ProductsData, UserDetails, TraderDetails } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
+                },
+                {
+                    "date": 1765481199976,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -68,9 +68,9 @@\n }\r\n \r\n export interface AddOrBuyProductProps<T> {\r\n   trader: T;\r\n-  tradersProducts?: ProductsData;\r\n+  tradersProducts?: ProductData[];\r\n   onSuccess?: () => Promise<void>;\r\n }\r\n \r\n export interface ModalProps {\r\n"
+                },
+                {
+                    "date": 1765481730872,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData, ProductsData } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n@@ -17,9 +17,9 @@\n   products?: ProductData[];\r\n   productsLoading?: boolean;\r\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n-  onEntityClick?: (entity: UserData | TraderData) => void;\r\n+  onEntityClick?: (entity: UserData | TraderData | ReceiptData) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
                 }
             ],
             "date": 1762248920808,

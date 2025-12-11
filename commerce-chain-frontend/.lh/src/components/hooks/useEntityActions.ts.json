@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 4,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1764622091261,
@@ -24,6 +24,14 @@
                 {
                     "date": 1765403023121,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,9 +26,9 @@\n     setAction(null);\r\n     setViewNestedDetails(false);\r\n   };\r\n \r\n-  const viewNestedEntityDetails = (nestedEntity: P | R) => {\r\n+  const viewNestedEntityDetails = (nestedEntity: P | R | S) => {\r\n     setSelectedNestedEntity(nestedEntity);\r\n     setViewNestedDetails(true);\r\n   };\r\n \r\n"
+                },
+                {
+                    "date": 1765481956339,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,9 +26,9 @@\n     setAction(null);\r\n     setViewNestedDetails(false);\r\n   };\r\n \r\n-  const viewNestedEntityDetails = (nestedEntity: P | R | S) => {\r\n+  const viewNestedEntityDetails = (nestedEntity: P | R | S | T) => {\r\n     setSelectedNestedEntity(nestedEntity);\r\n     setViewNestedDetails(true);\r\n   };\r\n \r\n"
+                },
+                {
+                    "date": 1765481970441,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,9 +5,9 @@\n   const [action, setAction] = useState<ActionType>(null);\r\n   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);\r\n   const [viewDetails, setViewDetails] = useState(false);\r\n \r\n-  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | R | S | null>(null);\r\n+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | R | S | T | null>(null);\r\n   const [viewNestedDetails, setViewNestedDetails] = useState(false);\r\n \r\n   const handleAction = (actionType: ActionType, entity?: T) => {\r\n     setAction(actionType);\r\n"
                 }
             ],
             "date": 1764622091261,
