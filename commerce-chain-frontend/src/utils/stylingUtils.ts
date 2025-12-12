@@ -24,3 +24,6 @@ export const createTraderButton = "flex items-center gap-2 px-6 py-3 bg-pink-600
 
 export const SECTION_BORDER = "border-2 p-3 border-green-400";
 export const GRID_RESPONSIVE = "grid-cols-1 sm:grid-cols-2";
+
+export const orderFontSemibold = "font-semibold text-indigo-300"
+export const orderFontBold = "font-bold text-indigo-300"

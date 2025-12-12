@@ -98,7 +98,7 @@ export interface ReceiptData {
 }
 
 export interface OrdersData {
-  Receipts: Array<OrderData>;
+  Orders: Array<OrderData>;
 }
 
 export interface OrderData {

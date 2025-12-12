@@ -2,7 +2,7 @@ import type { UserDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import { userFontBold, userFontSemibold } from "../../utils/stylingUtils";
 
-export default function UserDetails({ entity: userDetails }: DetailsProps<UserDetails>) {
+export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {
   return (
     <div className="space-y-4">
       <h3 className="text-2xl font-bold text-purple-400">User Details</h3>
@@ -33,6 +33,7 @@ export default function UserDetails({ entity: userDetails }: DetailsProps<UserDe
               <div
                 key={order.order.id}
                 className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-purple-400 hover:shadow-lg hover:shadow-purple-400/50 hover:bg-gray-600"
+                onClick={() => onEntityClick?.(order.order)}
               >
                 <div className="flex-1">
                   <h5 className={userFontBold}>Products bought: {order.products.length}</h5>

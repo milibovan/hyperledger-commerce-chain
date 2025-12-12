@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { UserData } from "../../utils/dataTypesUtils";
+import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
 import { Plus, Edit, Trash2, ShoppingBag } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
@@ -21,11 +21,15 @@ import UserDetails from "../overviews/UserDetails";
 import UsersList from "../lists/UsersList";
 import { useEntityActions } from "../hooks/useEntityActions";
 import BuyProduct from "../forms/BuyProductMenu";
+import { useOrders } from "../hooks/useOrders";
+import OrderDetails from "../overviews/OrderDetails";
+import LoadingSkeleton from "../reusables/LoadingSkeleton";
 
 export default function UsersPanel() {
   const modalRef = useRef<ModalHandle>(null);
 
   const { users, loading, error, fetchUsers, deleteUser, userDetails, fetchUserDetails } = useUsers();
+  const { orderDetails, fetchOrderDetails } = useOrders();
 
   const {
     action,
@@ -33,8 +37,12 @@ export default function UsersPanel() {
     viewDetails,
     handleAction,
     viewEntityDetails,
+    selectedNestedEntity,
+    viewNestedDetails,
+    viewNestedEntityDetails,
     resetActions,
-  } = useEntityActions<UserData>();
+    resetNestedView
+  } = useEntityActions<UserData, OrderData, ReceiptData, ProductData, TraderData>();
 
   useEffect(() => {
     fetchUsers();
@@ -45,6 +53,12 @@ export default function UsersPanel() {
       fetchUserDetails(selectedUser.id)
     }
   }, [selectedUser, fetchUserDetails])
+
+  useEffect(() => {
+    if (selectedNestedEntity) {
+      fetchOrderDetails(selectedNestedEntity.id)
+    }
+  }, [fetchOrderDetails, selectedNestedEntity])
 
   const handleDeleteClick = (user: UserData) => {
     handleAction("delete", user);
@@ -98,8 +112,15 @@ export default function UsersPanel() {
           )
 
         default:
+          if (viewNestedDetails && selectedNestedEntity) {
+            if (!orderDetails) {
+              return <LoadingSkeleton />;
+            }
+            return <OrderDetails entity={orderDetails} />
+          }
+
           if (viewDetails && userDetails) {
-            return <UserDetails entity={userDetails} />;
+            return <UserDetails entity={userDetails} onEntityClick={viewNestedEntityDetails} />;
           }
           return null;
       }
@@ -136,13 +157,19 @@ export default function UsersPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={resetActions}
+              onClick={() => {
+                if (viewNestedDetails) {
+                  resetNestedView();
+                } else {
+                  resetActions();
+                }
+              }}
               className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-purple-300 font-semibold rounded border-2 border-gray-600 transition-all"
             >
-              ← Back to Users
+              ← Back to {viewNestedDetails ? "User" : "Users"}
             </button>
           </div>
-          {action === null && selectedUser && (
+          {action === null && selectedUser && !selectedNestedEntity && (
             <div className="flex gap-2 my-4 justify-end">
               <button
                 onClick={() => handleAction("deposit", selectedUser!)}

@@ -1,4 +1,4 @@
-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData } from "./dataTypesUtils";
+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData } from "./dataTypesUtils";
 
 export interface ListProps<T> {
   entities: T[];
@@ -18,7 +18,7 @@ export interface DetailsProps<T> {
   productsLoading?: boolean;
   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;
   onProductClick?: (product: ProductData) => void;
-  onEntityClick?: (entity: UserData | TraderData | ReceiptData) => void;
+  onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData) => void;
 }
 
 export interface CreateFormsProps {

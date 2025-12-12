@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 95,
+            "activePatchIndex": 96,
             "patches": [
                 {
                     "date": 1761556014588,
@@ -388,6 +388,10 @@
                 {
                     "date": 1765404016334,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,8 +12,9 @@\n import UserDetails from \"../overviews/UserDetails\";\r\n import TraderDetails from \"../overviews/TraderDetails\";\r\n import { useUsers } from \"../hooks/useUsers\";\r\n import { useTraders } from \"../hooks/useTraders\";\r\n+import LoadingSkeleton from \"../reusables/LoadingSkeleton\";\r\n \r\n export default function ReceiptsPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n@@ -106,12 +107,18 @@\n         default:\r\n           if (viewNestedDetails && selectedNestedEntity) {\r\n             if ('price' in selectedNestedEntity) {\r\n               return <ProductDetails entity={selectedNestedEntity as ProductData} />;\r\n-            } else if ('surname' in selectedNestedEntity && selectedNestedEntity) {\r\n-              return <UserDetails entity={userDetails!} />;\r\n-            } else if (selectedNestedEntity) {\r\n-              return <TraderDetails entity={traderDetails!} />;\r\n+            } else if ('surname' in selectedNestedEntity) {\r\n+              if (!userDetails) {\r\n+                return <LoadingSkeleton />;\r\n+              }\r\n+              return <UserDetails entity={userDetails} />;\r\n+            } else {\r\n+              if (!traderDetails) {\r\n+                return <LoadingSkeleton />;\r\n+              }\r\n+              return <TraderDetails entity={traderDetails} />;\r\n             }\r\n           }\r\n \r\n           if (viewDetails && receiptDetails) {\r\n"
+                },
+                {
+                    "date": 1765541664452,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { useEffect, useRef } from \"react\";\r\n import { Edit, Trash2 } from \"lucide-react\";\r\n-import type { ProductData, ReceiptData, TraderData, UserData } from \"../../utils/dataTypesUtils\";\r\n+import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from \"../../utils/dataTypesUtils\";\r\n import type { ModalHandle } from \"../modals/DeleteModal\";\r\n import { useReceipts } from \"../hooks/useReceipts\";\r\n import ReceiptDetails from \"../overviews/ReceiptDetails\";\r\n import { deleteButtonStyle, modalCancelButtonStyle, modalConfirmButtonStyle, modalDialogClassName, receiptFontSemibold, updateButtonStyle } from \"../../utils/stylingUtils\";\r\n@@ -30,9 +30,9 @@\n     viewEntityDetails,\r\n     viewNestedEntityDetails,\r\n     resetActions,\r\n     resetNestedView\r\n-  } = useEntityActions<ReceiptData, ProductData, UserData, TraderData>();\r\n+  } = useEntityActions<ReceiptData, ProductData, UserData, TraderData, OrderData>();\r\n \r\n   const { userDetails, fetchUserDetails } = useUsers();\r\n   const { traderDetails, fetchTraderDetails } = useTraders();\r\n \r\n"
                 }
             ],
             "date": 1761556014588,

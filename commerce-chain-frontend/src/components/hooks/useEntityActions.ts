@@ -1,12 +1,13 @@
 import { useState } from "react";
 import type { ActionType } from "../../utils/utils";
+import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
 
-export function useEntityActions<T, P = unknown, R = unknown, S = unknown>() {
+export function useEntityActions<T, O = OrderData, R = TraderData, U = UserData, P = ProductData, C = ReceiptData>() {
   const [action, setAction] = useState<ActionType>(null);
   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);
   const [viewDetails, setViewDetails] = useState(false);
 
-  const [selectedNestedEntity, setSelectedNestedEntity] = useState<P | R | S | T | null>(null);
+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<O | R | U | T | P | C | null>(null);
   const [viewNestedDetails, setViewNestedDetails] = useState(false);
 
   const handleAction = (actionType: ActionType, entity?: T) => {
@@ -27,7 +28,7 @@ export function useEntityActions<T, P = unknown, R = unknown, S = unknown>() {
     setViewNestedDetails(false);
   };
 
-  const viewNestedEntityDetails = (nestedEntity: P | R | S | T) => {
+  const viewNestedEntityDetails = (nestedEntity: O | R | U | T | P | C ) => {
     setSelectedNestedEntity(nestedEntity);
     setViewNestedDetails(true);
   };

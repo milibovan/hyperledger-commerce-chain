@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Edit, Trash2 } from "lucide-react";
-import type { ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
+import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
 import type { ModalHandle } from "../modals/DeleteModal";
 import { useReceipts } from "../hooks/useReceipts";
 import ReceiptDetails from "../overviews/ReceiptDetails";
@@ -31,7 +31,7 @@ export default function ReceiptsPanel() {
     viewNestedEntityDetails,
     resetActions,
     resetNestedView
-  } = useEntityActions<ReceiptData, ProductData, UserData, TraderData>();
+  } = useEntityActions<ReceiptData, ProductData, UserData, TraderData, OrderData>();
 
   const { userDetails, fetchUserDetails } = useUsers();
   const { traderDetails, fetchTraderDetails } = useTraders();
