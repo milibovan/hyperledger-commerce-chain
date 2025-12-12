@@ -449,7 +449,7 @@ func (t *SmartContract) GetReceiptById(ctx contractapi.TransactionContextInterfa
 	return &receipt, err
 }
 
-func (t *SmartContract) GetOrdersById(ctx contractapi.TransactionContextInterface, id string) (*structs.Order, error) {
+func (t *SmartContract) GetOrderById(ctx contractapi.TransactionContextInterface, id string) (*structs.Order, error) {
 	orderKey, err := ctx.GetStub().CreateCompositeKey("order", []string{id})
 	if err != nil {
 		return nil, err

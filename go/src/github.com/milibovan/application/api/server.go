@@ -79,6 +79,7 @@ func CreateServer() {
 	router.GET("/users/details/:userId/:channel", getUserDetails)
 	router.GET("/traders/details/:traderId/:channel", getTraderDetails)
 	router.GET("/receipts/details/:receiptId/:channel", getReceiptDetails)
+	router.GET("/orders/details/:orderId/:channel", getOrderDetails)
 
 	router.Run("localhost:8080")
 }
@@ -686,6 +687,45 @@ func getReceiptDetails(c *gin.Context) {
 		Products: products,
 		Trader:   trader,
 		User:     user,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+// getOrderDetails fetches all necessary entities for User Details
+func getOrderDetails(c *gin.Context) {
+	var channel, orderId string
+	var response models.OrderWithDetails
+	var receipts []*models.Receipt
+	var products []*models.Product
+	channel = c.Param("channel")
+	orderId = c.Param("orderId")
+
+	// Get order by id
+	order, err := client.GetOrderById(activeGW, channel, orderId)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+
+	// Get receipts by ids
+	receipts, err = client.GetReceiptsByIds(activeGW, channel, order.ReceiptsIds)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+
+	// Get products by ids
+	productIds := getAllProductIds(order.Products)
+
+	products, err = client.GetProductsByIds(activeGW, channel, productIds)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+
+	// Build response
+	response = models.OrderWithDetails{
+		Order:    order,
+		Products: products,
+		Receipts: receipts,
 	}
 
 	c.JSON(http.StatusOK, response)
