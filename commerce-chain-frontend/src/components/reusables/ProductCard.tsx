@@ -1,5 +1,6 @@
+import { getFormattedDate } from "../../utils/dataTypesUtils";
 import type { ProductCardProps } from "../../utils/propsUtils";
-import { receiptFontBold, receiptFontSemibold, traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
+import { orderFontBold, orderFontSemibold, receiptFontBold, receiptFontSemibold, traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 
 export default function ProductCard({ product, quantity, onClick, colorScheme = "green" }: ProductCardProps) {
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -11,27 +12,37 @@ export default function ProductCard({ product, quantity, onClick, colorScheme = 
 
     // Determine color classes based on scheme and quantity
     const isOutOfStock = quantity === 0;
+
     const borderColor = isOutOfStock
         ? "border-red-600"
         : colorScheme === "pink"
             ? "border-pink-400"
-            : "border-green-400";
+            : colorScheme === "indigo"
+                ? "border-indigo-400"
+                : "border-green-400";
 
     const shadowColor = colorScheme === "pink"
         ? "hover:shadow-pink-400/50"
-        : "hover:shadow-green-400/50";
+        : colorScheme === "indigo"
+            ? "hover:shadow-indigo-400/50"
+            : "hover:shadow-green-400/50";
 
     const focusRing = colorScheme === "pink"
         ? "focus:ring-pink-400"
-        : "focus:ring-green-400";
+        : colorScheme === "indigo"
+            ? "focus:ring-indigo-400"
+            : "focus:ring-green-400";
+
 
     const quantityStyle = isOutOfStock
         ? "font-bold text-red-600"
         : colorScheme === "pink"
             ? traderFontBold
-            : receiptFontBold;
+            : colorScheme === "indigo"
+                ? orderFontBold
+                : receiptFontBold;
 
-    const titleStyle = colorScheme === "pink" ? traderFontSemibold : receiptFontSemibold;
+    const titleStyle = colorScheme === "pink" ? traderFontSemibold : colorScheme === "indigo" ? orderFontSemibold : receiptFontSemibold;
 
     return (
         <div
@@ -49,7 +60,7 @@ export default function ProductCard({ product, quantity, onClick, colorScheme = 
             <div className="text-right">
                 <p className={quantityStyle}>Quantity: {quantity ?? "N/A"}</p>
                 <p className="text-xs text-gray-400">
-                    Expiry: {new Date(product["expiry-date"]).toLocaleDateString()}
+                    Expiry: {getFormattedDate(product["expiry-date"])}
                 </p>
             </div>
         </div>

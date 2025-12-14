@@ -110,5 +110,5 @@ export interface ProductCardProps {
     product: ProductData;
     quantity: number | undefined;
     onClick?: () => void;
-  colorScheme?: "green" | "pink";
+    colorScheme?: "green" | "pink" | "indigo";
 }

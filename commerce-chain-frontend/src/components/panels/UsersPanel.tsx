@@ -24,12 +24,16 @@ import BuyProduct from "../forms/BuyProductMenu";
 import { useOrders } from "../hooks/useOrders";
 import OrderDetails from "../overviews/OrderDetails";
 import LoadingSkeleton from "../reusables/LoadingSkeleton";
+import { useReceipts } from "../hooks/useReceipts";
+import ProductDetails from "../overviews/ProductDetails";
+import ReceiptDetails from "../overviews/ReceiptDetails";
 
 export default function UsersPanel() {
   const modalRef = useRef<ModalHandle>(null);
 
   const { users, loading, error, fetchUsers, deleteUser, userDetails, fetchUserDetails } = useUsers();
   const { orderDetails, fetchOrderDetails } = useOrders();
+  const { receiptDetails, fetchReceiptDetails } = useReceipts();
 
   const {
     action,
@@ -42,7 +46,7 @@ export default function UsersPanel() {
     viewNestedEntityDetails,
     resetActions,
     resetNestedView
-  } = useEntityActions<UserData, OrderData, ReceiptData, ProductData, TraderData>();
+  } = useEntityActions<UserData, OrderData, ProductData, ReceiptData, TraderData>();
 
   useEffect(() => {
     fetchUsers();
@@ -55,10 +59,16 @@ export default function UsersPanel() {
   }, [selectedUser, fetchUserDetails])
 
   useEffect(() => {
-    if (selectedNestedEntity) {
-      fetchOrderDetails(selectedNestedEntity.id)
+    if (!selectedNestedEntity) {
+      return
     }
-  }, [fetchOrderDetails, selectedNestedEntity])
+
+    if ("trader-id" in selectedNestedEntity) {
+      fetchReceiptDetails(selectedNestedEntity.id)
+    }
+
+    fetchOrderDetails(selectedNestedEntity.id)
+  }, [fetchOrderDetails, selectedNestedEntity, fetchReceiptDetails])
 
   const handleDeleteClick = (user: UserData) => {
     handleAction("delete", user);
@@ -113,10 +123,20 @@ export default function UsersPanel() {
 
         default:
           if (viewNestedDetails && selectedNestedEntity) {
-            if (!orderDetails) {
-              return <LoadingSkeleton />;
+            if ('price' in selectedNestedEntity) {
+              return <ProductDetails entity={selectedNestedEntity as ProductData} />;
+            } else if ("trader-id" in selectedNestedEntity) {
+              if (!receiptDetails) {
+                return <LoadingSkeleton />;
+              }
+              return <ReceiptDetails entity={receiptDetails} />;
+            } else {
+
+              if (!orderDetails) {
+                return <LoadingSkeleton />;
+              }
+              return <OrderDetails entity={orderDetails} onEntityClick={viewNestedEntityDetails} onProductClick={viewNestedEntityDetails} />
             }
-            return <OrderDetails entity={orderDetails} />
           }
 
           if (viewDetails && userDetails) {
@@ -124,6 +144,14 @@ export default function UsersPanel() {
           }
           return null;
       }
+    }
+  };
+
+  const handleBackClick = () => {
+    if (viewNestedDetails) {
+      resetNestedView();
+    } else {
+      resetActions();
     }
   };
 
@@ -157,13 +185,7 @@ export default function UsersPanel() {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              onClick={() => {
-                if (viewNestedDetails) {
-                  resetNestedView();
-                } else {
-                  resetActions();
-                }
-              }}
+              onClick={handleBackClick}
               className="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-600 text-purple-300 font-semibold rounded border-2 border-gray-600 transition-all"
             >
               ← Back to {viewNestedDetails ? "User" : "Users"}
@@ -196,7 +218,7 @@ export default function UsersPanel() {
           )}
         </div>
         {renderContent()}
-        {action === null && selectedUser && (
+        {action === null && selectedUser && !selectedNestedEntity && (
           <div className="flex gap-2 my-4 justify-end">
             <button
               onClick={() => handleAction("shop", selectedUser!)}

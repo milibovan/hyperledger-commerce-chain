@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import type { ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
+import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateTraderForm from "../forms/UpdateTraderForm";
 import Modal from "../modals/DeleteModal";
@@ -52,7 +52,7 @@ export default function TradersPanel() {
     viewNestedEntityDetails,
     resetActions,
     resetNestedView,
-  } = useEntityActions<TraderData, ProductData, ReceiptData, UserData>();
+  } = useEntityActions<TraderData, ProductData, ReceiptData, UserData, OrderData>();
 
   // Fetch traders on mount
   useEffect(() => {
@@ -136,9 +136,8 @@ export default function TradersPanel() {
           );
         default:
           if (viewNestedDetails && selectedNestedEntity) {
-            console.log(selectedNestedEntity)
             if ('price' in selectedNestedEntity) {
-              return <ProductDetails entity={selectedNestedEntity as ProductData} />;
+              return <ProductDetails entity={selectedNestedEntity} />;
             } else if ("trader-id" in selectedNestedEntity) {
               if (!receiptDetails) {
                 return <LoadingSkeleton />;

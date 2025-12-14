@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 207,
+            "activePatchIndex": 210,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -836,6 +836,18 @@
                 {
                     "date": 1765482210443,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -154,8 +154,9 @@\n               <TraderDetails\r\n                 entity={traderDetails}\r\n                 addProduct={() => handleAction(\"addProduct\", selectedTrader)}\r\n                 onProductClick={viewNestedEntityDetails}\r\n+                onEntityClick={viewNestedEntityDetails}\r\n               />\r\n             );\r\n           }\r\n       }\r\n"
+                },
+                {
+                    "date": 1765715044544,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useEffect, useRef } from \"react\";\r\n import CreateTraderForm from \"../forms/CreateTraderForm\";\r\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n-import type { ProductData, ReceiptData, TraderData, UserData } from \"../../utils/dataTypesUtils\";\r\n+import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from \"../../utils/dataTypesUtils\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n import UpdateTraderForm from \"../forms/UpdateTraderForm\";\r\n import Modal from \"../modals/DeleteModal\";\r\n import type { ModalHandle } from \"../modals/DeleteModal\";\r\n@@ -51,9 +51,9 @@\n     viewEntityDetails,\r\n     viewNestedEntityDetails,\r\n     resetActions,\r\n     resetNestedView,\r\n-  } = useEntityActions<TraderData, ProductData, ReceiptData, UserData>();\r\n+  } = useEntityActions<TraderData, ProductData, ReceiptData, UserData, OrderData>();\r\n \r\n   // Fetch traders on mount\r\n   useEffect(() => {\r\n     fetchTraders();\r\n"
+                },
+                {
+                    "date": 1765715677748,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -135,9 +135,8 @@\n             />\r\n           );\r\n         default:\r\n           if (viewNestedDetails && selectedNestedEntity) {\r\n-            console.log(selectedNestedEntity)\r\n             if ('price' in selectedNestedEntity) {\r\n               return <ProductDetails entity={selectedNestedEntity as ProductData} />;\r\n             } else if (\"trader-id\" in selectedNestedEntity) {\r\n               if (!receiptDetails) {\r\n"
+                },
+                {
+                    "date": 1765715765981,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -136,9 +136,9 @@\n           );\r\n         default:\r\n           if (viewNestedDetails && selectedNestedEntity) {\r\n             if ('price' in selectedNestedEntity) {\r\n-              return <ProductDetails entity={selectedNestedEntity as ProductData} />;\r\n+              return <ProductDetails entity={selectedNestedEntity} />;\r\n             } else if (\"trader-id\" in selectedNestedEntity) {\r\n               if (!receiptDetails) {\r\n                 return <LoadingSkeleton />;\r\n               }\r\n"
                 }
             ],
             "date": 1761645486253,
