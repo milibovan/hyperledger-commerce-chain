@@ -226,32 +226,22 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 	return id, nil
 }
 
-func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, userId, traderId string, products []structs.ProductInventory, index int) (string, error) {
-	// Generate deterministic ID using transaction ID and trader ID
+func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, trader *structs.Trader, userId string, products []structs.ProductInventory, index int) (*structs.Receipt, error) {
+	// Generate deterministic ID using transaction ID
 	txID := ctx.GetStub().GetTxID()
 	id := fmt.Sprintf("RECEIPT_%s_%d", txID, index)
 
-	// Read trader and validate they can fulfill the products
-	trader, err := s.ReadTrader(ctx, traderId)
-	if err != nil {
-		return "", fmt.Errorf("failed to read trader: %w", err)
-	}
-
-	// Validate trader has sufficient inventory before creating receipt
-	canFulfill, _ := trader.ContainsProductsAndRequestedQuantities(products)
-	if !canFulfill {
-		return "", fmt.Errorf("trader %s cannot fulfill requested products", traderId)
-	}
-
+	// Calculate total cost
 	totalCost, err := s.calculateTotalCost(ctx, products)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
+
 	// Create receipt
 	receipt := structs.Receipt{
 		DocType:   "receipt",
 		Id:        id,
-		TraderId:  traderId,
+		TraderId:  trader.Id,
 		UserId:    userId,
 		Products:  products,
 		Date:      time.Now().Format(time.RFC3339),
@@ -259,46 +249,11 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		Deleted:   false,
 	}
 
-	// Update trader: add receipt and deduct inventory
+	// Update trader metadata (inventory already deducted by allocation algorithm)
 	trader.ReceiptsIDs = append(trader.ReceiptsIDs, id)
-	for _, product := range products {
-		if err := trader.DeductProduct(product.ProductId, product.Quantity); err != nil {
-			return "", fmt.Errorf("failed to deduct product %s: %w", product.ProductId, err)
-		}
-	}
-
-	// Update trader's balance
 	trader.Balance += totalCost
 
-	// Marshal and save trader
-	traderJSON, err := json.Marshal(trader)
-	if err != nil {
-		return "", fmt.Errorf("failed to marshal trader: %w", err)
-	}
-
-	// Marshal and save receipt
-	receiptJSON, err := json.Marshal(receipt)
-	if err != nil {
-		return "", fmt.Errorf("failed to marshal receipt: %w", err)
-	}
-
-	receiptKey, err := ctx.GetStub().CreateCompositeKey("receipt", []string{id})
-	if err != nil {
-		return "", err
-	}
-	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
-	if err != nil {
-		return "", err
-	}
-
-	if err = ctx.GetStub().PutState(traderKey, traderJSON); err != nil {
-		return "", fmt.Errorf("failed to save trader: %w", err)
-	}
-	if err = ctx.GetStub().PutState(receiptKey, receiptJSON); err != nil {
-		return "", fmt.Errorf("failed to save receipt: %w", err)
-	}
-
-	return id, nil
+	return &receipt, nil
 }
 
 // FindAndCreateOptimalReceipts finds the minimum set of traders and creates receipts
@@ -318,14 +273,72 @@ func (s *SmartContract) FindAndCreateOptimalReceipts(ctx contractapi.Transaction
 		return nil, err
 	}
 
-	// Create receipts for each allocation
+	// Build trader lookup map
+	traderMap := make(map[string]*structs.Trader)
+	for _, trader := range traders {
+		traderMap[trader.Id] = trader
+	}
+
+	// Create receipts using CreateReceipt and accumulate changes
 	receiptIds := make([]string, 0, len(allocations))
+	receiptsToSave := make([]*structs.Receipt, 0, len(allocations))
+
 	for index, allocation := range allocations {
-		receiptId, err := s.CreateReceipt(ctx, userId, allocation.TraderId, allocation.Products, index)
+		trader := traderMap[allocation.TraderId]
+
+		// Create receipt and update trader in memory
+		receipt, err := s.CreateReceipt(ctx, trader, userId, allocation.Products, index)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create receipt for trader %s: %w", allocation.TraderId, err)
 		}
-		receiptIds = append(receiptIds, receiptId)
+
+		receiptIds = append(receiptIds, receipt.Id)
+		receiptsToSave = append(receiptsToSave, receipt)
+	}
+
+	// Save all receipts to ledger
+	for _, receipt := range receiptsToSave {
+		receiptJSON, err := json.Marshal(receipt)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal receipt: %w", err)
+		}
+
+		receiptKey, err := ctx.GetStub().CreateCompositeKey("receipt", []string{receipt.Id})
+		if err != nil {
+			return nil, err
+		}
+
+		if err = ctx.GetStub().PutState(receiptKey, receiptJSON); err != nil {
+			return nil, fmt.Errorf("failed to save receipt: %w", err)
+		}
+	}
+
+	// Save all updated traders to ledger
+	for _, trader := range traderMap {
+		// Check if this trader was actually modified
+		wasModified := false
+		for _, allocation := range allocations {
+			if allocation.TraderId == trader.Id {
+				wasModified = true
+				break
+			}
+		}
+
+		if wasModified {
+			traderJSON, err := json.Marshal(trader)
+			if err != nil {
+				return nil, fmt.Errorf("failed to marshal trader: %w", err)
+			}
+
+			traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
+			if err != nil {
+				return nil, err
+			}
+
+			if err = ctx.GetStub().PutState(traderKey, traderJSON); err != nil {
+				return nil, fmt.Errorf("failed to save trader: %w", err)
+			}
+		}
 	}
 
 	return receiptIds, nil
@@ -336,6 +349,12 @@ func findOptimalTraderAllocation(traders []*structs.Trader, products []structs.P
 	// Strategy 1: Check if a single trader can fulfill entire order
 	for _, trader := range traders {
 		if canFulfillAll, _ := trader.ContainsProductsAndRequestedQuantities(products); canFulfillAll {
+			for _, product := range products {
+				if err := trader.DeductProduct(product.ProductId, product.Quantity); err != nil {
+					return nil, fmt.Errorf("failed to deduct product in Strategy 1: %w", err)
+				}
+			}
+
 			return []TraderAllocation{{
 				TraderId: trader.Id,
 				Products: products,
@@ -343,7 +362,7 @@ func findOptimalTraderAllocation(traders []*structs.Trader, products []structs.P
 		}
 	}
 
-	// Strategy 2: Greedy algorithm - pick traders that cover most remaining products
+	// Strategy 2: Greedy algorithm
 	return greedyTraderSelection(traders, products)
 }
 
@@ -352,7 +371,7 @@ func findOptimalTraderAllocation(traders []*structs.Trader, products []structs.P
 func greedyTraderSelection(traders []*structs.Trader, products []structs.ProductInventory) ([]TraderAllocation, error) {
 	remaining := cloneProductInventory(products)
 	allocations := []TraderAllocation{}
-	maxIterations := len(traders) * len(products) // Prevent infinite loops
+	maxIterations := len(traders) * len(products)
 
 	for len(remaining) > 0 && maxIterations > 0 {
 		maxIterations--
@@ -367,6 +386,14 @@ func greedyTraderSelection(traders []*structs.Trader, products []structs.Product
 			TraderId: bestTrader.Id,
 			Products: bestProducts,
 		})
+
+		// CRITICAL FIX: Update the trader's inventory in the traders slice
+		// This prevents the same trader from being selected again with stale inventory
+		for _, product := range bestProducts {
+			if err := bestTrader.DeductProduct(product.ProductId, product.Quantity); err != nil {
+				return nil, fmt.Errorf("failed to deduct product in allocation: %w", err)
+			}
+		}
 
 		remaining = reduceRemainingQuantities(remaining, bestProducts)
 	}
