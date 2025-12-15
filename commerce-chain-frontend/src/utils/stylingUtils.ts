@@ -60,3 +60,53 @@ export const colorSchemes = {
     button: 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400',
   },
 };
+
+export const ListColorSchemes = {
+  purple: {
+    border: 'border-purple-500',
+    shadow: 'shadow-purple-500/50',
+    title: 'text-purple-400',
+    itemBorder: 'border-purple-400',
+    itemShadow: 'hover:shadow-purple-400/50',
+    loading: 'text-purple-300',
+    button: 'bg-purple-600 hover:bg-purple-500 border-purple-400 shadow-purple-400/50',
+  },
+  pink: {
+    border: 'border-pink-500',
+    shadow: 'shadow-pink-500/50',
+    title: 'text-pink-400',
+    itemBorder: 'border-pink-400',
+    itemShadow: 'hover:shadow-pink-400/50',
+    loading: 'text-pink-300',
+    button: 'bg-pink-600 hover:bg-pink-500 border-pink-400 shadow-pink-400/50',
+  },
+  cyan: {
+    border: 'border-cyan-500',
+    shadow: 'shadow-cyan-500/50',
+    title: 'text-cyan-400',
+    itemBorder: 'border-cyan-400',
+    itemShadow: 'hover:shadow-cyan-400/50',
+    loading: 'text-cyan-300',
+    button: 'bg-cyan-600 hover:bg-cyan-500 border-cyan-400 shadow-cyan-400/50',
+  },
+  green: {
+    border: 'border-green-500',
+    shadow: 'shadow-green-500/50',
+    title: 'text-green-400',
+    itemBorder: 'border-green-400',
+    itemShadow: 'hover:shadow-green-400/50',
+    loading: 'text-green-300',
+    button: 'bg-green-600 hover:bg-green-500 border-green-400 shadow-green-400/50',
+  },
+  indigo: {
+    border: 'border-indigo-500',
+    shadow: 'shadow-indigo-500/50',
+    title: 'text-indigo-400',
+    itemBorder: 'border-indigo-400',
+    itemShadow: 'hover:shadow-indigo-400/50',
+    loading: 'text-indigo-300',
+    button: 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400 shadow-indigo-400/50',
+  },
+};
+
+export type ColorScheme = 'purple' | 'pink' | 'cyan' | 'green' | 'indigo';

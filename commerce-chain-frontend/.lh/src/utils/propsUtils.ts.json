@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 98,
+            "activePatchIndex": 104,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -400,6 +400,30 @@
                 {
                     "date": 1765823354293,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import type { ReactNode } from \"react\";\r\n-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, ListItem } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
+                },
+                {
+                    "date": 1765823668218,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -141,5 +141,24 @@\n   };\r\n   hasBorder?: boolean;\r\n   borderPosition?: 'top' | 'bottom' | 'right' | 'left' | 'y';\r\n   className?: string;\r\n+};\r\n+\r\n+type EntityListProps<T> = {\r\n+  entities: T[];\r\n+  loading: boolean;\r\n+  error?: string;\r\n+  colorScheme: ColorScheme;\r\n+  title: string;\r\n+  createButtonLabel: string;\r\n+  loadingMessage?: string;\r\n+  emptyMessage?: string;\r\n+  onCreateClick: () => void;\r\n+  onEntityClick: (entity: T) => void;\r\n+  onDepositClick?: (entity: T) => void;\r\n+  onUpdateClick: (entity: T) => void;\r\n+  onDeleteClick: (entity: T) => void;\r\n+  renderMainContent: (entity: T) => ReactNode;\r\n+  renderSideContent: (entity: T) => ReactNode;\r\n+  getEntityId: (entity: T) => string | number;\r\n };\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765823680635,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -143,9 +143,9 @@\n   borderPosition?: 'top' | 'bottom' | 'right' | 'left' | 'y';\r\n   className?: string;\r\n };\r\n \r\n-type EntityListProps<T> = {\r\n+export type EntityListProps<T> = {\r\n   entities: T[];\r\n   loading: boolean;\r\n   error?: string;\r\n   colorScheme: ColorScheme;\r\n"
+                },
+                {
+                    "date": 1765823696541,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,7 @@\n import type { ReactNode } from \"react\";\r\n import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from \"./dataTypesUtils\";\r\n+import type { ColorScheme } from \"./stylingUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
+                },
+                {
+                    "date": 1765823885869,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n-  error: string | null;\r\n+  error: string | undefined;\r\n   onCreateClick: () => void;\r\n   onEntityClick: (trader: T) => void;\r\n   onDepositClick: (trader: T) => void;\r\n   onUpdateClick: (trader: T) => void;\r\n"
+                },
+                {
+                    "date": 1765824015173,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,9 @@\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n-  error: string | undefined;\r\n+  error: string | null;\r\n   onCreateClick: () => void;\r\n   onEntityClick: (trader: T) => void;\r\n   onDepositClick: (trader: T) => void;\r\n   onUpdateClick: (trader: T) => void;\r\n"
+                },
+                {
+                    "date": 1765824047478,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -147,9 +147,9 @@\n \r\n export type EntityListProps<T> = {\r\n   entities: T[];\r\n   loading: boolean;\r\n-  error?: string;\r\n+  error: string | null;\r\n   colorScheme: ColorScheme;\r\n   title: string;\r\n   createButtonLabel: string;\r\n   loadingMessage?: string;\r\n"
                 }
             ],
             "date": 1762248920808,

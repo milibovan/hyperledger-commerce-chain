@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 33,
+            "activePatchIndex": 35,
             "patches": [
                 {
                     "date": 1762204899059,
@@ -140,6 +140,14 @@
                 {
                     "date": 1765811704393,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,5 +25,38 @@\n export const SECTION_BORDER = \"border-2 p-3 border-green-400\";\r\n export const GRID_RESPONSIVE = \"grid-cols-1 sm:grid-cols-2\";\r\n \r\n export const orderFontSemibold = \"font-semibold text-indigo-300\"\r\n-export const orderFontBold = \"font-bold text-indigo-300\"\n\\ No newline at end of file\n+export const orderFontBold = \"font-bold text-indigo-300\"\r\n+\r\n+export const colorSchemes = {\r\n+  purple: {\r\n+    text: 'text-purple-300',\r\n+    border: 'border-purple-400',\r\n+    shadow: 'hover:shadow-purple-400/50',\r\n+    button: 'bg-purple-600 hover:bg-purple-500 border-purple-400',\r\n+  },\r\n+  pink: {\r\n+    text: 'text-pink-300',\r\n+    border: 'border-pink-400',\r\n+    shadow: 'hover:shadow-pink-400/50',\r\n+    button: 'bg-pink-600 hover:bg-pink-500 border-pink-400',\r\n+  },\r\n+  green: {\r\n+    text: 'text-green-300',\r\n+    border: 'border-green-400',\r\n+    shadow: 'hover:shadow-green-400/50',\r\n+    button: 'bg-green-600 hover:bg-green-500 border-green-400',\r\n+  },\r\n+  cyan: {\r\n+    text: 'text-cyan-300',\r\n+    border: 'border-cyan-400',\r\n+    shadow: 'hover:shadow-cyan-400/50',\r\n+    button: 'bg-cyan-600 hover:bg-cyan-500 border-cyan-400',\r\n+  },\r\n+  indigo: {\r\n+    text: 'text-indigo-300',\r\n+    border: 'border-indigo-400',\r\n+    shadow: 'hover:shadow-indigo-400/50',\r\n+    button: 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400',\r\n+  },\r\n+};\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765823691120,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -58,5 +58,7 @@\n     border: 'border-indigo-400',\r\n     shadow: 'hover:shadow-indigo-400/50',\r\n     button: 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400',\r\n   },\r\n-};\n\\ No newline at end of file\n+};\r\n+\r\n+export type ColorScheme = 'purple' | 'pink' | 'cyan' | 'green' | 'indigo';\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765823745062,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -60,5 +60,53 @@\n     button: 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400',\r\n   },\r\n };\r\n \r\n+export const ListColorSchemes = {\r\n+  purple: {\r\n+    border: 'border-purple-500',\r\n+    shadow: 'shadow-purple-500/50',\r\n+    title: 'text-purple-400',\r\n+    itemBorder: 'border-purple-400',\r\n+    itemShadow: 'hover:shadow-purple-400/50',\r\n+    loading: 'text-purple-300',\r\n+    button: 'bg-purple-600 hover:bg-purple-500 border-purple-400 shadow-purple-400/50',\r\n+  },\r\n+  pink: {\r\n+    border: 'border-pink-500',\r\n+    shadow: 'shadow-pink-500/50',\r\n+    title: 'text-pink-400',\r\n+    itemBorder: 'border-pink-400',\r\n+    itemShadow: 'hover:shadow-pink-400/50',\r\n+    loading: 'text-pink-300',\r\n+    button: 'bg-pink-600 hover:bg-pink-500 border-pink-400 shadow-pink-400/50',\r\n+  },\r\n+  cyan: {\r\n+    border: 'border-cyan-500',\r\n+    shadow: 'shadow-cyan-500/50',\r\n+    title: 'text-cyan-400',\r\n+    itemBorder: 'border-cyan-400',\r\n+    itemShadow: 'hover:shadow-cyan-400/50',\r\n+    loading: 'text-cyan-300',\r\n+    button: 'bg-cyan-600 hover:bg-cyan-500 border-cyan-400 shadow-cyan-400/50',\r\n+  },\r\n+  green: {\r\n+    border: 'border-green-500',\r\n+    shadow: 'shadow-green-500/50',\r\n+    title: 'text-green-400',\r\n+    itemBorder: 'border-green-400',\r\n+    itemShadow: 'hover:shadow-green-400/50',\r\n+    loading: 'text-green-300',\r\n+    button: 'bg-green-600 hover:bg-green-500 border-green-400 shadow-green-400/50',\r\n+  },\r\n+  indigo: {\r\n+    border: 'border-indigo-500',\r\n+    shadow: 'shadow-indigo-500/50',\r\n+    title: 'text-indigo-400',\r\n+    itemBorder: 'border-indigo-400',\r\n+    itemShadow: 'hover:shadow-indigo-400/50',\r\n+    loading: 'text-indigo-300',\r\n+    button: 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400 shadow-indigo-400/50',\r\n+  },\r\n+};\r\n+\r\n export type ColorScheme = 'purple' | 'pink' | 'cyan' | 'green' | 'indigo';\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762204899059,

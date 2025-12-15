@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from "./dataTypesUtils";
+import type { ColorScheme } from "./stylingUtils";
 
 export interface ListProps<T> {
   entities: T[];
@@ -142,4 +143,23 @@ export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData> = 
   hasBorder?: boolean;
   borderPosition?: 'top' | 'bottom' | 'right' | 'left' | 'y';
   className?: string;
+};
+
+export type EntityListProps<T> = {
+  entities: T[];
+  loading: boolean;
+  error: string | null;
+  colorScheme: ColorScheme;
+  title: string;
+  createButtonLabel: string;
+  loadingMessage?: string;
+  emptyMessage?: string;
+  onCreateClick: () => void;
+  onEntityClick: (entity: T) => void;
+  onDepositClick?: (entity: T) => void;
+  onUpdateClick: (entity: T) => void;
+  onDeleteClick: (entity: T) => void;
+  renderMainContent: (entity: T) => ReactNode;
+  renderSideContent: (entity: T) => ReactNode;
+  getEntityId: (entity: T) => string | number;
 };
