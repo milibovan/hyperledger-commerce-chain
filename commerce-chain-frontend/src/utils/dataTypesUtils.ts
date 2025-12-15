@@ -117,6 +117,13 @@ export interface Deposit {
   channel: string;
 }
 
+export type FieldConfig = {
+  label: string;
+  value: string | number | Date;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  formatter?: (value: any) => string;
+};
+
 export interface AddProductToTrader {
   traderId: string;
   productId: string;

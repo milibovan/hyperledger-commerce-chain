@@ -2,10 +2,10 @@ import type { TraderDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import {
   traderFontBold,
-  traderFontSemibold,
 } from "../../utils/stylingUtils";
 import { Package, Plus, Receipt } from "lucide-react";
 import ProductCard from "../reusables/ProductCard";
+import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 
 export default function TraderDetails({
   entity: trader,
@@ -19,28 +19,28 @@ export default function TraderDetails({
 
   return (
     <div className="space-y-6">
-      <h3 className="text-2xl font-bold text-pink-400">Trader Details</h3>
-
-      {/* Basic Info */}
-      <div className="grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400">
-        <div>
-          <span className={traderFontSemibold}>ID:</span> {trader.trader.id}
-        </div>
-        <div>
-          <span className={traderFontSemibold}>VAT:</span> {trader.trader.vat}
-        </div>
-        <div>
-          <span className={traderFontSemibold}>Name:</span> {trader.trader.name}
-        </div>
-        <div>
-          <span className={traderFontSemibold}>Balance:</span> $
-          {trader.trader.balance.toFixed(2)}
-        </div>
-        <div>
-          <span className={traderFontSemibold}>Type:</span>{" "}
-          {trader.trader["trader-type"].toUpperCase()}
-        </div>
-      </div>
+      <EntityDetailsDisplay
+        title="Trader Details"
+        titleColor="text-pink-400"
+        labelColor="text-pink-300"
+        hasBorder={true}
+        borderColor="border-pink-400"
+        fields={[
+          { label: 'ID', value: trader.trader.id },
+          { label: 'VAT', value: trader.trader.vat },
+          { label: 'Name', value: trader.trader.name },
+          {
+            label: 'Balance',
+            value: trader.trader.balance,
+            // TODO Solve error
+            formatter: (val) => `$${val.toFixed(2)}`
+          },
+          {
+            label: 'Type',
+            value: trader.trader['trader-type'].toUpperCase()
+          },
+        ]}
+      />
 
       <div className="grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400">
 

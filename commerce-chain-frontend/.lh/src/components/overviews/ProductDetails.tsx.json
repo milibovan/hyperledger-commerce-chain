@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 6,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1762377383218,
@@ -32,6 +32,14 @@
                 {
                     "date": 1764536593786,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n           {product.name}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Expiry Date:</span>{\" \"}\r\n-          {getFormattedDate(product)}\r\n+          {getFormattedDate(product[\"expiry-date\"])}\r\n         </div>\r\n         <div>\r\n           <span className=\"font-semibold text-cyan-300\">Price:</span> $\r\n           {product.price.toFixed(2)}\r\n"
+                },
+                {
+                    "date": 1765810438626,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,36 +1,38 @@\n import { getFormattedDate, type ProductData } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n+import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n \r\n-export default function ProductDetails({entity: product}: DetailsProps<ProductData> ) {\r\n+export default function ProductDetails({ entity: product }: DetailsProps<ProductData>) {\r\n   return (\r\n     <div className=\"space-y-4\">\r\n-      <h3 className=\"text-2xl font-bold text-cyan-400\">Product Details</h3>\r\n-      <div className=\"grid grid-cols-2 gap-4 text-gray-300\">\r\n-        <div>\r\n-          <span className=\"font-semibold text-cyan-300\">ID:</span>{\" \"}\r\n-          {product.id}\r\n-        </div>\r\n-        <div>\r\n-          <span className=\"font-semibold text-cyan-300\">Product Name:</span>{\" \"}\r\n-          {product.name}\r\n-        </div>\r\n-        <div>\r\n-          <span className=\"font-semibold text-cyan-300\">Expiry Date:</span>{\" \"}\r\n-          {getFormattedDate(product[\"expiry-date\"])}\r\n-        </div>\r\n-        <div>\r\n-          <span className=\"font-semibold text-cyan-300\">Price:</span> $\r\n-          {product.price.toFixed(2)}\r\n-        </div>\r\n-        <div>\r\n-          <span className=\"font-semibold text-cyan-300\">Quantity: </span>\r\n-          {product.quantity.toFixed(0)}\r\n-        </div>\r\n-        <div>\r\n-          <span className=\"font-semibold text-cyan-300\">Trader type: </span>\r\n-          {product[\"trader-type\"].toUpperCase()}\r\n-        </div>\r\n-      </div>\r\n+      <EntityDetailsDisplay\r\n+        title=\"Product Details\"\r\n+        titleColor=\"text-cyan-400\"\r\n+        labelColor=\"text-cyan-300\"\r\n+        fields={[\r\n+          { label: 'ID', value: product.id },\r\n+          { label: 'Product Name', value: product.name },\r\n+          {\r\n+            label: 'Expiry Date',\r\n+            value: product['expiry-date'],\r\n+            formatter: (val) => getFormattedDate(val)\r\n+          },\r\n+          {\r\n+            label: 'Price',\r\n+            value: product.price,\r\n+            formatter: (val) => `$${val.toFixed(2)}`\r\n+          },\r\n+          {\r\n+            label: 'Quantity',\r\n+            value: product.quantity,\r\n+            formatter: (val) => val.toFixed(0)\r\n+          },\r\n+          {\r\n+            label: 'Trader type',\r\n+            value: product['trader-type'].toUpperCase()\r\n+          },\r\n+        ]}\r\n+      />\r\n     </div>\r\n   );\r\n }\r\n"
+                },
+                {
+                    "date": 1765810496360,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,8 +13,9 @@\n           { label: 'ID', value: product.id },\r\n           { label: 'Product Name', value: product.name },\r\n           {\r\n             label: 'Expiry Date',\r\n+            // TODO Solve error\r\n             value: product['expiry-date'],\r\n             formatter: (val) => getFormattedDate(val)\r\n           },\r\n           {\r\n"
                 }
             ],
             "date": 1762377383218,

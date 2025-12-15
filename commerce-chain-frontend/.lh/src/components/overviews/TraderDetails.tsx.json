@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 128,
+            "activePatchIndex": 130,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -520,6 +520,14 @@
                 {
                     "date": 1765482108741,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -102,10 +102,9 @@\n             <div className=\"space-y-2\">\r\n               {trader.receipts.map((receipt) => (\r\n                 <div\r\n                   key={receipt.id}\r\n-                  // TODO OnClick to show info\r\n-                  onClick={() => onEntityClick(receipt)}\r\n+                  onClick={() => onEntityClick?.(receipt)}\r\n                   className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600\"\r\n                 >\r\n                   <div className=\"flex-1\">\r\n                     <h5 className={traderFontBold}>Products sold: {trader[\"receipts-products\"].length}</h5>\r\n"
+                },
+                {
+                    "date": 1765810385173,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n   traderFontSemibold,\r\n } from \"../../utils/stylingUtils\";\r\n import { Package, Plus, Receipt } from \"lucide-react\";\r\n import ProductCard from \"../reusables/ProductCard\";\r\n+import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n \r\n export default function TraderDetails({\r\n   entity: trader,\r\n   addProduct,\r\n@@ -18,33 +19,33 @@\n   };\r\n \r\n   return (\r\n     <div className=\"space-y-6\">\r\n-      <h3 className=\"text-2xl font-bold text-pink-400\">Trader Details</h3>\r\n+      <EntityDetailsDisplay\r\n+        title=\"Trader Details\"\r\n+        titleColor=\"text-pink-400\"\r\n+        labelColor=\"text-pink-300\"\r\n+        hasBorder={true}\r\n+        borderColor=\"border-pink-400\"\r\n+        fields={[\r\n+          { label: 'ID', value: trader.trader.id },\r\n+          { label: 'VAT', value: trader.trader.vat },\r\n+          { label: 'Name', value: trader.trader.name },\r\n+          {\r\n+            label: 'Balance',\r\n+            value: trader.trader.balance,\r\n+            // TODO Solve error\r\n+            formatter: (val) => `$${val.toFixed(2)}`\r\n+          },\r\n+          {\r\n+            label: 'Type',\r\n+            value: trader.trader['trader-type'].toUpperCase()\r\n+          },\r\n+        ]}\r\n+      />\r\n \r\n-      {/* Basic Info */}\r\n       <div className=\"grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400\">\r\n-        <div>\r\n-          <span className={traderFontSemibold}>ID:</span> {trader.trader.id}\r\n-        </div>\r\n-        <div>\r\n-          <span className={traderFontSemibold}>VAT:</span> {trader.trader.vat}\r\n-        </div>\r\n-        <div>\r\n-          <span className={traderFontSemibold}>Name:</span> {trader.trader.name}\r\n-        </div>\r\n-        <div>\r\n-          <span className={traderFontSemibold}>Balance:</span> $\r\n-          {trader.trader.balance.toFixed(2)}\r\n-        </div>\r\n-        <div>\r\n-          <span className={traderFontSemibold}>Type:</span>{\" \"}\r\n-          {trader.trader[\"trader-type\"].toUpperCase()}\r\n-        </div>\r\n-      </div>\r\n \r\n-      <div className=\"grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400\">\r\n-\r\n         {/* Products Section */}\r\n         <div className=\"border-r-2 border-pink-300 pr-4\">\r\n           <div className=\"flex items-center justify-between mb-3.5\">\r\n             <h4 className=\"text-xl font-bold text-pink-300 flex items-center gap-2\">\r\n"
+                },
+                {
+                    "date": 1765810391370,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,8 @@\n import type { TraderDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import {\r\n   traderFontBold,\r\n-  traderFontSemibold,\r\n } from \"../../utils/stylingUtils\";\r\n import { Package, Plus, Receipt } from \"lucide-react\";\r\n import ProductCard from \"../reusables/ProductCard\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n"
                 }
             ],
             "date": 1762249738197,

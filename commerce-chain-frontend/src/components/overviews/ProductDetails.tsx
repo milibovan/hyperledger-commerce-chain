@@ -1,36 +1,39 @@
 import { getFormattedDate, type ProductData } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
+import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 
-export default function ProductDetails({entity: product}: DetailsProps<ProductData> ) {
+export default function ProductDetails({ entity: product }: DetailsProps<ProductData>) {
   return (
     <div className="space-y-4">
-      <h3 className="text-2xl font-bold text-cyan-400">Product Details</h3>
-      <div className="grid grid-cols-2 gap-4 text-gray-300">
-        <div>
-          <span className="font-semibold text-cyan-300">ID:</span>{" "}
-          {product.id}
-        </div>
-        <div>
-          <span className="font-semibold text-cyan-300">Product Name:</span>{" "}
-          {product.name}
-        </div>
-        <div>
-          <span className="font-semibold text-cyan-300">Expiry Date:</span>{" "}
-          {getFormattedDate(product["expiry-date"])}
-        </div>
-        <div>
-          <span className="font-semibold text-cyan-300">Price:</span> $
-          {product.price.toFixed(2)}
-        </div>
-        <div>
-          <span className="font-semibold text-cyan-300">Quantity: </span>
-          {product.quantity.toFixed(0)}
-        </div>
-        <div>
-          <span className="font-semibold text-cyan-300">Trader type: </span>
-          {product["trader-type"].toUpperCase()}
-        </div>
-      </div>
+      <EntityDetailsDisplay
+        title="Product Details"
+        titleColor="text-cyan-400"
+        labelColor="text-cyan-300"
+        fields={[
+          { label: 'ID', value: product.id },
+          { label: 'Product Name', value: product.name },
+          {
+            label: 'Expiry Date',
+            // TODO Solve error
+            value: product['expiry-date'],
+            formatter: (val) => getFormattedDate(val)
+          },
+          {
+            label: 'Price',
+            value: product.price,
+            formatter: (val) => `$${val.toFixed(2)}`
+          },
+          {
+            label: 'Quantity',
+            value: product.quantity,
+            formatter: (val) => val.toFixed(0)
+          },
+          {
+            label: 'Trader type',
+            value: product['trader-type'].toUpperCase()
+          },
+        ]}
+      />
     </div>
   );
 }

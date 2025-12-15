@@ -1,4 +1,4 @@
-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData } from "./dataTypesUtils";
+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from "./dataTypesUtils";
 
 export interface ListProps<T> {
   entities: T[];
@@ -112,3 +112,14 @@ export interface ProductCardProps {
     onClick?: () => void;
     colorScheme?: "green" | "pink" | "indigo";
 }
+
+export type EntityDetailsDisplayProps = {
+  title: string;
+  titleColor: string;
+  labelColor: string;
+  fields: FieldConfig[];
+  columns?: 1 | 2;
+  hasBorder?: boolean;
+  borderColor?: string;
+};
+

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 43,
+            "activePatchIndex": 52,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -180,6 +180,42 @@
                 {
                     "date": 1765542720203,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -97,9 +97,9 @@\n   date: Date;\r\n }\r\n \r\n export interface OrdersData {\r\n-  Receipts: Array<OrderData>;\r\n+  Orders: Array<OrderData>;\r\n }\r\n \r\n export interface OrderData {\r\n \t\"doc-type\" :    string;            \r\n"
+                },
+                {
+                    "date": 1765810055222,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -116,8 +116,14 @@\n   quantity?: string;\r\n   channel: string;\r\n }\r\n \r\n+export type FieldConfig = {\r\n+  label: string;\r\n+  value: string | number;\r\n+  formatter?: (value: Date) => string;\r\n+};\r\n+\r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n   productId: string;\r\n   quantity: string;\r\n"
+                },
+                {
+                    "date": 1765810192534,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -118,9 +118,9 @@\n }\r\n \r\n export type FieldConfig = {\r\n   label: string;\r\n-  value: string | number;\r\n+  value: Date | number;\r\n   formatter?: (value: Date) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n"
+                },
+                {
+                    "date": 1765810216720,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -118,10 +118,10 @@\n }\r\n \r\n export type FieldConfig = {\r\n   label: string;\r\n-  value: Date | number;\r\n-  formatter?: (value: Date) => string;\r\n+  value: string | number;\r\n+  formatter?: (value: any) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n"
+                },
+                {
+                    "date": 1765810223396,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -119,9 +119,9 @@\n \r\n export type FieldConfig = {\r\n   label: string;\r\n   value: string | number;\r\n-  formatter?: (value: any) => string;\r\n+  formatter?: (value: unknown) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n"
+                },
+                {
+                    "date": 1765810283845,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -119,9 +119,9 @@\n \r\n export type FieldConfig = {\r\n   label: string;\r\n   value: string | number;\r\n-  formatter?: (value: unknown) => string;\r\n+  formatter?: (value: string | number) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n"
+                },
+                {
+                    "date": 1765810461516,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -118,9 +118,9 @@\n }\r\n \r\n export type FieldConfig = {\r\n   label: string;\r\n-  value: string | number;\r\n+  value: string | number | Date;\r\n   formatter?: (value: string | number) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n"
+                },
+                {
+                    "date": 1765810481339,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -118,9 +118,9 @@\n }\r\n \r\n export type FieldConfig = {\r\n   label: string;\r\n-  value: string | number | Date;\r\n+  value: string | number;\r\n   formatter?: (value: string | number) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n"
+                },
+                {
+                    "date": 1765810757319,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -118,10 +118,10 @@\n }\r\n \r\n export type FieldConfig = {\r\n   label: string;\r\n-  value: string | number;\r\n-  formatter?: (value: string | number) => string;\r\n+  value: string | number | Date;\r\n+  formatter?: (value: unknown) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n"
+                },
+                {
+                    "date": 1765810770659,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -119,9 +119,10 @@\n \r\n export type FieldConfig = {\r\n   label: string;\r\n   value: string | number | Date;\r\n-  formatter?: (value: unknown) => string;\r\n+  // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n+  formatter?: (value: any) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n"
                 }
             ],
             "date": 1762249804506,

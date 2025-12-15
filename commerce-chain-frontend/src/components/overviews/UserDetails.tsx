@@ -1,28 +1,30 @@
 import type { UserDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
-import { userFontBold, userFontSemibold } from "../../utils/stylingUtils";
+import { userFontBold } from "../../utils/stylingUtils";
+import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 
 export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {
   return (
     <div className="space-y-4">
-      <h3 className="text-2xl font-bold text-purple-400">User Details</h3>
-      <div className="grid grid-cols-2 gap-4 text-gray-300">
-        <div>
-          <span className={userFontSemibold}>ID:</span> {userDetails.user.id}
-        </div>
-        <div>
-          <span className={userFontSemibold}>Email:</span>{" "}
-          {userDetails.user.email}
-        </div>
-        <div>
-          <span className={userFontSemibold}>Name:</span>{" "}
-          {userDetails.user.name} {userDetails.user.surname}
-        </div>
-        <div>
-          <span className={userFontSemibold}>Balance:</span> $
-          {userDetails.user.balance.toFixed(2)}
-        </div>
-      </div>
+      <EntityDetailsDisplay
+        title="User Details"
+        titleColor="text-purple-400"
+        labelColor="text-purple-300"
+        fields={[
+          { label: 'ID', value: userDetails.user.id },
+          { label: 'Email', value: userDetails.user.email },
+          {
+            label: 'Name',
+            value: `${userDetails.user.name} ${userDetails.user.surname}`
+          },
+          {
+            label: 'Balance',
+            value: userDetails.user.balance,
+            // TODO Solve error
+            formatter: (val) => `$${val.toFixed(2)}`
+          },
+        ]}
+      />
       <div className="pt-4 border-t-2 border-purple-400">
         <h4 className="text-xl font-bold text-purple-300 mb-2">
           Orders ({userDetails.user["orders-ids"]?.length || 0})

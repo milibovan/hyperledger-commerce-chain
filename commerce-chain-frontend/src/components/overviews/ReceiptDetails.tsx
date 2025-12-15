@@ -1,10 +1,10 @@
 import { Package } from "lucide-react";
 import { getFormattedDate, type ReceiptDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
-import { receiptFontSemibold } from "../../utils/stylingUtils";
 import LoadingSkeleton from "../reusables/LoadingSkeleton";
 import InfoSection from "../reusables/InfoSection";
 import ProductCard from "../reusables/ProductCard";
+import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 
 export default function ReceiptDetails({
     entity: receipt,
@@ -20,22 +20,26 @@ export default function ReceiptDetails({
 
     return (
         <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-green-400">Receipt Details</h3>
-
-            {/* Receipt Basic Info */}
-            <div className={`grid grid-cols-1 gap-4 text-gray-300 py-4`}>
-                <div>
-                    <span className={receiptFontSemibold}>ID:</span> {receipt.receipt.id}
-                </div>
-                <div>
-                    <span className={receiptFontSemibold}>Date created:</span>{" "}
-                    {getFormattedDate(receipt.receipt.date)}
-                </div>
-                <div>
-                    <span className={receiptFontSemibold}>Total cost:</span> $
-                    {receipt.receipt["total-cost"]}
-                </div>
-            </div>
+            <EntityDetailsDisplay
+                title="Receipt Details"
+                titleColor="text-green-400"
+                labelColor="text-green-300"
+                columns={1}
+                fields={[
+                    { label: 'ID', value: receipt.receipt.id },
+                    {
+                        label: 'Date created',
+                        // TODO Solve error
+                        value: receipt.receipt.date,
+                        formatter: (val) => getFormattedDate(val)
+                    },
+                    {
+                        label: 'Total cost',
+                        value: receipt.receipt['total-cost'],
+                        formatter: (val) => `$${val}`
+                    },
+                ]}
+            />
             <div className={`grid grid-cols-2 gap-4 text-gray-300 py-4`}>
                 {/* User Info Section */}
                 <InfoSection

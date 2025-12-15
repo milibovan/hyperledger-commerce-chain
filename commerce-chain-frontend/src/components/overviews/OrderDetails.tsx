@@ -1,8 +1,9 @@
 import { Package, Receipt } from "lucide-react";
 import { getFormattedDate, type OrderDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
-import { orderFontSemibold, orderFontBold } from "../../utils/stylingUtils";
+import { orderFontBold } from "../../utils/stylingUtils";
 import ProductCard from "../reusables/ProductCard";
+import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 
 export default function OrderDetails({ entity: order, onEntityClick, onProductClick }: DetailsProps<OrderDetails>) {
     const getProductQuantity = (productId: string) => {
@@ -11,20 +12,24 @@ export default function OrderDetails({ entity: order, onEntityClick, onProductCl
 
     return (
         <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-indigo-400">Order Details</h3>
-            <div className="grid grid-cols-2 gap-4 text-gray-300">
-                <div>
-                    <span className={orderFontSemibold}>ID:</span> {order.order.id}
-                </div>
-                <div>
-                    <span className={orderFontSemibold}>Total cost:</span> $
-                    {order.order["total-cost"].toFixed(2)}
-                </div>
-                <div>
-                    <span className={orderFontSemibold}>Order placed: </span>
-                    {getFormattedDate(order.receipts[0].date)}
-                </div>
-            </div>
+            <EntityDetailsDisplay
+                title="Order Details"
+                titleColor="text-indigo-400"
+                labelColor="text-indigo-300"
+                fields={[
+                    { label: 'ID', value: order.order.id },
+                    {
+                        label: 'Total cost',
+                        value: order.order['total-cost'],
+                        formatter: (val: number) => `$${val.toFixed(2)}`
+                    },
+                    {
+                        label: 'Order placed',
+                        value: order.receipts[0].date,
+                        formatter: (val: Date) => getFormattedDate(val)
+                    },
+                ]}
+            />
 
             <div className="grid grid-cols-2 gap-4 text-gray-300 pb-4 border-y-2 border-indigo-400">
                 <div className="mt-4 border-r-2 pr-4 border-indigo-400">
