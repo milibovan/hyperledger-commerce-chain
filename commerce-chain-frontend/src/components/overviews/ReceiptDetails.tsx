@@ -1,10 +1,10 @@
-import { Package } from "lucide-react";
-import { getFormattedDate, type ReceiptDetails } from "../../utils/dataTypesUtils";
+import { getFormattedDate, type ProductData, type ReceiptDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import LoadingSkeleton from "../reusables/LoadingSkeleton";
 import InfoSection from "../reusables/InfoSection";
 import ProductCard from "../reusables/ProductCard";
 import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
+import NestedEntityListSection from "../reusables/NestedEntityListSection";
 
 export default function ReceiptDetails({
     entity: receipt,
@@ -29,7 +29,6 @@ export default function ReceiptDetails({
                     { label: 'ID', value: receipt.receipt.id },
                     {
                         label: 'Date created',
-                        // TODO Solve error
                         value: receipt.receipt.date,
                         formatter: (val) => getFormattedDate(val)
                     },
@@ -64,32 +63,23 @@ export default function ReceiptDetails({
 
 
             {/* Products Section */}
-            <div>
-                <h4 className="text-xl font-bold text-green-300 flex items-center gap-2 mb-4">
-                    <Package size={20} />
-                    Products ({receipt.products?.length || 0})
-                </h4>
-
-                {productsLoading ? (
-                    <LoadingSkeleton />
-                ) : receipt.products && receipt.products.length > 0 ? (
-                    <div className="space-y-2">
-                        {receipt.products.map((product) => (
-                            <ProductCard
-                                key={product.id}
-                                product={product}
-                                quantity={getProductQuantity(product.id)}
-                                onClick={() => onProductClick?.(product)}
-                                colorScheme="green"
-                            />
-                        ))}
-                    </div>
-                ) : (
-                    <div className="text-center text-gray-400 py-4 bg-gray-700 rounded border border-green-400">
-                        No products available
-                    </div>
+            <NestedEntityListSection
+                title="Products"
+                items={receipt.products || []}
+                colorScheme="green"
+                icon="package"
+                isLoading={productsLoading}
+                loadingComponent={<LoadingSkeleton />}
+                emptyMessage="No products available"
+                renderItem={(product: ProductData) => (
+                    <ProductCard
+                        product={product}
+                        quantity={getProductQuantity(product.id)}
+                        onClick={() => onProductClick?.(product)}
+                        colorScheme="green"
+                    />
                 )}
-            </div>
+            />
         </div>
     );
 }

@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from "./dataTypesUtils";
 
 export interface ListProps<T> {
@@ -123,3 +124,22 @@ export type EntityDetailsDisplayProps = {
   borderColor?: string;
 };
 
+export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData> = {
+  title: string;
+  items: T[];
+  colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';
+  icon?: 'package' | 'receipt' | 'custom';
+  customIcon?: ReactNode;
+  renderItem: (item: T, index: number) => ReactNode;
+  emptyMessage?: string;
+  isLoading?: boolean;
+  loadingComponent?: ReactNode;
+  actionButton?: {
+    label: string;
+    onClick: () => void;
+    icon?: ReactNode;
+  };
+  hasBorder?: boolean;
+  borderPosition?: 'top' | 'bottom' | 'right' | 'left' | 'y';
+  className?: string;
+};

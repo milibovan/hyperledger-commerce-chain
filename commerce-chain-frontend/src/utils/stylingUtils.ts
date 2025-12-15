@@ -27,3 +27,36 @@ export const GRID_RESPONSIVE = "grid-cols-1 sm:grid-cols-2";
 
 export const orderFontSemibold = "font-semibold text-indigo-300"
 export const orderFontBold = "font-bold text-indigo-300"
+
+export const colorSchemes = {
+  purple: {
+    text: 'text-purple-300',
+    border: 'border-purple-400',
+    shadow: 'hover:shadow-purple-400/50',
+    button: 'bg-purple-600 hover:bg-purple-500 border-purple-400',
+  },
+  pink: {
+    text: 'text-pink-300',
+    border: 'border-pink-400',
+    shadow: 'hover:shadow-pink-400/50',
+    button: 'bg-pink-600 hover:bg-pink-500 border-pink-400',
+  },
+  green: {
+    text: 'text-green-300',
+    border: 'border-green-400',
+    shadow: 'hover:shadow-green-400/50',
+    button: 'bg-green-600 hover:bg-green-500 border-green-400',
+  },
+  cyan: {
+    text: 'text-cyan-300',
+    border: 'border-cyan-400',
+    shadow: 'hover:shadow-cyan-400/50',
+    button: 'bg-cyan-600 hover:bg-cyan-500 border-cyan-400',
+  },
+  indigo: {
+    text: 'text-indigo-300',
+    border: 'border-indigo-400',
+    shadow: 'hover:shadow-indigo-400/50',
+    button: 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400',
+  },
+};

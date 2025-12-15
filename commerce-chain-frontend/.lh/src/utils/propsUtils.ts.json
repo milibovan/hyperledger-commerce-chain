@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 88,
+            "activePatchIndex": 98,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -360,6 +360,46 @@
                 {
                     "date": 1765810060946,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
+                },
+                {
+                    "date": 1765811645601,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -122,4 +122,23 @@\n   hasBorder?: boolean;\r\n   borderColor?: string;\r\n };\r\n \r\n+export type EntityListSectionProps = {\r\n+  title: string;\r\n+  items: ListItem[];\r\n+  colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n+  icon?: 'package' | 'receipt' | 'custom';\r\n+  customIcon?: ReactNode;\r\n+  renderItem: (item: ListItem, index: number) => ReactNode;\r\n+  emptyMessage?: string;\r\n+  isLoading?: boolean;\r\n+  loadingComponent?: ReactNode;\r\n+  actionButton?: {\r\n+    label: string;\r\n+    onClick: () => void;\r\n+    icon?: ReactNode;\r\n+  };\r\n+  hasBorder?: boolean;\r\n+  borderPosition?: 'top' | 'bottom' | 'right' | 'left' | 'y';\r\n+  className?: string;\r\n+};\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765811716111,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,6 @@\n-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from \"./dataTypesUtils\";\r\n+import type { ReactNode } from \"react\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, ListItem } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
+                },
+                {
+                    "date": 1765822839919,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -123,9 +123,9 @@\n   hasBorder?: boolean;\r\n   borderColor?: string;\r\n };\r\n \r\n-export type EntityListSectionProps = {\r\n+export type EntityListSectionProps<T, R> = {\r\n   title: string;\r\n   items: ListItem[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n   icon?: 'package' | 'receipt' | 'custom';\r\n"
+                },
+                {
+                    "date": 1765822883682,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -123,9 +123,9 @@\n   hasBorder?: boolean;\r\n   borderColor?: string;\r\n };\r\n \r\n-export type EntityListSectionProps<T, R> = {\r\n+export type EntityListSectionProps<T = , R> = {\r\n   title: string;\r\n   items: ListItem[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n   icon?: 'package' | 'receipt' | 'custom';\r\n"
+                },
+                {
+                    "date": 1765822918604,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -123,15 +123,15 @@\n   hasBorder?: boolean;\r\n   borderColor?: string;\r\n };\r\n \r\n-export type EntityListSectionProps<T = , R> = {\r\n+export type EntityListSectionProps<T = ProductData, R = ReceiptData, O = OrderData> = {\r\n   title: string;\r\n   items: ListItem[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n   icon?: 'package' | 'receipt' | 'custom';\r\n   customIcon?: ReactNode;\r\n-  renderItem: (item: ListItem, index: number) => ReactNode;\r\n+  renderItem: (item: T | R | O, index: number) => ReactNode;\r\n   emptyMessage?: string;\r\n   isLoading?: boolean;\r\n   loadingComponent?: ReactNode;\r\n   actionButton?: {\r\n"
+                },
+                {
+                    "date": 1765822939778,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -129,9 +129,9 @@\n   items: ListItem[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n   icon?: 'package' | 'receipt' | 'custom';\r\n   customIcon?: ReactNode;\r\n-  renderItem: (item: T | R | O, index: number) => ReactNode;\r\n+  renderItem: (item: T, index: number) => ReactNode;\r\n   emptyMessage?: string;\r\n   isLoading?: boolean;\r\n   loadingComponent?: ReactNode;\r\n   actionButton?: {\r\n"
+                },
+                {
+                    "date": 1765822961413,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -129,9 +129,9 @@\n   items: ListItem[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n   icon?: 'package' | 'receipt' | 'custom';\r\n   customIcon?: ReactNode;\r\n-  renderItem: (item: T, index: number) => ReactNode;\r\n+  renderItem: (item: ListItem, index: number) => ReactNode;\r\n   emptyMessage?: string;\r\n   isLoading?: boolean;\r\n   loadingComponent?: ReactNode;\r\n   actionButton?: {\r\n"
+                },
+                {
+                    "date": 1765823104812,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -123,9 +123,9 @@\n   hasBorder?: boolean;\r\n   borderColor?: string;\r\n };\r\n \r\n-export type EntityListSectionProps<T = ProductData, R = ReceiptData, O = OrderData> = {\r\n+export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData> = {\r\n   title: string;\r\n   items: ListItem[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n   icon?: 'package' | 'receipt' | 'custom';\r\n"
+                },
+                {
+                    "date": 1765823113275,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -125,13 +125,13 @@\n };\r\n \r\n export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData> = {\r\n   title: string;\r\n-  items: ListItem[];\r\n+  items: T[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n   icon?: 'package' | 'receipt' | 'custom';\r\n   customIcon?: ReactNode;\r\n-  renderItem: (item: ListItem, index: number) => ReactNode;\r\n+  renderItem: (item: T, index: number) => ReactNode;\r\n   emptyMessage?: string;\r\n   isLoading?: boolean;\r\n   loadingComponent?: ReactNode;\r\n   actionButton?: {\r\n"
+                },
+                {
+                    "date": 1765823354293,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import type { ReactNode } from \"react\";\r\n-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, ListItem } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from \"./dataTypesUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n   loading: boolean;\r\n"
                 }
             ],
             "date": 1762248920808,

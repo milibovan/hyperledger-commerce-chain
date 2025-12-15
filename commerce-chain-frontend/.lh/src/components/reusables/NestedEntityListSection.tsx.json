@@ -1,0 +1,22 @@
+{
+    "sourceFile": "src/components/reusables/NestedEntityListSection.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1765823477831,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1765823484646,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Package, Plus, Receipt } from \"lucide-react\";\r\n-import type { EntityListSectionProps } from \"../../utils/propsUtils\";\r\n+import type { EntityListSectionProps as NestedEntityListSectionProps } from \"../../utils/propsUtils\";\r\n import { colorSchemes } from \"../../utils/stylingUtils\";\r\n \r\n const NestedEntityListSection = <T,>({\r\n     title,\r\n@@ -15,9 +15,9 @@\n     actionButton,\r\n     hasBorder = false,\r\n     borderPosition = 'right',\r\n     className = '',\r\n-}: EntityListSectionProps<T>) => {\r\n+}: NestedEntityListSectionProps<T>) => {\r\n     const colors = colorSchemes[colorScheme];\r\n \r\n     const getIcon = () => {\r\n         if (customIcon) return customIcon;\r\n"
+                }
+            ],
+            "date": 1765823477831,
+            "name": "Commit-0",
+            "content": "import { Package, Plus, Receipt } from \"lucide-react\";\r\nimport type { EntityListSectionProps } from \"../../utils/propsUtils\";\r\nimport { colorSchemes } from \"../../utils/stylingUtils\";\r\n\r\nconst NestedEntityListSection = <T,>({\r\n    title,\r\n    items,\r\n    colorScheme,\r\n    icon = 'package',\r\n    customIcon,\r\n    renderItem,\r\n    emptyMessage = 'No items available',\r\n    isLoading = false,\r\n    loadingComponent,\r\n    actionButton,\r\n    hasBorder = false,\r\n    borderPosition = 'right',\r\n    className = '',\r\n}: EntityListSectionProps<T>) => {\r\n    const colors = colorSchemes[colorScheme];\r\n\r\n    const getIcon = () => {\r\n        if (customIcon) return customIcon;\r\n        if (icon === 'receipt') return <Receipt size={20} />;\r\n        return <Package size={20} />;\r\n    };\r\n\r\n    const getBorderClass = () => {\r\n        if (!hasBorder) return '';\r\n        const borderMap = {\r\n            top: 'border-t-2',\r\n            bottom: 'border-b-2',\r\n            right: 'border-r-2 pr-4',\r\n            left: 'border-l-2 pl-4',\r\n            y: 'border-y-2',\r\n        };\r\n        return `${borderMap[borderPosition]} ${colors.border}`;\r\n    };\r\n\r\n    return (\r\n        <div className={`${getBorderClass()} ${className}`}>\r\n            <div className=\"flex items-center justify-between mb-3.5\">\r\n                <h4 className={`text-xl font-bold ${colors.text} flex items-center gap-2`}>\r\n                    {getIcon()}\r\n                    {title} ({items?.length || 0})\r\n                </h4>\r\n                {actionButton && (\r\n                    <button\r\n                        onClick={actionButton.onClick}\r\n                        className={`flex items-center px-3 py-2 gap-3 ${colors.button} text-white font-semibold rounded border-2 transition-all duration-200 hover:shadow-lg ${colors.shadow}`}\r\n                        title={actionButton.label}\r\n                    >\r\n                        {actionButton.icon || <Plus size={18} />}\r\n                        {actionButton.label}\r\n                    </button>\r\n                )}\r\n            </div>\r\n\r\n            {isLoading ? (\r\n                loadingComponent || <div className=\"text-center text-gray-400 py-4\">Loading...</div>\r\n            ) : items && items.length > 0 ? (\r\n                <div className=\"space-y-2\">\r\n                    {items.map((item, index) => (\r\n                        <div key={index}>\r\n                            {renderItem(item, index)}\r\n                        </div>\r\n                    ))}\r\n                </div>\r\n            ) : (\r\n                <div className={`text-center text-gray-400 py-4 bg-gray-700 rounded border ${colors.border}`}>\r\n                    {emptyMessage}\r\n                </div>\r\n            )}\r\n        </div>\r\n    );\r\n};\r\n\r\nexport default NestedEntityListSection;"
+        }
+    ]
+}

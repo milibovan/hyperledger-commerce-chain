@@ -1,11 +1,8 @@
-import type { TraderDetails } from "../../utils/dataTypesUtils";
+import type { ProductData, ReceiptData, TraderDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
-import {
-  traderFontBold,
-} from "../../utils/stylingUtils";
-import { Package, Plus, Receipt } from "lucide-react";
 import ProductCard from "../reusables/ProductCard";
 import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
+import NestedEntityListSection from "../reusables/NestedEntityListSection";
 
 export default function TraderDetails({
   entity: trader,
@@ -32,7 +29,6 @@ export default function TraderDetails({
           {
             label: 'Balance',
             value: trader.trader.balance,
-            // TODO Solve error
             formatter: (val) => `$${val.toFixed(2)}`
           },
           {
@@ -45,88 +41,54 @@ export default function TraderDetails({
       <div className="grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400">
 
         {/* Products Section */}
-        <div className="border-r-2 border-pink-300 pr-4">
-          <div className="flex items-center justify-between mb-3.5">
-            <h4 className="text-xl font-bold text-pink-300 flex items-center gap-2">
-              <Package size={20} />
-              Products ({trader.trader["products-available"]?.length || 0})
-            </h4>
-            {addProduct && (
-              <button
-                onClick={() => addProduct(trader.trader!, trader["available-products"]!)}
-                className="flex items-center px-3 py-2 gap-3 bg-pink-600 hover:bg-pink-500 text-white font-semibold rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50"
-                title="Add products"
-              >
-                <Plus size={18} /> Add products
-              </button>
-            )}
-          </div>
-
-          {trader["available-products"] && trader["available-products"].length > 0 ? (
-            <div className="space-y-2">
-              {trader["available-products"].map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  quantity={getProductQuantity(product.id)}
-                  onClick={() => onProductClick?.(product)}
-                  colorScheme="pink"
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400">
-              No products available
-            </div>
+        <NestedEntityListSection
+          title="Products"
+          items={trader["available-products"] || []}
+          colorScheme="pink"
+          icon="package"
+          hasBorder={true}
+          borderPosition="right"
+          actionButton={{
+            label: "Add products",
+            onClick: () => addProduct!(trader.trader!, trader["available-products"]!),
+          }}
+          renderItem={(product: ProductData) => (
+            <ProductCard
+              product={product}
+              quantity={getProductQuantity(product.id)}
+              onClick={() => onProductClick?.(product)}
+              colorScheme="pink"
+            />
           )}
-          {/* <div className="flex gap-2 my-4 justify-end">
-            {addProduct && (
-              <button
-                onClick={() => addProduct(trader.trader!, trader["available-products"]!)}
-                className={createTraderButton}
-                title="Add products"
-              >
-                <Plus size={18} /> Add products
-              </button>
-            )}
-          </div> */}
-        </div>
+        />
 
         {/* Receipts Section */}
-        <div>
-          <h4 className="text-xl font-bold text-pink-300 mb-5.5 flex items-center gap-2 mt-2">
-            <Receipt size={20} />
-            Receipts ({trader.trader["receipts-ids"]?.length || 0})
-          </h4>
-          {trader.trader["receipts-ids"]?.length > 0 ? (
-            <div className="space-y-2">
-              {trader.receipts.map((receipt) => (
-                <div
-                  key={receipt.id}
-                  onClick={() => onEntityClick?.(receipt)}
-                  className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600"
-                >
-                  <div className="flex-1">
-                    <h5 className={traderFontBold}>Products sold: {trader["receipts-products"].length}</h5>
-                    <p className="text-xs text-gray-400">Buyer id: {receipt["user-id"]}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className={traderFontBold}>Total cost: ${receipt["total-cost"]}</p>
-                    <p className="text-xs text-gray-400">
-                      Order placed:{" "}
-                      {new Date(receipt.date).toLocaleDateString()}
-                    </p>
-                  </div>
-
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-gray-400 py-4 bg-gray-700 rounded border border-pink-400">
-              No receipts
+        <NestedEntityListSection
+          title="Receipts"
+          items={trader.receipts || []}
+          colorScheme="pink"
+          icon="receipt"
+          emptyMessage="No receipts"
+          renderItem={(receipt: ReceiptData) => (
+            <div
+              onClick={() => onEntityClick?.(receipt)}
+              className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600 cursor-pointer"
+            >
+              <div className="flex-1">
+                <h5 className="font-bold text-pink-300">
+                  Products sold: {trader["receipts-products"].length}
+                </h5>
+                <p className="text-xs text-gray-400">Buyer id: {receipt["user-id"]}</p>
+              </div>
+              <div className="text-right">
+                <p className="font-bold text-pink-300">Total cost: ${receipt["total-cost"]}</p>
+                <p className="text-xs text-gray-400">
+                  Order placed: {new Date(receipt.date).toLocaleDateString()}
+                </p>
+              </div>
             </div>
           )}
-        </div>
+        />
       </div>
     </div>
   );

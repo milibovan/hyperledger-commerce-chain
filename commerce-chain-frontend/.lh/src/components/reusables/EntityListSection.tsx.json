@@ -1,0 +1,50 @@
+{
+    "sourceFile": "src/components/reusables/EntityListSection.tsx",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 8,
+            "patches": [
+                {
+                    "date": 1765811629180,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1765811741663,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,58 @@\n+export default function EntityListSection() {\r\n+    const colors = colorSchemes[colorScheme];\r\n+\r\n+    const getIcon = () => {\r\n+        if (customIcon) return customIcon;\r\n+        if (icon === 'receipt') return <Receipt size={20} />;\r\n+        return <Package size={20} />;\r\n+    };\r\n+\r\n+    const getBorderClass = () => {\r\n+        if (!hasBorder) return '';\r\n+        const borderMap = {\r\n+            top: 'border-t-2',\r\n+            bottom: 'border-b-2',\r\n+            right: 'border-r-2 pr-4',\r\n+            left: 'border-l-2 pl-4',\r\n+            y: 'border-y-2',\r\n+        };\r\n+        return `${borderMap[borderPosition]} ${colors.border}`;\r\n+    };\r\n+\r\n+    return (\r\n+        <div className={`${getBorderClass()} ${className}`}>\r\n+            <div className=\"flex items-center justify-between mb-3.5\">\r\n+                <h4 className={`text-xl font-bold ${colors.text} flex items-center gap-2`}>\r\n+                    {getIcon()}\r\n+                    {title} ({items?.length || 0})\r\n+                </h4>\r\n+                {actionButton && (\r\n+                    <button\r\n+                        onClick={actionButton.onClick}\r\n+                        className={`flex items-center px-3 py-2 gap-3 ${colors.button} text-white font-semibold rounded border-2 transition-all duration-200 hover:shadow-lg ${colors.shadow}`}\r\n+                        title={actionButton.label}\r\n+                    >\r\n+                        {actionButton.icon || <Plus size={18} />}\r\n+                        {actionButton.label}\r\n+                    </button>\r\n+                )}\r\n+            </div>\r\n+\r\n+            {isLoading ? (\r\n+                loadingComponent || <div className=\"text-center text-gray-400 py-4\">Loading...</div>\r\n+            ) : items && items.length > 0 ? (\r\n+                <div className=\"space-y-2\">\r\n+                    {items.map((item, index) => (\r\n+                        <div key={item.id}>\r\n+                            {renderItem(item, index)}\r\n+                        </div>\r\n+                    ))}\r\n+                </div>\r\n+            ) : (\r\n+                <div className={`text-center text-gray-400 py-4 bg-gray-700 rounded border ${colors.border}`}>\r\n+                    {emptyMessage}\r\n+                </div>\r\n+            )}\r\n+        </div>\r\n+    );\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765811756909,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,21 @@\n-export default function EntityListSection() {\r\n+import type { EntityListSectionProps } from \"../../utils/propsUtils\";\r\n+\r\n+export default function EntityListSection({\r\n+    title,\r\n+    items,\r\n+    colorScheme,\r\n+    icon = 'package',\r\n+    customIcon,\r\n+    renderItem,\r\n+    emptyMessage = 'No items available',\r\n+    isLoading = false,\r\n+    loadingComponent,\r\n+    actionButton,\r\n+    hasBorder = false,\r\n+    borderPosition = 'right',\r\n+    className = '',\r\n+}: EntityListSectionProps) {\r\n     const colors = colorSchemes[colorScheme];\r\n \r\n     const getIcon = () => {\r\n         if (customIcon) return customIcon;\r\n@@ -54,8 +70,5 @@\n                 </div>\r\n             )}\r\n         </div>\r\n     );\r\n-}\n-export default function EntityListSection() {\r\n-\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765811776513,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,7 @@\n+import { Package, Plus, Receipt } from \"lucide-react\";\r\n import type { EntityListSectionProps } from \"../../utils/propsUtils\";\r\n+import { colorSchemes } from \"../../utils/stylingUtils\";\r\n \r\n export default function EntityListSection({\r\n     title,\r\n     items,\r\n"
+                },
+                {
+                    "date": 1765823138078,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n     actionButton,\r\n     hasBorder = false,\r\n     borderPosition = 'right',\r\n     className = '',\r\n-}: EntityListSectionProps) {\r\n+}: EntityListSectionProps<T>) {\r\n     const colors = colorSchemes[colorScheme];\r\n \r\n     const getIcon = () => {\r\n         if (customIcon) return customIcon;\r\n"
+                },
+                {
+                    "date": 1765823231616,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,9 +15,9 @@\n     actionButton,\r\n     hasBorder = false,\r\n     borderPosition = 'right',\r\n     className = '',\r\n-}: EntityListSectionProps<T>) {\r\n+}: EntityListSectionProps) {\r\n     const colors = colorSchemes[colorScheme];\r\n \r\n     const getIcon = () => {\r\n         if (customIcon) return customIcon;\r\n"
+                },
+                {
+                    "date": 1765823329324,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,10 @@\n import { Package, Plus, Receipt } from \"lucide-react\";\r\n import type { EntityListSectionProps } from \"../../utils/propsUtils\";\r\n import { colorSchemes } from \"../../utils/stylingUtils\";\r\n+import React from \"react\";\r\n \r\n-export default function EntityListSection({\r\n+const EntityListSection = <T,>({\r\n     title,\r\n     items,\r\n     colorScheme,\r\n     icon = 'package',\r\n@@ -15,9 +16,9 @@\n     actionButton,\r\n     hasBorder = false,\r\n     borderPosition = 'right',\r\n     className = '',\r\n-}: EntityListSectionProps) {\r\n+}: EntityListSectionProps<T>) => {\r\n     const colors = colorSchemes[colorScheme];\r\n \r\n     const getIcon = () => {\r\n         if (customIcon) return customIcon;\r\n@@ -60,11 +61,11 @@\n                 loadingComponent || <div className=\"text-center text-gray-400 py-4\">Loading...</div>\r\n             ) : items && items.length > 0 ? (\r\n                 <div className=\"space-y-2\">\r\n                     {items.map((item, index) => (\r\n-                        <div key={item.id}>\r\n+                        <React.Fragment key={index}>\r\n                             {renderItem(item, index)}\r\n-                        </div>\r\n+                        </React.Fragment>\r\n                     ))}\r\n                 </div>\r\n             ) : (\r\n                 <div className={`text-center text-gray-400 py-4 bg-gray-700 rounded border ${colors.border}`}>\r\n@@ -72,5 +73,7 @@\n                 </div>\r\n             )}\r\n         </div>\r\n     );\r\n-}\n\\ No newline at end of file\n+};\r\n+\r\n+export default EntityListSection;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1765823337636,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -61,11 +61,11 @@\n                 loadingComponent || <div className=\"text-center text-gray-400 py-4\">Loading...</div>\r\n             ) : items && items.length > 0 ? (\r\n                 <div className=\"space-y-2\">\r\n                     {items.map((item, index) => (\r\n-                        <React.Fragment key={index}>\r\n+                        <div key={index}>\r\n                             {renderItem(item, index)}\r\n-                        </React.Fragment>\r\n+                        </div>\r\n                     ))}\r\n                 </div>\r\n             ) : (\r\n                 <div className={`text-center text-gray-400 py-4 bg-gray-700 rounded border ${colors.border}`}>\r\n"
+                },
+                {
+                    "date": 1765823345255,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,7 @@\n import { Package, Plus, Receipt } from \"lucide-react\";\r\n import type { EntityListSectionProps } from \"../../utils/propsUtils\";\r\n import { colorSchemes } from \"../../utils/stylingUtils\";\r\n-import React from \"react\";\r\n \r\n const EntityListSection = <T,>({\r\n     title,\r\n     items,\r\n"
+                }
+            ],
+            "date": 1765811629180,
+            "name": "Commit-0",
+            "content": "export default function EntityListSection() {\r\n\r\n}"
+        }
+    ]
+}

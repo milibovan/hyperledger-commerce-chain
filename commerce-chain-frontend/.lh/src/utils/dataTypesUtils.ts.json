@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 52,
+            "activePatchIndex": 56,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -216,6 +216,22 @@
                 {
                     "date": 1765810770659,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -119,9 +119,10 @@\n \r\n export type FieldConfig = {\r\n   label: string;\r\n   value: string | number | Date;\r\n-  formatter?: (value: unknown) => string;\r\n+  // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n+  formatter?: (value: any) => string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n"
+                },
+                {
+                    "date": 1765811655672,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -123,8 +123,10 @@\n   // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n   formatter?: (value: any) => string;\r\n };\r\n \r\n+\r\n+\r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n   productId: string;\r\n   quantity: string;\r\n"
+                },
+                {
+                    "date": 1765811675264,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -123,10 +123,13 @@\n   // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n   formatter?: (value: any) => string;\r\n };\r\n \r\n+export type ListItem = {\r\n+  id: string | number;\r\n+  [key: string]: any;\r\n+};\r\n \r\n-\r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n   productId: string;\r\n   quantity: string;\r\n"
+                },
+                {
+                    "date": 1765811805786,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -125,8 +125,9 @@\n };\r\n \r\n export type ListItem = {\r\n   id: string | number;\r\n+  // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n   [key: string]: any;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n"
+                },
+                {
+                    "date": 1765822823512,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -123,14 +123,8 @@\n   // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n   formatter?: (value: any) => string;\r\n };\r\n \r\n-export type ListItem = {\r\n-  id: string | number;\r\n-  // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n-  [key: string]: any;\r\n-};\r\n-\r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n   productId: string;\r\n   quantity: string;\r\n"
                 }
             ],
             "date": 1762249804506,

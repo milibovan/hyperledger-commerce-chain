@@ -14,7 +14,6 @@ export default function ProductDetails({ entity: product }: DetailsProps<Product
           { label: 'Product Name', value: product.name },
           {
             label: 'Expiry Date',
-            // TODO Solve error
             value: product['expiry-date'],
             formatter: (val) => getFormattedDate(val)
           },
