@@ -1,12 +1,13 @@
 import type { InfoSectionProps } from "../../utils/propsUtils";
-import { GRID_RESPONSIVE, receiptFontSemibold, SECTION_BORDER } from "../../utils/stylingUtils";
+import { GRID_RESPONSIVE, receiptFontSemibold } from "../../utils/stylingUtils";
 
 export default function InfoSection({ title, id, label, value, entity, onEntityClick }: InfoSectionProps) {
     return (
         <div>
             <span className="text-xl font-bold text-green-400">{title}</span>
             <div
-                className={`grid ${GRID_RESPONSIVE} gap-4 text-gray-300 py-4 ${SECTION_BORDER} cursor-pointer hover:bg-gray-700/50 transition-colors rounded`}
+                tabIndex={0}
+                className={`grid ${GRID_RESPONSIVE} gap-4 text-gray-300 mt-4 py-4 px-2 cursor-pointer hover:bg-gray-500/50 transition-all rounded bg-gray-700 focus:ring-green-400  border-green-400 border focus:outline-none duration-200 focus:ring-2`}
                 onClick={() => onEntityClick?.(entity)}
             >
                 <div>

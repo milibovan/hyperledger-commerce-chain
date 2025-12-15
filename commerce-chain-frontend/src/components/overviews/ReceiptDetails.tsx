@@ -1,7 +1,7 @@
 import { Package } from "lucide-react";
 import { getFormattedDate, type ReceiptDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
-import { receiptFontSemibold, SECTION_BORDER } from "../../utils/stylingUtils";
+import { receiptFontSemibold } from "../../utils/stylingUtils";
 import LoadingSkeleton from "../reusables/LoadingSkeleton";
 import InfoSection from "../reusables/InfoSection";
 import ProductCard from "../reusables/ProductCard";
@@ -23,7 +23,7 @@ export default function ReceiptDetails({
             <h3 className="text-2xl font-bold text-green-400">Receipt Details</h3>
 
             {/* Receipt Basic Info */}
-            <div className={`grid grid-cols-1 gap-4 text-gray-300 py-4 ${SECTION_BORDER}`}>
+            <div className={`grid grid-cols-1 gap-4 text-gray-300 py-4`}>
                 <div>
                     <span className={receiptFontSemibold}>ID:</span> {receipt.receipt.id}
                 </div>
