@@ -1,0 +1,18 @@
+{
+    "sourceFile": ".dockerignore",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1765824255340,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1765824255340,
+            "name": "Commit-0",
+            "content": "# Dependencies and build output\r\nnode_modules\r\ndist\r\n\r\n# Docker-related files\r\nDockerfile\r\n.dockerignore\r\n\r\n# Git ignore\r\n.git\r\n.gitignore\r\n\r\n# Other development files\r\nnpm-debug.log\r\nyarn-error.log\r\n.vscode"
+        }
+    ]
+}
