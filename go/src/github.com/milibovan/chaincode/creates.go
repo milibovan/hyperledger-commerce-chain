@@ -149,6 +149,7 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().PutState(productKey, productJSON)
 }
 
+// CreateOrder TODO Implement new Receipt fields and later order fields
 func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
 	// Check if order already exists
 	exists, err := s.AssetExists(ctx, id, structs.OrderET)
@@ -226,6 +227,7 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 	return id, nil
 }
 
+// CreateReceipt TODO Implement new Receipt fields
 func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, trader *structs.Trader, userId string, products []structs.ProductInventory, index int) (*structs.Receipt, error) {
 	// Generate deterministic ID using transaction ID
 	txID := ctx.GetStub().GetTxID()
