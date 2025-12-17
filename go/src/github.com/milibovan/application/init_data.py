@@ -59,6 +59,7 @@ requests_data = [
         "data": {
             "name": "Some_trader",
             "trader-type": "SUPERMARKET",
+            "email": "milibovan190d@gmail.com",
             "vat": "some_vat",
             "balance": 1000,
             "channel": "channel-a"
@@ -70,6 +71,7 @@ requests_data = [
         "data": {
             "name": "Some_trader_1",
             "trader-type": "SUPERMARKET",
+            "email": "milibovan190d@gmail.com",
             "vat": "some_vat_1",
             "balance": 500,
             "channel": "channel-a"

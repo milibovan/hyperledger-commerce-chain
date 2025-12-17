@@ -20,9 +20,9 @@ type Product struct {
 type ReceiptStatus string
 
 const (
-	COMPLETED   ReceiptStatus = "COMPLETED"
-	CANCELED    ReceiptStatus = "CANCELED"
-	IN_PROGRESS ReceiptStatus = "IN_PROGRESS"
+	ReceiptCompleted ReceiptStatus = "COMPLETED"
+	ReceiptCancelled ReceiptStatus = "CANCELLED"
+	InProgress       ReceiptStatus = "IN_PROGRESS"
 )
 
 type Receipt struct {
