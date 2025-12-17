@@ -1,13 +1,11 @@
 package structs
 
-import "time"
-
 type ReceiptStatus string
 
 const (
-	COMPLETED   ReceiptStatus = "COMPLETED"
-	CANCELED    ReceiptStatus = "CANCELED"
-	IN_PROGRESS ReceiptStatus = "IN_PROGRESS"
+	ReceiptCompleted ReceiptStatus = "COMPLETED"
+	ReceiptCancelled ReceiptStatus = "CANCELLED"
+	InProgress       ReceiptStatus = "IN_PROGRESS"
 )
 
 type Receipt struct {
@@ -20,7 +18,7 @@ type Receipt struct {
 	Date          string             `json:"date"`
 	TotalCost     float64            `json:"total-cost"`
 	Status        ReceiptStatus      `json:"status"`
-	CancelledDate time.Time          `json:"cancelled-date,omitempty"`
+	CancelledDate string             `json:"cancelled-date,omitempty"`
 	CancelledBy   string             `json:"cancelled-by,omitempty"`
 	Deleted       bool               `json:"deleted"`
 }

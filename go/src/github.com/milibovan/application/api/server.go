@@ -158,7 +158,7 @@ func createTrader(c *gin.Context) {
 
 	fmt.Println(Trader)
 
-	blockNumber, ID := client.CreateTrader(activeGW, channel, Trader.Name, string(Trader.TraderType), Trader.VAT, fmt.Sprint(Trader.Balance))
+	blockNumber, ID := client.CreateTrader(activeGW, channel, Trader.Name, string(Trader.TraderType), Trader.VAT, Trader.Email, fmt.Sprint(Trader.Balance))
 
 	c.JSON(201, gin.H{"Message": fmt.Sprintf("Trader created %d %s", blockNumber, ID)})
 }

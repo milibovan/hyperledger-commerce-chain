@@ -5,6 +5,7 @@
       "id",
       "trader-type",
       "vat",
+      "email",
       "products-available",
       "receipts-ids",
       "balance",

@@ -53,7 +53,7 @@ func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, 
 	return ctx.GetStub().PutState(userKey, userJSON)
 }
 
-func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id, name, traderTypeStr, vat, balance string) error {
+func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface, id, name, traderTypeStr, vat, email, balance string) error {
 	exists, err := s.AssetExists(ctx, id, structs.TraderET)
 	if err != nil {
 		return err
@@ -76,6 +76,7 @@ func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface
 		DocType:           "trader",
 		Id:                id,
 		Name:              name,
+		Email:             email,
 		TraderType:        traderType,
 		VAT:               vat,
 		ProductsAvailable: []structs.ProductInventory{},
@@ -173,7 +174,7 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 	}
 
 	// Find optimal trader allocation and create receipts
-	receiptIds, err := s.FindAndCreateOptimalReceipts(ctx, userId, products)
+	receiptIds, err := s.FindAndCreateOptimalReceipts(ctx, id, userId, products)
 	if err != nil {
 		return "", fmt.Errorf("failed to create receipts: %w", err)
 	}
@@ -185,13 +186,16 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 
 	// Create order
 	order := structs.Order{
-		DocType:     "order",
-		Id:          id,
-		UserId:      userId,
-		Products:    products,
-		ReceiptsIds: receiptIds,
-		TotalCost:   totalCost,
-		Deleted:     false,
+		DocType:      "order",
+		Id:           id,
+		UserId:       userId,
+		Status:       structs.OrderFulfilled,
+		CreatedDate:  time.Now().Format(time.RFC3339),
+		Products:     products,
+		ReceiptsIds:  receiptIds,
+		TotalCost:    totalCost,
+		ApprovedDate: time.Now().Format(time.RFC3339),
+		Deleted:      false,
 	}
 
 	// Update user's order list
@@ -227,8 +231,7 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 	return id, nil
 }
 
-// CreateReceipt TODO Implement new Receipt fields
-func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, trader *structs.Trader, userId string, products []structs.ProductInventory, index int) (*structs.Receipt, error) {
+func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterface, trader *structs.Trader, orderId, userId string, products []structs.ProductInventory, index int) (*structs.Receipt, error) {
 	// Generate deterministic ID using transaction ID
 	txID := ctx.GetStub().GetTxID()
 	id := fmt.Sprintf("RECEIPT_%s_%d", txID, index)
@@ -245,9 +248,11 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		Id:        id,
 		TraderId:  trader.Id,
 		UserId:    userId,
+		OrderId:   orderId,
 		Products:  products,
 		Date:      time.Now().Format(time.RFC3339),
 		TotalCost: totalCost,
+		Status:    structs.ReceiptCompleted,
 		Deleted:   false,
 	}
 
@@ -259,7 +264,7 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 }
 
 // FindAndCreateOptimalReceipts finds the minimum set of traders and creates receipts
-func (s *SmartContract) FindAndCreateOptimalReceipts(ctx contractapi.TransactionContextInterface, userId string, products []structs.ProductInventory) ([]string, error) {
+func (s *SmartContract) FindAndCreateOptimalReceipts(ctx contractapi.TransactionContextInterface, orderId, userId string, products []structs.ProductInventory) ([]string, error) {
 	traders, err := s.GetAllTraders(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get traders: %w", err)
@@ -289,7 +294,7 @@ func (s *SmartContract) FindAndCreateOptimalReceipts(ctx contractapi.Transaction
 		trader := traderMap[allocation.TraderId]
 
 		// Create receipt and update trader in memory
-		receipt, err := s.CreateReceipt(ctx, trader, userId, allocation.Products, index)
+		receipt, err := s.CreateReceipt(ctx, trader, orderId, userId, allocation.Products, index)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create receipt for trader %s: %w", allocation.TraderId, err)
 		}

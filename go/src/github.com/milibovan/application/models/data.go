@@ -35,20 +35,34 @@ type Receipt struct {
 	Date          string             `json:"date"`
 	TotalCost     float64            `json:"total-cost"`
 	Status        ReceiptStatus      `json:"status"`
-	CancelledDate CustomTime         `json:"cancelled-date,omitempty"`
+	CancelledDate string             `json:"cancelled-date,omitempty"`
 	CancelledBy   string             `json:"cancelled-by,omitempty"`
 	Deleted       bool               `json:"deleted"`
 }
 
+type OrderStatus string
+
+const (
+	OrderPending   OrderStatus = "PENDING"
+	OrderApproved  OrderStatus = "APPROVED"
+	OrderRejected  OrderStatus = "REJECTED"
+	OrderFulfilled OrderStatus = "FULFILLED"
+	OrderCancelled OrderStatus = "CANCELLED"
+)
+
 type Order struct {
-	DocType     string             `json:"doc-type"`
-	Id          string             `json:"id"`
-	UserId      string             `json:"user-id"`
-	Products    []ProductInventory `json:"products"`
-	ReceiptsIds []string           `json:"receipts-ids"`
-	TotalCost   float64            `json:"total-cost"`
-	Deleted     bool               `json:"deleted"`
+	DocType      string             `json:"doc-type"`
+	Id           string             `json:"id"`
+	UserId       string             `json:"user-id"`
+	Status       OrderStatus        `json:"status"`
+	CreatedDate  string             `json:"created-date"`
+	Products     []ProductInventory `json:"products"`
+	ReceiptsIds  []string           `json:"receipts-ids"`
+	TotalCost    float64            `json:"total-cost"`
+	ApprovedDate string             `json:"approved-date,omitempty"`
+	Deleted      bool               `json:"deleted"`
 }
+
 type TraderType string
 
 const (
@@ -63,6 +77,7 @@ type Trader struct {
 	DocType           string             `json:"doc-type"`
 	Id                string             `json:"id"`
 	Name              string             `json:"name"`
+	Email             string             `json:"email"`
 	TraderType        TraderType         `json:"trader-type"`
 	VAT               string             `json:"vat"`
 	ProductsAvailable []ProductInventory `json:"products-available"`

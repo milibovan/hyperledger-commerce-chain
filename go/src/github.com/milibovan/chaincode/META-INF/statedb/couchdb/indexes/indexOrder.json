@@ -4,6 +4,8 @@
       "doc-type",
       "id",
       "user-id",
+      "status",
+      "created-date",
       "products",
       "receipts-ids",
       "total-cost",

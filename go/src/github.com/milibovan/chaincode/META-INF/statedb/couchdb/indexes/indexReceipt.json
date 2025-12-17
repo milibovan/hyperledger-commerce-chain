@@ -5,6 +5,8 @@
       "id",
       "trader-id",
       "user-id",
+      "order-id",
+      "status",
       "products",
       "total-cost",
       "date",

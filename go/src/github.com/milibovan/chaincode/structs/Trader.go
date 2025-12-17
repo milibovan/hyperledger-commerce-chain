@@ -16,6 +16,7 @@ type Trader struct {
 	DocType           string             `json:"doc-type"`
 	Id                string             `json:"id"`
 	Name              string             `json:"name"`
+	Email             string             `json:"email"`
 	TraderType        TraderType         `json:"trader-type"`
 	VAT               string             `json:"vat"`
 	ProductsAvailable []ProductInventory `json:"products-available"`
