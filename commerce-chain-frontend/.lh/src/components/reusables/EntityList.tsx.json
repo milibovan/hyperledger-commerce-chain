@@ -3,11 +3,27 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1765823828653,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766008034936,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Edit, Plus, Trash2 } from \"lucide-react\";\r\n-import { addButtonSm, deleteButtonSm, entitiesNotFound, ListColorSchemes, updateButtonSm } from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, colorSchemes, deleteButtonSm, entitiesNotFound, ListColorSchemes, updateButtonSm } from \"../../utils/stylingUtils\";\r\n import type { EntityListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function EntityList<T>({\r\n     entities,\r\n@@ -19,9 +19,9 @@\n     renderMainContent,\r\n     renderSideContent,\r\n     getEntityId,\r\n }: EntityListProps<T>) {\r\n-    const colors = ListColorSchemes[colorScheme];\r\n+    const colors = colorSchemes[colorScheme];\r\n     const defaultLoadingMessage = loadingMessage || `Loading ${title.toLowerCase()}...`;\r\n     const defaultEmptyMessage = emptyMessage || `No ${title.toLowerCase()} found`;\r\n \r\n     return (\r\n"
+                },
+                {
+                    "date": 1766008042104,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Edit, Plus, Trash2 } from \"lucide-react\";\r\n-import { addButtonSm, colorSchemes, deleteButtonSm, entitiesNotFound, ListColorSchemes, updateButtonSm } from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, deleteButtonSm, entitiesNotFound, ListColorSchemes, updateButtonSm } from \"../../utils/stylingUtils\";\r\n import type { EntityListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function EntityList<T>({\r\n     entities,\r\n@@ -19,9 +19,9 @@\n     renderMainContent,\r\n     renderSideContent,\r\n     getEntityId,\r\n }: EntityListProps<T>) {\r\n-    const colors = colorSchemes[colorScheme];\r\n+    const colors = ListColorSchemes[colorScheme];\r\n     const defaultLoadingMessage = loadingMessage || `Loading ${title.toLowerCase()}...`;\r\n     const defaultEmptyMessage = emptyMessage || `No ${title.toLowerCase()} found`;\r\n \r\n     return (\r\n"
+                },
+                {
+                    "date": 1766008311158,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Edit, Plus, Trash2 } from \"lucide-react\";\r\n-import { addButtonSm, deleteButtonSm, entitiesNotFound, ListColorSchemes, updateButtonSm } from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, deleteButtonSm, entitiesNotFound, ListColorSchemes, updateButtonSm, updateButtonStyle } from \"../../utils/stylingUtils\";\r\n import type { EntityListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function EntityList<T>({\r\n     entities,\r\n@@ -76,9 +76,9 @@\n                                         </button>\r\n                                     )}\r\n                                     <button\r\n                                         onClick={() => onUpdateClick(entity)}\r\n-                                        className={updateButtonSm}\r\n+                                        className={updateButtonStyle}\r\n                                         title=\"Update\"\r\n                                     >\r\n                                         <Edit size={18} />\r\n                                     </button>\r\n"
+                },
+                {
+                    "date": 1766008323926,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import { Edit, Plus, Trash2 } from \"lucide-react\";\r\n-import { addButtonSm, deleteButtonSm, entitiesNotFound, ListColorSchemes, updateButtonSm, updateButtonStyle } from \"../../utils/stylingUtils\";\r\n+import { addButtonSm, deleteButtonSm, entitiesNotFound, ListColorSchemes, updateButtonSm } from \"../../utils/stylingUtils\";\r\n import type { EntityListProps } from \"../../utils/propsUtils\";\r\n \r\n export default function EntityList<T>({\r\n     entities,\r\n@@ -76,9 +76,9 @@\n                                         </button>\r\n                                     )}\r\n                                     <button\r\n                                         onClick={() => onUpdateClick(entity)}\r\n-                                        className={updateButtonStyle}\r\n+                                        className={updateButtonSm}\r\n                                         title=\"Update\"\r\n                                     >\r\n                                         <Edit size={18} />\r\n                                     </button>\r\n"
                 }
             ],
             "date": 1765823828653,

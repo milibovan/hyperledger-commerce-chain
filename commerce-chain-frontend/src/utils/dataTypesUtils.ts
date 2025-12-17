@@ -22,6 +22,7 @@ export interface Trader {
   name: string;
   traderType: string;
   vat: string;
+  email: string;
   balance: string;
   channel: string;
 }
@@ -33,6 +34,12 @@ export const TraderType = [
   "GROCERY",
   "GAS_STATION",
 ];
+
+export const ReceiptStatus = [
+  "COMPLETED",
+  "CANCELLED",
+  "IN_PROGRESS"
+]
 
 export const channels = ["channel-a", "channel-b"];
 
@@ -77,6 +84,7 @@ export interface TraderData {
   id: string;
   name: string;
   "trader-type": string;
+  email: string;
   vat: string;
   "products-available": Array<ProductInventory>;
   "receipts-ids": Array<string>;
@@ -92,10 +100,20 @@ export interface ReceiptData {
   id: string;
   "trader-id": string;
   "user-id": string;
+  "order-id": string;
   "products": Array<ProductInventory>;
   "total-cost": number;
+  "status": string;
   date: Date;
 }
+
+export const OrderStatus = [
+  "PENDING",
+  "APPROVED",
+  "REJECTED",
+  "FULFILLED",
+  "CANCELLED"
+]
 
 export interface OrdersData {
   Orders: Array<OrderData>;
@@ -104,10 +122,13 @@ export interface OrdersData {
 export interface OrderData {
 	"doc-type" :    string;            
 	id:        string;            
-	"user-id":      string;            
+	"user-id":      string;    
+  "status": string;
+  "created-date": Date;        
 	products:    Array<ProductInventory>;
 	"receipts-ids": Array<string>;          
-	"total-cost":   number;           
+	"total-cost":   number;
+  "approved-date": Date;     
 	"deleted":     boolean;              
 }
 

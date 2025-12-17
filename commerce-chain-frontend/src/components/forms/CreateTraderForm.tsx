@@ -9,6 +9,7 @@ export default function CreateTraderForm({ onSuccess }: CreateFormsProps) {
     name: "",
     traderType: "",
     vat: "",
+    email: "",
     balance: "",
     channel: "",
   });
@@ -54,6 +55,7 @@ export default function CreateTraderForm({ onSuccess }: CreateFormsProps) {
             name: formData.name,
             "trader-type": formData.traderType,
             vat: formData.vat,
+            email: formData.email,
             balance: parseFloat(formData.balance),
             channel: formData.channel,
           }),
@@ -69,6 +71,7 @@ export default function CreateTraderForm({ onSuccess }: CreateFormsProps) {
           traderType: "",
           vat: "",
           balance: "",
+          email: "",
           channel: "",
         });
         if (onSuccess) {
@@ -121,6 +124,21 @@ export default function CreateTraderForm({ onSuccess }: CreateFormsProps) {
             value={formData.name}
             onChange={handleChange}
             placeholder="Enter trader name"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50"
+          />
+        </div>
+
+        {/* Trader Email */}
+        <div>
+          <label className="block text-pink-300 font-semibold mb-2">
+            Trader Email *
+          </label>
+          <input
+            type="text"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter trader email"
             className="w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50"
           />
         </div>
