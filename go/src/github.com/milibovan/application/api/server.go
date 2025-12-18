@@ -286,7 +286,7 @@ func updateTrader(c *gin.Context) {
 
 	fmt.Println(Trader)
 
-	blockNumber, err := client.UpdateTrader(activeGW, channel, Trader.Id, Trader.Name, Trader.VAT, string(Trader.TraderType))
+	blockNumber, err := client.UpdateTrader(activeGW, channel, Trader.Id, Trader.Name, Trader.VAT, Trader.Email, string(Trader.TraderType))
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

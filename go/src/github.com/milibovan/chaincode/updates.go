@@ -53,7 +53,7 @@ func (s *SmartContract) UpdateUser(ctx contractapi.TransactionContextInterface, 
 	}
 	return ctx.GetStub().PutState(userKey, userJSON)
 }
-func (s *SmartContract) UpdateTrader(ctx contractapi.TransactionContextInterface, id, name, vat, traderTypeStr string) error {
+func (s *SmartContract) UpdateTrader(ctx contractapi.TransactionContextInterface, id, name, vat, email, traderTypeStr string) error {
 	exists, err := s.AssetExists(ctx, id, structs.TraderET)
 	if err != nil {
 		return err
@@ -77,6 +77,12 @@ func (s *SmartContract) UpdateTrader(ctx contractapi.TransactionContextInterface
 		trader.Name = name
 		changed = true
 	}
+
+	if trader.Email != email {
+		trader.Email = email
+		changed = true
+	}
+
 	if trader.VAT != vat {
 		trader.VAT = vat
 		changed = true

@@ -110,6 +110,7 @@ user_id = make_request("POST", "/user/channel-a", user_payload, "Creating User",
 t1_payload = {
     "name": "Some_trader",
     "trader-type": "SUPERMARKET",
+    "email": "milibovan190d@gmail.com",
     "vat": "some_vat",
     "balance": 1000,
     "channel": "channel-a"
@@ -121,6 +122,7 @@ t2_payload = {
     "name": "Some_trader_1",
     "trader-type": "SUPERMARKET",
     "vat": "some_vat_1",
+    "email": "josejosemou8@gmail.com",
     "balance": 500,
     "channel": "channel-a"
 }
@@ -147,7 +149,19 @@ add_products_payload = {
 }
 make_request("POST", "/traders-products/channel-a", add_products_payload, "Adding Products to Trader 1")
 
-# 8. User Buy Order (User Buying from Trader)
+# 8. Add Products to Trader (Trader "Buying" Inventory)
+# We use the IDs captured in steps 1, 2, 3, and 5
+add_products_payload_1 = {
+    "trader-id": trader_id_2,
+    "products": [
+        {"product-id": product_id_1, "quantity": 3},
+        {"product-id": product_id_2, "quantity": 12},
+        {"product-id": product_id_3, "quantity": 28}
+    ]
+}
+make_request("POST", "/traders-products/channel-a", add_products_payload_1, "Adding Products to Trader 1")
+
+# 9. User Buy Order (User Buying from Trader)
 # We use the IDs captured in steps 1, 2, 3, and 4
 user_buy_payload = {
     "user-id": user_id,

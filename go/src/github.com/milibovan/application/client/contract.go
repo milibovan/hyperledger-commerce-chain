@@ -541,13 +541,13 @@ func UpdateUser(gw *fabricClient.Gateway, channel, id, name, surname, email stri
 
 	return status.BlockNumber, nil
 }
-func UpdateTrader(gw *fabricClient.Gateway, channel, id, name, vat, traderType string) (uint64, error) {
+func UpdateTrader(gw *fabricClient.Gateway, channel, id, name, vat, email, traderType string) (uint64, error) {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
 	fmt.Printf("\n--> Submit transaction: UpdateTrader, ID: %s on channel %s\n", id, channel)
 
-	_, commit, err := ccContract.SubmitAsync("UpdateTrader", fabricClient.WithArguments(id, name, vat, traderType))
+	_, commit, err := ccContract.SubmitAsync("UpdateTrader", fabricClient.WithArguments(id, name, vat, email, traderType))
 	if err != nil {
 		return uint64(0), fmt.Errorf("failed to submit transaction: %w", err)
 	}
