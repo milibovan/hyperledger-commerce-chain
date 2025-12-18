@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 138,
+            "activePatchIndex": 141,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -560,6 +560,18 @@
                 {
                     "date": 1765823478106,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,9 +1,9 @@\n import type { ProductData, ReceiptData, TraderDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import ProductCard from \"../reusables/ProductCard\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n-import EntityListSection from \"../reusables/NestedEntityListSection\";\r\n+import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n \r\n export default function TraderDetails({\r\n   entity: trader,\r\n   addProduct,\r\n@@ -40,9 +40,9 @@\n \r\n       <div className=\"grid grid-cols-2 gap-4 text-gray-300 pb-4 border-b-2 border-pink-400\">\r\n \r\n         {/* Products Section */}\r\n-        <EntityListSection\r\n+        <NestedEntityListSection\r\n           title=\"Products\"\r\n           items={trader[\"available-products\"] || []}\r\n           colorScheme=\"pink\"\r\n           icon=\"package\"\r\n@@ -62,9 +62,9 @@\n           )}\r\n         />\r\n \r\n         {/* Receipts Section */}\r\n-        <EntityListSection\r\n+        <NestedEntityListSection\r\n           title=\"Receipts\"\r\n           items={trader.receipts || []}\r\n           colorScheme=\"pink\"\r\n           icon=\"receipt\"\r\n"
+                },
+                {
+                    "date": 1766084721684,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,8 +25,9 @@\n         fields={[\r\n           { label: 'ID', value: trader.trader.id },\r\n           { label: 'VAT', value: trader.trader.vat },\r\n           { label: 'Name', value: trader.trader.name },\r\n+          { label: 'Name', value: trader.trader.name },\r\n           {\r\n             label: 'Balance',\r\n             value: trader.trader.balance,\r\n             formatter: (val) => `$${val.toFixed(2)}`\r\n"
+                },
+                {
+                    "date": 1766084728461,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,9 +25,9 @@\n         fields={[\r\n           { label: 'ID', value: trader.trader.id },\r\n           { label: 'VAT', value: trader.trader.vat },\r\n           { label: 'Name', value: trader.trader.name },\r\n-          { label: 'Name', value: trader.trader.name },\r\n+          { label: 'Email', value: trader.trader.email },\r\n           {\r\n             label: 'Balance',\r\n             value: trader.trader.balance,\r\n             formatter: (val) => `$${val.toFixed(2)}`\r\n"
+                },
+                {
+                    "date": 1766084748586,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -72,9 +72,9 @@\n           emptyMessage=\"No receipts\"\r\n           renderItem={(receipt: ReceiptData) => (\r\n             <div\r\n               onClick={() => onEntityClick?.(receipt)}\r\n-              className=\"flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600 cursor-pointer\"\r\n+              className=\"flex items-center justify-between px-6 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600 cursor-pointer\"\r\n             >\r\n               <div className=\"flex-1\">\r\n                 <h5 className=\"font-bold text-pink-300\">\r\n                   Products sold: {trader[\"receipts-products\"].length}\r\n"
                 }
             ],
             "date": 1762249738197,

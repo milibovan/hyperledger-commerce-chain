@@ -26,6 +26,7 @@ export default function TraderDetails({
           { label: 'ID', value: trader.trader.id },
           { label: 'VAT', value: trader.trader.vat },
           { label: 'Name', value: trader.trader.name },
+          { label: 'Email', value: trader.trader.email },
           {
             label: 'Balance',
             value: trader.trader.balance,

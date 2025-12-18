@@ -9,6 +9,8 @@ export default function OrderDetails({ entity: order, onEntityClick, onProductCl
         return order.order.products.find(product => product["product-id"] === productId)?.quantity
     };
 
+    const statusColour = order.order.status === "FULFILLED" ? "text-green-300" : "text-gray-300";
+
     return (
         <div className="space-y-4">
             <EntityDetailsDisplay
@@ -17,6 +19,7 @@ export default function OrderDetails({ entity: order, onEntityClick, onProductCl
                 labelColor="text-indigo-300"
                 fields={[
                     { label: 'ID', value: order.order.id },
+                    { label: 'Status', value: order.order.status, colour: statusColour },
                     {
                         label: 'Total cost',
                         value: order.order['total-cost'],

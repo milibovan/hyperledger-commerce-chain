@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 76,
+            "activePatchIndex": 77,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -312,6 +312,10 @@
                 {
                     "date": 1766008789402,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,8 +21,9 @@\n   id: string;\r\n   name: string;\r\n   traderType: string;\r\n   vat: string;\r\n+  email: string;\r\n   balance: string;\r\n   channel: string;\r\n }\r\n \r\n@@ -82,9 +83,9 @@\n   \"doc-type\": string;\r\n   id: string;\r\n   name: string;\r\n   \"trader-type\": string;\r\n-  \"email\": string;\r\n+  email: string;\r\n   vat: string;\r\n   \"products-available\": Array<ProductInventory>;\r\n   \"receipts-ids\": Array<string>;\r\n   balance: number;\r\n"
+                },
+                {
+                    "date": 1766089980690,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -142,8 +142,9 @@\n   label: string;\r\n   value: string | number | Date;\r\n   // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n   formatter?: (value: any) => string;\r\n+  colour?: string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n"
                 }
             ],
             "date": 1762249804506,

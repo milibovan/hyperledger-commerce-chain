@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 8,
             "patches": [
                 {
                     "date": 1765810093820,
@@ -20,6 +20,26 @@
                 {
                     "date": 1765810852163,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,16 +13,27 @@\n     const borderClass = hasBorder && borderColor\r\n         ? `pb-4 border-b-2 ${borderColor}`\r\n         : '';\r\n \r\n+    const renderValue = (field: FieldConfig) => {\r\n+        if (field.formatter) {\r\n+            return field.formatter(field.value);\r\n+        }\r\n+        // Convert Date to string if no formatter provided\r\n+        if (field.value instanceof Date) {\r\n+            return field.value.toISOString();\r\n+        }\r\n+        return field.value;\r\n+    };\r\n+\r\n     return (\r\n         <>\r\n             <h3 className={`text-2xl font-bold ${titleColor}`}>{title}</h3>\r\n             <div className={`grid ${gridCols} gap-4 text-gray-300 ${borderClass}`}>\r\n                 {fields.map((field, index) => (\r\n                     <div key={index}>\r\n                         <span className={`font-semibold ${labelColor}`}>{field.label}:</span>{' '}\r\n-                        {field.formatter ? field.formatter(field.value) : field.value}\r\n+                        {renderValue(field)}\r\n                     </div>\r\n                 ))}\r\n             </div>\r\n         </>\r\n"
+                },
+                {
+                    "date": 1766090031159,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,5 @@\n+import type { FieldConfig } from \"../../utils/dataTypesUtils\";\r\n import type { EntityDetailsDisplayProps } from \"../../utils/propsUtils\";\r\n \r\n export default function EntityDetailsDisplay({\r\n     title,\r\n@@ -17,9 +18,8 @@\n     const renderValue = (field: FieldConfig) => {\r\n         if (field.formatter) {\r\n             return field.formatter(field.value);\r\n         }\r\n-        // Convert Date to string if no formatter provided\r\n         if (field.value instanceof Date) {\r\n             return field.value.toISOString();\r\n         }\r\n         return field.value;\r\n@@ -31,9 +31,9 @@\n             <div className={`grid ${gridCols} gap-4 text-gray-300 ${borderClass}`}>\r\n                 {fields.map((field, index) => (\r\n                     <div key={index}>\r\n                         <span className={`font-semibold ${labelColor}`}>{field.label}:</span>{' '}\r\n-                        {renderValue(field)}\r\n+                        <p>{renderValue(field)}</p>\r\n                     </div>\r\n                 ))}\r\n             </div>\r\n         </>\r\n"
+                },
+                {
+                    "date": 1766090037949,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,9 +31,9 @@\n             <div className={`grid ${gridCols} gap-4 text-gray-300 ${borderClass}`}>\r\n                 {fields.map((field, index) => (\r\n                     <div key={index}>\r\n                         <span className={`font-semibold ${labelColor}`}>{field.label}:</span>{' '}\r\n-                        <p>{renderValue(field)}</p>\r\n+                        <span>{renderValue(field)}</span>\r\n                     </div>\r\n                 ))}\r\n             </div>\r\n         </>\r\n"
+                },
+                {
+                    "date": 1766090117095,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,9 +31,9 @@\n             <div className={`grid ${gridCols} gap-4 text-gray-300 ${borderClass}`}>\r\n                 {fields.map((field, index) => (\r\n                     <div key={index}>\r\n                         <span className={`font-semibold ${labelColor}`}>{field.label}:</span>{' '}\r\n-                        <span>{renderValue(field)}</span>\r\n+                        {field.colour ? (<span className={``}>{renderValue(field)}</span>) : ({ renderValue(field) })}\r\n                     </div>\r\n                 ))}\r\n             </div>\r\n         </>\r\n"
+                },
+                {
+                    "date": 1766090136401,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,9 +31,9 @@\n             <div className={`grid ${gridCols} gap-4 text-gray-300 ${borderClass}`}>\r\n                 {fields.map((field, index) => (\r\n                     <div key={index}>\r\n                         <span className={`font-semibold ${labelColor}`}>{field.label}:</span>{' '}\r\n-                        {field.colour ? (<span className={``}>{renderValue(field)}</span>) : ({ renderValue(field) })}\r\n+                        {renderValue(field)}\r\n                     </div>\r\n                 ))}\r\n             </div>\r\n         </>\r\n"
+                },
+                {
+                    "date": 1766090172066,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,9 +31,9 @@\n             <div className={`grid ${gridCols} gap-4 text-gray-300 ${borderClass}`}>\r\n                 {fields.map((field, index) => (\r\n                     <div key={index}>\r\n                         <span className={`font-semibold ${labelColor}`}>{field.label}:</span>{' '}\r\n-                        {renderValue(field)}\r\n+                        <span className={`${field.colour}`}>{renderValue(field)}</span>\r\n                     </div>\r\n                 ))}\r\n             </div>\r\n         </>\r\n"
                 }
             ],
             "date": 1765810093820,

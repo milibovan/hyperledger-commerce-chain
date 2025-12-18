@@ -18,6 +18,8 @@ export default function ReceiptDetails({
         )?.quantity;
     };
 
+    const statusColour = receipt.receipt.status === "COMPLETED" ? "text-green-300" : "text-gray-300";
+
     return (
         <div className="space-y-6">
             <EntityDetailsDisplay
@@ -37,6 +39,7 @@ export default function ReceiptDetails({
                         value: receipt.receipt['total-cost'],
                         formatter: (val) => `$${val}`
                     },
+                    { label: 'Status', value: receipt.receipt.status, colour: statusColour },
                 ]}
             />
             <div className={`grid grid-cols-2 gap-4 text-gray-300 py-4`}>

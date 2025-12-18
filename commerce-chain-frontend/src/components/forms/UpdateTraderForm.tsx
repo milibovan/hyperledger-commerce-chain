@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle, Plus } from "lucide-react";
 import type {
-  UpdateTraderFormsProps,
   Trader,
   TraderData,
 } from "../../utils/dataTypesUtils";
 import { channels, TraderType } from "../../utils/dataTypesUtils";
+import type { UpdateTraderFormsProps } from "../../utils/propsUtils";
 
 export default function UpdateTraderForm({
   onSuccess,
@@ -17,6 +17,7 @@ export default function UpdateTraderForm({
     id: trader.id,
     name: trader.name,
     vat: trader.vat,
+    email: trader.email,
     traderType: trader["trader-type"],
     balance: trader.balance.toString(),
     channel: channels[0],
@@ -43,6 +44,7 @@ export default function UpdateTraderForm({
     if (
       !formData.name ||
       !formData.vat ||
+      !formData.email ||
       !formData.traderType ||
       !formData.balance ||
       !formData.traderType ||
@@ -64,6 +66,7 @@ export default function UpdateTraderForm({
             id: formData.id,
             name: formData.name,
             vat: formData.vat,
+            email: formData.email,
             "trader-type": formData.traderType,
             balance: parseFloat(formData.balance),
           }),
@@ -77,6 +80,7 @@ export default function UpdateTraderForm({
           id: "",
           name: "",
           vat: "",
+          email: "",
           traderType: "",
           balance: "",
           channel: "",
@@ -147,6 +151,21 @@ export default function UpdateTraderForm({
             value={formData.name}
             onChange={handleChange}
             placeholder="Enter trader name"
+            className="w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50"
+          />
+        </div>
+
+        {/* Trader Email */}
+        <div>
+          <label className="block text-pink-300 font-semibold mb-2">
+            Trader Email *
+          </label>
+          <input
+            type="text"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Enter trader email"
             className="w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50"
           />
         </div>

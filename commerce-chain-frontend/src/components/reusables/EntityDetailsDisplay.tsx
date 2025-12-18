@@ -32,7 +32,7 @@ export default function EntityDetailsDisplay({
                 {fields.map((field, index) => (
                     <div key={index}>
                         <span className={`font-semibold ${labelColor}`}>{field.label}:</span>{' '}
-                        {renderValue(field)}
+                        <span className={`${field.colour}`}>{renderValue(field)}</span>
                     </div>
                 ))}
             </div>

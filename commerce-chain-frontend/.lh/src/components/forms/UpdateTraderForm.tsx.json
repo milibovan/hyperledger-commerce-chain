@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 14,
+            "activePatchIndex": 21,
             "patches": [
                 {
                     "date": 1761913706589,
@@ -64,6 +64,34 @@
                 {
                     "date": 1762204279311,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,10 +3,10 @@\n import type {\r\n   UpdateTraderFormsProps,\r\n   Trader,\r\n   TraderData,\r\n-} from \"../../utils/utils\";\r\n-import { channels, TraderType } from \"../../utils/utils\";\r\n+} from \"../../utils/dataTypesUtils\";\r\n+import { channels, TraderType } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function UpdateTraderForm({\r\n   onSuccess,\r\n   trader,\r\n"
+                },
+                {
+                    "date": 1766088216115,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,8 +16,9 @@\n   const [formData, setFormData] = useState<Trader>({\r\n     id: trader.id,\r\n     name: trader.name,\r\n     vat: trader.vat,\r\n+    email: trader.email,\r\n     traderType: trader[\"trader-type\"],\r\n     balance: trader.balance.toString(),\r\n     channel: channels[0],\r\n   });\r\n"
+                },
+                {
+                    "date": 1766088224171,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -43,8 +43,9 @@\n \r\n     if (\r\n       !formData.name ||\r\n       !formData.vat ||\r\n+      !formData.email ||\r\n       !formData.traderType ||\r\n       !formData.balance ||\r\n       !formData.traderType ||\r\n       !formData.channel\r\n"
+                },
+                {
+                    "date": 1766088237668,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -65,8 +65,9 @@\n           body: JSON.stringify({\r\n             id: formData.id,\r\n             name: formData.name,\r\n             vat: formData.vat,\r\n+            email: formData.email,\r\n             \"trader-type\": formData.traderType,\r\n             balance: parseFloat(formData.balance),\r\n           }),\r\n         }\r\n"
+                },
+                {
+                    "date": 1766088264883,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -79,8 +79,9 @@\n         setFormData({\r\n           id: \"\",\r\n           name: \"\",\r\n           vat: \"\",\r\n+          email: \"\",\r\n           traderType: \"\",\r\n           balance: \"\",\r\n           channel: \"\",\r\n         });\r\n"
+                },
+                {
+                    "date": 1766088290683,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -154,8 +154,23 @@\n             className=\"w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50\"\r\n           />\r\n         </div>\r\n \r\n+        {/* Trader Email */}\r\n+        <div>\r\n+          <label className=\"block text-pink-300 font-semibold mb-2\">\r\n+            Trader Email *\r\n+          </label>\r\n+          <input\r\n+            type=\"text\"\r\n+            email=\"email\"\r\n+            value={formData.email}\r\n+            onChange={handleChange}\r\n+            placeholder=\"Enter trader email\"\r\n+            className=\"w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50\"\r\n+          />\r\n+        </div>\r\n+\r\n         {/* Trader Type */}\r\n         <div>\r\n           <label className=\"block text-pink-300 font-semibold mb-2\">\r\n             Trader Type *\r\n"
+                },
+                {
+                    "date": 1766088300913,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -161,9 +161,9 @@\n             Trader Email *\r\n           </label>\r\n           <input\r\n             type=\"text\"\r\n-            email=\"email\"\r\n+            name=\"email\"\r\n             value={formData.email}\r\n             onChange={handleChange}\r\n             placeholder=\"Enter trader email\"\r\n             className=\"w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50\"\r\n"
+                },
+                {
+                    "date": 1766088439206,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,12 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle, Plus } from \"lucide-react\";\r\n import type {\r\n-  UpdateTraderFormsProps,\r\n   Trader,\r\n   TraderData,\r\n } from \"../../utils/dataTypesUtils\";\r\n import { channels, TraderType } from \"../../utils/dataTypesUtils\";\r\n+import type { UpdateTraderFormsProps } from \"../../utils/propsUtils\";\r\n \r\n export default function UpdateTraderForm({\r\n   onSuccess,\r\n   trader,\r\n"
                 }
             ],
             "date": 1761913706589,

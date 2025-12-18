@@ -143,6 +143,7 @@ export type FieldConfig = {
   value: string | number | Date;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   formatter?: (value: any) => string;
+  colour?: string;
 };
 
 export interface AddProductToTrader {
