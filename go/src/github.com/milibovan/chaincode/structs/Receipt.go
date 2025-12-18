@@ -18,7 +18,7 @@ type Receipt struct {
 	Date          string             `json:"date"`
 	TotalCost     float64            `json:"total-cost"`
 	Status        ReceiptStatus      `json:"status"`
-	CancelledDate string             `json:"cancelled-date,omitempty"`
-	CancelledBy   string             `json:"cancelled-by,omitempty"`
+	CancelledDate string             `json:"cancelled-date"`
+	CancelledBy   string             `json:"cancelled-by"`
 	Deleted       bool               `json:"deleted"`
 }

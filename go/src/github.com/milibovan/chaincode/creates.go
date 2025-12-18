@@ -150,7 +150,6 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().PutState(productKey, productJSON)
 }
 
-// CreateOrder TODO Implement new Receipt fields and later order fields
 func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
 	// Check if order already exists
 	exists, err := s.AssetExists(ctx, id, structs.OrderET)
@@ -244,16 +243,18 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 
 	// Create receipt
 	receipt := structs.Receipt{
-		DocType:   "receipt",
-		Id:        id,
-		TraderId:  trader.Id,
-		UserId:    userId,
-		OrderId:   orderId,
-		Products:  products,
-		Date:      time.Now().Format(time.RFC3339),
-		TotalCost: totalCost,
-		Status:    structs.ReceiptCompleted,
-		Deleted:   false,
+		DocType:       "receipt",
+		Id:            id,
+		TraderId:      trader.Id,
+		UserId:        userId,
+		OrderId:       orderId,
+		Products:      products,
+		Date:          time.Now().Format(time.RFC3339),
+		TotalCost:     totalCost,
+		Status:        structs.ReceiptCompleted,
+		CancelledBy:   "",
+		CancelledDate: "",
+		Deleted:       false,
 	}
 
 	// Update trader metadata (inventory already deducted by allocation algorithm)
