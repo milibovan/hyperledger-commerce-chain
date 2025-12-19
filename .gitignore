@@ -82,3 +82,7 @@ go/src/github.com/milibovan/install-fabric.sh
 /go/src/github.com/milibovan/network/channel-artifacts/
 /commerce-chain-frontend/.lh/
 /commerce-chain-frontend/TODO_README.md
+/commerce-chain-frontend/REQUEST_ITEM.md
+/kafka1/
+/kafka2/
+/kafka3/
