@@ -144,11 +144,10 @@ export default function App() {
                   <button
                     key={org}
                     onClick={() => handleOrgSelect(org)}
-                    className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${
-                      selectedOrg === org
+                    className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${selectedOrg === org
                         ? "bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50"
                         : "bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200"
-                    }`}
+                      }`}
                   >
                     {org}
                   </button>
@@ -166,11 +165,10 @@ export default function App() {
                   <button
                     key={user}
                     onClick={() => setSelectedUser(user)}
-                    className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${
-                      selectedUser === user
+                    className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${selectedUser === user
                         ? "bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50"
                         : "bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200"
-                    }`}
+                      }`}
                   >
                     {user}
                   </button>
