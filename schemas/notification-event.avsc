@@ -1,0 +1,101 @@
+{
+  "namespace": "com.hyperledger_commerce_chain.notifications",
+  "type": "record",
+  "name": "NotificationEvent",
+  "doc": "This is schema for email notification type in Kafka",
+  "fields": [
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "event_type",
+      "type": {
+        "type": "enum",
+        "name": "EventTypes",
+        "symbols": [
+          "ORDER_INSUFFICIENT_BALANCE",
+          "ORDER_PAYMENT_COMPLETED",
+          "ORDER_APPROVED",
+          "ORDER_FULFILLED",
+          "ORDER_CANCELLED",
+          "ORDER_REJECTED",
+          "NEW_ORDER_PENDING_APPROVAL",
+          "ORDER_FULFILLMENT_REMINDER_DAY_1",
+          "ORDER_FULFILLMENT_REMINDER_DAY_2",
+          "ORDER_FULFILLMENT_REMINDER_DAY_3"
+        ]
+      },
+      "doc": "Event type and also email template"
+    },
+    {
+      "name": "recipient_type",
+      "type": {
+        "type": "enum",
+        "name": "RecipientType",
+        "symbols": [
+          "USER",
+          "TRADER",
+          "ADMIN"
+        ]
+      },
+      "doc": "Who should receive this notification"
+    },
+    {
+      "name": "recipient_id",
+      "type": "string",
+      "doc": "ID of the recipient (user_id or trader_id)"
+    },
+    {
+      "name": "timestamp",
+      "type": "long",
+      "logicalType": "timestamp-millis"
+    },
+    {
+      "name": "scheduled_send_time",
+      "type": [
+        "null",
+        "long"
+      ],
+      "logicalType": "timestamp-millis",
+      "default": null,
+      "doc": "If set, send notification at this time (Unix timestamp). Null = send immediately"
+    },
+    {
+      "name": "channel",
+      "type": {
+        "type": "enum",
+        "name": "Channels",
+        "symbols": [
+          "EMAIL",
+          "SMS",
+          "PUSH",
+          "IN_APP"
+        ]
+      },
+      "doc": "Which channel notification should be sent to"
+    },
+    {
+      "name": "order_id",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "user_id",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "trader_id",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "data",
+      "type": {
+        "type": "map",
+        "values": "string"
+      }
+    }
+  ]
+}
