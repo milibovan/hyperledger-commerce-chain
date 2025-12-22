@@ -2,7 +2,7 @@
 
 # run-app.sh - Launch the application in interactive mode
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 echo "Building application..."
 go build -o commerce-app

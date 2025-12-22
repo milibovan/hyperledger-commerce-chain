@@ -44,7 +44,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
       KAFKA_LISTENERS: 'PLAINTEXT://kafka2:9092,CONTROLLER://kafka2:9093'
       KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka2:9092'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
       KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
       KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
       CLUSTER_ID: '98D2R1B0T4iSnoL06HXiCw'
@@ -126,6 +126,29 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass ppgQ;g+rg()u9vhi
     volumes:
       - redis_data:/data
+
+#  go-backend:
+#    build:
+#      context: ./go/src/github.com/milibovan/application
+#      dockerfile: Dockerfile
+#    container_name: go-backend
+#    ports:
+#      - "7070:7070"
+#    environment:
+#      KAFKA_BROKERS: "kafka1:9092,kafka2:9092,kafka3:9092"
+#      SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+#      REDIS_HOST: "redis"
+#      REDIS_PORT: "6379"
+#      REDIS_PASSWORD: "ppgQ;g+rg()u9vhi"
+#    depends_on:
+#      - kafka1
+#      - kafka2
+#      - kafka3
+#      - redis
+#      - schema-registry
+#    networks:
+#      - kafka-net
+#    restart: unless-stopped
 
 volumes:
   redis_data:
