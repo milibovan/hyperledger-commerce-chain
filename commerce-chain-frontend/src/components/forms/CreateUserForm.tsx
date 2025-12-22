@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
-import type { CreateFormsProps, User} from "../../utils/dataTypesUtils";
-import { channels } from "../../utils/dataTypesUtils";
+import type { CreateFormsProps } from "../../utils/propsUtils";
+import { channels, type User } from "../../utils/dataTypesUtils";
+import { host } from "../../utils/utils";
 
 export default function CreateUserForm({ onSuccess }: CreateFormsProps) {
   const [formData, setFormData] = useState<User>({
+    id: "",
     name: "",
     surname: "",
     email: "",
@@ -45,7 +47,7 @@ export default function CreateUserForm({ onSuccess }: CreateFormsProps) {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/user/${formData.channel}`,
+        `${host}/user/${formData.channel}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -62,6 +64,7 @@ export default function CreateUserForm({ onSuccess }: CreateFormsProps) {
         const data = await response.json();
         setSuccess(`User created: ${data.Message}`);
         setFormData({
+          id: "",
           name: "",
           surname: "",
           email: "",

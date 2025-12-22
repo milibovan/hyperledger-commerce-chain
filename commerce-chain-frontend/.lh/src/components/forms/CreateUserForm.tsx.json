@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 6,
             "patches": [
                 {
                     "date": 1761555960731,
@@ -16,6 +16,22 @@
                 {
                     "date": 1762204278931,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import type { CreateFormsProps, User} from \"../../utils/utils\";\r\n-import { channels } from \"../../utils/utils\";\r\n+import type { CreateFormsProps, User} from \"../../utils/dataTypesUtils\";\r\n+import { channels } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function CreateUserForm({ onSuccess }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n     name: \"\",\r\n"
+                },
+                {
+                    "date": 1766438061603,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import type { CreateFormsProps, User} from \"../../utils/dataTypesUtils\";\r\n+import type { CreateFormsProps, User } from \"../../utils/dataTypesUtils\";\r\n import { channels } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function CreateUserForm({ onSuccess }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n@@ -44,9 +44,9 @@\n     setLoading(true);\r\n \r\n     try {\r\n       const response = await fetch(\r\n-        `http://localhost:8080/user/${formData.channel}`,\r\n+        `${host}/user/${formData.channel}`,\r\n         {\r\n           method: \"POST\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n"
+                },
+                {
+                    "date": 1766438143717,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,9 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n import type { CreateFormsProps, User } from \"../../utils/dataTypesUtils\";\r\n import { channels } from \"../../utils/dataTypesUtils\";\r\n+import { host } from \"../../utils/utils\";\r\n \r\n export default function CreateUserForm({ onSuccess }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n     name: \"\",\r\n"
+                },
+                {
+                    "date": 1766438175492,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n import { host } from \"../../utils/utils\";\r\n \r\n export default function CreateUserForm({ onSuccess }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n+    id: \"\",\r\n     name: \"\",\r\n     surname: \"\",\r\n     email: \"\",\r\n     balance: \"\",\r\n@@ -62,8 +63,9 @@\n       if (response.ok) {\r\n         const data = await response.json();\r\n         setSuccess(`User created: ${data.Message}`);\r\n         setFormData({\r\n+          id: \"\",\r\n           name: \"\",\r\n           surname: \"\",\r\n           email: \"\",\r\n           balance: \"\",\r\n"
+                },
+                {
+                    "date": 1766438211989,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import type { CreateFormsProps, User } from \"../../utils/dataTypesUtils\";\r\n-import { channels } from \"../../utils/dataTypesUtils\";\r\n+import type { CreateFormsProps } from \"../../utils/propsUtils\";\r\n+import { channels, type User } from \"../../utils/dataTypesUtils\";\r\n import { host } from \"../../utils/utils\";\r\n \r\n export default function CreateUserForm({ onSuccess }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<User>({\r\n"
                 }
             ],
             "date": 1761555960731,

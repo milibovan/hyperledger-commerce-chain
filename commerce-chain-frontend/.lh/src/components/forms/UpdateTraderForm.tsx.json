@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 21,
+            "activePatchIndex": 23,
             "patches": [
                 {
                     "date": 1761913706589,
@@ -92,6 +92,14 @@
                 {
                     "date": 1766088439206,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,12 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle, Plus } from \"lucide-react\";\r\n import type {\r\n-  UpdateTraderFormsProps,\r\n   Trader,\r\n   TraderData,\r\n } from \"../../utils/dataTypesUtils\";\r\n import { channels, TraderType } from \"../../utils/dataTypesUtils\";\r\n+import type { UpdateTraderFormsProps } from \"../../utils/propsUtils\";\r\n \r\n export default function UpdateTraderForm({\r\n   onSuccess,\r\n   trader,\r\n"
+                },
+                {
+                    "date": 1766438059651,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -57,9 +57,9 @@\n     setLoading(true);\r\n \r\n     try {\r\n       const response = await fetch(\r\n-        `http://localhost:8080/traders/${formData.channel}`,\r\n+        `${host}/traders/${formData.channel}`,\r\n         {\r\n           method: \"PUT\",\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n"
+                },
+                {
+                    "date": 1766438251898,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n   TraderData,\r\n } from \"../../utils/dataTypesUtils\";\r\n import { channels, TraderType } from \"../../utils/dataTypesUtils\";\r\n import type { UpdateTraderFormsProps } from \"../../utils/propsUtils\";\r\n+import { host } from \"../../utils/utils\";\r\n \r\n export default function UpdateTraderForm({\r\n   onSuccess,\r\n   trader,\r\n"
                 }
             ],
             "date": 1761913706589,

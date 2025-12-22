@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle, Plus } from "lucide-react";
-import type { UpdateUserFormsProps, User } from "../../utils/dataTypesUtils";
-import { channels } from "../../utils/dataTypesUtils";
+import { type User, channels } from "../../utils/dataTypesUtils";
+import { host } from "../../utils/utils";
+import type { UpdateUserFormsProps } from "../../utils/propsUtils";
 
 export default function UpdateUserForm({
   onSuccess,
@@ -51,7 +52,7 @@ export default function UpdateUserForm({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/users/${formData.channel}`,
+        `${host}/users/${formData.channel}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -122,7 +123,7 @@ export default function UpdateUserForm({
               Use the deposit feature to modify balance
             </p>
             <button
-                onClick={() => handleActionClick("deposit", user)}
+              onClick={() => handleActionClick("deposit", user)}
               className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all flex items-center gap-2"
             >
               <Plus size={18} />

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 14,
+            "activePatchIndex": 15,
             "patches": [
                 {
                     "date": 1761555960730,
@@ -64,6 +64,10 @@
                 {
                     "date": 1766008868362,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -70,9 +70,9 @@\n           name: \"\",\r\n           traderType: \"\",\r\n           vat: \"\",\r\n           balance: \"\",\r\n-          email: \"\"\r\n+          email: \"\",\r\n           channel: \"\",\r\n         });\r\n         if (onSuccess) {\r\n           onSuccess();\r\n@@ -127,8 +127,23 @@\n             className=\"w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50\"\r\n           />\r\n         </div>\r\n \r\n+        {/* Trader Email */}\r\n+        <div>\r\n+          <label className=\"block text-pink-300 font-semibold mb-2\">\r\n+            Trader Email *\r\n+          </label>\r\n+          <input\r\n+            type=\"text\"\r\n+            name=\"email\"\r\n+            value={formData.email}\r\n+            onChange={handleChange}\r\n+            placeholder=\"Enter trader email\"\r\n+            className=\"w-full px-4 py-3 bg-gray-700 border-2 border-pink-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-pink-300 focus:shadow-lg focus:shadow-pink-400/50\"\r\n+          />\r\n+        </div>\r\n+\r\n         {/* Trader Type */}\r\n         <div>\r\n           <label className=\"block text-pink-300 font-semibold mb-2\">\r\n             Trader Type *\r\n"
+                },
+                {
+                    "date": 1766438217238,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle } from \"lucide-react\";\r\n-import type { CreateFormsProps, Trader } from \"../../utils/dataTypesUtils\";\r\n+import type { Trader } from \"../../utils/dataTypesUtils\";\r\n import { TraderType, channels } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function CreateTraderForm({ onSuccess }: CreateFormsProps) {\r\n   const [formData, setFormData] = useState<Trader>({\r\n"
                 }
             ],
             "date": 1761555960730,

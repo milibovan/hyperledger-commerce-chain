@@ -6,6 +6,7 @@ import type {
 } from "../../utils/dataTypesUtils";
 import { channels, TraderType } from "../../utils/dataTypesUtils";
 import type { UpdateTraderFormsProps } from "../../utils/propsUtils";
+import { host } from "../../utils/utils";
 
 export default function UpdateTraderForm({
   onSuccess,
@@ -58,7 +59,7 @@ export default function UpdateTraderForm({
 
     try {
       const response = await fetch(
-        `http://localhost:8080/traders/${formData.channel}`,
+        `${host}/traders/${formData.channel}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

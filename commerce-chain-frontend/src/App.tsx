@@ -26,7 +26,7 @@ export default function App() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8080/connect", {
+      const response = await fetch("${host}/connect", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -54,7 +54,7 @@ export default function App() {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:8080/disconnect", {
+      const response = await fetch("${host}/disconnect", {
         method: "POST",
       });
 
@@ -145,8 +145,8 @@ export default function App() {
                     key={org}
                     onClick={() => handleOrgSelect(org)}
                     className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${selectedOrg === org
-                        ? "bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50"
-                        : "bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200"
+                      ? "bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50"
+                      : "bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200"
                       }`}
                   >
                     {org}
@@ -166,8 +166,8 @@ export default function App() {
                     key={user}
                     onClick={() => setSelectedUser(user)}
                     className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${selectedUser === user
-                        ? "bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50"
-                        : "bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200"
+                      ? "bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50"
+                      : "bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200"
                       }`}
                   >
                     {user}

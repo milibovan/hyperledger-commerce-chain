@@ -1,7 +1,9 @@
 import { useState } from "react";
-import type { CreateFormsProps, Product } from "../../utils/dataTypesUtils";
+import type { Product } from "../../utils/dataTypesUtils";
 import { channels, TraderType } from "../../utils/dataTypesUtils";
 import { Send, AlertCircle, CheckCircle } from "lucide-react";
+import { host } from "../../utils/utils";
+import type { CreateFormsProps } from "../../utils/propsUtils";
 
 export default function CreateProductForm({ onSuccess }: CreateFormsProps) {
   const [formData, setFormData] = useState<Product>({
@@ -48,7 +50,7 @@ export default function CreateProductForm({ onSuccess }: CreateFormsProps) {
 
     try {
       const response = await fetch(
-        `http://localhost:8080/product/${formData.channel}`,
+        `${host}/product/${formData.channel}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
