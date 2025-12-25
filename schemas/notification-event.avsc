@@ -14,16 +14,16 @@
         "type": "enum",
         "name": "EventTypes",
         "symbols": [
-          "ORDER_INSUFFICIENT_BALANCE",
-          "ORDER_PAYMENT_COMPLETED",
-          "ORDER_APPROVED",
-          "ORDER_FULFILLED",
-          "ORDER_CANCELLED",
-          "ORDER_REJECTED",
-          "NEW_ORDER_PENDING_APPROVAL",
-          "ORDER_FULFILLMENT_REMINDER_DAY_1",
-          "ORDER_FULFILLMENT_REMINDER_DAY_2",
-          "ORDER_FULFILLMENT_REMINDER_DAY_3"
+          "OrderInsufficientBalance",
+          "OrderPaymentCompleted",
+          "OrderApproved",
+          "OrderFulfilled",
+          "OrderCancelled",
+          "OrderRejected",
+          "NewOrderPendingApproval",
+          "OrderFulfillmentReminderDay1",
+          "OrderFulfillmentReminderDay2",
+          "OrderFulfillmentReminderDay3"
         ]
       },
       "doc": "Event type and also email template"
@@ -77,7 +77,7 @@
           "EMAIL",
           "SMS",
           "PUSH",
-          "IN_APP"
+          "InApp"
         ]
       },
       "doc": "Which channel notification should be sent to"

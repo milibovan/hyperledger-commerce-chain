@@ -2,14 +2,18 @@ use rdkafka::consumer::{Consumer, StreamConsumer, CommitMode};
 use rdkafka::config::ClientConfig;
 use rdkafka::message::Message;
 use std::env;
+use schema_registry_converter::async_impl::schema_registry::SrSettings;
+use schema_registry_converter::async_impl::avro::AvroDecoder;
+use crate::notification_event::NotificationEvent;
+use apache_avro::from_value;
 
 pub(crate) async fn consume_messages() {
     let brokers = env::var("KAFKA_BROKERS").unwrap_or("localhost:9092,localhost:9094,localhost:9096".to_string());
-//     let schema_registry = env::var("SCHEMA_REGISTRY_URL").unwrap_or("http://localhost:8081".to_string());
-    let topic = "notifications";         // Replace with your Kafka topic name
+    let schema_registry = env::var("SCHEMA_REGISTRY_URL").unwrap_or("http://localhost:8081".to_string());
+    let decoder = AvroDecoder::new(SrSettings::new(schema_registry));
+    let topic = "notifications";
     let group_id = "email-service-consumer-group";
 
-    // Create the consumer configuration
     let consumer: StreamConsumer = ClientConfig::new()
         .set("bootstrap.servers", brokers)
         .set("group.id", group_id)
@@ -27,24 +31,30 @@ pub(crate) async fn consume_messages() {
 
     println!("Starting consumer loop for topic: {}", topic);
 
-    // Start the consumption loop
     loop {
         match consumer.recv().await {
             Ok(message) => {
-                if let Some(payload) = message.payload_view() {
-                    match payload {
-                        Ok(payload) => {
-                            println!("Received message from partition {} @ offset {}: key={:?}, payload={:?}",
-                                     message.partition(),
-                                     message.offset(),
-                                     message.key(),
-                                     std::str::from_utf8(payload).unwrap_or("Invalid UTF-8"),
-                            );}
-                        Err(_e) => eprint!("Error parsing payload.")
+                if let Some(payload) = message.payload() {
+                    match decoder.decode(Some(payload)).await {
+                        Ok(avro_result) => {
+                            let result = from_value::<NotificationEvent>(&avro_result.value);
+
+                            match result {
+                                Ok(event) => {
+                                    println!("✅ Successfully deserialized event: {:?}", event.id);
+                                    println!("Type: {:?}, Channel: {:?}", event.event_type, event.channel);
+                                }
+                                Err(e) => {
+                                    eprintln!("❌ Data matches Avro schema, but not Rust struct: {}", e);
+                                }
+                            }
+                        }
+                        Err(e) => {
+                            eprintln!("❌ Failed to decode from Registry (Network/Schema Error): {}", e);
+                        }
                     }
-                    // Commit the offset manually after successful processing
-                    consumer.commit_message(&message, CommitMode::Async).unwrap();
                 }
+                consumer.commit_message(&message, CommitMode::Async).unwrap();
             }
             Err(e) => eprintln!("Kafka error: {}", e),
         }

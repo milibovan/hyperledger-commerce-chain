@@ -1,9 +1,11 @@
 [package]
 name = "email-service"
 version = "0.1.0"
-edition = "2024"
+edition = "2021"
 
 [dependencies]
 rdkafka = "0.38.0"
 tokio = { version = "1", features = ["full"] }
-tokio-macros = { version = "2.5.0" }
+schema_registry_converter = { version = "4.7.0", features = ["avro"] }
+serde = { version = "1.0", features = ["derive"] }
+apache-avro = "0.21.0"
