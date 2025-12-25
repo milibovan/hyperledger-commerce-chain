@@ -118,37 +118,53 @@ services:
     networks:
       - kafka-net
 
-  redis:
-    image: redis:7.4-alpine
-    restart: always
+  email-service:
+    build:
+      context: ./email-service/email-service
+      dockerfile: Dockerfile
+    environment:
+      KAFKA_BROKERS: "kafka1:9092,kafka2:9092,kafka3:9092"
+      SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
     ports:
-      - "6379:6379"
-    command: redis-server --save 20 1 --loglevel warning --requirepass ppgQ;g+rg()u9vhi
-    volumes:
-      - redis_data:/data
+      - "6060:6060"
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+      - schema-registry
+    networks:
+      - kafka-net
 
-#  go-backend:
-#    build:
-#      context: ./go/src/github.com/milibovan/application
-#      dockerfile: Dockerfile
-#    container_name: go-backend
+#  redis:
+#    image: redis:7.4-alpine
+#    restart: always
 #    ports:
-#      - "7070:7070"
-#    environment:
-#      KAFKA_BROKERS: "kafka1:9092,kafka2:9092,kafka3:9092"
-#      SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
-#      REDIS_HOST: "redis"
-#      REDIS_PORT: "6379"
-#      REDIS_PASSWORD: "ppgQ;g+rg()u9vhi"
-#    depends_on:
-#      - kafka1
-#      - kafka2
-#      - kafka3
-#      - redis
-#      - schema-registry
-#    networks:
-#      - kafka-net
-#    restart: unless-stopped
+#      - "6379:6379"
+#    command: redis-server --save 20 1 --loglevel warning --requirepass ppgQ;g+rg()u9vhi
+#    volumes:
+#      - redis_data:/data
+
+  go-backend:
+    build:
+      context: ./go/src/github.com/milibovan/application
+      dockerfile: Dockerfile
+    container_name: go-backend
+    ports:
+      - "7070:7070"
+    environment:
+      KAFKA_BROKERS: "kafka1:9092,kafka2:9092,kafka3:9092"
+      SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "ppgQ;g+rg()u9vhi"
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+      - schema-registry
+    networks:
+      - kafka-net
+    restart: unless-stopped
 
 volumes:
   redis_data:
