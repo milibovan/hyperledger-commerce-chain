@@ -149,6 +149,8 @@ services:
       context: ./go/src/github.com/milibovan/application
       dockerfile: Dockerfile
     container_name: go-backend
+    volumes:
+      - ./schemas:/app/schemas
     ports:
       - "7070:7070"
     environment:
@@ -157,6 +159,7 @@ services:
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
       REDIS_PASSWORD: "ppgQ;g+rg()u9vhi"
+      SCHEMA_PATH: "/app/schemas/notification-event.avsc"
     depends_on:
       - kafka1
       - kafka2

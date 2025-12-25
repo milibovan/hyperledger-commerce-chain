@@ -43,11 +43,11 @@ type Receipt struct {
 type OrderStatus string
 
 const (
-	OrderPending   OrderStatus = "PENDING"
-	OrderApproved  OrderStatus = "APPROVED"
-	OrderRejected  OrderStatus = "REJECTED"
-	OrderFulfilled OrderStatus = "FULFILLED"
-	OrderCancelled OrderStatus = "CANCELLED"
+	Pending   OrderStatus = "PENDING"
+	Approved  OrderStatus = "APPROVED"
+	Rejected  OrderStatus = "REJECTED"
+	Fulfilled OrderStatus = "FULFILLED"
+	Cancelled OrderStatus = "CANCELLED"
 )
 
 type Order struct {

@@ -2,10 +2,12 @@ package api
 
 import (
 	"commerce-sdk/client"
+	"commerce-sdk/kafka"
 	"commerce-sdk/models"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -42,17 +44,17 @@ func CreateServer() {
 		activeConn = nil
 	}
 
-	//kafkaBrokers := os.Getenv("KAFKA_BROKERS")
-	//if kafkaBrokers == "" {
-	//	kafkaBrokers = "localhost:9092,localhost:9094,localhost:9096"
-	//}
-	//
-	//schemaRegistryURL := os.Getenv("SCHEMA_REGISTRY_URL")
-	//if schemaRegistryURL == "" {
-	//	schemaRegistryURL = "http://localhost:8081"
-	//}
-	//
-	//kafka.InitKafka(kafkaBrokers, schemaRegistryURL)
+	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
+	if kafkaBrokers == "" {
+		kafkaBrokers = "localhost:9092,localhost:9094,localhost:9096"
+	}
+
+	schemaRegistryURL := os.Getenv("SCHEMA_REGISTRY_URL")
+	if schemaRegistryURL == "" {
+		schemaRegistryURL = "http://localhost:8081"
+	}
+
+	kafka.InitKafka(kafkaBrokers, schemaRegistryURL)
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -99,27 +101,27 @@ func CreateServer() {
 	router.GET("/receipts/details/:receiptId/:channel", getReceiptDetails)
 	router.GET("/orders/details/:orderId/:channel", getOrderDetails)
 
-	//someNotification := models.NotificationEvent{
-	//	ID:                "1",
-	//	EventType:         "ORDER_INSUFFICIENT_BALANCE",
-	//	RecipientType:     "USER",
-	//	RecipientID:       "1",
-	//	Timestamp:         nil,
-	//	ScheduledSendTime: nil,
-	//	Channel:           "EMAIL",
-	//	OrderID:           "",
-	//	UserID:            "",
-	//	TraderID:          "",
-	//	Data:              nil,
-	//}
-	//
-	//err := kafka.ProduceToKafka(someNotification, topic)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//
-	//defer kafka.CloseKafka()
+	someNotification := models.NotificationEvent{
+		Id:                "1",
+		EventType:         models.OrderInsufficientBalance,
+		RecipientType:     models.USER,
+		RecipientID:       "1",
+		Timestamp:         nil,
+		ScheduledSendTime: nil,
+		Channel:           models.EMAIL,
+		OrderID:           "",
+		UserID:            "",
+		TraderID:          "",
+		Data:              nil,
+	}
+
+	err := kafka.ProduceToKafka(someNotification, topic)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	defer kafka.CloseKafka()
 
 	router.Run("localhost:7070")
 }
