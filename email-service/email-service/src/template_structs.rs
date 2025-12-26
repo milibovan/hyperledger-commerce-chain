@@ -3,7 +3,7 @@ use chrono::{DateTime, Utc};
 
 #[derive(Template)]
 #[template(path="../templates/new_order_pending_approval.html")]
-struct OrderPendingApproval {
+pub struct OrderPendingApproval {
     order_id: String,
     order_date: DateTime<Utc>,
     item_count: i32,
@@ -13,20 +13,20 @@ struct OrderPendingApproval {
 
 #[derive(Template)]
 #[template(path="../templates/insufficient_balance.html")]
-struct InsufficientBalance {
-    order_id: String,
-    order_date: DateTime<Utc>,
-    item_count: i32,
-    total_amount: f32,
-    current_balance: f32,
-    required_amount: f32,
-    shortage_amount: f32,
-    url: String,
+pub struct OrderInsufficientBalance {
+    pub(crate) order_id: String,
+    pub(crate) order_date: DateTime<Utc>,
+    pub(crate) item_count: i32,
+    pub(crate) total_amount: f32,
+    pub(crate) current_balance: f32,
+    pub(crate) required_amount: f32,
+    pub(crate) shortage_amount: f32,
+    pub(crate) url: String,
 }
 
 #[derive(Template)]
 #[template(path="../templates/order_approved.html")]
-struct OrderApproved {
+pub struct OrderApproved {
     order_id: String,
     approval_date: DateTime<Utc>,
     trader_name: String,
@@ -37,7 +37,7 @@ struct OrderApproved {
 
 #[derive(Template)]
 #[template(path="../templates/order_cancelled.html")]
-struct OrderCancelled {
+pub struct OrderCancelled {
     order_id: String,
     cancelled_date: DateTime<Utc>,
     total_amount: f32,
@@ -48,7 +48,7 @@ struct OrderCancelled {
 
 #[derive(Template)]
 #[template(path="../templates/order_fulfilled.html")]
-struct OrderFulfilled {
+pub struct OrderFulfilled {
     order_id: String,
     cancelled_date: DateTime<Utc>,
     trader_name: String,
@@ -61,7 +61,7 @@ struct OrderFulfilled {
 
 #[derive(Template)]
 #[template(path="../templates/order_fulfillment_reminder_day1.html")]
-struct OrderFulfillmentReminderDay1 {
+pub struct OrderFulfillmentReminderDay1 {
     days_remaining: i32,
     order_id: String,
     approval_date: DateTime<Utc>,
@@ -72,7 +72,7 @@ struct OrderFulfillmentReminderDay1 {
 
 #[derive(Template)]
 #[template(path="../templates/order_fulfillment_reminder_day2.html")]
-struct OrderFulfillmentReminderDay2 {
+pub struct OrderFulfillmentReminderDay2 {
     days_remaining: i32,
     order_id: String,
     approval_date: DateTime<Utc>,
@@ -83,7 +83,7 @@ struct OrderFulfillmentReminderDay2 {
 
 #[derive(Template)]
 #[template(path="../templates/order_fulfillment_reminder_day3.html")]
-struct OrderFulfillmentReminderDay3 {
+pub struct OrderFulfillmentReminderDay3 {
     days_remaining: i32,
     order_id: String,
     approval_date: DateTime<Utc>,
@@ -95,7 +95,7 @@ struct OrderFulfillmentReminderDay3 {
 
 #[derive(Template)]
 #[template(path="../templates/order_rejected.html")]
-struct OrderRejected {
+pub struct OrderRejected {
     order_id: String,
     rejection_date: DateTime<Utc>,
     trader_name: String,
@@ -108,7 +108,7 @@ struct OrderRejected {
 
 #[derive(Template)]
 #[template(path="../templates/payment_completed.html")]
-struct PaymentCompleted {
+pub struct PaymentCompleted {
     order_id: String,
     payment_date: DateTime<Utc>,
     transaction_id: String,

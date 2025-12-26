@@ -7,7 +7,7 @@ use schema_registry_converter::async_impl::avro::AvroDecoder;
 use crate::notification_event::NotificationEvent;
 use apache_avro::from_value;
 
-pub(crate) async fn consume_messages() {
+pub(crate) async fn consume_messages() -> NotificationEvent {
     let brokers = env::var("KAFKA_BROKERS").unwrap_or("localhost:9092,localhost:9094,localhost:9096".to_string());
     let schema_registry = env::var("SCHEMA_REGISTRY_URL").unwrap_or("http://localhost:8081".to_string());
     let decoder = AvroDecoder::new(SrSettings::new(schema_registry));
@@ -43,6 +43,7 @@ pub(crate) async fn consume_messages() {
                                 Ok(event) => {
                                     println!("✅ Successfully deserialized event: {:?}", event.id);
                                     println!("Type: {:?}, Channel: {:?}", event.event_type, event.channel);
+                                    return event;
                                 }
                                 Err(e) => {
                                     eprintln!("❌ Data matches Avro schema, but not Rust struct: {}", e);

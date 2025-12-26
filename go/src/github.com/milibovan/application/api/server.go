@@ -102,17 +102,26 @@ func CreateServer() {
 	router.GET("/orders/details/:orderId/:channel", getOrderDetails)
 
 	someNotification := models.NotificationEvent{
-		Id:                "1",
+		Id:                "550e8400-e29b-41d4-a716-446655440000",
 		EventType:         models.OrderInsufficientBalance,
-		RecipientType:     models.USER,
-		RecipientID:       "1",
+		RecipientType:     models.TRADER,
+		RecipientID:       "trader_123",
 		Timestamp:         nil,
 		ScheduledSendTime: nil,
 		Channel:           models.EMAIL,
-		OrderID:           "",
-		UserID:            "",
-		TraderID:          "",
-		Data:              nil,
+		OrderID:           "ord_987654",
+		UserID:            "user_555",
+		TraderID:          "trader_123",
+		Data: map[string]string{
+			"order_date":      "2023-12-26T10:00:00Z",
+			"item_count":      "5",
+			"total_amount":    "150.50",
+			"current_balance": "50.00",
+			"required_amount": "150.50",
+			"shortage_amount": "100.50",
+			"url":             "https://hyperledger.commerce/orders/ord_987654",
+			"recipients":      "milibovan190d@gmail.com|mili.bovan@devoteam.com",
+		},
 	}
 
 	err := kafka.ProduceToKafka(someNotification, topic)
