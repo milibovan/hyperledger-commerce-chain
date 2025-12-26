@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Approved</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', monospace;
+            background-color: #0a0e27;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
+        }
+        .header {
+            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
+            padding: 2px;
+        }
+        .header-content {
+            background: #0a0e27;
+            padding: 30px;
+            text-align: center;
+        }
+        .logo {
+            width: 200px;
+            height: auto;
+            margin: 0 auto 10px;
+        }
+        .content {
+            padding: 40px 30px;
+            color: #00ffff;
+        }
+        .status-badge {
+            display: inline-block;
+            background: rgba(0, 255, 0, 0.15);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 10px 20px;
+            margin: 20px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-weight: bold;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            animation: approvedGlow 2s infinite;
+        }
+        @keyframes approvedGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 0, 0.8); }
+        }
+        .success-icon {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .checkmark-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #00ff00;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+            animation: scaleIn 0.8s ease-in-out;
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .checkmark-circle::before {
+            content: '✓';
+            font-size: 60px;
+            color: #00ff00;
+            animation: checkAppear 0.5s 0.3s ease-in-out forwards;
+            opacity: 0;
+        }
+        @keyframes checkAppear {
+            to { opacity: 1; }
+        }
+        .order-details {
+            background: rgba(0, 255, 0, 0.08);
+            border-left: 4px solid #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            color: #ff00ff;
+            font-weight: bold;
+        }
+        .value {
+            color: #00ff00;
+        }
+        .timeline-box {
+            background: rgba(0, 255, 255, 0.08);
+            border: 2px solid #00ffff;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .timeline-item {
+            padding: 10px 0;
+            color: #00ffff;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(90deg, #00ff00 0%, #00ffff 100%);
+            color: #000;
+            text-decoration: none;
+            padding: 15px 40px;
+            margin: 20px 0;
+            text-transform: uppercase;
+            font-weight: bold;
+            border: none;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px 30px;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            border-top: 1px solid rgba(0, 255, 0, 0.2);
+        }
+        .cyber-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, #00ff00 50%, transparent 100%);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="header-content">
+            <svg class="logo" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="cyberGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+                        <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#00ff00;stop-opacity:1" />
+                    </linearGradient>
+                    <linearGradient id="cyberGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+                <polygon points="60,20 100,35 100,65 60,80 20,65 20,35" fill="none" stroke="url(#cyberGrad1)" stroke-width="2" filter="url(#glow)" opacity="0.6"/>
+                <polygon points="60,30 85,40 85,60 60,70 35,60 35,40" fill="none" stroke="#00ffff" stroke-width="2" filter="url(#glow)"/>
+                <path d="M 60,30 L 60,15 M 85,40 L 100,40 M 85,60 L 100,60 M 60,70 L 60,85 M 35,60 L 20,60 M 35,40 L 20,40" stroke="#ff00ff" stroke-width="1.5" opacity="0.7"/>
+                <polygon points="60,45 70,50 60,55 50,50" fill="url(#cyberGrad2)" filter="url(#glow)"/>
+                <circle cx="60" cy="15" r="2" fill="#00ffff" filter="url(#glow)"/>
+                <circle cx="100" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
+                <circle cx="100" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
+                <circle cx="60" cy="85" r="2" fill="#00ff00" filter="url(#glow)"/>
+                <circle cx="20" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
+                <circle cx="20" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
+                <text x="120" y="45" font-family="'Courier New', monospace" font-size="32" font-weight="bold" fill="url(#cyberGrad1)" filter="url(#glow)">CHAINCODE</text>
+                <text x="120" y="70" font-family="'Courier New', monospace" font-size="18" fill="#00ffff" letter-spacing="4" opacity="0.9">TRADE</text>
+                <line x1="120" y1="75" x2="280" y2="75" stroke="url(#cyberGrad2)" stroke-width="1" opacity="0.5"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="content">
+        <h1 style="color: #00ff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Order Approved!</h1>
+
+        <div class="cyber-line"></div>
+
+        <div class="success-icon">
+            <div class="checkmark-circle"></div>
+        </div>
+
+        <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
+            Great news! Your order has been approved by the trader and is now in progress.
+        </p>
+
+        <div style="text-align: center;">
+            <span class="status-badge">⟡ APPROVED ⟡</span>
+        </div>
+
+        <div class="order-details">
+            <div class="detail-row">
+                <span class="label">ORDER ID:</span>
+                <span class="value">{{ORDER_ID}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">APPROVED:</span>
+                <span class="value">{{APPROVAL_DATE}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">TRADER:</span>
+                <span class="value">{{TRADER_NAME}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">FULFILLMENT DEADLINE:</span>
+                <span class="value">{{DEADLINE_DATE}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">TOTAL VALUE:</span>
+                <span class="value">{{TOTAL_AMOUNT}}</span>
+            </div>
+        </div>
+
+        <div class="timeline-box">
+            <h3 style="color: #00ffff; margin-top: 0;">What Happens Next?</h3>
+            <div class="timeline-item">
+                <strong>1.</strong> The trader will acquire the requested items within the specified timeframe
+            </div>
+            <div class="timeline-item">
+                <strong>2.</strong> Once items are obtained, the trader will fulfill your order
+            </div>
+            <div class="timeline-item">
+                <strong>3.</strong> You'll receive a notification when your order is completed
+            </div>
+            <div class="timeline-item">
+                <strong>4.</strong> Payment will be processed and released to the trader
+            </div>
+        </div>
+
+        <p style="color: #fff; line-height: 1.6;">
+            The trader has committed to fulfilling your order by <strong style="color: #00ff00;">{{DEADLINE_DATE}}</strong>. You can track the progress of your order at any time through your dashboard.
+        </p>
+
+        <div style="text-align: center;">
+            <a href="{{ORDER_URL}}" class="button">Track Order Status</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>CHAINCODE TRADE • Secure Trading Network</p>
+        <p style="margin-top: 10px;">This is an automated message. Please do not reply to this email.</p>
+    </div>
+</div>
+</body>
+</html>

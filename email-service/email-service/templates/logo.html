@@ -1,0 +1,75 @@
+<svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="cyberGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+            <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#00ff00;stop-opacity:1" />
+        </linearGradient>
+        <linearGradient id="cyberGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
+        </linearGradient>
+        <filter id="glow">
+            <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+
+    <!-- Hexagon background -->
+    <polygon points="60,20 100,35 100,65 60,80 20,65 20,35"
+             fill="none"
+             stroke="url(#cyberGrad1)"
+             stroke-width="2"
+             filter="url(#glow)"
+             opacity="0.6"/>
+
+    <!-- Inner hexagon -->
+    <polygon points="60,30 85,40 85,60 60,70 35,60 35,40"
+             fill="none"
+             stroke="#00ffff"
+             stroke-width="2"
+             filter="url(#glow)"/>
+
+    <!-- Circuit lines -->
+    <path d="M 60,30 L 60,15 M 85,40 L 100,40 M 85,60 L 100,60 M 60,70 L 60,85 M 35,60 L 20,60 M 35,40 L 20,40"
+          stroke="#ff00ff"
+          stroke-width="1.5"
+          opacity="0.7"/>
+
+    <!-- Central diamond -->
+    <polygon points="60,45 70,50 60,55 50,50"
+             fill="url(#cyberGrad2)"
+             filter="url(#glow)"/>
+
+    <!-- Dots at endpoints -->
+    <circle cx="60" cy="15" r="2" fill="#00ffff" filter="url(#glow)"/>
+    <circle cx="100" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
+    <circle cx="100" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
+    <circle cx="60" cy="85" r="2" fill="#00ff00" filter="url(#glow)"/>
+    <circle cx="20" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
+    <circle cx="20" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
+
+    <!-- Company name -->
+    <text x="120" y="45"
+          font-family="'Courier New', monospace"
+          font-size="32"
+          font-weight="bold"
+          fill="url(#cyberGrad1)"
+          filter="url(#glow)">CHAINCODE</text>
+
+    <text x="120" y="70"
+          font-family="'Courier New', monospace"
+          font-size="18"
+          fill="#00ffff"
+          letter-spacing="4"
+          opacity="0.9">TRADE</text>
+
+    <!-- Underline effect -->
+    <line x1="120" y1="75" x2="280" y2="75"
+          stroke="url(#cyberGrad2)"
+          stroke-width="1"
+          opacity="0.5"/>
+</svg>
