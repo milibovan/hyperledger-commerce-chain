@@ -201,26 +201,26 @@
         <div class="order-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{ORDER_ID}}</span>
+                <span class="value">{{order_id}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">REJECTED:</span>
-                <span class="value">{{REJECTION_DATE}}</span>
+                <span class="value">{{rejection_date}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">TRADER:</span>
-                <span class="value">{{TRADER_NAME}}</span>
+                <span class="value">{{trader_name}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">ORIGINAL AMOUNT:</span>
-                <span class="value">{{TOTAL_AMOUNT}}</span>
+                <span class="value">{{total_amount}}</span>
             </div>
         </div>
 
         <div class="reason-box">
             <h3 style="color: #ffa500; margin-top: 0;">Rejection Reason</h3>
             <p style="color: #fff; line-height: 1.6; margin: 0;">
-                {{REJECTION_REASON}}
+                {{rejection_reason}}
             </p>
         </div>
 
@@ -229,7 +229,7 @@
                 <strong>Trader's Note:</strong>
             </p>
             <p style="color: #fff; margin: 10px 0 0 0; line-height: 1.5;">
-                {{TRADER_MESSAGE}}
+                {{trader_message}}
             </p>
         </div>
 
@@ -238,7 +238,7 @@
             <p style="color: #fff; margin: 10px 0;">
                 Your reserved funds have been released:
             </p>
-            <div class="refund-amount">{{REFUND_AMOUNT}}</div>
+            <div class="refund-amount">{{refund_amount}}</div>
             <p style="color: #00ffff; margin: 10px 0; font-size: 14px;">
                 Available in your account immediately
             </p>
@@ -249,7 +249,7 @@
         </p>
 
         <div style="text-align: center;">
-            <a href="{{NEW_ORDER_URL}}" class="button">Create New Order</a>
+            <a href="{{url}}" class="button">Create New Order</a>
         </div>
 
         <div style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); padding: 15px; margin: 30px 0;">

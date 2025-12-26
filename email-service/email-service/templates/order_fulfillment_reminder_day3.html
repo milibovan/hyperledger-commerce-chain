@@ -189,30 +189,30 @@
         </div>
 
         <div class="timer">
-            {{HOURS_REMAINING}} HOURS
+            {{days_remaining}} DAYS
         </div>
 
         <div class="order-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{ORDER_ID}}</span>
+                <span class="value">{{order_id}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">APPROVED:</span>
-                <span class="value">{{APPROVAL_DATE}}</span>
+                <span class="value">{{approval_date}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">DEADLINE:</span>
-                <span class="value">{{DEADLINE_DATE}}</span>
+                <span class="value">{{deadline_date}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">TOTAL VALUE:</span>
-                <span class="value">{{TOTAL_AMOUNT}}</span>
+                <span class="value">{{total_amount}}</span>
             </div>
         </div>
 
         <div class="danger-box">
-            <strong>🚨 CRITICAL ALERT:</strong> This is your final warning. If this order is not fulfilled within the next {{HOURS_REMAINING}} hours, it will be AUTOMATICALLY CANCELLED. This WILL negatively impact your trader rating and reputation on the platform.
+            <strong>🚨 CRITICAL ALERT:</strong> This is your final warning. If this order is not fulfilled within the next {{hours_remaining}} hours, it will be AUTOMATICALLY CANCELLED. This WILL negatively impact your trader rating and reputation on the platform.
         </div>
 
         <p style="color: #fff; line-height: 1.6; font-size: 15px;">
@@ -220,7 +220,7 @@
         </p>
 
         <div style="text-align: center;">
-            <a href="{{ORDER_URL}}" class="button">🚨 Fulfill Order NOW 🚨</a>
+            <a href="{{url}}" class="button">🚨 Fulfill Order NOW 🚨</a>
         </div>
     </div>
 
