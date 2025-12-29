@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 77,
+            "activePatchIndex": 79,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -316,6 +316,14 @@
                 {
                     "date": 1766089980690,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -142,8 +142,9 @@\n   label: string;\r\n   value: string | number | Date;\r\n   // eslint-disable-next-line @typescript-eslint/no-explicit-any\r\n   formatter?: (value: any) => string;\r\n+  colour?: string;\r\n };\r\n \r\n export interface AddProductToTrader {\r\n   traderId: string;\r\n"
+                },
+                {
+                    "date": 1767041796349,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -204,5 +204,11 @@\n   receipt: ReceiptData,\r\n   products: ProductData[],\r\n   trader: TraderData,\r\n   user: UserData\r\n+}\r\n+\r\n+export interface BalanceItem {\r\n+    label: string;\r\n+    value: string;\r\n+    colorClass: string;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1767041853187,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -210,5 +210,15 @@\n export interface BalanceItem {\r\n     label: string;\r\n     value: string;\r\n     colorClass: string;\r\n+}\r\n+\r\n+export interface Tab {\r\n+    id: string;\r\n+    label: string;\r\n+    icon?: string;\r\n+    badge?: {\r\n+        text: string;\r\n+        colorClass: string;\r\n+    };\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762249804506,

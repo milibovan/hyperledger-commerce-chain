@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 106,
+            "activePatchIndex": 110,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -432,6 +432,22 @@
                 {
                     "date": 1766089863807,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -122,9 +122,8 @@\n   fields: FieldConfig[];\r\n   columns?: 1 | 2;\r\n   hasBorder?: boolean;\r\n   borderColor?: string;\r\n-  textColor?: string;\r\n };\r\n \r\n export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData> = {\r\n   title: string;\r\n"
+                },
+                {
+                    "date": 1767041779055,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -161,5 +161,11 @@\n   onDeleteClick: (entity: T) => void;\r\n   renderMainContent: (entity: T) => ReactNode;\r\n   renderSideContent: (entity: T) => ReactNode;\r\n   getEntityId: (entity: T) => string | number;\r\n-};\n\\ No newline at end of file\n+};\r\n+\r\n+export interface BalanceSummaryProps {\r\n+    items: BalanceItem[];\r\n+    errorMessage?: string;\r\n+    showError?: boolean;\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1767041801111,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import type { ReactNode } from \"react\";\r\n-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem } from \"./dataTypesUtils\";\r\n import type { ColorScheme } from \"./stylingUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n"
+                },
+                {
+                    "date": 1767041839977,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -167,5 +167,11 @@\n export interface BalanceSummaryProps {\r\n     items: BalanceItem[];\r\n     errorMessage?: string;\r\n     showError?: boolean;\r\n-}\n\\ No newline at end of file\n+}\r\n+\r\n+export interface TabNavigationProps {\r\n+    tabs: Tab[];\r\n+    activeTab: string;\r\n+    onTabChange: (tabId: string) => void;\r\n+}\r\n"
+                },
+                {
+                    "date": 1767041859787,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import type { ReactNode } from \"react\";\r\n-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab } from \"./dataTypesUtils\";\r\n import type { ColorScheme } from \"./stylingUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n"
                 }
             ],
             "date": 1762248920808,

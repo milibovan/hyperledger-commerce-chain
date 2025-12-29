@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { LogOut } from "lucide-react";
 import Menu from "./components/Menu";
+import { host } from "./utils/utils";
 
 type ConnectionState = "disconnected" | "connected";
 
@@ -26,7 +27,7 @@ export default function App() {
     setError(null);
 
     try {
-      const response = await fetch("${host}/connect", {
+      const response = await fetch(`${host}/connect`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

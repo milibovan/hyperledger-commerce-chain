@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 58,
+            "activePatchIndex": 59,
             "patches": [
                 {
                     "date": 1762356648891,
@@ -240,6 +240,10 @@
                 {
                     "date": 1765823477883,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,8 +1,8 @@\n import type { OrderDetails, UserDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n-import EntityListSection from \"../reusables/NestedEntityListSection\";\r\n+import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n \r\n export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {\r\n   return (\r\n     <div className=\"space-y-4\">\r\n@@ -23,9 +23,9 @@\n             formatter: (val) => `$${val.toFixed(2)}`\r\n           },\r\n         ]}\r\n       />\r\n-      <EntityListSection\r\n+      <NestedEntityListSection\r\n         title=\"Orders\"\r\n         // TODO Solve id\r\n         items={userDetails.orders || []}\r\n         colorScheme=\"purple\"\r\n"
+                },
+                {
+                    "date": 1767041396654,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,9 +25,8 @@\n         ]}\r\n       />\r\n       <NestedEntityListSection\r\n         title=\"Orders\"\r\n-        // TODO Solve id\r\n         items={userDetails.orders || []}\r\n         colorScheme=\"purple\"\r\n         hasBorder={true}\r\n         borderPosition=\"top\"\r\n"
                 }
             ],
             "date": 1762356648891,

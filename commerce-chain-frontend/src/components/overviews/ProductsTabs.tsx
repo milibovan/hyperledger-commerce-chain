@@ -150,13 +150,12 @@ export default function ProductsTabs({
                   key={product.id}
                   className={`
                       border-2 rounded-lg p-4 transition-all duration-200
-                      ${
-                        isOutOfStock
-                          ? "bg-gray-900/50 border-gray-700 opacity-60 cursor-not-allowed"
-                          : isSelected
-                          ? "bg-purple-900/20 border-purple-400 shadow-lg shadow-purple-400/20 cursor-pointer"
-                          : "bg-gray-800 border-gray-600 hover:border-purple-400/50 cursor-pointer"
-                      }
+                      ${isOutOfStock
+                      ? "bg-gray-900/50 border-gray-700 opacity-60 cursor-not-allowed"
+                      : isSelected
+                        ? "bg-purple-900/20 border-purple-400 shadow-lg shadow-purple-400/20 cursor-pointer"
+                        : "bg-gray-800 border-gray-600 hover:border-purple-400/50 cursor-pointer"
+                    }
                     `}
                   onClick={() =>
                     !isSelected && !isOutOfStock && toggleProduct(product.id)
@@ -173,11 +172,10 @@ export default function ProductsTabs({
                         ${product.price.toFixed(2)}
                       </p>
                       <p
-                        className={`text-xs ${
-                          isOutOfStock
-                            ? "text-red-400 font-semibold"
-                            : "text-gray-400"
-                        }`}
+                        className={`text-xs ${isOutOfStock
+                          ? "text-red-400 font-semibold"
+                          : "text-gray-400"
+                          }`}
                       >
                         Stock: {quantity >= 0 && product.quantity - quantity}
                       </p>
@@ -216,13 +214,12 @@ export default function ProductsTabs({
                           className={`
                               flex-1 px-3 py-2 bg-gray-700 text-white rounded font-semibold
                               transition-all duration-200 focus:outline-none
-                              ${
-                                error ||
-                                (hasInsufficientFunds && quantity > 0) ||
-                                quantity < 0
-                                  ? "border-2 border-red-500 focus:border-red-400"
-                                  : "border-2 border-purple-500 focus:border-purple-300"
-                              }
+                              ${error ||
+                              (hasInsufficientFunds && quantity > 0) ||
+                              quantity < 0
+                              ? "border-2 border-red-500 focus:border-red-400"
+                              : "border-2 border-purple-500 focus:border-purple-300"
+                            }
                             `}
                         />
                         <button
@@ -245,11 +242,10 @@ export default function ProductsTabs({
                             Subtotal:
                           </span>
                           <span
-                            className={`text-lg font-bold ${
-                              hasInsufficientFunds && quantity > 0
-                                ? "text-red-400"
-                                : "text-purple-300"
-                            }`}
+                            className={`text-lg font-bold ${hasInsufficientFunds && quantity > 0
+                              ? "text-red-400"
+                              : "text-purple-300"
+                              }`}
                           >
                             ${productTotal.toFixed(2)}
                           </span>

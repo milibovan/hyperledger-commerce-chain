@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 70,
+            "activePatchIndex": 71,
             "patches": [
                 {
                     "date": 1760684060056,
@@ -288,6 +288,10 @@
                 {
                     "date": 1766438064890,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,9 +25,9 @@\n     setLoading(true);\r\n     setError(null);\r\n \r\n     try {\r\n-      const response = await fetch(\"http://localhost:8080/connect\", {\r\n+      const response = await fetch(\"${host}/connect\", {\r\n         method: \"POST\",\r\n         headers: { \"Content-Type\": \"application/json\" },\r\n         body: JSON.stringify({\r\n           organization: selectedOrg,\r\n@@ -53,9 +53,9 @@\n     setLoading(true);\r\n     setError(null);\r\n \r\n     try {\r\n-      const response = await fetch(\"http://localhost:8080/disconnect\", {\r\n+      const response = await fetch(\"${host}/disconnect\", {\r\n         method: \"POST\",\r\n       });\r\n \r\n       if (response.ok) {\r\n@@ -144,10 +144,10 @@\n                   <button\r\n                     key={org}\r\n                     onClick={() => handleOrgSelect(org)}\r\n                     className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${selectedOrg === org\r\n-                        ? \"bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50\"\r\n-                        : \"bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200\"\r\n+                      ? \"bg-cyan-500 border-cyan-300 text-gray-900 shadow-lg shadow-cyan-400/50\"\r\n+                      : \"bg-gray-700 border-gray-600 text-cyan-300 hover:border-cyan-400 hover:text-cyan-200\"\r\n                       }`}\r\n                   >\r\n                     {org}\r\n                   </button>\r\n@@ -165,10 +165,10 @@\n                   <button\r\n                     key={user}\r\n                     onClick={() => setSelectedUser(user)}\r\n                     className={`w-full py-3 px-4 rounded border-2 font-semibold transition-all duration-200 ${selectedUser === user\r\n-                        ? \"bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50\"\r\n-                        : \"bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200\"\r\n+                      ? \"bg-purple-500 border-purple-300 text-gray-900 shadow-lg shadow-purple-400/50\"\r\n+                      : \"bg-gray-700 border-gray-600 text-purple-300 hover:border-purple-400 hover:text-purple-200\"\r\n                       }`}\r\n                   >\r\n                     {user}\r\n                   </button>\r\n"
+                },
+                {
+                    "date": 1767043667995,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,9 +25,9 @@\n     setLoading(true);\r\n     setError(null);\r\n \r\n     try {\r\n-      const response = await fetch(\"${host}/connect\", {\r\n+      const response = await fetch(`${host}/connect`, {\r\n         method: \"POST\",\r\n         headers: { \"Content-Type\": \"application/json\" },\r\n         body: JSON.stringify({\r\n           organization: selectedOrg,\r\n"
                 }
             ],
             "date": 1760684060056,

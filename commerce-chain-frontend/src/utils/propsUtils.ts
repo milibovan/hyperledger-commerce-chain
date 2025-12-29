@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig } from "./dataTypesUtils";
+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab } from "./dataTypesUtils";
 import type { ColorScheme } from "./stylingUtils";
 
 export interface ListProps<T> {
@@ -163,3 +163,15 @@ export type EntityListProps<T> = {
   renderSideContent: (entity: T) => ReactNode;
   getEntityId: (entity: T) => string | number;
 };
+
+export interface BalanceSummaryProps {
+    items: BalanceItem[];
+    errorMessage?: string;
+    showError?: boolean;
+}
+
+export interface TabNavigationProps {
+    tabs: Tab[];
+    activeTab: string;
+    onTabChange: (tabId: string) => void;
+}

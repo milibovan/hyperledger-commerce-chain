@@ -206,3 +206,19 @@ export interface ReceiptDetails {
   trader: TraderData,
   user: UserData
 }
+
+export interface BalanceItem {
+    label: string;
+    value: string;
+    colorClass: string;
+}
+
+export interface Tab {
+    id: string;
+    label: string;
+    icon?: string;
+    badge?: {
+        text: string;
+        colorClass: string;
+    };
+}

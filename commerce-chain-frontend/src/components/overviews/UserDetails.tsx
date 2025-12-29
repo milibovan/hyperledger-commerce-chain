@@ -26,7 +26,6 @@ export default function UserDetails({ entity: userDetails, onEntityClick }: Deta
       />
       <NestedEntityListSection
         title="Orders"
-        // TODO Solve id
         items={userDetails.orders || []}
         colorScheme="purple"
         hasBorder={true}
