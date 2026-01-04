@@ -2,12 +2,10 @@ package api
 
 import (
 	"commerce-sdk/client"
-	"commerce-sdk/kafka"
 	"commerce-sdk/models"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -44,17 +42,17 @@ func CreateServer() {
 		activeConn = nil
 	}
 
-	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
-	if kafkaBrokers == "" {
-		kafkaBrokers = "localhost:9092,localhost:9094,localhost:9096"
-	}
-
-	schemaRegistryURL := os.Getenv("SCHEMA_REGISTRY_URL")
-	if schemaRegistryURL == "" {
-		schemaRegistryURL = "http://localhost:8081"
-	}
-
-	kafka.InitKafka(kafkaBrokers, schemaRegistryURL)
+	//kafkaBrokers := os.Getenv("KAFKA_BROKERS")
+	//if kafkaBrokers == "" {
+	//	kafkaBrokers = "localhost:9092,localhost:9094,localhost:9096"
+	//}
+	//
+	//schemaRegistryURL := os.Getenv("SCHEMA_REGISTRY_URL")
+	//if schemaRegistryURL == "" {
+	//	schemaRegistryURL = "http://localhost:8081"
+	//}
+	//
+	//kafka.InitKafka(kafkaBrokers, schemaRegistryURL)
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -101,36 +99,38 @@ func CreateServer() {
 	router.GET("/receipts/details/:receiptId/:channel", getReceiptDetails)
 	router.GET("/orders/details/:orderId/:channel", getOrderDetails)
 
-	someNotification := models.NotificationEvent{
-		Id:                "550e8400-e29b-41d4-a716-446655440000",
-		EventType:         models.OrderInsufficientBalance,
-		RecipientType:     models.TRADER,
-		RecipientID:       "trader_123",
-		Timestamp:         nil,
-		ScheduledSendTime: nil,
-		Channel:           models.EMAIL,
-		OrderID:           "ord_987654",
-		UserID:            "user_555",
-		TraderID:          "trader_123",
-		Data: map[string]string{
-			"order_date":      "2023-12-26T10:00:00Z",
-			"item_count":      "5",
-			"total_amount":    "150.50",
-			"current_balance": "50.00",
-			"required_amount": "150.50",
-			"shortage_amount": "100.50",
-			"url":             "https://hyperledger.commerce/orders/ord_987654",
-			"recipients":      "milibovan190d@gmail.com|mili.bovan@devoteam.com",
-		},
-	}
+	router.POST("/order/request/:channel", createOrderRequest)
 
-	err := kafka.ProduceToKafka(someNotification, topic)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	defer kafka.CloseKafka()
+	//someNotification := models.NotificationEvent{
+	//	Id:                "550e8400-e29b-41d4-a716-446655440000",
+	//	EventType:         models.OrderInsufficientBalance,
+	//	RecipientType:     models.TRADER,
+	//	RecipientID:       "trader_123",
+	//	Timestamp:         nil,
+	//	ScheduledSendTime: nil,
+	//	Channel:           models.EMAIL,
+	//	OrderID:           "ord_987654",
+	//	UserID:            "user_555",
+	//	TraderID:          "trader_123",
+	//	Data: map[string]string{
+	//		"order_date":      "2023-12-26T10:00:00Z",
+	//		"item_count":      "5",
+	//		"total_amount":    "150.50",
+	//		"current_balance": "50.00",
+	//		"required_amount": "150.50",
+	//		"shortage_amount": "100.50",
+	//		"url":             "https://hyperledger.commerce/orders/ord_987654",
+	//		"recipients":      "milibovan190d@gmail.com|mili.bovan@devoteam.com",
+	//	},
+	//}
+	//
+	//err := kafka.ProduceToKafka(someNotification, topic)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return
+	//}
+	//
+	//defer kafka.CloseKafka()
 
 	router.Run("localhost:7070")
 }
@@ -780,6 +780,26 @@ func getOrderDetails(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+// createOrderRequest Create order request for products not in stock or not at any trader's
+func createOrderRequest(c *gin.Context) {
+	var orderData struct {
+		UserId   string                   `json:"user-id"`
+		Products []models.RequestProducts `json:"requests"`
+	}
+
+	var channel string
+
+	channel = c.Param("channel")
+
+	if err := c.BindJSON(&orderData); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
+		return
+	}
+
+	fmt.Println(orderData)
+	fmt.Println(channel)
 }
 
 // buildOrdersWithDetails helper function for building response

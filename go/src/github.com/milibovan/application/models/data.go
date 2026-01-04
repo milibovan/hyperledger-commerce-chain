@@ -131,3 +131,9 @@ type ProductInventory struct {
 	ProductId string `json:"product-id"`
 	Quantity  int32  `json:"quantity"`
 }
+
+type RequestProducts struct {
+	ProductId    string `json:"product-id"`
+	Quantity     int32  `json:"quantity"`
+	DeliveryDays int32  `json:"delivery-days"`
+}
