@@ -64,8 +64,8 @@ export default function RequestProductsTabs({
             const current = newMap.get(productId);
             if (current) {
                 const newMinDays = getMinDeliveryDays(product, quantity);
-                const updatedDeliveryDays = Math.max(current.deliveryDays, newMinDays);
-                newMap.set(productId, { quantity, deliveryDays: updatedDeliveryDays });
+                // const updatedDeliveryDays = Math.max(current.deliveryDays, newMinDays);
+                newMap.set(productId, { quantity, deliveryDays: newMinDays });
             }
             return newMap;
         });
