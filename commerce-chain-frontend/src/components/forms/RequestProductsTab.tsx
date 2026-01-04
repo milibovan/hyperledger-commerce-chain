@@ -146,7 +146,7 @@ export default function RequestProductsTabs({
         setIsSubmitting(true);
 
         try {
-            const response = await fetch(`${host}/order/request`, {
+            const response = await fetch(`${host}/order/request/channel-a`, {
                 method: httpMethod.POST,
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -276,6 +276,11 @@ export default function RequestProductsTabs({
                     <div className="bg-yellow-900/30 border border-yellow-600 rounded p-3">
                         <p className="text-yellow-200 text-sm">
                             ⚠️ Note: This is a request. Funds will be reserved but not charged until the order is fulfilled.
+                        </p>
+                    </div>
+                    <div className="bg-yellow-900/30 border border-yellow-600 rounded p-3 mt-2">
+                        <p className="text-yellow-200 text-sm">
+                            ⚠️ Important: Your entire order will be delivered together once all items are ready. Delivery time will be based on the item that takes longest to fulfill.
                         </p>
                     </div>
                 </div>

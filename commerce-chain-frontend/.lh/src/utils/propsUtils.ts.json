@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 110,
+            "activePatchIndex": 113,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -448,6 +448,18 @@
                 {
                     "date": 1767041859787,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import type { ReactNode } from \"react\";\r\n-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab } from \"./dataTypesUtils\";\r\n import type { ColorScheme } from \"./stylingUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n"
+                },
+                {
+                    "date": 1767530032882,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,8 +96,9 @@\n   toggleProduct: (productId: string) => void;\r\n   updateQuantity: (productId: string, quantity: number) => void;\r\n   totalCost: number,\r\n   remainingBalance: number\r\n+  channel: string = \"channel-a\"\r\n }\r\n \r\n export interface InfoSectionProps {\r\n     title: string;\r\n"
+                },
+                {
+                    "date": 1767530045746,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,9 +96,9 @@\n   toggleProduct: (productId: string) => void;\r\n   updateQuantity: (productId: string, quantity: number) => void;\r\n   totalCost: number,\r\n   remainingBalance: number\r\n-  channel: string = \"channel-a\"\r\n+  channel: string\r\n }\r\n \r\n export interface InfoSectionProps {\r\n     title: string;\r\n"
+                },
+                {
+                    "date": 1767530071583,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,9 +96,8 @@\n   toggleProduct: (productId: string) => void;\r\n   updateQuantity: (productId: string, quantity: number) => void;\r\n   totalCost: number,\r\n   remainingBalance: number\r\n-  channel: string\r\n }\r\n \r\n export interface InfoSectionProps {\r\n     title: string;\r\n"
                 }
             ],
             "date": 1762248920808,
