@@ -6,12 +6,7 @@ import Modal from "../modals/DeleteModal";
 import { useEntityActions } from "../hooks/useEntityActions";
 import { host, httpMethod } from "../../utils/utils";
 import { userFontBold } from "../../utils/stylingUtils";
-import type { ProductData } from "../../utils/dataTypesUtils";
-
-interface ProductRequest {
-    quantity: number;
-    deliveryDays: number;
-}
+import type { ProductData, ProductRequest } from "../../utils/dataTypesUtils";
 
 export default function RequestProductsTabs({
     user,
@@ -31,8 +26,14 @@ export default function RequestProductsTabs({
     const confirmModalRef = useRef<ModalHandle>(null);
     const successModalRef = useRef<ModalHandle>(null);
 
-    const getMinDeliveryDays = (product: ProductData): number => {
-        return product.quantity > 0 ? 3 : 7; // In stock: 3 days, Out of stock: 7 days
+    const getMinDeliveryDays = (product: ProductData, requestedQuantity?: number): number => {
+        const quantityToCheck = requestedQuantity ?? 0;
+        const effectiveStock = product.quantity - quantityToCheck;
+        if (product.quantity > 0) {
+            return product.quantity < quantityToCheck ? 7 : 3;
+        } else {
+            return effectiveStock > 0 ? 3 : 7; // In stock: 3 days, Out of stock: 7 days
+        }
     };
 
     const toggleProduct = (productId: string) => {
@@ -47,7 +48,7 @@ export default function RequestProductsTabs({
                 });
             } else {
                 const product = products.find((p) => p.id === productId);
-                const minDays = getMinDeliveryDays(product!);
+                const minDays = getMinDeliveryDays(product!, 1);
                 newMap.set(productId, { quantity: 1, deliveryDays: minDays });
             }
             return newMap;
@@ -62,7 +63,9 @@ export default function RequestProductsTabs({
             const newMap = new Map(prev);
             const current = newMap.get(productId);
             if (current) {
-                newMap.set(productId, { ...current, quantity });
+                const newMinDays = getMinDeliveryDays(product, quantity);
+                const updatedDeliveryDays = Math.max(current.deliveryDays, newMinDays);
+                newMap.set(productId, { quantity, deliveryDays: updatedDeliveryDays });
             }
             return newMap;
         });
@@ -84,7 +87,7 @@ export default function RequestProductsTabs({
         const product = products.find((p) => p.id === productId);
         if (!product) return;
 
-        const minDays = getMinDeliveryDays(product);
+        const minDays = getMinDeliveryDays(product, requestedProducts.get(productId)?.quantity);
 
         setRequestedProducts((prev) => {
             const newMap = new Map(prev);
@@ -296,7 +299,7 @@ export default function RequestProductsTabs({
                             const request = requestedProducts.get(product.id);
                             const error = errors.get(product.id);
                             const productTotal = request ? product.price * request.quantity : 0;
-                            const minDays = getMinDeliveryDays(product);
+                            const minDays = getMinDeliveryDays(product, request?.quantity || 0);
                             const isInStock = product.quantity > 0;
 
                             return (
@@ -323,7 +326,7 @@ export default function RequestProductsTabs({
                                                 {isInStock ? (
                                                     <span className="text-green-400 font-semibold flex items-center gap-1">
                                                         <Package size={12} />
-                                                        In Stock
+                                                        In Stock: {product.quantity}
                                                     </span>
                                                 ) : (
                                                     <span className="text-yellow-400 font-semibold flex items-center gap-1">
@@ -415,7 +418,7 @@ export default function RequestProductsTabs({
                                             <span className="text-sm text-purple-300 font-semibold">
                                                 Click to request
                                             </span>
-                                            <p className="text-xs text-gray-400 mt-1">
+                                            <p className="text-xs text-fuchsia-400 text-bold mt-1">
                                                 Min. {minDays} days delivery
                                             </p>
                                         </div>

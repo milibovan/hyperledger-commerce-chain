@@ -222,3 +222,8 @@ export interface Tab {
         colorClass: string;
     };
 }
+
+export interface ProductRequest {
+    quantity: number;
+    deliveryDays: number;
+}

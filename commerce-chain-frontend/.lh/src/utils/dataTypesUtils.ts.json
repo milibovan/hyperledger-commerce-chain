@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 79,
+            "activePatchIndex": 80,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -324,6 +324,10 @@
                 {
                     "date": 1767041853187,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -210,5 +210,15 @@\n export interface BalanceItem {\r\n     label: string;\r\n     value: string;\r\n     colorClass: string;\r\n+}\r\n+\r\n+export interface Tab {\r\n+    id: string;\r\n+    label: string;\r\n+    icon?: string;\r\n+    badge?: {\r\n+        text: string;\r\n+        colorClass: string;\r\n+    };\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1767527768467,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -220,5 +220,10 @@\n     badge?: {\r\n         text: string;\r\n         colorClass: string;\r\n     };\r\n+}\r\n+\r\n+export interface ProductRequest {\r\n+    quantity: number;\r\n+    deliveryDays: number;\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762249804506,
