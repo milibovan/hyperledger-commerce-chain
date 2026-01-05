@@ -8,6 +8,7 @@ pub enum EventType {
     OrderApproved,
     OrderFulfilled,
     OrderCancelled,
+    OrderCreated,
     OrderRejected,
     NewOrderPendingApproval,
     OrderFulfillmentReminderDay1,

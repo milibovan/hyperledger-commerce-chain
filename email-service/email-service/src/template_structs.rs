@@ -1,9 +1,12 @@
 use askama::Template;
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
-struct OrderItem {
-
-    }
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct OrderItem {
+    pub name: String,
+    pub quantity: i32,
+}
 
 #[derive(Template)]
 #[template(path="../templates/new_order_pending_approval.html")]
@@ -51,14 +54,15 @@ pub struct OrderCancelled {
 }
 
 #[derive(Template)]
-#[template(path="../templates/order_created.html")]
+#[template(path = "order_created.html")]
 pub struct OrderCreated {
-    order_id: String,
-    order_date: DateTime<Utc>,
-    item_count: i32,
-    total_amount: f32,
-    items: Vec<OrderItem>,
-    url: String,
+    pub order_id: String,
+    pub order_date: String,
+    pub item_count: i32,
+    pub total_amount: String,
+    pub items: Vec<OrderItem>,
+    pub url: String,
+    pub order_reference: String,
 }
 
 #[derive(Template)]

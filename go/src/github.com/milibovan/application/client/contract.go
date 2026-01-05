@@ -2,7 +2,6 @@ package client
 
 import (
 	"bytes"
-	"chaincode/structs"
 	"commerce-sdk/models"
 	"encoding/json"
 	"fmt"
