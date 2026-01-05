@@ -40,7 +40,7 @@ pub(crate) async fn send_email(event: NotificationEvent, email: String) {
                 shortage_amount: event.data.get("shortage_amount").unwrap().parse().unwrap(),
             };
             let html_body = template.render().expect("Failed to render email template");
-            
+
             send_email_from_template(email, html_body);
         }
         EventType::OrderPaymentCompleted => {}
@@ -52,20 +52,17 @@ pub(crate) async fn send_email(event: NotificationEvent, email: String) {
                 .cloned()
                 .unwrap_or_default();
 
-            let items: Vec<OrderItem> = products_str
-                .split('|')
-                .filter_map(|s| {
-                    let parts: Vec<&str> = s.split(':').collect();
-                    if parts.len() == 2 {
-                        Some(OrderItem {
-                            name: parts[0].to_string(),
-                            quantity: parts[1].parse().unwrap_or(1),
-                        })
-                    } else {
-                        None
-                    }
-                })
-                .collect();
+            let parts: Vec<&str> = products_str.split(',').collect();
+            let mut items: Vec<OrderItem> = Vec::new();
+
+            for chunk in parts.chunks(2) {
+                if chunk.len() == 2 {
+                    items.push(OrderItem {
+                        name: chunk[0].to_string(),
+                        quantity: chunk[1].parse().unwrap_or(1),
+                    });
+                }
+            }
 
             let template = OrderCreated {
                 order_id: event.data.get("order_id")
