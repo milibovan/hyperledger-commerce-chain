@@ -2,10 +2,12 @@ package api
 
 import (
 	"commerce-sdk/client"
+	"commerce-sdk/kafka"
 	"commerce-sdk/models"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -42,17 +44,17 @@ func CreateServer() {
 		activeConn = nil
 	}
 
-	//kafkaBrokers := os.Getenv("KAFKA_BROKERS")
-	//if kafkaBrokers == "" {
-	//	kafkaBrokers = "localhost:9092,localhost:9094,localhost:9096"
-	//}
-	//
-	//schemaRegistryURL := os.Getenv("SCHEMA_REGISTRY_URL")
-	//if schemaRegistryURL == "" {
-	//	schemaRegistryURL = "http://localhost:8081"
-	//}
-	//
-	//kafka.InitKafka(kafkaBrokers, schemaRegistryURL)
+	kafkaBrokers := os.Getenv("KAFKA_BROKERS")
+	if kafkaBrokers == "" {
+		kafkaBrokers = "localhost:9092,localhost:9094,localhost:9096"
+	}
+
+	schemaRegistryURL := os.Getenv("SCHEMA_REGISTRY_URL")
+	if schemaRegistryURL == "" {
+		schemaRegistryURL = "http://localhost:8081"
+	}
+
+	kafka.InitKafka(kafkaBrokers, schemaRegistryURL)
 
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
@@ -101,36 +103,7 @@ func CreateServer() {
 
 	router.POST("/order/request/:channel", createProductRequest)
 
-	//someNotification := models.NotificationEvent{
-	//	Id:                "550e8400-e29b-41d4-a716-446655440000",
-	//	EventType:         models.OrderInsufficientBalance,
-	//	RecipientType:     models.TRADER,
-	//	RecipientID:       "trader_123",
-	//	Timestamp:         nil,
-	//	ScheduledSendTime: nil,
-	//	Channel:           models.EMAIL,
-	//	OrderID:           "ord_987654",
-	//	UserID:            "user_555",
-	//	TraderID:          "trader_123",
-	//	Data: map[string]string{
-	//		"order_date":      "2023-12-26T10:00:00Z",
-	//		"item_count":      "5",
-	//		"total_amount":    "150.50",
-	//		"current_balance": "50.00",
-	//		"required_amount": "150.50",
-	//		"shortage_amount": "100.50",
-	//		"url":             "https://hyperledger.commerce/orders/ord_987654",
-	//		"recipients":      "milibovan190d@gmail.com|mili.bovan@devoteam.com",
-	//	},
-	//}
-	//
-	//err := kafka.ProduceToKafka(someNotification, topic)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//
-	//defer kafka.CloseKafka()
+	defer kafka.CloseKafka()
 
 	router.Run("localhost:7070")
 }
@@ -603,9 +576,9 @@ func getUserDetails(c *gin.Context) {
 	}
 
 	// Get its orders
-	if len(user.OrdersIds) > 0 {
+	if len(user.OrdersIDs) > 0 {
 
-		orders, err = client.GetOrdersByIds(activeGW, channel, user.OrdersIds)
+		orders, err = client.GetOrdersByIds(activeGW, channel, user.OrdersIDs)
 		if err != nil {
 			c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
 		}
@@ -784,7 +757,7 @@ func getOrderDetails(c *gin.Context) {
 
 // createProductRequest Create order request for products not in stock or not at any trader's
 func createProductRequest(c *gin.Context) {
-	var requestData models.ProductsRequest
+	var requestData models.CreateRequest
 
 	var channel string
 
@@ -806,9 +779,50 @@ func createProductRequest(c *gin.Context) {
 		}
 	}
 
-	blockNumber, ID := client.CreateRequest(activeGW, channel, requestData.UserId, requestData.UserEmail, strconv.Itoa(int(requestData.TotalCost)), strconv.Itoa(maxDays), args)
+	blockNumber, ID, createRequest := client.CreateRequest(activeGW, channel, requestData.UserId, requestData.UserEmail, strconv.Itoa(int(requestData.TotalCost)), strconv.Itoa(maxDays), args)
 
-	// TODO Produce record to Kafka
+	totalCost := strconv.FormatFloat(createRequest.TotalCost, 'f', 3, 64)
+
+	var products []string
+
+	for _, p := range requestData.Products {
+		products = append(products, p.ProductId)
+		products = append(products, strconv.Itoa(int(p.Quantity)))
+		if p.DeliveryDays > maxDays {
+			maxDays = p.DeliveryDays
+		}
+	}
+
+	orderCreatedNotification := models.NotificationEvent{
+		Id:                ID,
+		EventType:         models.OrderCreated,
+		RecipientType:     models.USER,
+		RecipientID:       requestData.UserId,
+		Timestamp:         nil,
+		ScheduledSendTime: nil,
+		Channel:           models.EMAIL,
+		OrderID:           "",
+		UserID:            requestData.UserId,
+		TraderID:          "",
+		Data: map[string]string{
+			"order_id":     createRequest.Id,
+			"order_date":   createRequest.CreatedDate,
+			"due_date":     createRequest.DueDate,
+			"item_count":   strconv.Itoa(len(createRequest.Products)),
+			"products":     strings.Join(products, ","),
+			"total_amount": totalCost,
+			"url":          "https://hyperledger.commerce/orders/ord_987654",
+			"recipients":   requestData.UserEmail,
+		},
+	}
+
+	err := kafka.ProduceToKafka(orderCreatedNotification, topic)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// TODO Produce to all trader emails
 
 	c.JSON(http.StatusCreated, gin.H{"Message": fmt.Sprintf("Order created %d %s", blockNumber, ID)})
 }

@@ -1,6 +1,10 @@
 use askama::Template;
 use chrono::{DateTime, Utc};
 
+struct OrderItem {
+
+    }
+
 #[derive(Template)]
 #[template(path="../templates/new_order_pending_approval.html")]
 pub struct OrderPendingApproval {
@@ -43,6 +47,17 @@ pub struct OrderCancelled {
     total_amount: f32,
     cancellation_reason: String,
     refund_amount: f32,
+    url: String,
+}
+
+#[derive(Template)]
+#[template(path="../templates/order_created.html")]
+pub struct OrderCreated {
+    order_id: String,
+    order_date: DateTime<Utc>,
+    item_count: i32,
+    total_amount: f32,
+    items: Vec<OrderItem>,
     url: String,
 }
 

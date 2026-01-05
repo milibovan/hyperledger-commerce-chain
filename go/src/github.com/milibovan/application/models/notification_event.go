@@ -7,6 +7,7 @@ import (
 type EventTypes string
 
 const (
+	OrderCreated                 EventTypes = "OrderCreated"
 	OrderInsufficientBalance     EventTypes = "OrderInsufficientBalance"
 	OrderPaymentCompleted        EventTypes = "OrderPaymentCompleted"
 	OrderApproved                EventTypes = "OrderApproved"

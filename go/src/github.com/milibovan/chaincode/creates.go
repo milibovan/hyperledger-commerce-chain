@@ -334,10 +334,6 @@ func (s *SmartContract) CreateRequest(ctx contractapi.TransactionContextInterfac
 		return nil, fmt.Errorf("failed to save user: %w", err)
 	}
 
-	err = ctx.GetStub().PutState(userKey, userJSON)
-	if err != nil {
-		return nil, fmt.Errorf("failed to save user: %w", err)
-	}
 	err = ctx.GetStub().PutState(requestKey, requestJSON)
 	if err != nil {
 		return nil, fmt.Errorf("failed to save request: %w", err)

@@ -2,6 +2,7 @@ package client
 
 import (
 	"bytes"
+	"chaincode/structs"
 	"commerce-sdk/models"
 	"encoding/json"
 	"fmt"
@@ -157,7 +158,7 @@ func CreateOrder(gw *fabricClient.Gateway, channel string, args []string) (uint6
 	return status.BlockNumber, ID
 }
 
-func CreateRequest(gw *fabricClient.Gateway, channel string, userId, userEmail, totalCost, maxDays string, products []string) (uint64, string) {
+func CreateRequest(gw *fabricClient.Gateway, channel string, userId, userEmail, totalCost, maxDays string, products []string) (uint64, string, *models.ProductsRequest) {
 	ID := createId("REQUEST")
 
 	net := gw.GetNetwork(channel)
@@ -165,7 +166,7 @@ func CreateRequest(gw *fabricClient.Gateway, channel string, userId, userEmail, 
 
 	fmt.Printf("\n--> Submit transaction: CreateRequest, ID: %s on channel %s\n", ID, channel)
 
-	_, commit, err := ccContract.SubmitAsync("CreateRequest", fabricClient.WithArguments(ID, userId, userEmail, totalCost, maxDays, strings.Join(products, ",")))
+	txnResult, commit, err := ccContract.SubmitAsync("CreateRequest", fabricClient.WithArguments(ID, userId, userEmail, totalCost, maxDays, strings.Join(products, ",")))
 	if err != nil {
 		panic(fmt.Errorf("failed to submit transaction: %w", err))
 	}
@@ -181,7 +182,16 @@ func CreateRequest(gw *fabricClient.Gateway, channel string, userId, userEmail, 
 
 	fmt.Println("\n*** CreateRequest committed successfully")
 
-	return status.BlockNumber, ID
+	var createdRequest models.ProductsRequest
+
+	if err := json.Unmarshal(txnResult, &createdRequest); err != nil {
+		panic(fmt.Errorf("failed to unmarshal response: %w", err))
+	}
+
+	fmt.Println("\n*** CreateRequest committed successfully")
+	fmt.Printf("*** Returned Request Status: %s\n", createdRequest.Status)
+
+	return status.BlockNumber, ID, &createdRequest
 }
 
 func AddProductsToTrader(gw *fabricClient.Gateway, channel string, args []string) (uint64, error) {
