@@ -103,6 +103,25 @@ func constructOrderQueryResponseFromIterator(resultsIterator shim.StateQueryIter
 	return orders, nil
 }
 
+// constructRequestQueryResponseFromIterator constructs a slice of orders from the resultsIterator
+func constructRequestQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorInterface) ([]*structs.ProductsRequest, error) {
+	var orders []*structs.ProductsRequest
+	for resultsIterator.HasNext() {
+		queryResult, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+		var asset structs.ProductsRequest
+		err = json.Unmarshal(queryResult.Value, &asset)
+		if err != nil {
+			return nil, err
+		}
+		orders = append(orders, &asset)
+	}
+
+	return orders, nil
+}
+
 // HistoryProductQueryResult structure used for returning result of history query
 type HistoryProductQueryResult struct {
 	Record    *structs.Product `json:"record"`
@@ -176,4 +195,19 @@ type PaginatedOrderQueryResult struct {
 	Records             []*structs.Order `json:"records"`
 	FetchedRecordsCount int32            `json:"fetched-records-count"`
 	Bookmark            string           `json:"bookmark"`
+}
+
+// HistoryRequestQueryResult structure used for returning result of history query
+type HistoryRequestQueryResult struct {
+	Record    *structs.ProductsRequest `json:"record"`
+	TxId      string                   `json:"tx-id"`
+	Timestamp time.Time                `json:"timestamp"`
+	IsDelete  bool                     `json:"is-delete"`
+}
+
+// PaginatedRequestQueryResult structure used for returning paginated query results and metadata
+type PaginatedRequestQueryResult struct {
+	Records             []*structs.ProductsRequest `json:"records"`
+	FetchedRecordsCount int32                      `json:"fetched-records-count"`
+	Bookmark            string                     `json:"bookmark"`
 }

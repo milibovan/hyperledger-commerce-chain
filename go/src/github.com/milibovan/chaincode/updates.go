@@ -172,3 +172,51 @@ func (s *SmartContract) UpdateProduct(ctx contractapi.TransactionContextInterfac
 	}
 	return ctx.GetStub().PutState(productKey, productJSON)
 }
+func (s *SmartContract) UpdateRequest(ctx contractapi.TransactionContextInterface, id, status, orderId, traderId string) error {
+	exists, err := s.AssetExists(ctx, id, structs.RequestET)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("Request %s doesn't exists", id)
+	}
+	request, err := s.ReadRequest(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	requestStatus, err := structs.GetRequestStatusFromString(status)
+	if err != nil {
+		return err
+	}
+
+	changed := false
+
+	if request.Status != requestStatus {
+		request.Status = requestStatus
+		changed = true
+	}
+	if request.OrderId != orderId {
+		request.OrderId = orderId
+		changed = true
+	}
+	if request.TraderId != traderId {
+		request.TraderId = traderId
+		changed = true
+	}
+
+	if !changed {
+		return fmt.Errorf("No changes have been made")
+	}
+
+	requestJSON, err := json.Marshal(request)
+	if err != nil {
+		return err
+	}
+
+	requestKey, err := ctx.GetStub().CreateCompositeKey("request", []string{request.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(requestKey, requestJSON)
+}

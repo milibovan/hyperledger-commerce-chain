@@ -8,6 +8,7 @@
       "email",
       "products-available",
       "receipts-ids",
+      "requests-ids",
       "balance",
       "deleted"
     ]

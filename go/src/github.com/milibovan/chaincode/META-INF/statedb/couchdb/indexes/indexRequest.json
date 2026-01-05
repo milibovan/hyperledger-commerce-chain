@@ -1,0 +1,21 @@
+{
+  "index": {
+    "fields": [
+      "doc-type",
+      "id",
+      "user-id",
+      "trader-id",
+      "user-email",
+      "products",
+      "created-date",
+      "due-date",
+      "total-cost",
+      "status",
+      "order-id",
+      "deleted"
+    ]
+  },
+  "ddoc": "indexUserDoc",
+  "name": "indexUser",
+  "type": "json"
+}

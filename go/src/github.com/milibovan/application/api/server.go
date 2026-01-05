@@ -99,7 +99,7 @@ func CreateServer() {
 	router.GET("/receipts/details/:receiptId/:channel", getReceiptDetails)
 	router.GET("/orders/details/:orderId/:channel", getOrderDetails)
 
-	router.POST("/order/request/:channel", createOrderRequest)
+	router.POST("/order/request/:channel", createProductRequest)
 
 	//someNotification := models.NotificationEvent{
 	//	Id:                "550e8400-e29b-41d4-a716-446655440000",
@@ -256,7 +256,7 @@ func createOrder(c *gin.Context) {
 
 	blockNumber, ID := client.CreateOrder(activeGW, channel, args)
 
-	c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s", blockNumber, ID)})
+	c.JSON(201, gin.H{"Message": fmt.Sprintf("Order created %d %s", blockNumber, ID)})
 	//c.JSON(201, gin.H{"Message": fmt.Sprintf("Receipt created %d %s")})
 }
 
@@ -782,24 +782,35 @@ func getOrderDetails(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// createOrderRequest Create order request for products not in stock or not at any trader's
-func createOrderRequest(c *gin.Context) {
-	var orderData struct {
-		UserId   string                   `json:"user-id"`
-		Products []models.RequestProducts `json:"requests"`
-	}
+// createProductRequest Create order request for products not in stock or not at any trader's
+func createProductRequest(c *gin.Context) {
+	var requestData models.ProductsRequest
 
 	var channel string
 
 	channel = c.Param("channel")
 
-	if err := c.BindJSON(&orderData); err != nil {
+	if err := c.BindJSON(&requestData); err != nil {
 		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
 		return
 	}
 
-	fmt.Println(orderData)
-	fmt.Println(channel)
+	args := []string{requestData.UserId}
+	maxDays := 0
+
+	for _, p := range requestData.Products {
+		args = append(args, p.ProductId)
+		args = append(args, strconv.Itoa(int(p.Quantity)))
+		if p.DeliveryDays > maxDays {
+			maxDays = p.DeliveryDays
+		}
+	}
+
+	blockNumber, ID := client.CreateRequest(activeGW, channel, requestData.UserId, requestData.UserEmail, strconv.Itoa(int(requestData.TotalCost)), strconv.Itoa(maxDays), args)
+
+	// TODO Produce record to Kafka
+
+	c.JSON(http.StatusCreated, gin.H{"Message": fmt.Sprintf("Order created %d %s", blockNumber, ID)})
 }
 
 // buildOrdersWithDetails helper function for building response

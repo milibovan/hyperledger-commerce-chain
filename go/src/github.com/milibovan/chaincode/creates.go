@@ -32,13 +32,14 @@ func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, 
 	}
 
 	user := structs.User{
-		DocType:   "user",
-		Id:        id,
-		Name:      name,
-		Surname:   surname,
-		Email:     email,
-		OrdersIDs: []string{},
-		Balance:   balanceFl,
+		DocType:     "user",
+		Id:          id,
+		Name:        name,
+		Surname:     surname,
+		Email:       email,
+		OrdersIDs:   []string{},
+		RequestsIDs: []string{},
+		Balance:     balanceFl,
 	}
 
 	userJSON, err := json.Marshal(user)
@@ -81,6 +82,7 @@ func (s *SmartContract) CreateTrader(ctx contractapi.TransactionContextInterface
 		VAT:               vat,
 		ProductsAvailable: []structs.ProductInventory{},
 		ReceiptsIDs:       []string{},
+		RequestsIDs:       []string{},
 		Balance:           balanceFl,
 	}
 
@@ -185,16 +187,14 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 
 	// Create order
 	order := structs.Order{
-		DocType:      "order",
-		Id:           id,
-		UserId:       userId,
-		Status:       structs.OrderFulfilled,
-		CreatedDate:  time.Now().Format(time.RFC3339),
-		Products:     products,
-		ReceiptsIds:  receiptIds,
-		TotalCost:    totalCost,
-		ApprovedDate: time.Now().Format(time.RFC3339),
-		Deleted:      false,
+		DocType:     "order",
+		Id:          id,
+		UserId:      userId,
+		CreatedDate: time.Now().Format(time.RFC3339),
+		Products:    products,
+		ReceiptsIds: receiptIds,
+		TotalCost:   totalCost,
+		Deleted:     false,
 	}
 
 	// Update user's order list
@@ -262,6 +262,88 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 	trader.Balance += totalCost
 
 	return &receipt, nil
+}
+
+func (s *SmartContract) CreateRequest(ctx contractapi.TransactionContextInterface, id, userId, userEmail, totalCost, maxDays, args string) (*structs.ProductsRequest, error) {
+	exists, err := s.AssetExists(ctx, id, structs.RequestET)
+
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return nil, fmt.Errorf("Request %s already exists", id)
+	}
+
+	user, err := s.ReadUser(ctx, userId)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read user: %w", err)
+	}
+
+	products, _, err := parseOrderArguments(args)
+	if err != nil {
+		return nil, fmt.Errorf("invalid order arguments: %w", err)
+	}
+
+	addDays, err := strconv.Atoi(maxDays)
+	if err != nil {
+		return nil, fmt.Errorf("invalid max days: %w", err)
+	}
+
+	totalCostFl, err := strconv.ParseFloat(totalCost, 64)
+	if err != nil {
+		return nil, fmt.Errorf("invalid total cost: %w", err)
+	}
+
+	request := structs.ProductsRequest{
+		DocType:     "request",
+		Id:          id,
+		UserId:      userId,
+		TraderId:    "",
+		UserEmail:   userEmail,
+		Products:    products,
+		CreatedDate: time.Now().Format(time.RFC3339),
+		DueDate:     time.Now().AddDate(0, 0, addDays).Format(time.RFC3339),
+		TotalCost:   totalCostFl,
+		Status:      structs.CREATED,
+		OrderId:     "",
+		Deleted:     false,
+	}
+
+	// Update user's requests
+	user.RequestsIDs = append(user.RequestsIDs, id)
+
+	requestJSON, err := json.Marshal(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request: %w", err)
+	}
+
+	userJSON, err := json.Marshal(user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal user: %w", err)
+	}
+
+	requestKey, err := ctx.GetStub().CreateCompositeKey("request", []string{id})
+	if err != nil {
+		return nil, err
+	}
+	userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{user.Id})
+	if err != nil {
+		return nil, err
+	}
+	if err = ctx.GetStub().PutState(userKey, userJSON); err != nil {
+		return nil, fmt.Errorf("failed to save user: %w", err)
+	}
+
+	err = ctx.GetStub().PutState(userKey, userJSON)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save user: %w", err)
+	}
+	err = ctx.GetStub().PutState(requestKey, requestJSON)
+	if err != nil {
+		return nil, fmt.Errorf("failed to save request: %w", err)
+	}
+
+	return &request, nil
 }
 
 // FindAndCreateOptimalReceipts finds the minimum set of traders and creates receipts

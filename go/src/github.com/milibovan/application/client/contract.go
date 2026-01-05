@@ -157,6 +157,33 @@ func CreateOrder(gw *fabricClient.Gateway, channel string, args []string) (uint6
 	return status.BlockNumber, ID
 }
 
+func CreateRequest(gw *fabricClient.Gateway, channel string, userId, userEmail, totalCost, maxDays string, products []string) (uint64, string) {
+	ID := createId("REQUEST")
+
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Submit transaction: CreateRequest, ID: %s on channel %s\n", ID, channel)
+
+	_, commit, err := ccContract.SubmitAsync("CreateRequest", fabricClient.WithArguments(ID, userId, userEmail, totalCost, maxDays, strings.Join(products, ",")))
+	if err != nil {
+		panic(fmt.Errorf("failed to submit transaction: %w", err))
+	}
+
+	status, err := commit.Status()
+	if err != nil {
+		panic(fmt.Errorf("failed to get transaction commit status: %w", err))
+	}
+
+	if !status.Successful {
+		panic(fmt.Errorf("failed to commit transaction with status code %v", status.Code))
+	}
+
+	fmt.Println("\n*** CreateRequest committed successfully")
+
+	return status.BlockNumber, ID
+}
+
 func AddProductsToTrader(gw *fabricClient.Gateway, channel string, args []string) (uint64, error) {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)

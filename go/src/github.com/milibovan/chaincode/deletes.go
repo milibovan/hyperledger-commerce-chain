@@ -140,3 +140,30 @@ func (s *SmartContract) DeleteOrder(ctx contractapi.TransactionContextInterface,
 	}
 	return ctx.GetStub().PutState(orderKey, orderJSON)
 }
+
+func (s *SmartContract) DeleteRequest(ctx contractapi.TransactionContextInterface, id string) error {
+	exists, err := s.AssetExists(ctx, id, structs.RequestET)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return fmt.Errorf("Request %s doesn't exists", id)
+	}
+	request, err := s.ReadRequest(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	request.Deleted = true
+
+	requestJSON, err := json.Marshal(request)
+	if err != nil {
+		return err
+	}
+
+	requestKey, err := ctx.GetStub().CreateCompositeKey("request", []string{request.Id})
+	if err != nil {
+		return err
+	}
+	return ctx.GetStub().PutState(requestKey, requestJSON)
+}

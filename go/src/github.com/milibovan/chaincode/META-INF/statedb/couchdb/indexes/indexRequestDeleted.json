@@ -1,0 +1,8 @@
+{
+  "index": {
+    "fields": ["doc-type", "deleted"]
+  },
+  "ddoc": "indexRequestDeletedDoc",
+  "name": "indexRequestDeleted",
+  "type": "json"
+}

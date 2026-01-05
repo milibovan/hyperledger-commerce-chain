@@ -87,14 +87,15 @@ type Trader struct {
 }
 
 type User struct {
-	DocType   string   `json:"doc-type"`
-	Id        string   `json:"id"`
-	Name      string   `json:"name"`
-	Surname   string   `json:"surname"`
-	Email     string   `json:"email"`
-	OrdersIds []string `json:"orders-ids"`
-	Balance   float64  `json:"balance"`
-	Deleted   bool     `json:"deleted"`
+	DocType     string   `json:"doc-type"`
+	Id          string   `json:"id"`
+	Name        string   `json:"name"`
+	Surname     string   `json:"surname"`
+	Email       string   `json:"email"`
+	OrdersIDs   []string `json:"orders-ids"`
+	RequestsIDs []string `json:"requests-ids"`
+	Balance     float64  `json:"balance"`
+	Deleted     bool     `json:"deleted"`
 }
 
 type CustomTime struct {
@@ -132,8 +133,16 @@ type ProductInventory struct {
 	Quantity  int32  `json:"quantity"`
 }
 
-type RequestProducts struct {
+type ProductsRequestInventory struct {
 	ProductId    string `json:"product-id"`
 	Quantity     int32  `json:"quantity"`
-	DeliveryDays int32  `json:"delivery-days"`
+	DeliveryDays int    `json:"delivery-days"`
+}
+
+type ProductsRequest struct {
+	UserId    string                     `json:"user-id"`
+	UserEmail string                     `json:"user-email"`
+	Products  []ProductsRequestInventory `json:"products"`
+	TotalCost float64                    `json:"total-cost"`
+	Deleted   bool                       `json:"deleted"`
 }

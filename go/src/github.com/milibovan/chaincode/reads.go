@@ -117,3 +117,25 @@ func (s *SmartContract) ReadOrder(ctx contractapi.TransactionContextInterface, i
 	}
 	return order, nil
 }
+
+func (s *SmartContract) ReadRequest(ctx contractapi.TransactionContextInterface, id string) (*structs.ProductsRequest, error) {
+	requestKey, err := ctx.GetStub().CreateCompositeKey("request", []string{id})
+	if err != nil {
+		return nil, err
+	}
+
+	requestJSON, err := ctx.GetStub().GetState(requestKey)
+	if err != nil {
+		return nil, err
+	}
+	if requestJSON == nil {
+		return nil, fmt.Errorf("request %s does not exists", id)
+	}
+
+	var request *structs.ProductsRequest
+	err = json.Unmarshal(requestJSON, &request)
+	if err != nil {
+		return nil, err
+	}
+	return request, nil
+}
