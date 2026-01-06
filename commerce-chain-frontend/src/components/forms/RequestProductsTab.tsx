@@ -151,7 +151,9 @@ export default function RequestProductsTabs({
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     "user-id": user.id,
-                    requests: requestsToSubmit,
+                    "user-email": user.email,
+                    "total-cost": totalCost,
+                    products: requestsToSubmit,
                 }),
             });
 
