@@ -264,7 +264,12 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 	return &receipt, nil
 }
 
-func (s *SmartContract) CreateRequest(ctx contractapi.TransactionContextInterface, id, userId, userEmail, totalCost, maxDays, args string) (*structs.ProductsRequest, error) {
+func (s *SmartContract) CreateRequest(ctx contractapi.TransactionContextInterface, id, userId, userEmail, totalCost, maxDays, productArgs string) (*structs.ProductsRequest, error) {
+	// DEBUG: Print what we received
+	fmt.Printf("DEBUG Chaincode - productArgs received: '%s'\n", productArgs)
+
+	argsWithUserId := userId + "," + productArgs
+	fmt.Printf("DEBUG Chaincode - argsWithUserId: '%s'\n", argsWithUserId)
 	exists, err := s.AssetExists(ctx, id, structs.RequestET)
 
 	if err != nil {
@@ -279,9 +284,15 @@ func (s *SmartContract) CreateRequest(ctx contractapi.TransactionContextInterfac
 		return nil, fmt.Errorf("failed to read user: %w", err)
 	}
 
-	products, _, err := parseOrderArguments(args)
+	//argsWithUserId := userId + "," + productArgs
+	products, parsedUserId, err := parseOrderArguments(argsWithUserId)
 	if err != nil {
 		return nil, fmt.Errorf("invalid order arguments: %w", err)
+	}
+
+	// Verify userId matches
+	if parsedUserId != userId {
+		return nil, fmt.Errorf("userId mismatch")
 	}
 
 	addDays, err := strconv.Atoi(maxDays)

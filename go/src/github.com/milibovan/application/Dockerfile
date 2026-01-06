@@ -23,22 +23,20 @@ RUN CGO_ENABLED=1 GOOS=linux GOARCH=amd64 \
 # Use alpine instead of scratch for better compatibility
 FROM alpine:latest
 
-# Install runtime dependencies for Kafka
 RUN apk --no-cache add ca-certificates tzdata librdkafka
 
-# Create a non-root user for security
-RUN addgroup -g 1001 appgroup && \
-    adduser -D -u 1001 -G appgroup appuser
+# CHANGE: Use UID 1000 instead of 1001 to match host user
+RUN addgroup -g 1000 appgroup && \
+    adduser -D -u 1000 -G appgroup appuser
 
 WORKDIR /app
 
-# Copy the built binary from the builder stage
 COPY --from=builder /app/server .
 
-# Change ownership to non-root user
+# Change ownership inside the container
 RUN chown -R appuser:appgroup /app
 
-# Switch to non-root user
+# Switch to the user
 USER appuser
 
 # Expose the port your application listens on
@@ -46,7 +44,7 @@ EXPOSE 7070
 
 # Health check (adjust the endpoint as needed)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD wget --no-verbose --tries=1 --spider http://localhost:7070/health || exit 1
+    CMD wget --no-verbose --tries=1 --spider http://localhost:7070/api-status || exit 1
 
 # Run the application
 CMD ["./server"]

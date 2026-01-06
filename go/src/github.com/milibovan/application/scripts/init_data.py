@@ -3,7 +3,7 @@ import json
 import sys
 
 # Configuration
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:7070"
 HEADERS = {
     'Content-Type': 'application/json',
     'Accept': '*/*',

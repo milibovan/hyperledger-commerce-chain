@@ -165,7 +165,15 @@ func CreateRequest(gw *fabricClient.Gateway, channel string, userId, userEmail, 
 
 	fmt.Printf("\n--> Submit transaction: CreateRequest, ID: %s on channel %s\n", ID, channel)
 
-	txnResult, commit, err := ccContract.SubmitAsync("CreateRequest", fabricClient.WithArguments(ID, userId, userEmail, totalCost, maxDays, strings.Join(products, ",")))
+	productArgs := strings.Join(products, ",")
+
+	// DEBUG: Print what we're sending
+	fmt.Printf("\n--> DEBUG: userId: %s\n", userId)
+	fmt.Printf("--> DEBUG: products array: %v\n", products)
+	fmt.Printf("--> DEBUG: productArgs after join: %s\n", productArgs)
+	fmt.Printf("--> Submit transaction: CreateRequest, ID: %s on channel %s\n", ID, channel)
+
+	txnResult, commit, err := ccContract.SubmitAsync("CreateRequest", fabricClient.WithArguments(ID, userId, userEmail, totalCost, maxDays, productArgs))
 	if err != nil {
 		panic(fmt.Errorf("failed to submit transaction: %w", err))
 	}

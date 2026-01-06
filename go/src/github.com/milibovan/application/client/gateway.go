@@ -37,19 +37,19 @@ var OrgConfigs = map[string]OrgConfig{
 	"org1": {
 		MSP:      Org1MSP,
 		Crypto:   "../network/organizations/peerOrganizations/org1.example.com",
-		PeerEP:   "dns:///localhost:7051",
+		PeerEP:   "dns:///peer0.org1.example.com:7051",
 		PeerHost: "peer0.org1.example.com",
 	},
 	"org2": {
 		MSP:      Org2MSP,
 		Crypto:   "../network/organizations/peerOrganizations/org2.example.com",
-		PeerEP:   "dns:///localhost:9051",
+		PeerEP:   "dns:///peer0.org2.example.com:9051",
 		PeerHost: "peer0.org2.example.com",
 	},
 	"org3": {
 		MSP:      Org3MSP,
 		Crypto:   "../network/organizations/peerOrganizations/org3.example.com",
-		PeerEP:   "dns:///localhost:8051",
+		PeerEP:   "dns:///peer0.org3.example.com:8051",
 		PeerHost: "peer0.org3.example.com",
 	},
 }

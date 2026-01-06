@@ -105,7 +105,7 @@ func CreateServer() {
 
 	defer kafka.CloseKafka()
 
-	router.Run("localhost:7070")
+	router.Run(":7070")
 }
 
 func getApiStatus(c *gin.Context) {
@@ -758,7 +758,6 @@ func getOrderDetails(c *gin.Context) {
 // createProductRequest Create order request for products not in stock or not at any trader's
 func createProductRequest(c *gin.Context) {
 	var requestData models.CreateRequest
-
 	var channel string
 
 	channel = c.Param("channel")
@@ -768,7 +767,7 @@ func createProductRequest(c *gin.Context) {
 		return
 	}
 
-	args := []string{requestData.UserId}
+	args := []string{}
 	maxDays := 0
 
 	for _, p := range requestData.Products {
@@ -779,7 +778,14 @@ func createProductRequest(c *gin.Context) {
 		}
 	}
 
-	blockNumber, ID, createRequest := client.CreateRequest(activeGW, channel, requestData.UserId, requestData.UserEmail, strconv.Itoa(int(requestData.TotalCost)), strconv.Itoa(maxDays), args)
+	blockNumber, ID, createRequest := client.CreateRequest(
+		activeGW,
+		channel,
+		requestData.UserId,
+		requestData.UserEmail,
+		strconv.Itoa(int(requestData.TotalCost)),
+		strconv.Itoa(maxDays),
+		args)
 
 	totalCost := strconv.FormatFloat(createRequest.TotalCost, 'f', 3, 64)
 
