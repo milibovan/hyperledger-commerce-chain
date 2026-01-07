@@ -41,14 +41,14 @@ pub(crate) async fn send_email(event: NotificationEvent, email: String) {
             };
             let html_body = template.render().expect("Failed to render email template");
 
-            send_email_from_template(email, html_body);
+            send_email_from_template(email, html_body, "Order Insufficient Balance".parse().unwrap());
         }
         EventType::OrderPaymentCompleted => {}
         EventType::OrderApproved => {}
         EventType::OrderFulfilled => {}
         EventType::OrderCancelled => {}
         EventType::OrderCreated => {
-            // Parse products (common for all recipients)
+            // 1. Parse products (Common data)
             let products_str = event.data.get("products").cloned().unwrap_or_default();
             let parts: Vec<&str> = products_str.split(',').collect();
             let mut items: Vec<OrderItem> = Vec::new();
@@ -62,64 +62,37 @@ pub(crate) async fn send_email(event: NotificationEvent, email: String) {
                 }
             }
 
-            // Common data for template
-            let base_template = OrderCreated {
+            // 2. Determine if THIS email is a Trader or User
+            // We check if the email exists in the trader_recipients string
+            let traders_str = event.data.get("trader_recipients").cloned().unwrap_or_default();
+            let is_trader = traders_str.contains(&email);
+
+            let (recipient_type_str, subject_line) = if is_trader {
+                ("TRADER", "🔔 New Order Request Available")
+            } else {
+                ("USER", "✅ Order Successfully Created")
+            };
+
+            // 3. Populate Template
+            let template = OrderCreated {
                 order_id: event.data.get("order_id").cloned().unwrap_or_default(),
                 order_date: event.data.get("order_date").cloned().unwrap_or_default(),
                 due_date: event.data.get("due_date").cloned().unwrap_or_default(),
                 url: event.data.get("url").cloned().unwrap_or_default(),
                 item_count: event.data.get("item_count").and_then(|v| v.parse().ok()).unwrap_or(0),
                 total_amount: event.data.get("total_amount").cloned().unwrap_or_default(),
-                items: items.clone(),
+                items,
                 order_reference: event.data.get("order_reference").cloned().unwrap_or_default(),
                 user_name: event.data.get("user_name").cloned().unwrap_or("Customer".to_string()),
-                recipient_type: RecipientType::USER, // Will be updated per recipient
+                // Pass as String
+                recipient_type: recipient_type_str.to_string(),
             };
 
-            // Send to each recipient type in the array
-            for recipient_type in &event.recipient_types {
-                match recipient_type {
-                    RecipientType::USER => {
-                        // Send to user
-                        let mut user_template = base_template.clone();
-                        user_template.recipient_type = RecipientType::USER;
+            // 4. Render
+            let html_body = template.render().expect("Failed to render template");
 
-                        let html_body = user_template.render()
-                            .expect("Failed to render user template");
-
-                        let user_email = event.data.get("recipients")
-                            .cloned()
-                            .unwrap_or_default();
-
-                        if !user_email.is_empty() {
-                            send_email_from_template(&user_email, html_body);
-                        }
-                    },
-                    RecipientType::TRADER => {
-                        // Send to traders
-                        let mut trader_template = base_template.clone();
-                        trader_template.recipient_type = RecipientType::TRADER;
-
-                        let html_body = trader_template.render()
-                            .expect("Failed to render trader template");
-
-                        let trader_emails = event.data.get("trader_recipients")
-                            .cloned()
-                            .unwrap_or_default();
-
-                        // Send to all traders (comma-separated)
-                        for email in trader_emails.split(',') {
-                            let trimmed_email = email.trim();
-                            if !trimmed_email.is_empty() {
-                                send_email_from_template(trimmed_email, html_body.clone());
-                            }
-                        }
-                    },
-                    RecipientType::ADMIN => {
-                        // Handle admin case if needed in the future
-                    }
-                }
-            }
+            // 5. Send (Using the correct Subject)
+            send_email_from_template(email, html_body, subject_line.to_string());
         }
         EventType::OrderRejected => {}
         EventType::NewOrderPendingApproval => {}
@@ -129,11 +102,11 @@ pub(crate) async fn send_email(event: NotificationEvent, email: String) {
     }
 }
 
-fn send_email_from_template(email: String, html_body: String) {
+fn send_email_from_template(email: String, html_body: String, subject: String) {
     let email = Message::builder()
         .from("josejosemou8@gmail.com".parse().unwrap())
         .to(email.parse().unwrap())
-        .subject("Order Insufficient Balance")
+        .subject(subject)
         .singlepart(
             SinglePart::builder()
                 .header(header::ContentType::TEXT_HTML)
