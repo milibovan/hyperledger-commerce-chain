@@ -152,6 +152,7 @@ export default function RequestProductsTabs({
                 body: JSON.stringify({
                     "user-id": user.id,
                     "user-email": user.email,
+                    "user-name": user.name,
                     "total-cost": totalCost,
                     products: requestsToSubmit,
                 }),
