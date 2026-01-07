@@ -16,7 +16,7 @@ pub enum EventType {
     OrderFulfillmentReminderDay3,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub enum RecipientType {
     USER,
     TRADER,
@@ -37,7 +37,7 @@ pub struct NotificationEvent {
 
     pub event_type: EventType,
 
-    pub recipient_type: RecipientType,
+    pub recipient_types: Vec<RecipientType>,
 
     pub recipient_id: String,
 

@@ -799,10 +799,16 @@ func createProductRequest(c *gin.Context) {
 		}
 	}
 
+	emails, err := client.GetTradersEmails(activeGW, channel)
+	if err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
+		return
+	}
+
 	orderCreatedNotification := models.NotificationEvent{
 		Id:                ID,
 		EventType:         models.OrderCreated,
-		RecipientType:     models.USER,
+		RecipientType:     []models.RecipientType{models.USER, models.TRADER},
 		RecipientID:       requestData.UserId,
 		Timestamp:         nil,
 		ScheduledSendTime: nil,
@@ -811,24 +817,27 @@ func createProductRequest(c *gin.Context) {
 		UserID:            requestData.UserId,
 		TraderID:          "",
 		Data: map[string]string{
-			"order_id":     createRequest.Id,
-			"order_date":   createRequest.CreatedDate,
-			"due_date":     createRequest.DueDate,
-			"item_count":   strconv.Itoa(len(createRequest.Products)),
-			"products":     strings.Join(products, ","),
-			"total_amount": totalCost,
-			"url":          "https://hyperledger.commerce/orders/ord_987654",
-			"recipients":   requestData.UserEmail,
+			"order_id":          createRequest.Id,
+			"order_date":        createRequest.CreatedDate,
+			"due_date":          createRequest.DueDate,
+			"item_count":        strconv.Itoa(len(createRequest.Products)),
+			"products":          strings.Join(products, ","),
+			"total_amount":      totalCost,
+			"url":               "https://hyperledger.commerce/orders/ord_987654",
+			"user_name":         requestData.UserName,
+			"recipients":        requestData.UserEmail,
+			"trader_recipients": strings.Join(emails, ","),
 		},
 	}
 
-	err := kafka.ProduceToKafka(orderCreatedNotification, topic)
+	err = kafka.ProduceToKafka(orderCreatedNotification, topic)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
 	// TODO Produce to all trader emails
+	fmt.Println(emails)
 
 	c.JSON(http.StatusCreated, gin.H{"Message": fmt.Sprintf("Order created %d %s", blockNumber, ID)})
 }

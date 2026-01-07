@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Created</title>
+    <title>{% if recipient_type == "TRADER" %}New Order Request{% else %}Order Created{% endif %}</title>
     <style>
         body {
             margin: 0;
@@ -15,8 +15,8 @@
             max-width: 600px;
             margin: 0 auto;
             background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
-            border: 2px solid #00ffff;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4), 0 0 40px rgba(255, 0, 255, 0.2);
+            border: 2px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
+            box-shadow: 0 0 20px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.4), 0 0 40px rgba({% if recipient_type == "TRADER" %}0, 255, 255{% else %}255, 0, 255{% endif %}, 0.2);
         }
         .header {
             background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
@@ -38,46 +38,51 @@
         }
         .status-badge {
             display: inline-block;
-            background: rgba(0, 255, 255, 0.15);
-            border: 2px solid #00ffff;
-            color: #00ffff;
+            background: rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.15);
+            border: 2px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
+            color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
             padding: 10px 20px;
             margin: 20px 0;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: bold;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
-            animation: newOrderGlow 2s infinite;
+            box-shadow: 0 0 15px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.5);
+            animation: statusGlow 2s infinite;
         }
-        @keyframes newOrderGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 255, 0.5); }
-            50% { box-shadow: 0 0 25px rgba(0, 255, 255, 0.8); }
+        @keyframes statusGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.5); }
+            50% { box-shadow: 0 0 25px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.8); }
         }
         .success-icon {
             text-align: center;
             margin: 30px 0;
         }
-        .plus-icon {
+        .icon-circle {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            border: 4px solid #00ffff;
+            border: 4px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
             display: inline-flex;
             align-items: center;
             justify-content: center;
             font-size: 60px;
-            color: #00ffff;
-            box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
-            animation: plusAppear 0.8s ease-in-out;
+            color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
+            box-shadow: 0 0 25px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.6);
+            animation: {% if recipient_type == "TRADER" %}bellRing{% else %}plusAppear{% endif %} 0.8s ease-in-out;
         }
         @keyframes plusAppear {
             0% { transform: scale(0) rotate(-180deg); opacity: 0; }
             50% { transform: scale(1.1) rotate(0deg); }
             100% { transform: scale(1) rotate(0deg); opacity: 1; }
         }
+        @keyframes bellRing {
+            0%, 100% { transform: rotate(0deg); }
+            10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
+            20%, 40%, 60%, 80% { transform: rotate(10deg); }
+        }
         .order-details {
-            background: rgba(0, 255, 255, 0.08);
-            border-left: 4px solid #00ffff;
+            background: rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.08);
+            border-left: 4px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
             padding: 20px;
             margin: 20px 0;
         }
@@ -85,36 +90,88 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+            border-bottom: 1px solid rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.2);
         }
         .detail-row:last-child {
             border-bottom: none;
         }
         .label {
-            color: #ff00ff;
+            color: {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %};
             font-weight: bold;
         }
         .value {
-            color: #00ffff;
+            color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
         }
         .items-box {
-            background: rgba(255, 0, 255, 0.08);
-            border: 2px solid #ff00ff;
+            background: rgba({% if recipient_type == "TRADER" %}0, 255, 255{% else %}255, 0, 255{% endif %}, 0.08);
+            border: 2px solid {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %};
             padding: 20px;
             margin: 20px 0;
         }
         .item {
             padding: 10px 0;
             color: #fff;
-            border-bottom: 1px solid rgba(255, 0, 255, 0.2);
+            border-bottom: 1px solid rgba({% if recipient_type == "TRADER" %}0, 255, 255{% else %}255, 0, 255{% endif %}, 0.2);
         }
         .item:last-child {
             border-bottom: none;
         }
         .item-name {
-            color: #ff00ff;
+            color: {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %};
             font-weight: bold;
         }
+        {% if recipient_type == "TRADER" %}
+        .deadline-box {
+            background: rgba(255, 255, 0, 0.1);
+            border: 2px solid #ffff00;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .deadline-date {
+            color: #ffff00;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .customer-info {
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .action-box {
+            background: rgba(0, 255, 0, 0.08);
+            border: 2px solid #00ff00;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .action-item {
+            padding: 10px 0;
+            color: #fff;
+        }
+        .action-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            text-align: center;
+            line-height: 26px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .button-approve {
+            background: linear-gradient(90deg, #00ff00 0%, #00ffff 100%);
+            color: #000;
+        }
+        .button-reject {
+            background: linear-gradient(90deg, #ff6600 0%, #ff0000 100%);
+            color: #fff;
+        }
+        {% else %}
         .next-steps-box {
             background: rgba(0, 255, 0, 0.08);
             border: 2px solid #00ff00;
@@ -138,17 +195,18 @@
             margin-right: 10px;
             font-weight: bold;
         }
+        {% endif %}
         .button {
             display: inline-block;
-            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 100%);
-            color: #000;
-            text-decoration: none;
-            padding: 15px 40px;
-            margin: 20px 0;
-            text-transform: uppercase;
-            font-weight: bold;
-            border: none;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            background: linear-gradient(90deg, {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %} 0%, {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %} 100%);
+        color: #000;
+        text-decoration: none;
+        padding: 15px 40px;
+        margin: 20px 5px;
+        text-transform: uppercase;
+        font-weight: bold;
+        border: none;
+        box-shadow: 0 0 20px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.5);
         }
         .footer {
             background: rgba(0, 0, 0, 0.3);
@@ -156,16 +214,16 @@
             text-align: center;
             color: #666;
             font-size: 12px;
-            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            border-top: 1px solid rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.2);
         }
         .cyber-line {
             height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #00ffff 50%, transparent 100%);
-            margin: 20px 0;
+            background: linear-gradient(90deg, transparent 0%, {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %} 50%, transparent 100%);
+        margin: 20px 0;
         }
         .info-box {
-            background: rgba(0, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            background: rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.05);
+            border: 1px solid rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.3);
             padding: 15px;
             margin: 20px 0;
         }
@@ -209,55 +267,102 @@
     </div>
 
     <div class="content">
-        <h1 style="color: #00ffff; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Order Successfully Created!</h1>
+        <h1 style="color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %}; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">
+        {% if recipient_type == "TRADER" %}🔔 New Order Request{% else %}Order Successfully Created!{% endif %}
+        </h1>
 
         <div class="cyber-line"></div>
 
         <div class="success-icon">
-            <div class="plus-icon">✓</div>
+            <div class="icon-circle">{% if recipient_type == "TRADER" %}🔔{% else %}✓{% endif %}</div>
         </div>
 
         <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
+            {% if recipient_type == "TRADER" %}
+            You have received a new order request that requires your attention.
+            {% else %}
             Your order has been successfully created and is now entering the approval process.
+            {% endif %}
         </p>
 
         <div style="text-align: center;">
-            <span class="status-badge">⟡ ORDER CREATED ⟡</span>
+            <span class="status-badge">⟡ {% if recipient_type == "TRADER" %}ACTION REQUIRED{% else %}ORDER CREATED{% endif %} ⟡</span>
         </div>
+
+        {% if recipient_type == "TRADER" %}
+        <div class="customer-info">
+            <p style="color: #00ffff; margin: 0; font-size: 14px;">
+                <strong>Customer:</strong> <span style="color: #fff;">{{ user_name }}</span>
+            </p>
+        </div>
+        {% endif %}
 
         <div class="order-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{ order_id }}</span>
             </div>
             <div class="detail-row">
-                <span class="label">CREATED:</span>
-                <span class="value">{{order_date}}</span>
+                <span class="label">{% if recipient_type == "TRADER" %}REQUEST DATE{% else %}CREATED{% endif %}:</span>
+                <span class="value">{{ order_date }}</span>
             </div>
+            {% if recipient_type == "USER" %}
             <div class="detail-row">
                 <span class="label">STATUS:</span>
                 <span class="value">Awaiting Trader Approval</span>
             </div>
+            {% endif %}
             <div class="detail-row">
-                <span class="label">ITEMS:</span>
-                <span class="value">{{item_count}}</span>
+                <span class="label">{% if recipient_type == "TRADER" %}ITEMS REQUESTED{% else %}ITEMS{% endif %}:</span>
+                <span class="value">{{ item_count }}</span>
             </div>
             <div class="detail-row">
-                <span class="label">TOTAL VALUE:</span>
-                <span class="value">{{total_amount}}</span>
+                <span class="label">{% if recipient_type == "TRADER" %}ORDER VALUE{% else %}TOTAL VALUE{% endif %}:</span>
+                <span class="value">{{ total_amount }}</span>
             </div>
         </div>
 
+        {% if recipient_type == "TRADER" %}
+        <div class="deadline-box">
+            <h3 style="color: #ffff00; margin-top: 0;">⏰ Fulfillment Deadline</h3>
+            <div class="deadline-date">{{ due_date }}</div>
+            <p style="color: #fff; margin: 10px 0; font-size: 14px;">
+                Order must be fulfilled by this date
+            </p>
+        </div>
+        {% endif %}
+
         <div class="items-box">
-            <h3 style="color: #ff00ff; margin-top: 0;">Requested Items</h3>
+            <h3 style="color: {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %}; margin-top: 0;">{% if recipient_type == "TRADER" %}Requested Products{% else %}Requested Items{% endif %}</h3>
             {% for item in items %}
             <div class="item">
                 <span class="item-name">{{ item.name }}</span>
-                <span style="color: #00ffff;"> × {{ item.quantity }}</span>
+                <span style="color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};"> × {{ item.quantity }}</span>
             </div>
             {% endfor %}
         </div>
 
+        {% if recipient_type == "TRADER" %}
+        <div class="action-box">
+            <h3 style="color: #00ff00; margin-top: 0;">Next Steps</h3>
+            <div class="action-item">
+                <span class="action-number">1</span>
+                <span>Review the order details and product requirements</span>
+            </div>
+            <div class="action-item">
+                <span class="action-number">2</span>
+                <span>Verify you can fulfill this order by the deadline</span>
+            </div>
+            <div class="action-item">
+                <span class="action-number">3</span>
+                <span>Approve or reject the order in your pending requests</span>
+            </div>
+            <div class="action-item">
+                <span class="action-number">4</span>
+                <span>If approved, acquire items and fulfill within timeframe</span>
+            </div>
+        </div>
+        {% else %}
         <div class="next-steps-box">
             <h3 style="color: #00ff00; margin-top: 0;">What Happens Next?</h3>
             <div class="step">
@@ -277,20 +382,43 @@
                 <span>Once fulfilled, you'll receive your items and the transaction will be completed</span>
             </div>
         </div>
+        {% endif %}
 
         <div class="info-box">
-            <p style="color: #00ffff; margin: 0; font-size: 14px; line-height: 1.6;">
-                <strong>💡 Important:</strong> Your payment has been reserved and is secure. You'll be notified immediately once a trader reviews your order. You can track your order status at any time through your dashboard.
+            <p style="color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %}; margin: 0; font-size: 14px; line-height: 1.6;">
+            {% if recipient_type == "TRADER" %}
+            <strong>💡 Tip:</strong> Responding quickly to orders improves your trader rating and increases customer satisfaction.
+            {% else %}
+            <strong>💡 Important:</strong> Your payment has been reserved and is secure. You'll be notified immediately once a trader reviews your order. You can track your order status at any time through your dashboard.
+            {% endif %}
             </p>
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
+            {% if recipient_type == "TRADER" %}
+            Please review this order request and respond as soon as possible. The customer is waiting for your decision.
+            {% else %}
             Thank you for using NEXUS TRADE! We'll keep you updated on every step of your order's progress.
+            {% endif %}
         </p>
 
         <div style="text-align: center;">
-            <a href="{{url}}" class="button">View Order Details</a>
+            {% if recipient_type == "TRADER" %}
+            <a href="{{ url }}" class="button button-approve">View & Approve</a>
+            <a href="{{ url }}" class="button button-reject">View & Reject</a>
+            {% else %}
+            <a href="{{ url }}" class="button">View Order Details</a>
+            {% endif %}
         </div>
+
+        {% if recipient_type == "USER" %}
+        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 255, 255, 0.2); padding: 15px; margin: 30px 0; text-align: center;">
+            <p style="color: #999; margin: 0; font-size: 13px;">
+                Order Reference: <strong style="color: #00ffff;">{{ order_reference }}</strong><br>
+                <span style="font-size: 11px;">Save this reference for future inquiries</span>
+            </p>
+        </div>
+        {% endif %}
     </div>
 
     <div class="footer">
@@ -299,4 +427,3 @@
     </div>
 </div>
 </body>
-</html>

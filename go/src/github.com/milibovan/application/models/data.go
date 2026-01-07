@@ -141,6 +141,7 @@ type ProductsRequestInventory struct {
 
 type CreateRequest struct {
 	UserId    string                     `json:"user-id"`
+	UserName  string                     `json:"user-name"`
 	UserEmail string                     `json:"user-email"`
 	Products  []ProductsRequestInventory `json:"products"`
 	TotalCost float64                    `json:"total-cost"`

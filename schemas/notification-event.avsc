@@ -30,17 +30,20 @@
       "doc": "Event type and also email template"
     },
     {
-      "name": "recipient_type",
+      "name": "recipient_types",
       "type": {
-        "type": "enum",
-        "name": "RecipientType",
-        "symbols": [
-          "USER",
-          "TRADER",
-          "ADMIN"
-        ]
+        "type": "array",
+        "items": {
+          "type": "enum",
+          "name": "RecipientType",
+          "symbols": [
+            "USER",
+            "TRADER",
+            "ADMIN"
+          ]
+        }
       },
-      "doc": "Who should receive this notification"
+      "doc": "Who should receive this notification (can be multiple types)"
     },
     {
       "name": "recipient_id",

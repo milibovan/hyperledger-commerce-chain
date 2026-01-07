@@ -1,6 +1,7 @@
 use askama::Template;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
+use crate::notification_event::RecipientType
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OrderItem {
@@ -53,16 +54,19 @@ pub struct OrderCancelled {
     url: String,
 }
 
-#[derive(Template)]
+#[derive(Template, Clone)]
 #[template(path = "order_created.html")]
 pub struct OrderCreated {
     pub order_id: String,
     pub order_date: String,
+    pub due_date: String,
     pub item_count: i32,
     pub total_amount: String,
     pub items: Vec<OrderItem>,
     pub url: String,
     pub order_reference: String,
+    pub user_name: String,
+    pub recipient_type: String,
 }
 
 #[derive(Template)]

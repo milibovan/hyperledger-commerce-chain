@@ -185,12 +185,24 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 		return "", err
 	}
 
+	txTimestamp, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return "", fmt.Errorf("failed to retrieve transaction timestamp: %v", err)
+	}
+
+	// Convert Protobuf timestamp to Go Time object
+	// Note: It returns UTC time
+	createdTime := time.Unix(txTimestamp.Seconds, int64(txTimestamp.Nanos)).UTC()
+
+	// Format as string if needed
+	createdDateStr := createdTime.Format(time.RFC3339)
+
 	// Create order
 	order := structs.Order{
 		DocType:     "order",
 		Id:          id,
 		UserId:      userId,
-		CreatedDate: time.Now().Format(time.RFC3339),
+		CreatedDate: createdDateStr,
 		Products:    products,
 		ReceiptsIds: receiptIds,
 		TotalCost:   totalCost,
@@ -241,6 +253,18 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		return nil, err
 	}
 
+	txTimestamp, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve transaction timestamp: %v", err)
+	}
+
+	// Convert Protobuf timestamp to Go Time object
+	// Note: It returns UTC time
+	createdTime := time.Unix(txTimestamp.Seconds, int64(txTimestamp.Nanos)).UTC()
+
+	// Format as string if needed
+	createdDateStr := createdTime.Format(time.RFC3339)
+
 	// Create receipt
 	receipt := structs.Receipt{
 		DocType:       "receipt",
@@ -249,7 +273,7 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 		UserId:        userId,
 		OrderId:       orderId,
 		Products:      products,
-		Date:          time.Now().Format(time.RFC3339),
+		Date:          createdDateStr,
 		TotalCost:     totalCost,
 		Status:        structs.ReceiptCompleted,
 		CancelledBy:   "",
@@ -265,11 +289,7 @@ func (s *SmartContract) CreateReceipt(ctx contractapi.TransactionContextInterfac
 }
 
 func (s *SmartContract) CreateRequest(ctx contractapi.TransactionContextInterface, id, userId, userEmail, totalCost, maxDays, productArgs string) (*structs.ProductsRequest, error) {
-	// DEBUG: Print what we received
-	fmt.Printf("DEBUG Chaincode - productArgs received: '%s'\n", productArgs)
-
 	argsWithUserId := userId + "," + productArgs
-	fmt.Printf("DEBUG Chaincode - argsWithUserId: '%s'\n", argsWithUserId)
 	exists, err := s.AssetExists(ctx, id, structs.RequestET)
 
 	if err != nil {
@@ -305,6 +325,16 @@ func (s *SmartContract) CreateRequest(ctx contractapi.TransactionContextInterfac
 		return nil, fmt.Errorf("invalid total cost: %w", err)
 	}
 
+	txTimestamp, err := ctx.GetStub().GetTxTimestamp()
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve transaction timestamp: %v", err)
+	}
+
+	createdTime := time.Unix(txTimestamp.Seconds, int64(txTimestamp.Nanos)).UTC()
+
+	createdDateStr := createdTime.Format(time.RFC3339)
+	dueDateStr := createdTime.AddDate(0, 0, addDays).Format(time.RFC3339)
+
 	request := structs.ProductsRequest{
 		DocType:     "request",
 		Id:          id,
@@ -312,8 +342,8 @@ func (s *SmartContract) CreateRequest(ctx contractapi.TransactionContextInterfac
 		TraderId:    "",
 		UserEmail:   userEmail,
 		Products:    products,
-		CreatedDate: time.Now().Format(time.RFC3339),
-		DueDate:     time.Now().AddDate(0, 0, addDays).Format(time.RFC3339),
+		CreatedDate: createdDateStr,
+		DueDate:     dueDateStr,
 		TotalCost:   totalCostFl,
 		Status:      structs.CREATED,
 		OrderId:     "",

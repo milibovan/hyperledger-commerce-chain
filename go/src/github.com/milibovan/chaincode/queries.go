@@ -308,6 +308,25 @@ func (t *SmartContract) GetAllOrders(ctx contractapi.TransactionContextInterface
 	return getOrderQueryResultForQueryString(ctx, queryString)
 }
 
+func (t *SmartContract) GetAllRequests(ctx contractapi.TransactionContextInterface) ([]*structs.ProductsRequest, error) {
+	selector := map[string]interface{}{
+		"doc-type": "order",
+		"deleted":  map[string]interface{}{"$ne": true},
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getRequestQueryResultForQueryString(ctx, queryString)
+}
+
 func (t *SmartContract) GetProductsByIds(ctx contractapi.TransactionContextInterface, productIdsJSON string) ([]*structs.Product, error) {
 	var productIds []string
 	err := json.Unmarshal([]byte(productIdsJSON), &productIds)
@@ -392,6 +411,34 @@ func (t *SmartContract) GetOrdersByIds(ctx contractapi.TransactionContextInterfa
 	return getOrderQueryResultForQueryString(ctx, queryString)
 }
 
+func (t *SmartContract) GetRequestsByIds(ctx contractapi.TransactionContextInterface, orderIdsJSON string) ([]*structs.ProductsRequest, error) {
+	var orderIds []string
+	err := json.Unmarshal([]byte(orderIdsJSON), &orderIds)
+	if err != nil {
+		return nil, fmt.Errorf("failed to unmarshal order IDs: %w", err)
+	}
+
+	selector := map[string]interface{}{
+		"doc-type": "order",
+		"id": map[string]interface{}{
+			"$in": orderIds,
+		},
+		"deleted": map[string]interface{}{"$ne": true},
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getRequestQueryResultForQueryString(ctx, queryString)
+}
+
 func (t *SmartContract) GetUserById(ctx contractapi.TransactionContextInterface, id string) (*structs.User, error) {
 	userKey, err := ctx.GetStub().CreateCompositeKey("user", []string{id})
 	if err != nil {
@@ -468,6 +515,75 @@ func (t *SmartContract) GetOrderById(ctx contractapi.TransactionContextInterface
 	return &order, err
 }
 
+func (t *SmartContract) GetRequestById(ctx contractapi.TransactionContextInterface, id string) (*structs.ProductsRequest, error) {
+	orderKey, err := ctx.GetStub().CreateCompositeKey("order", []string{id})
+	if err != nil {
+		return nil, err
+	}
+
+	orderBytes, err := ctx.GetStub().GetState(orderKey)
+	if err != nil {
+		return nil, err
+	}
+	if orderBytes == nil {
+		return nil, fmt.Errorf("order %s not found", id)
+	}
+
+	var order structs.ProductsRequest
+	err = json.Unmarshal(orderBytes, &order)
+	return &order, err
+}
+
+// GetTradersEmails Get emails from all traders in system
+func (t *SmartContract) GetTradersEmails(ctx contractapi.TransactionContextInterface) ([]string, error) {
+	selector := map[string]interface{}{
+		"doc-type": "trader",
+		"deleted":  map[string]interface{}{"$ne": true},
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+		"fields":   []string{"email"},
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	type EmailProjection struct {
+		Email string `json:"email"`
+	}
+
+	var emails []string
+
+	for resultsIterator.HasNext() {
+		queryResult, err := resultsIterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		var projection EmailProjection
+		err = json.Unmarshal(queryResult.Value, &projection)
+		if err != nil {
+			return nil, err
+		}
+
+		if projection.Email != "" {
+			emails = append(emails, projection.Email)
+		}
+	}
+
+	return emails, nil
+}
+
 // getProductQueryResultForQueryString executes the passed in query string.
 // The result set is built and returned as a byte array containing the JSON results.
 func getProductQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.Product, error) {
@@ -526,4 +642,16 @@ func getOrderQueryResultForQueryString(ctx contractapi.TransactionContextInterfa
 	defer resultsIterator.Close()
 
 	return constructOrderQueryResponseFromIterator(resultsIterator)
+}
+
+// getRequestQueryResultForQueryString executes the passed in query string.
+// The result set is built and returned as a byte array containing the JSON results.
+func getRequestQueryResultForQueryString(ctx contractapi.TransactionContextInterface, queryString string) ([]*structs.ProductsRequest, error) {
+	resultsIterator, err := ctx.GetStub().GetQueryResult(queryString)
+	if err != nil {
+		return nil, err
+	}
+	defer resultsIterator.Close()
+
+	return constructRequestQueryResponseFromIterator(resultsIterator)
 }

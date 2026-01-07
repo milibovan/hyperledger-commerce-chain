@@ -561,6 +561,30 @@ func GetOrderById(gw *fabricClient.Gateway, channel, id string) (*models.Order, 
 	return &order, nil
 }
 
+func GetTradersEmails(gw *fabricClient.Gateway, channel string) ([]string, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetTradersEmails from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetTradersEmails")
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resultBytes) == 0 || string(resultBytes) == "[]" || string(resultBytes) == "null" {
+		fmt.Println("*** No receipts found matching the criteria")
+		return []string{}, err
+	}
+
+	var emails []string
+	if err := json.Unmarshal(resultBytes, &emails); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON: %w", err)
+	}
+
+	return emails, nil
+}
+
 func UpdateUser(gw *fabricClient.Gateway, channel, id, name, surname, email string) (uint64, error) {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
