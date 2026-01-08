@@ -91,11 +91,11 @@ pub(crate) async fn send_email(event: NotificationEvent) {
 
             let base_template = OrderCreated {
                 order_id: event.data.get("order_id").cloned().unwrap_or_default(),
-                order_date: format_date_iso(
+                order_date: format_date_pretty(
                     &event.data.get("order_date").cloned().unwrap_or_default(),
                 ),
 
-                due_date: format_date_iso(&event.data.get("due_date").cloned().unwrap_or_default()),
+                due_date: format_date_pretty(&event.data.get("due_date").cloned().unwrap_or_default()),
                 url: event.data.get("url").cloned().unwrap_or_default(),
                 item_count: event
                     .data
@@ -197,9 +197,18 @@ fn send_email_via_smtp(email: String, html_body: String, subject: String) {
     }
 }
 
-fn format_date_iso(date_str: &str) -> String {
+fn format_date_pretty(date_str: &str) -> String {
+    // 1. Parse the RFC3339 string (e.g., "2026-01-07T22:33:42Z")
     if let Ok(dt) = DateTime::parse_from_rfc3339(date_str) {
-        return dt.format("%Y-%m-%dT%H:%M:%S").to_string();
+        // 2. Format it to match "en-US" style:
+        // %B = Full Month Name (January)
+        // %d = Day (08)
+        // %Y = Year (2026)
+        // %I = Hour 12-hour clock (12)
+        // %M = Minute (42)
+        // %p = AM/PM
+        return dt.format("%B %d, %Y at %I:%M %p").to_string();
     }
+    // Fallback if parsing fails
     date_str.to_string()
 }
