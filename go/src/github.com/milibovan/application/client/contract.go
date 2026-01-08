@@ -561,6 +561,25 @@ func GetOrderById(gw *fabricClient.Gateway, channel, id string) (*models.Order, 
 	return &order, nil
 }
 
+func GetRequestById(gw *fabricClient.Gateway, channel, id string) (*models.ProductsRequest, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetRequestById from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetRequestById", fabricClient.WithArguments(id))
+	if err != nil {
+		return nil, fmt.Errorf("failed to evaluate transaction: %w", err)
+	}
+
+	var order models.ProductsRequest
+	if err = json.Unmarshal(resultBytes, &order); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal order: %w", err)
+	}
+
+	return &order, nil
+}
+
 func GetTradersEmails(gw *fabricClient.Gateway, channel string) ([]string, error) {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
@@ -840,6 +859,58 @@ func GetOrdersByIds(gw *fabricClient.Gateway, channel string, ordersIds []string
 	}
 
 	return orders, nil
+}
+func GetRequestsByIds(gw *fabricClient.Gateway, channel string, requestsIds []string) ([]*models.ProductsRequest, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetRequestsByIds from %s\n", channel)
+	fmt.Printf("Request IDs to query: %v\n", requestsIds)
+
+	requestsIdsJSON, err := json.Marshal(requestsIds)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal request IDs: %w", err)
+	}
+
+	resultBytes, err := ccContract.Evaluate("GetRequestsByIds", fabricClient.WithArguments(string(requestsIdsJSON)))
+	if err != nil {
+		return nil, fmt.Errorf("failed to evaluate transaction: %w", err)
+	}
+	requests, err := unmarshalEntityArray[models.ProductsRequest](resultBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(requests) == 0 {
+		fmt.Println("*** No requests found matching the criteria")
+	} else {
+		fmt.Printf("*** Found %d requests\n", len(requests))
+	}
+
+	return requests, nil
+}
+func GetUnassignedRequests(gw *fabricClient.Gateway, channel string) ([]*models.ProductsRequest, error) {
+	net := gw.GetNetwork(channel)
+	ccContract := net.GetContract(ChaincodeName)
+
+	fmt.Printf("\n--> Evaluate Transaction: GetUnassignedRequests from %s\n", channel)
+
+	resultBytes, err := ccContract.Evaluate("GetUnassignedRequests")
+	if err != nil {
+		return nil, fmt.Errorf("failed to evaluate transaction: %w", err)
+	}
+	requests, err := unmarshalEntityArray[models.ProductsRequest](resultBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(requests) == 0 {
+		fmt.Println("*** No requests found matching the criteria")
+	} else {
+		fmt.Printf("*** Found %d requests\n", len(requests))
+	}
+
+	return requests, nil
 }
 
 func IncreaseQuantity(gw *fabricClient.Gateway, channel, id, quantity string) (uint64, error) {

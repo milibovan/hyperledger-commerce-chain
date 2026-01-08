@@ -566,6 +566,7 @@ func getUserDetails(c *gin.Context) {
 	var orders []*models.Order
 	var receipts []*models.Receipt
 	var products []*models.Product
+	var requests []*models.ProductsRequest
 	channel = c.Param("channel")
 	userId = c.Param("userId")
 
@@ -601,10 +602,20 @@ func getUserDetails(c *gin.Context) {
 		}
 
 	}
+
+	// Get its requests
+	if len(user.RequestsIDs) > 0 {
+		requests, err = client.GetRequestsByIds(activeGW, channel, user.RequestsIDs)
+		if err != nil {
+			c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+		}
+	}
+
 	// Build response
 	response = models.UserDetailsResponse{
-		User:   user,
-		Orders: buildOrdersWithDetails(orders, products, receipts),
+		User:     user,
+		Orders:   buildOrdersWithDetails(orders, products, receipts),
+		Requests: requests,
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -615,6 +626,7 @@ func getTraderDetails(c *gin.Context) {
 	var channel, traderId string
 	var receipts []*models.Receipt
 	var receiptsProducts, availableProducts []*models.Product
+	var requests, availableRequests []*models.ProductsRequest
 	channel = c.Param("channel")
 	traderId = c.Param("traderId")
 
@@ -661,12 +673,28 @@ func getTraderDetails(c *gin.Context) {
 		}
 	}
 
+	if len(trader.RequestsIDs) > 0 {
+		requests, err = client.GetRequestsByIds(activeGW, channel, trader.RequestsIDs)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	}
+
+	availableRequests, err = client.GetUnassignedRequests(activeGW, channel)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	// Build response
 	response := models.TraderDetailsResponse{
 		Trader:            trader,
 		Receipts:          receipts,
 		ReceiptsProducts:  receiptsProducts,
 		AvailableProducts: availableProducts,
+		Requests:          requests,
+		AvailableRequests: availableRequests,
 	}
 
 	c.JSON(http.StatusOK, response)

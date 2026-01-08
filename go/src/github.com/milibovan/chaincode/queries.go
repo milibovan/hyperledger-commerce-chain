@@ -411,17 +411,17 @@ func (t *SmartContract) GetOrdersByIds(ctx contractapi.TransactionContextInterfa
 	return getOrderQueryResultForQueryString(ctx, queryString)
 }
 
-func (t *SmartContract) GetRequestsByIds(ctx contractapi.TransactionContextInterface, orderIdsJSON string) ([]*structs.ProductsRequest, error) {
-	var orderIds []string
-	err := json.Unmarshal([]byte(orderIdsJSON), &orderIds)
+func (t *SmartContract) GetRequestsByIds(ctx contractapi.TransactionContextInterface, requestIdsJSON string) ([]*structs.ProductsRequest, error) {
+	var requestIds []string
+	err := json.Unmarshal([]byte(requestIdsJSON), &requestIds)
 	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal order IDs: %w", err)
+		return nil, fmt.Errorf("failed to unmarshal request IDs: %w", err)
 	}
 
 	selector := map[string]interface{}{
-		"doc-type": "order",
+		"doc-type": "request",
 		"id": map[string]interface{}{
-			"$in": orderIds,
+			"$in": requestIds,
 		},
 		"deleted": map[string]interface{}{"$ne": true},
 	}
@@ -516,22 +516,48 @@ func (t *SmartContract) GetOrderById(ctx contractapi.TransactionContextInterface
 }
 
 func (t *SmartContract) GetRequestById(ctx contractapi.TransactionContextInterface, id string) (*structs.ProductsRequest, error) {
-	orderKey, err := ctx.GetStub().CreateCompositeKey("order", []string{id})
+	requestKey, err := ctx.GetStub().CreateCompositeKey("request", []string{id})
 	if err != nil {
 		return nil, err
 	}
 
-	orderBytes, err := ctx.GetStub().GetState(orderKey)
+	requestBytes, err := ctx.GetStub().GetState(requestKey)
 	if err != nil {
 		return nil, err
 	}
-	if orderBytes == nil {
-		return nil, fmt.Errorf("order %s not found", id)
+	if requestBytes == nil {
+		return nil, fmt.Errorf("request %s not found", id)
 	}
 
-	var order structs.ProductsRequest
-	err = json.Unmarshal(orderBytes, &order)
-	return &order, err
+	var request structs.ProductsRequest
+	err = json.Unmarshal(requestBytes, &request)
+	return &request, err
+}
+
+func (t *SmartContract) GetUnassignedRequests(ctx contractapi.TransactionContextInterface) ([]*structs.ProductsRequest, error) {
+	selector := map[string]interface{}{
+		"doc-type":  "request",
+		"trader-id": "",
+		"status":    map[string]interface{}{"$eq": "CREATED"},
+		"deleted":   map[string]interface{}{"$ne": true},
+		"$or": []map[string]interface{}{
+			{"trader-id": ""},
+			{"trader-id": map[string]interface{}{"$exists": false}},
+			{"trader-id": nil},
+		},
+	}
+
+	queryMap := map[string]interface{}{
+		"selector": selector,
+	}
+
+	queryStringBytes, err := json.Marshal(queryMap)
+	if err != nil {
+		return nil, err
+	}
+	queryString := string(queryStringBytes)
+
+	return getRequestQueryResultForQueryString(ctx, queryString)
 }
 
 // GetTradersEmails Get emails from all traders in system

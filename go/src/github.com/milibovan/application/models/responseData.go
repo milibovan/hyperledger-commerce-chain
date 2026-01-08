@@ -2,8 +2,9 @@ package models
 
 // UserDetailsResponse User detail page
 type UserDetailsResponse struct {
-	User   *User              `json:"user"`
-	Orders []OrderWithDetails `json:"orders"`
+	User     *User              `json:"user"`
+	Orders   []OrderWithDetails `json:"orders"`
+	Requests []*ProductsRequest `json:"requests"`
 }
 
 // OrderWithDetails Order detail page
@@ -15,10 +16,12 @@ type OrderWithDetails struct {
 
 // TraderDetailsResponse Trader detail page
 type TraderDetailsResponse struct {
-	Trader            *Trader    `json:"trader"`
-	Receipts          []*Receipt `json:"receipts"`
-	ReceiptsProducts  []*Product `json:"receipts-products"`
-	AvailableProducts []*Product `json:"available-products"`
+	Trader            *Trader            `json:"trader"`
+	Receipts          []*Receipt         `json:"receipts"`
+	ReceiptsProducts  []*Product         `json:"receipts-products"`
+	AvailableProducts []*Product         `json:"available-products"`
+	Requests          []*ProductsRequest `json:"requests"`
+	AvailableRequests []*ProductsRequest `json:"available-requests"`
 }
 
 // ReceiptDetailsResponse Receipt detail page

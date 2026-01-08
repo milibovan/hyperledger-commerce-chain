@@ -60,6 +60,7 @@ type Order struct {
 	ReceiptsIds  []string           `json:"receipts-ids"`
 	TotalCost    float64            `json:"total-cost"`
 	ApprovedDate string             `json:"approved-date,omitempty"`
+	RequestId    string             `json:"request-id"`
 	Deleted      bool               `json:"deleted"`
 }
 
@@ -82,6 +83,7 @@ type Trader struct {
 	VAT               string             `json:"vat"`
 	ProductsAvailable []ProductInventory `json:"products-available"`
 	ReceiptsIDs       []string           `json:"receipts-ids"`
+	RequestsIDs       []string           `json:"requests-ids"`
 	Balance           float64            `json:"balance"`
 	Deleted           bool               `json:"deleted"`
 }
