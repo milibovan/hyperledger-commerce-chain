@@ -42,7 +42,7 @@ type NotificationEvent struct {
 	// Event type and also email template.
 	EventType EventTypes `avro:"event_type"`
 	// Who should receive this notification.
-	RecipientType []RecipientType `avro:"recipient_type"`
+	RecipientType []RecipientType `avro:"recipient_types"`
 	// ID of the recipient (user_id or trader_id).
 	RecipientID string     `avro:"recipient_id"`
 	Timestamp   *time.Time `avro:"timestamp"`

@@ -46,29 +46,10 @@ pub(crate) async fn start_consumer() {
                         match from_value::<NotificationEvent>(&avro_result.value) {
                             Ok(event) => {
                                 println!("✅ Event received: {:?}", event.id);
-
-                                // --- PROCESS LOGIC START ---
-                                // 1. Parse Recipients
-                                // We use empty string as default to avoid panic if field is missing
-                                let recipients_str = event.data.get("recipients").map(|s| s.as_str()).unwrap_or("");
-
-                                if !recipients_str.is_empty() {
-                                    let recipients: Vec<String> = recipients_str.split('|').map(|s| s.to_string()).collect();
-
-                                    // 2. Spawn Email Tasks (Don't block the consumer!)
-                                    for recipient in recipients {
-                                        let event_clone = event.clone();
-                                        // Spawn a lightweight thread for sending
-                                        tokio::spawn(async move {
-                                            // Handle the parsing/unwrapping safely here
-                                            // Assuming recipient is a valid email string
-                                            send_email(event_clone, recipient).await;
-                                        });
-                                    }
-                                } else {
-                                    eprintln!("⚠️ Event {:?} has no recipients", event.id);
-                                }
-                                // --- PROCESS LOGIC END ---
+                                
+                                tokio::spawn(async move {
+                                    send_email(event).await;
+                                });
                             }
                             Err(e) => eprintln!("❌ Struct mismatch: {}", e),
                         }
@@ -76,9 +57,8 @@ pub(crate) async fn start_consumer() {
                     Err(e) => eprintln!("❌ Registry decode error: {}", e),
                 }
 
-                // Commit offset after processing
                 if let Err(e) = consumer.commit_message(&message, CommitMode::Async) {
-                     eprintln!("Failed to commit offset: {}", e);
+                    eprintln!("Failed to commit offset: {}", e);
                 }
             }
             Err(e) => eprintln!("Kafka error: {}", e),
