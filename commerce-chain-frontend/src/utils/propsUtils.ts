@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab } from "./dataTypesUtils";
+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab, RequestData } from "./dataTypesUtils";
 import type { ColorScheme } from "./stylingUtils";
 
 export interface ListProps<T> {
@@ -20,7 +20,7 @@ export interface DetailsProps<T> {
   productsLoading?: boolean;
   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;
   onProductClick?: (product: ProductData) => void;
-  onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData) => void;
+  onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData) => void;
 }
 
 export interface CreateFormsProps {
@@ -125,11 +125,11 @@ export type EntityDetailsDisplayProps = {
   borderColor?: string;
 };
 
-export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData> = {
+export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData | RequestData> = {
   title: string;
   items: T[];
   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';
-  icon?: 'package' | 'receipt' | 'custom';
+  icon?: 'package' | 'receipt' | 'custom' | 'request';
   customIcon?: ReactNode;
   renderItem: (item: T, index: number) => ReactNode;
   emptyMessage?: string;
@@ -143,6 +143,7 @@ export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData> = 
   hasBorder?: boolean;
   borderPosition?: 'top' | 'bottom' | 'right' | 'left' | 'y';
   className?: string;
+  headerContent?: React.ReactNode
 };
 
 export type EntityListProps<T> = {
@@ -174,4 +175,10 @@ export interface TabNavigationProps {
     tabs: Tab[];
     activeTab: string;
     onTabChange: (tabId: string) => void;
+}
+
+export interface RequestCardProps {
+    request: RequestData;
+    onClick?: () => void;
+    colorScheme?: "pink" | "purple";
 }

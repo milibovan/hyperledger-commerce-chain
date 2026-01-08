@@ -132,6 +132,21 @@ export interface OrderData {
 	"deleted":     boolean;              
 }
 
+export interface RequestData {
+  "doc-type" :    string;            
+	id:        string;            
+	"user-id":      string;    
+	"trader-id":      string;    
+	"user-email":      string;    
+	products:    Array<ProductInventory>;
+  "created-date": Date;        
+  "due-date": Date;        
+	"total-cost":   number;
+  "status": string;
+	"order-id":      string;    
+	"deleted":     boolean; 
+}
+
 export interface Deposit {
   amount?: string;
   quantity?: string;
@@ -184,7 +199,8 @@ export function isUserData(trader: UserData | TraderData) {
 
 export interface UserDetails {
   user: UserData,
-  orders: Array<OrderDetails>
+  orders: Array<OrderDetails>,
+  requests: Array<RequestData>
 }
 
 export interface OrderDetails {
@@ -197,7 +213,9 @@ export interface TraderDetails {
   trader: TraderData,
   receipts: ReceiptData[],
   "receipts-products": ProductData[],
-  "available-products": ProductData[]
+  "available-products": ProductData[],
+  requests: RequestData[],
+  "available-requests": RequestData[]
 }
 
 export interface ReceiptDetails {

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 113,
+            "activePatchIndex": 118,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -460,6 +460,26 @@
                 {
                     "date": 1767530071583,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -96,9 +96,8 @@\n   toggleProduct: (productId: string) => void;\r\n   updateQuantity: (productId: string, quantity: number) => void;\r\n   totalCost: number,\r\n   remainingBalance: number\r\n-  channel: string\r\n }\r\n \r\n export interface InfoSectionProps {\r\n     title: string;\r\n"
+                },
+                {
+                    "date": 1767897085279,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n import type { ReactNode } from \"react\";\r\n-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab } from \"./dataTypesUtils\";\r\n+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab, RequestData } from \"./dataTypesUtils\";\r\n import type { ColorScheme } from \"./stylingUtils\";\r\n \r\n export interface ListProps<T> {\r\n   entities: T[];\r\n@@ -19,9 +19,9 @@\n   products?: ProductData[];\r\n   productsLoading?: boolean;\r\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n-  onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData) => void;\r\n+  onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1767897434077,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -124,9 +124,9 @@\n   hasBorder?: boolean;\r\n   borderColor?: string;\r\n };\r\n \r\n-export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData> = {\r\n+export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData | RequestData> = {\r\n   title: string;\r\n   items: T[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n   icon?: 'package' | 'receipt' | 'custom';\r\n"
+                },
+                {
+                    "date": 1767897655166,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -128,9 +128,9 @@\n export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData | RequestData> = {\r\n   title: string;\r\n   items: T[];\r\n   colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n-  icon?: 'package' | 'receipt' | 'custom';\r\n+  icon?: 'package' | 'receipt' | 'custom' | 'request';\r\n   customIcon?: ReactNode;\r\n   renderItem: (item: T, index: number) => ReactNode;\r\n   emptyMessage?: string;\r\n   isLoading?: boolean;\r\n"
+                },
+                {
+                    "date": 1767898934561,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -142,8 +142,9 @@\n   };\r\n   hasBorder?: boolean;\r\n   borderPosition?: 'top' | 'bottom' | 'right' | 'left' | 'y';\r\n   className?: string;\r\n+  headerContent?: React.ReactNode\r\n };\r\n \r\n export type EntityListProps<T> = {\r\n   entities: T[];\r\n"
+                },
+                {
+                    "date": 1767899462014,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -175,4 +175,10 @@\n     tabs: Tab[];\r\n     activeTab: string;\r\n     onTabChange: (tabId: string) => void;\r\n }\r\n+\r\n+export interface RequestCardProps {\r\n+    request: RequestData;\r\n+    onClick?: () => void;\r\n+    colorScheme?: \"pink\" | \"purple\";\r\n+}\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762248920808,

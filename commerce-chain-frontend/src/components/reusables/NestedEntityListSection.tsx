@@ -1,4 +1,4 @@
-import { Package, Plus, Receipt } from "lucide-react";
+import { Package, Plus, Receipt, CircleQuestionMark } from "lucide-react";
 import type { EntityListSectionProps as NestedEntityListSectionProps } from "../../utils/propsUtils";
 import { colorSchemes } from "../../utils/stylingUtils";
 
@@ -13,6 +13,7 @@ const NestedEntityListSection = <T,>({
     isLoading = false,
     loadingComponent,
     actionButton,
+    headerContent,
     hasBorder = false,
     borderPosition = 'right',
     className = '',
@@ -22,6 +23,7 @@ const NestedEntityListSection = <T,>({
     const getIcon = () => {
         if (customIcon) return customIcon;
         if (icon === 'receipt') return <Receipt size={20} />;
+        if (icon === 'request') return <CircleQuestionMark size={20} />;
         return <Package size={20} />;
     };
 
@@ -54,7 +56,14 @@ const NestedEntityListSection = <T,>({
                         {actionButton.label}
                     </button>
                 )}
+                {/* Render headerContent if provided */}
+                {headerContent && (
+                    <>
+                        {headerContent}
+                    </>
+                )}
             </div>
+
 
             {isLoading ? (
                 loadingComponent || <div className="text-center text-gray-400 py-4">Loading...</div>

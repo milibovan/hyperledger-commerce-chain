@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 80,
+            "activePatchIndex": 85,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -328,6 +328,26 @@
                 {
                     "date": 1767527768467,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -220,5 +220,10 @@\n     badge?: {\r\n         text: string;\r\n         colorClass: string;\r\n     };\r\n+}\r\n+\r\n+export interface ProductRequest {\r\n+    quantity: number;\r\n+    deliveryDays: number;\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1767896859164,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -131,8 +131,12 @@\n   \"approved-date\": Date;     \r\n \t\"deleted\":     boolean;              \r\n }\r\n \r\n+export interface RequestData {\r\n+  \r\n+}\r\n+\r\n export interface Deposit {\r\n   amount?: string;\r\n   quantity?: string;\r\n   channel: string;\r\n@@ -183,9 +187,10 @@\n }\r\n \r\n export interface UserDetails {\r\n   user: UserData,\r\n-  orders: Array<OrderDetails>\r\n+  orders: Array<OrderDetails>,\r\n+  requests: Array<RequestData>\r\n }\r\n \r\n export interface OrderDetails {\r\n   order: OrderData,\r\n"
+                },
+                {
+                    "date": 1767896936627,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -132,9 +132,18 @@\n \t\"deleted\":     boolean;              \r\n }\r\n \r\n export interface RequestData {\r\n-  \r\n+  \"doc-type\" :    string;            \r\n+\tid:        string;            \r\n+\t\"user-id\":      string;    \r\n+  \"status\": string;\r\n+  \"created-date\": Date;        \r\n+\tproducts:    Array<ProductInventory>;\r\n+\t\"receipts-ids\": Array<string>;          \r\n+\t\"total-cost\":   number;\r\n+  \"approved-date\": Date;     \r\n+\t\"deleted\":     boolean; \r\n }\r\n \r\n export interface Deposit {\r\n   amount?: string;\r\n"
+                },
+                {
+                    "date": 1767896970447,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -135,11 +135,13 @@\n export interface RequestData {\r\n   \"doc-type\" :    string;            \r\n \tid:        string;            \r\n \t\"user-id\":      string;    \r\n+\t\"trader-id\":      string;    \r\n+\t\"user-email\":      string;    \r\n+\tproducts:    Array<ProductInventory>;\r\n   \"status\": string;\r\n   \"created-date\": Date;        \r\n-\tproducts:    Array<ProductInventory>;\r\n \t\"receipts-ids\": Array<string>;          \r\n \t\"total-cost\":   number;\r\n   \"approved-date\": Date;     \r\n \t\"deleted\":     boolean; \r\n"
+                },
+                {
+                    "date": 1767897005277,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -138,13 +138,13 @@\n \t\"user-id\":      string;    \r\n \t\"trader-id\":      string;    \r\n \t\"user-email\":      string;    \r\n \tproducts:    Array<ProductInventory>;\r\n-  \"status\": string;\r\n   \"created-date\": Date;        \r\n-\t\"receipts-ids\": Array<string>;          \r\n+  \"due-date\": Date;        \r\n \t\"total-cost\":   number;\r\n-  \"approved-date\": Date;     \r\n+  \"status\": string;\r\n+\t\"order-id\":      string;    \r\n \t\"deleted\":     boolean; \r\n }\r\n \r\n export interface Deposit {\r\n"
+                },
+                {
+                    "date": 1767897405442,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -212,9 +212,11 @@\n export interface TraderDetails {\r\n   trader: TraderData,\r\n   receipts: ReceiptData[],\r\n   \"receipts-products\": ProductData[],\r\n-  \"available-products\": ProductData[]\r\n+  \"available-products\": ProductData[],\r\n+  requests: RequestData[],\r\n+  \"available-requests\": RequestData[]\r\n }\r\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n"
                 }
             ],
             "date": 1762249804506,
