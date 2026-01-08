@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 15,
+            "activePatchIndex": 18,
             "patches": [
                 {
                     "date": 1764869868655,
@@ -68,6 +68,18 @@
                 {
                     "date": 1764878306998,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -67,10 +67,10 @@\n       if (response.ok) {\r\n       const responseData = await response.json();\r\n       \r\n       const parsedData = {\r\n-        user: responseData.user,  // Changed from responseData.User\r\n-        orders: responseData.orders || [],  // Changed from responseData.Orders\r\n+        user: responseData.user,  \r\n+        orders: responseData.orders || [], \r\n       };\r\n \r\n       setDetailedData(parsedData);\r\n     } else {\r\n"
+                },
+                {
+                    "date": 1767891952366,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -69,8 +69,9 @@\n       \r\n       const parsedData = {\r\n         user: responseData.user,  \r\n         orders: responseData.orders || [], \r\n+        requests: responseData.requests || [],\r\n       };\r\n \r\n       setDetailedData(parsedData);\r\n     } else {\r\n"
+                },
+                {
+                    "date": 1767894010324,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -72,8 +72,11 @@\n         orders: responseData.orders || [], \r\n         requests: responseData.requests || [],\r\n       };\r\n \r\n+      console.log(parsedData)\r\n+\r\n+\r\n       setDetailedData(parsedData);\r\n     } else {\r\n       const errorData = await response.json();\r\n       setError(errorData.Message || \"Failed to fetch user details\");\r\n"
+                },
+                {
+                    "date": 1767894157708,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -72,11 +72,8 @@\n         orders: responseData.orders || [], \r\n         requests: responseData.requests || [],\r\n       };\r\n \r\n-      console.log(parsedData)\r\n-\r\n-\r\n       setDetailedData(parsedData);\r\n     } else {\r\n       const errorData = await response.json();\r\n       setError(errorData.Message || \"Failed to fetch user details\");\r\n"
                 }
             ],
             "date": 1764869868655,

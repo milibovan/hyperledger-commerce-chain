@@ -159,6 +159,8 @@ export function useTraders(channel: string = "channel-a") {
         receipts: responseData.receipts,
         "receipts-products": responseData["receipts-products"],
         "available-products": responseData["available-products"],
+        requests: responseData.requests,
+        "available-requests": responseData["available-requests"],
       };
 
       setDetailedData(parsedData);

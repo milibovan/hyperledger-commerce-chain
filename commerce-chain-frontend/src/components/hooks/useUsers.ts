@@ -70,6 +70,7 @@ export function useUsers(channel: string = "channel-a") {
       const parsedData = {
         user: responseData.user,  
         orders: responseData.orders || [], 
+        requests: responseData.requests || [],
       };
 
       setDetailedData(parsedData);

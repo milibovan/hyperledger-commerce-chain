@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 12,
+            "activePatchIndex": 15,
             "patches": [
                 {
                     "date": 1765043720125,
@@ -56,6 +56,18 @@
                 {
                     "date": 1765110018452,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -178,9 +178,9 @@\n   }, [channel])\r\n \r\n   return {\r\n     traders: data?.Traders || [],\r\n-    TraderDetails: detailedData,\r\n+    traderDetails: detailedData,\r\n     products: products,\r\n     loading,\r\n     error,\r\n     fetchTraders,\r\n"
+                },
+                {
+                    "date": 1767892013798,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -158,8 +158,10 @@\n         trader: responseData.trader,  \r\n         receipts: responseData.receipts,\r\n         \"receipts-products\": responseData[\"receipts-products\"],\r\n         \"available-products\": responseData[\"available-products\"],\r\n+        requests: responseData.requests,\r\n+        \"available-requests\": responseData[\"available-requests\"],\r\n       };\r\n \r\n       setDetailedData(parsedData);\r\n     } else {\r\n"
+                },
+                {
+                    "date": 1767894006960,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -162,8 +162,10 @@\n         requests: responseData.requests,\r\n         \"available-requests\": responseData[\"available-requests\"],\r\n       };\r\n \r\n+      console.log(parsedData)\r\n+\r\n       setDetailedData(parsedData);\r\n     } else {\r\n       const errorData = await response.json();\r\n       setError(errorData.Message || \"Failed to fetch trader details\");\r\n"
+                },
+                {
+                    "date": 1767894162758,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -162,10 +162,8 @@\n         requests: responseData.requests,\r\n         \"available-requests\": responseData[\"available-requests\"],\r\n       };\r\n \r\n-      console.log(parsedData)\r\n-\r\n       setDetailedData(parsedData);\r\n     } else {\r\n       const errorData = await response.json();\r\n       setError(errorData.Message || \"Failed to fetch trader details\");\r\n"
                 }
             ],
             "date": 1765043720125,
