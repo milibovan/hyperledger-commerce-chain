@@ -1,13 +1,13 @@
 import { useState } from "react";
 import type { ActionType } from "../../utils/utils";
-import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
+import type { OrderData, ProductData, ReceiptData, RequestData, TraderData, UserData } from "../../utils/dataTypesUtils";
 
-export function useEntityActions<T, O = OrderData, R = TraderData, U = UserData, P = ProductData, C = ReceiptData>() {
+export function useEntityActions<T, O = OrderData, R = TraderData, U = UserData, P = ProductData, C = ReceiptData, Q = RequestData>() {
   const [action, setAction] = useState<ActionType>(null);
   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);
   const [viewDetails, setViewDetails] = useState(false);
 
-  const [selectedNestedEntity, setSelectedNestedEntity] = useState<O | R | U | T | P | C | null>(null);
+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<O | R | U | T | P | C | Q | null>(null);
   const [viewNestedDetails, setViewNestedDetails] = useState(false);
 
   const handleAction = (actionType: ActionType, entity?: T) => {
@@ -28,7 +28,7 @@ export function useEntityActions<T, O = OrderData, R = TraderData, U = UserData,
     setViewNestedDetails(false);
   };
 
-  const viewNestedEntityDetails = (nestedEntity: O | R | U | T | P | C ) => {
+  const viewNestedEntityDetails = (nestedEntity: O | R | U | T | P | C | Q ) => {
     setSelectedNestedEntity(nestedEntity);
     setViewNestedDetails(true);
   };

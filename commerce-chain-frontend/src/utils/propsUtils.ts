@@ -112,7 +112,7 @@ export interface ProductCardProps {
     product: ProductData;
     quantity: number | undefined;
     onClick?: () => void;
-    colorScheme?: "green" | "pink" | "indigo";
+    colorScheme?: "green" | "pink" | "indigo" | "amber";
 }
 
 export type EntityDetailsDisplayProps = {
@@ -128,7 +128,7 @@ export type EntityDetailsDisplayProps = {
 export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData | RequestData> = {
   title: string;
   items: T[];
-  colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';
+  colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo' | 'amber';
   icon?: 'package' | 'receipt' | 'custom' | 'request';
   customIcon?: ReactNode;
   renderItem: (item: T, index: number) => ReactNode;

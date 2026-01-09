@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 9,
+            "activePatchIndex": 10,
             "patches": [
                 {
                     "date": 1764622091261,
@@ -44,6 +44,10 @@
                 {
                     "date": 1765541644352,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,9 +6,9 @@\n   const [action, setAction] = useState<ActionType>(null);\r\n   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);\r\n   const [viewDetails, setViewDetails] = useState(false);\r\n \r\n-  const [selectedNestedEntity, setSelectedNestedEntity] = useState<O | R | U | T | P | C| null>(null);\r\n+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<O | R | U | T | P | C | null>(null);\r\n   const [viewNestedDetails, setViewNestedDetails] = useState(false);\r\n \r\n   const handleAction = (actionType: ActionType, entity?: T) => {\r\n     setAction(actionType);\r\n@@ -27,9 +27,9 @@\n     setAction(null);\r\n     setViewNestedDetails(false);\r\n   };\r\n \r\n-  const viewNestedEntityDetails = (nestedEntity: O | R | U | T) => {\r\n+  const viewNestedEntityDetails = (nestedEntity: O | R | U | T | P | C ) => {\r\n     setSelectedNestedEntity(nestedEntity);\r\n     setViewNestedDetails(true);\r\n   };\r\n \r\n"
+                },
+                {
+                    "date": 1767969821774,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,14 +1,14 @@\n import { useState } from \"react\";\r\n import type { ActionType } from \"../../utils/utils\";\r\n-import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from \"../../utils/dataTypesUtils\";\r\n+import type { OrderData, ProductData, ReceiptData, RequestData, TraderData, UserData } from \"../../utils/dataTypesUtils\";\r\n \r\n-export function useEntityActions<T, O = OrderData, R = TraderData, U = UserData, P = ProductData, C = ReceiptData>() {\r\n+export function useEntityActions<T, O = OrderData, R = TraderData, U = UserData, P = ProductData, C = ReceiptData, Q = RequestData>() {\r\n   const [action, setAction] = useState<ActionType>(null);\r\n   const [selectedEntity, setSelectedEntity] = useState<T | null>(null);\r\n   const [viewDetails, setViewDetails] = useState(false);\r\n \r\n-  const [selectedNestedEntity, setSelectedNestedEntity] = useState<O | R | U | T | P | C | null>(null);\r\n+  const [selectedNestedEntity, setSelectedNestedEntity] = useState<O | R | U | T | P | C | Q | null>(null);\r\n   const [viewNestedDetails, setViewNestedDetails] = useState(false);\r\n \r\n   const handleAction = (actionType: ActionType, entity?: T) => {\r\n     setAction(actionType);\r\n@@ -27,9 +27,9 @@\n     setAction(null);\r\n     setViewNestedDetails(false);\r\n   };\r\n \r\n-  const viewNestedEntityDetails = (nestedEntity: O | R | U | T | P | C ) => {\r\n+  const viewNestedEntityDetails = (nestedEntity: O | R | U | T | P | C | Q ) => {\r\n     setSelectedNestedEntity(nestedEntity);\r\n     setViewNestedDetails(true);\r\n   };\r\n \r\n"
                 }
             ],
             "date": 1764622091261,

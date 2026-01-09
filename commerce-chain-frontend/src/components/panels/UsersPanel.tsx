@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
+import type { OrderData, ProductData, ReceiptData, RequestData, TraderData, UserData } from "../../utils/dataTypesUtils";
 import { Plus, Edit, Trash2, ShoppingBag } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
@@ -27,6 +27,8 @@ import LoadingSkeleton from "../reusables/LoadingSkeleton";
 import { useReceipts } from "../hooks/useReceipts";
 import ProductDetails from "../overviews/ProductDetails";
 import ReceiptDetails from "../overviews/ReceiptDetails";
+import RequestDetails from "../overviews/RequestDetails";
+import { useRequests } from "../hooks/useRequests";
 
 export default function UsersPanel() {
   const modalRef = useRef<ModalHandle>(null);
@@ -34,6 +36,7 @@ export default function UsersPanel() {
   const { users, loading, error, fetchUsers, deleteUser, userDetails, fetchUserDetails } = useUsers();
   const { orderDetails, fetchOrderDetails } = useOrders();
   const { receiptDetails, fetchReceiptDetails } = useReceipts();
+  const { requestDetails, fetchRequestDetails } = useRequests();
 
   const {
     action,
@@ -46,7 +49,7 @@ export default function UsersPanel() {
     viewNestedEntityDetails,
     resetActions,
     resetNestedView
-  } = useEntityActions<UserData, OrderData, ProductData, ReceiptData, TraderData>();
+  } = useEntityActions<UserData, OrderData, ProductData, ReceiptData, TraderData, RequestData>();
 
   useEffect(() => {
     fetchUsers();
@@ -63,12 +66,15 @@ export default function UsersPanel() {
       return
     }
 
-    if ("trader-id" in selectedNestedEntity) {
+    if ("date" in selectedNestedEntity) {
       fetchReceiptDetails(selectedNestedEntity.id)
+    } else if ("due-date" in selectedNestedEntity) {
+      fetchRequestDetails(selectedNestedEntity.id)
+    } else {
+      fetchOrderDetails(selectedNestedEntity.id)
     }
 
-    fetchOrderDetails(selectedNestedEntity.id)
-  }, [fetchOrderDetails, selectedNestedEntity, fetchReceiptDetails])
+  }, [fetchOrderDetails, selectedNestedEntity, fetchReceiptDetails, fetchRequestDetails])
 
   const handleDeleteClick = (user: UserData) => {
     handleAction("delete", user);
@@ -125,11 +131,16 @@ export default function UsersPanel() {
           if (viewNestedDetails && selectedNestedEntity) {
             if ('price' in selectedNestedEntity) {
               return <ProductDetails entity={selectedNestedEntity as ProductData} />;
-            } else if ("trader-id" in selectedNestedEntity) {
+            } else if ("date" in selectedNestedEntity) {
               if (!receiptDetails) {
                 return <LoadingSkeleton />;
               }
               return <ReceiptDetails entity={receiptDetails} />;
+            } else if ("due-date" in selectedNestedEntity) {
+              if (!requestDetails) {
+                return <LoadingSkeleton />;
+              }
+              return <RequestDetails entity={requestDetails} />;
             } else {
 
               if (!orderDetails) {

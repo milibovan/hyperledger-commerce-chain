@@ -1,6 +1,6 @@
 import { getFormattedDate } from "../../utils/dataTypesUtils";
 import type { ProductCardProps } from "../../utils/propsUtils";
-import { orderFontBold, orderFontSemibold, receiptFontBold, receiptFontSemibold, traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
+import { orderFontBold, orderFontSemibold, receiptFontBold, receiptFontSemibold, requestFontBold, requestFontSemibold, traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 
 export default function ProductCard({ product, quantity, onClick, colorScheme = "green" }: ProductCardProps) {
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -19,19 +19,25 @@ export default function ProductCard({ product, quantity, onClick, colorScheme = 
             ? "border-pink-400"
             : colorScheme === "indigo"
                 ? "border-indigo-400"
-                : "border-green-400";
+                : colorScheme === "amber"
+                    ? "border-amber-400"
+                    : "border-green-400";
 
     const shadowColor = colorScheme === "pink"
         ? "hover:shadow-pink-400/50"
         : colorScheme === "indigo"
             ? "hover:shadow-indigo-400/50"
-            : "hover:shadow-green-400/50";
+            : colorScheme === "amber"
+                ? "hover:shadow-amber-400/50"
+                : "hover:shadow-green-400/50";
 
     const focusRing = colorScheme === "pink"
         ? "focus:ring-pink-400"
         : colorScheme === "indigo"
             ? "focus:ring-indigo-400"
-            : "focus:ring-green-400";
+            : colorScheme === "amber"
+                ? "focus:ring-amber-400"
+                : "focus:ring-green-400";
 
 
     const quantityStyle = isOutOfStock
@@ -40,9 +46,17 @@ export default function ProductCard({ product, quantity, onClick, colorScheme = 
             ? traderFontBold
             : colorScheme === "indigo"
                 ? orderFontBold
-                : receiptFontBold;
+                : colorScheme === "amber"
+                    ? requestFontBold
+                    : receiptFontBold
 
-    const titleStyle = colorScheme === "pink" ? traderFontSemibold : colorScheme === "indigo" ? orderFontSemibold : receiptFontSemibold;
+    const titleStyle = colorScheme === "pink"
+        ? traderFontSemibold
+        : colorScheme === "indigo"
+            ? orderFontSemibold
+            : colorScheme === "amber"
+                ? requestFontSemibold
+                : receiptFontSemibold
 
     return (
         <div

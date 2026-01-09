@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 118,
+            "activePatchIndex": 120,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -480,6 +480,14 @@
                 {
                     "date": 1767899462014,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -175,4 +175,10 @@\n     tabs: Tab[];\r\n     activeTab: string;\r\n     onTabChange: (tabId: string) => void;\r\n }\r\n+\r\n+export interface RequestCardProps {\r\n+    request: RequestData;\r\n+    onClick?: () => void;\r\n+    colorScheme?: \"pink\" | \"purple\";\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1767971558783,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -127,9 +127,9 @@\n \r\n export type EntityListSectionProps<T = ProductData | ReceiptData | OrderData | RequestData> = {\r\n   title: string;\r\n   items: T[];\r\n-  colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo';\r\n+  colorScheme: 'purple' | 'pink' | 'green' | 'cyan' | 'indigo' | 'amber';\r\n   icon?: 'package' | 'receipt' | 'custom' | 'request';\r\n   customIcon?: ReactNode;\r\n   renderItem: (item: T, index: number) => ReactNode;\r\n   emptyMessage?: string;\r\n"
+                },
+                {
+                    "date": 1767971582613,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -111,9 +111,9 @@\n export interface ProductCardProps {\r\n     product: ProductData;\r\n     quantity: number | undefined;\r\n     onClick?: () => void;\r\n-    colorScheme?: \"green\" | \"pink\" | \"indigo\";\r\n+    colorScheme?: \"green\" | \"pink\" | \"indigo\" | \"amber\";\r\n }\r\n \r\n export type EntityDetailsDisplayProps = {\r\n   title: string;\r\n"
                 }
             ],
             "date": 1762248920808,

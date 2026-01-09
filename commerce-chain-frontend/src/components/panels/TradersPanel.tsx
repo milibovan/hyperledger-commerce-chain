@@ -25,6 +25,8 @@ import ProductDetails from "../overviews/ProductDetails";
 import { useReceipts } from "../hooks/useReceipts";
 import LoadingSkeleton from "../reusables/LoadingSkeleton";
 import ReceiptDetails from "../overviews/ReceiptDetails";
+import { useRequests } from "../hooks/useRequests";
+import RequestDetails from "../overviews/RequestDetails";
 
 export default function TradersPanel() {
   const modalRef = useRef<ModalHandle>(null);
@@ -40,6 +42,7 @@ export default function TradersPanel() {
   } = useTraders();
 
   const { receiptDetails, fetchReceiptDetails } = useReceipts();
+  const { requestDetails, fetchRequestDetails } = useRequests();
 
   const {
     action,
@@ -73,8 +76,10 @@ export default function TradersPanel() {
 
     if ("trader-id" in selectedNestedEntity) {
       fetchReceiptDetails(selectedNestedEntity.id);
+    } else if ("due-date" in selectedNestedEntity) {
+      fetchRequestDetails(selectedNestedEntity.id)
     }
-  }, [selectedNestedEntity, fetchReceiptDetails]);
+  }, [selectedNestedEntity, fetchReceiptDetails, fetchRequestDetails]);
 
   const handleDeleteClick = (trader: TraderData) => {
     handleAction("delete", trader);
@@ -112,7 +117,7 @@ export default function TradersPanel() {
             <UpdateTraderForm
               trader={selectedTrader}
               onSuccess={fetchTraders}
-              handleAction={(actionType: ActionType, trader: TraderData) =>
+              handleActionClick={(actionType: ActionType, trader: TraderData) =>
                 handleAction(actionType, trader)
               }
               handleBackToList={resetActions}
@@ -143,6 +148,11 @@ export default function TradersPanel() {
                 return <LoadingSkeleton />;
               }
               return <ReceiptDetails entity={receiptDetails} />;
+            } else if ("due-date" in selectedNestedEntity) {
+              if (!requestDetails) {
+                return <LoadingSkeleton />;
+              }
+              return <RequestDetails entity={requestDetails} />;
             }
           }
 

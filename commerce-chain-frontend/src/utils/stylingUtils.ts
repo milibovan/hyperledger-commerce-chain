@@ -1,4 +1,4 @@
-export type ColorScheme = 'purple' | 'pink' | 'cyan' | 'green' | 'indigo' | 'blue' | 'red' | 'gray';
+export type ColorScheme = 'purple' | 'pink' | 'cyan' | 'green' | 'indigo' | 'blue' | 'red' | 'gray' | 'amber';
 
 // Base button styles (common across all buttons)
 const baseButtonStyle = "flex items-center justify-center gap-3 rounded border-2 transition-all font-semibold";
@@ -112,6 +112,18 @@ const colorClassesMap: Record<ColorScheme, {
     title: 'text-gray-400',
     loading: 'text-gray-300',
   },
+  amber: {
+    text: 'text-amber-300',
+    textBold: 'font-bold text-amber-300',
+    textSemibold: 'font-semibold text-amber-300',
+    border: 'border-amber-400',
+    borderThick: 'border-amber-500',
+    shadow: 'hover:shadow-amber-400/50',
+    shadowStrong: 'shadow-amber-500/50',
+    button: 'bg-amber-600 hover:bg-amber-500 border-amber-400',
+    title: 'text-amber-400',
+    loading: 'text-amber-300',
+  },
 };
 
 // Get color classes from the map
@@ -173,6 +185,8 @@ export const receiptFontSemibold = colorClassesMap.green.textSemibold;
 export const receiptFontBold = colorClassesMap.green.textBold;
 export const orderFontSemibold = colorClassesMap.indigo.textSemibold;
 export const orderFontBold = colorClassesMap.indigo.textBold;
+export const requestFontSemibold = colorClassesMap.amber.textSemibold;
+export const requestFontBold = colorClassesMap.amber.textBold;
 
 export const createUserButton = getCreateButtonStyle('purple');
 export const createTraderButton = getCreateButtonStyle('pink');
@@ -196,4 +210,5 @@ export const ListColorSchemes: Record<ColorScheme, ReturnType<typeof getListCont
   blue: getListContainerStyle('blue'),
   red: getListContainerStyle('red'),
   gray: getListContainerStyle('gray'),
+  amber: getListContainerStyle('amber'),
 };

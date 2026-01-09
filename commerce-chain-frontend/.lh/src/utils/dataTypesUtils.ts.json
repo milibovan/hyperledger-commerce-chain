@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 88,
+            "activePatchIndex": 90,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -360,6 +360,14 @@
                 {
                     "date": 1767965856577,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -199,9 +199,9 @@\n \r\n export interface UserDetails {\r\n   user: UserData,\r\n   orders: Array<OrderDetails>,\r\n-  requests: Array<RequestData>\r\n+  requests: Array<RequestDetails>\r\n }\r\n \r\n export interface OrderDetails {\r\n   order: OrderData,\r\n"
+                },
+                {
+                    "date": 1767970264581,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -131,8 +131,12 @@\n   \"approved-date\": Date;     \r\n \t\"deleted\":     boolean;              \r\n }\r\n \r\n+export interface OrdersData {\r\n+  Orders: Array<OrderData>;\r\n+}\r\n+\r\n export interface RequestData {\r\n   \"doc-type\" :    string;            \r\n \tid:        string;            \r\n \t\"user-id\":      string;    \r\n"
+                },
+                {
+                    "date": 1767970271050,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -131,10 +131,10 @@\n   \"approved-date\": Date;     \r\n \t\"deleted\":     boolean;              \r\n }\r\n \r\n-export interface OrdersData {\r\n-  Orders: Array<OrderData>;\r\n+export interface RequestsData {\r\n+  Requests: Array<RequestData>;\r\n }\r\n \r\n export interface RequestData {\r\n   \"doc-type\" :    string;            \r\n"
                 }
             ],
             "date": 1762249804506,

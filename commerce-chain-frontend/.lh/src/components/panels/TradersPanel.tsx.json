@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 210,
+            "activePatchIndex": 215,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -848,6 +848,26 @@
                 {
                     "date": 1765715765981,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -136,9 +136,9 @@\n           );\r\n         default:\r\n           if (viewNestedDetails && selectedNestedEntity) {\r\n             if ('price' in selectedNestedEntity) {\r\n-              return <ProductDetails entity={selectedNestedEntity as ProductData} />;\r\n+              return <ProductDetails entity={selectedNestedEntity} />;\r\n             } else if (\"trader-id\" in selectedNestedEntity) {\r\n               if (!receiptDetails) {\r\n                 return <LoadingSkeleton />;\r\n               }\r\n"
+                },
+                {
+                    "date": 1767970749199,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -111,9 +111,9 @@\n           return (\r\n             <UpdateTraderForm\r\n               trader={selectedTrader}\r\n               onSuccess={fetchTraders}\r\n-              handleAction={(actionType: ActionType, trader: TraderData) =>\r\n+              handleActionClick={(actionType: ActionType, trader: TraderData) =>\r\n                 handleAction(actionType, trader)\r\n               }\r\n               handleBackToList={resetActions}\r\n             />\r\n"
+                },
+                {
+                    "date": 1767970786879,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,8 +24,9 @@\n import ProductDetails from \"../overviews/ProductDetails\";\r\n import { useReceipts } from \"../hooks/useReceipts\";\r\n import LoadingSkeleton from \"../reusables/LoadingSkeleton\";\r\n import ReceiptDetails from \"../overviews/ReceiptDetails\";\r\n+import { useRequests } from \"../hooks/useRequests\";\r\n \r\n export default function TradersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n@@ -39,8 +40,9 @@\n     deleteTrader,\r\n   } = useTraders();\r\n \r\n   const { receiptDetails, fetchReceiptDetails } = useReceipts();\r\n+  const { requestDetails, fetchRequestDetails } = useRequests();\r\n \r\n   const {\r\n     action,\r\n     selectedEntity: selectedTrader,\r\n"
+                },
+                {
+                    "date": 1767970826417,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -74,10 +74,12 @@\n     if (!selectedNestedEntity) return;\r\n \r\n     if (\"trader-id\" in selectedNestedEntity) {\r\n       fetchReceiptDetails(selectedNestedEntity.id);\r\n+    } else if (\"due-date\" in selectedNestedEntity) {\r\n+      fetchRequestDetails(selectedNestedEntity.id)\r\n     }\r\n-  }, [selectedNestedEntity, fetchReceiptDetails]);\r\n+  }, [selectedNestedEntity, fetchReceiptDetails, fetchRequestDetails]);\r\n \r\n   const handleDeleteClick = (trader: TraderData) => {\r\n     handleAction(\"delete\", trader);\r\n     modalRef.current?.open();\r\n"
+                },
+                {
+                    "date": 1767970851712,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -146,9 +146,9 @@\n               if (!receiptDetails) {\r\n                 return <LoadingSkeleton />;\r\n               }\r\n               return <ReceiptDetails entity={receiptDetails} />;\r\n-            }\r\n+            } else if (\"\")\r\n           }\r\n \r\n \r\n \r\n"
+                },
+                {
+                    "date": 1767970867352,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,8 +25,9 @@\n import { useReceipts } from \"../hooks/useReceipts\";\r\n import LoadingSkeleton from \"../reusables/LoadingSkeleton\";\r\n import ReceiptDetails from \"../overviews/ReceiptDetails\";\r\n import { useRequests } from \"../hooks/useRequests\";\r\n+import RequestDetails from \"../overviews/RequestDetails\";\r\n \r\n export default function TradersPanel() {\r\n   const modalRef = useRef<ModalHandle>(null);\r\n \r\n@@ -146,9 +147,14 @@\n               if (!receiptDetails) {\r\n                 return <LoadingSkeleton />;\r\n               }\r\n               return <ReceiptDetails entity={receiptDetails} />;\r\n-            } else if (\"\")\r\n+            } else if (\"due-date\" in selectedNestedEntity) {\r\n+              if (!requestDetails) {\r\n+                return <LoadingSkeleton />;\r\n+              }\r\n+              return <RequestDetails entity={requestDetails} />;\r\n+            }\r\n           }\r\n \r\n \r\n \r\n"
                 }
             ],
             "date": 1761645486253,

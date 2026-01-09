@@ -132,6 +132,10 @@ export interface OrderData {
 	"deleted":     boolean;              
 }
 
+export interface RequestsData {
+  Requests: Array<RequestData>;
+}
+
 export interface RequestData {
   "doc-type" :    string;            
 	id:        string;            
