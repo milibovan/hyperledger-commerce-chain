@@ -1,4 +1,4 @@
-import type { OrderDetails, RequestData, UserDetails } from "../../utils/dataTypesUtils";
+import type { OrderDetails, RequestDetails, UserDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 import NestedEntityListSection from "../reusables/NestedEntityListSection";
@@ -67,10 +67,10 @@ export default function UserDetails({ entity: userDetails, onEntityClick }: Deta
           icon="request"
           className="pt-4"
           emptyMessage="No requests"
-          renderItem={(request: RequestData) => (
+          renderItem={(request: RequestDetails) => (
             <RequestCard
-              request={request}
-              onClick={() => onEntityClick?.(request)}
+              request={request.request}
+              onClick={() => onEntityClick?.(request.request)}
               colorScheme="purple"
             />
           )}

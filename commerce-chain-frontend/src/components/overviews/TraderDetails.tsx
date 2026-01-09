@@ -1,4 +1,4 @@
-import type { ProductData, ReceiptData, RequestData, TraderDetails } from "../../utils/dataTypesUtils";
+import type { ProductData, ReceiptData, RequestDetails, TraderDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import ProductCard from "../reusables/ProductCard";
 import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
@@ -15,8 +15,13 @@ export default function TraderDetails({
     return trader.trader["products-available"].find(productItem => productId === productItem["product-id"])?.quantity;
   };
 
-  const requestCount = trader["available-requests"].length;
-  const hasRequests = requestCount > 0;
+  let requestCount = 0;
+  let hasRequests = false;
+
+  if (trader["available-requests"]) {
+    requestCount = trader["available-requests"].length;
+    hasRequests = requestCount > 0;
+  }
 
   return (
     <div className="space-y-6">
@@ -131,10 +136,10 @@ export default function TraderDetails({
               </div>
             </div>
           }
-          renderItem={(request: RequestData) => (
+          renderItem={(request: RequestDetails) => (
             <RequestCard
-              request={request}
-              onClick={() => onEntityClick?.(request)}
+              request={request.request}
+              onClick={() => onEntityClick?.(request.request)}
               colorScheme="pink"
             />
           )}

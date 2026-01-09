@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 181,
+            "activePatchIndex": 185,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -732,6 +732,22 @@
                 {
                     "date": 1767899739845,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -130,15 +130,15 @@\n                 </span>\r\n               </div>\r\n             </div>\r\n           }\r\n-          renderItem={(request: RequestData) => {\r\n+          renderItem={(request: RequestData) => (\r\n             <RequestCard\r\n               request={request}\r\n               onClick={() => onEntityClick?.(request)}\r\n               colorScheme=\"pink\"\r\n             />\r\n-          }}\r\n+          )}\r\n         />\r\n       </div>\r\n     </div>\r\n   );\r\n"
+                },
+                {
+                    "date": 1767967063358,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { ProductData, ReceiptData, RequestData, TraderDetails } from \"../../utils/dataTypesUtils\";\r\n+import type { ProductData, ReceiptData, RequestData, RequestDetails, TraderDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import ProductCard from \"../reusables/ProductCard\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n@@ -130,12 +130,12 @@\n                 </span>\r\n               </div>\r\n             </div>\r\n           }\r\n-          renderItem={(request: RequestData) => (\r\n+          renderItem={(request: RequestDetails) => (\r\n             <RequestCard\r\n-              request={request}\r\n-              onClick={() => onEntityClick?.(request)}\r\n+              request={request.request}\r\n+              onClick={() => onEntityClick?.(request.request)}\r\n               colorScheme=\"pink\"\r\n             />\r\n           )}\r\n         />\r\n"
+                },
+                {
+                    "date": 1767967071053,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { ProductData, ReceiptData, RequestData, RequestDetails, TraderDetails } from \"../../utils/dataTypesUtils\";\r\n+import type { ProductData, ReceiptData, RequestDetails, TraderDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import ProductCard from \"../reusables/ProductCard\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n"
+                },
+                {
+                    "date": 1767967375051,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,11 +14,16 @@\n   const getProductQuantity = (productId: string) => {\r\n     return trader.trader[\"products-available\"].find(productItem => productId === productItem[\"product-id\"])?.quantity;\r\n   };\r\n \r\n-  const requestCount = trader[\"available-requests\"].length;\r\n-  const hasRequests = requestCount > 0;\r\n+  let requestCount = 0\r\n+  let hasRequest = false\r\n \r\n+  if (trader[\"available-requests\"]) {\r\n+    requestCount = trader[\"available-requests\"].length;\r\n+    hasRequests = requestCount > 0;\r\n+  }\r\n+\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <EntityDetailsDisplay\r\n         title=\"Trader Details\"\r\n"
+                },
+                {
+                    "date": 1767967383523,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,10 +14,10 @@\n   const getProductQuantity = (productId: string) => {\r\n     return trader.trader[\"products-available\"].find(productItem => productId === productItem[\"product-id\"])?.quantity;\r\n   };\r\n \r\n-  let requestCount = 0\r\n-  let hasRequest = false\r\n+  let requestCount = 0;\r\n+  let hasRequests = false;\r\n \r\n   if (trader[\"available-requests\"]) {\r\n     requestCount = trader[\"available-requests\"].length;\r\n     hasRequests = requestCount > 0;\r\n"
                 }
             ],
             "date": 1762249738197,

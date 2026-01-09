@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 90,
+            "activePatchIndex": 94,
             "patches": [
                 {
                     "date": 1762356648891,
@@ -368,6 +368,22 @@
                 {
                     "date": 1767899769998,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,10 +4,8 @@\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n import RequestCard from \"../reusables/RequestCard\";\r\n \r\n export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {\r\n-  console.log(userDetails.requests)\r\n-\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <EntityDetailsDisplay\r\n         title=\"User Details\"\r\n"
+                },
+                {
+                    "date": 1767966699411,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { OrderDetails, RequestData, UserDetails } from \"../../utils/dataTypesUtils\";\r\n+import type { OrderDetails, RequestData, RequestDetails, UserDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n import RequestCard from \"../reusables/RequestCard\";\r\n@@ -66,12 +66,12 @@\n           colorScheme=\"purple\"\r\n           icon=\"request\"\r\n           className=\"pt-4\"\r\n           emptyMessage=\"No requests\"\r\n-          renderItem={(request: RequestData) => (\r\n+          renderItem={(request: RequestDetails) => (\r\n             <RequestCard\r\n-              request={request}\r\n-              onClick={() => onEntityClick?.(request)}\r\n+              request={request.request}\r\n+              onClick={() => onEntityClick?.(request.request)}\r\n               colorScheme=\"purple\"\r\n             />\r\n           )}\r\n         />\r\n"
+                },
+                {
+                    "date": 1767966709133,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { OrderDetails, RequestData, RequestDetails, UserDetails } from \"../../utils/dataTypesUtils\";\r\n+import type { OrderDetails, RequestDetails, UserDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n import RequestCard from \"../reusables/RequestCard\";\r\n"
+                },
+                {
+                    "date": 1767966733275,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,8 +4,9 @@\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n import RequestCard from \"../reusables/RequestCard\";\r\n \r\n export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {\r\n+  console.log(userDetails)\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <EntityDetailsDisplay\r\n         title=\"User Details\"\r\n"
+                },
+                {
+                    "date": 1767966987934,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -4,9 +4,8 @@\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n import RequestCard from \"../reusables/RequestCard\";\r\n \r\n export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {\r\n-  console.log(userDetails)\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <EntityDetailsDisplay\r\n         title=\"User Details\"\r\n"
                 }
             ],
             "date": 1762356648891,

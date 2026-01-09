@@ -200,7 +200,7 @@ export function isUserData(trader: UserData | TraderData) {
 export interface UserDetails {
   user: UserData,
   orders: Array<OrderDetails>,
-  requests: Array<RequestData>
+  requests: Array<RequestDetails>
 }
 
 export interface OrderDetails {
@@ -214,8 +214,8 @@ export interface TraderDetails {
   receipts: ReceiptData[],
   "receipts-products": ProductData[],
   "available-products": ProductData[],
-  requests: RequestData[],
-  "available-requests": RequestData[]
+  requests: RequestDetails[],
+  "available-requests": RequestDetails[]
 }
 
 export interface ReceiptDetails {
@@ -223,6 +223,11 @@ export interface ReceiptDetails {
   products: ProductData[],
   trader: TraderData,
   user: UserData
+}
+
+export interface RequestDetails {
+  request: RequestData,
+  products: ProductData[]
 }
 
 export interface BalanceItem {

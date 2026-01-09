@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 85,
+            "activePatchIndex": 88,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -348,6 +348,18 @@
                 {
                     "date": 1767897405442,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -212,9 +212,11 @@\n export interface TraderDetails {\r\n   trader: TraderData,\r\n   receipts: ReceiptData[],\r\n   \"receipts-products\": ProductData[],\r\n-  \"available-products\": ProductData[]\r\n+  \"available-products\": ProductData[],\r\n+  requests: RequestData[],\r\n+  \"available-requests\": RequestData[]\r\n }\r\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n"
+                },
+                {
+                    "date": 1767965842915,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -224,8 +224,13 @@\n   trader: TraderData,\r\n   user: UserData\r\n }\r\n \r\n+export interface RequestDetails {\r\n+  request: RequestData,\r\n+  products: ProductData[]\r\n+}\r\n+\r\n export interface BalanceItem {\r\n     label: string;\r\n     value: string;\r\n     colorClass: string;\r\n"
+                },
+                {
+                    "date": 1767965849126,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -213,10 +213,10 @@\n   trader: TraderData,\r\n   receipts: ReceiptData[],\r\n   \"receipts-products\": ProductData[],\r\n   \"available-products\": ProductData[],\r\n-  requests: RequestData[],\r\n-  \"available-requests\": RequestData[]\r\n+  requests: RequestDetails[],\r\n+  \"available-requests\": RequestDetails[]\r\n }\r\n \r\n export interface ReceiptDetails {\r\n   receipt: ReceiptData,\r\n"
+                },
+                {
+                    "date": 1767965856577,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -199,9 +199,9 @@\n \r\n export interface UserDetails {\r\n   user: UserData,\r\n   orders: Array<OrderDetails>,\r\n-  requests: Array<RequestData>\r\n+  requests: Array<RequestDetails>\r\n }\r\n \r\n export interface OrderDetails {\r\n   order: OrderData,\r\n"
                 }
             ],
             "date": 1762249804506,
