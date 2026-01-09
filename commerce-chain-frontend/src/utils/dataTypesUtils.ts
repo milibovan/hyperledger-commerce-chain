@@ -54,6 +54,7 @@ export interface UserData {
   surname: string;
   email: string;
   "orders-ids": Array<string>;
+  "requests-ids": Array<string>;
   balance: number;
 }
 
@@ -231,7 +232,8 @@ export interface ReceiptDetails {
 
 export interface RequestDetails {
   request: RequestData,
-  products: ProductData[]
+  products: ProductData[],
+  user: UserData,
 }
 
 export interface BalanceItem {

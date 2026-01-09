@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 42,
+            "activePatchIndex": 44,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -176,6 +176,14 @@
                 {
                     "date": 1766437892084,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-export const host = \"http://localhost:8080\";\r\n+export const host = \"http://localhost:7070\";\r\n export const headers = { \"Content-Type\": \"application/json\" };\r\n export enum httpMethod {\r\n   GET = \"GET\",\r\n   POST = \"POST\",\r\n"
+                },
+                {
+                    "date": 1767981478114,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,5 +6,5 @@\n   PUT = \"PUT\",\r\n   DELETE = \"DELETE\",\r\n }\r\n \r\n-export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | \"shop\" | null;\n\\ No newline at end of file\n+export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | \"shop\" | \"showUnassigned\" | null;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1767985131355,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,5 +6,5 @@\n   PUT = \"PUT\",\r\n   DELETE = \"DELETE\",\r\n }\r\n \r\n-export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | \"shop\" | \"showUnassigned\" | null;\n\\ No newline at end of file\n+export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | \"shop\" | \"showUnassigned\" | \"updateRequest\" | null;\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1761645950564,

@@ -6,7 +6,6 @@ import NestedEntityListSection from "../reusables/NestedEntityListSection";
 
 export default function RequestDetails({ entity: request, onProductClick }: DetailsProps<RequestDetails>) {
     const getProductQuantity = (productId: string) => {
-        console.log(request)
         return request.request.products.find(product => product["product-id"] === productId)?.quantity
     };
 

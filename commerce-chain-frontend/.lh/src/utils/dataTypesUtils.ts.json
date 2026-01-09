@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 90,
+            "activePatchIndex": 92,
             "patches": [
                 {
                     "date": 1762249804506,
@@ -368,6 +368,14 @@
                 {
                     "date": 1767970271050,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -131,10 +131,10 @@\n   \"approved-date\": Date;     \r\n \t\"deleted\":     boolean;              \r\n }\r\n \r\n-export interface OrdersData {\r\n-  Orders: Array<OrderData>;\r\n+export interface RequestsData {\r\n+  Requests: Array<RequestData>;\r\n }\r\n \r\n export interface RequestData {\r\n   \"doc-type\" :    string;            \r\n"
+                },
+                {
+                    "date": 1767984894675,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -230,9 +230,10 @@\n }\r\n \r\n export interface RequestDetails {\r\n   request: RequestData,\r\n-  products: ProductData[]\r\n+  products: ProductData[],\r\n+  user: UserData,\r\n }\r\n \r\n export interface BalanceItem {\r\n     label: string;\r\n"
+                },
+                {
+                    "date": 1767989177337,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -53,8 +53,9 @@\n   name: string;\r\n   surname: string;\r\n   email: string;\r\n   \"orders-ids\": Array<string>;\r\n+  \"requests-ids\": Array<string>;\r\n   balance: number;\r\n }\r\n \r\n export interface ProductsData {\r\n"
                 }
             ],
             "date": 1762249804506,

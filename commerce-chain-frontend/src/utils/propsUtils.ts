@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab, RequestData } from "./dataTypesUtils";
+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab, RequestData, RequestDetails, TraderDetails } from "./dataTypesUtils";
 import type { ColorScheme } from "./stylingUtils";
 
 export interface ListProps<T> {
@@ -20,7 +20,8 @@ export interface DetailsProps<T> {
   productsLoading?: boolean;
   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;
   onProductClick?: (product: ProductData) => void;
-  onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData) => void;
+  onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData | RequestDetails) => void;
+  onUnassignedClick?: (trader: TraderDetails) => void;
 }
 
 export interface CreateFormsProps {
@@ -180,5 +181,5 @@ export interface TabNavigationProps {
 export interface RequestCardProps {
     request: RequestData;
     onClick?: () => void;
-    colorScheme?: "pink" | "purple";
+    colorScheme?: "pink" | "purple" | "amber";
 }

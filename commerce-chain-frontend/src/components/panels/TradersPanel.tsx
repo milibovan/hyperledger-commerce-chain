@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2 } from "lucide-react";
-import type { OrderData, ProductData, ReceiptData, TraderData, UserData } from "../../utils/dataTypesUtils";
+import type { OrderData, ProductData, ReceiptData, RequestDetails, TraderData, UserData } from "../../utils/dataTypesUtils";
 import DepositMoneyForm from "../forms/DepositMoneyForm";
 import UpdateTraderForm from "../forms/UpdateTraderForm";
 import Modal from "../modals/DeleteModal";
@@ -26,7 +26,9 @@ import { useReceipts } from "../hooks/useReceipts";
 import LoadingSkeleton from "../reusables/LoadingSkeleton";
 import ReceiptDetails from "../overviews/ReceiptDetails";
 import { useRequests } from "../hooks/useRequests";
-import RequestDetails from "../overviews/RequestDetails";
+import RequestDetailsComponent from "../overviews/RequestDetails";
+import UnassignedRequests from "../forms/UnassignedRequests";
+import UpdateRequest from "../forms/UpdateRequest";
 
 export default function TradersPanel() {
   const modalRef = useRef<ModalHandle>(null);
@@ -50,6 +52,7 @@ export default function TradersPanel() {
     viewDetails,
     selectedNestedEntity,
     viewNestedDetails,
+    selectedRequestForUpdate,
     handleAction,
     viewEntityDetails,
     viewNestedEntityDetails,
@@ -74,7 +77,7 @@ export default function TradersPanel() {
   useEffect(() => {
     if (!selectedNestedEntity) return;
 
-    if ("trader-id" in selectedNestedEntity) {
+    if ("date" in selectedNestedEntity) {
       fetchReceiptDetails(selectedNestedEntity.id);
     } else if ("due-date" in selectedNestedEntity) {
       fetchRequestDetails(selectedNestedEntity.id)
@@ -139,11 +142,28 @@ export default function TradersPanel() {
               }}
             />
           );
+
+
+        // TODO Guard if there is no unassigned
+        case "showUnassigned":
+          return (
+            <UnassignedRequests
+              entity={traderDetails}
+              onEntityClick={(request) => handleAction("updateRequest", selectedTrader, request as RequestDetails)}
+            />
+          );
+
+        case "updateRequest":
+          if (!selectedRequestForUpdate) {
+            return <LoadingSkeleton />;
+          }
+          return <UpdateRequest entity={selectedRequestForUpdate} />;
+
         default:
           if (viewNestedDetails && selectedNestedEntity) {
             if ('price' in selectedNestedEntity) {
               return <ProductDetails entity={selectedNestedEntity} />;
-            } else if ("trader-id" in selectedNestedEntity) {
+            } else if ("date" in selectedNestedEntity) {
               if (!receiptDetails) {
                 return <LoadingSkeleton />;
               }
@@ -152,7 +172,7 @@ export default function TradersPanel() {
               if (!requestDetails) {
                 return <LoadingSkeleton />;
               }
-              return <RequestDetails entity={requestDetails} />;
+              return <RequestDetailsComponent entity={requestDetails} />;
             }
           }
 
@@ -165,6 +185,7 @@ export default function TradersPanel() {
                 addProduct={() => handleAction("addProduct", selectedTrader)}
                 onProductClick={viewNestedEntityDetails}
                 onEntityClick={viewNestedEntityDetails}
+                onUnassignedClick={() => handleAction("showUnassigned", selectedTrader)}
               />
             );
           }

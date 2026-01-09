@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 185,
+            "activePatchIndex": 189,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -748,6 +748,22 @@
                 {
                     "date": 1767967383523,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,10 +14,10 @@\n   const getProductQuantity = (productId: string) => {\r\n     return trader.trader[\"products-available\"].find(productItem => productId === productItem[\"product-id\"])?.quantity;\r\n   };\r\n \r\n-  let requestCount = 0\r\n-  let hasRequest = false\r\n+  let requestCount = 0;\r\n+  let hasRequests = false;\r\n \r\n   if (trader[\"available-requests\"]) {\r\n     requestCount = trader[\"available-requests\"].length;\r\n     hasRequests = requestCount > 0;\r\n"
+                },
+                {
+                    "date": 1767980801248,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,8 +22,12 @@\n     requestCount = trader[\"available-requests\"].length;\r\n     hasRequests = requestCount > 0;\r\n   }\r\n \r\n+  function handleUnassignedClick() {\r\n+    console.log(\"something\")\r\n+  }\r\n+\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <EntityDetailsDisplay\r\n         title=\"Trader Details\"\r\n@@ -109,9 +113,9 @@\n           colorScheme=\"pink\"\r\n           icon=\"request\"\r\n           emptyMessage=\"No requests\"\r\n           headerContent={\r\n-            <div className=\"flex items-center gap-2 mt-2\">\r\n+            <div className=\"flex items-center gap-2 mt-2\" onClick={handleUnassignedClick}>\r\n               <div className={`\r\n                 relative flex items-center gap-2 px-3 py-1.5 rounded-full \r\n                 border-2 transition-all duration-300\r\n                 ${hasRequests\r\n"
+                },
+                {
+                    "date": 1767980977441,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,9 +8,10 @@\n export default function TraderDetails({\r\n   entity: trader,\r\n   addProduct,\r\n   onProductClick,\r\n-  onEntityClick\r\n+  onEntityClick,\r\n+  onUnassignedClick\r\n }: DetailsProps<TraderDetails>) {\r\n   const getProductQuantity = (productId: string) => {\r\n     return trader.trader[\"products-available\"].find(productItem => productId === productItem[\"product-id\"])?.quantity;\r\n   };\r\n@@ -22,12 +23,8 @@\n     requestCount = trader[\"available-requests\"].length;\r\n     hasRequests = requestCount > 0;\r\n   }\r\n \r\n-  function handleUnassignedClick() {\r\n-    console.log(\"something\")\r\n-  }\r\n-\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <EntityDetailsDisplay\r\n         title=\"Trader Details\"\r\n@@ -113,9 +110,9 @@\n           colorScheme=\"pink\"\r\n           icon=\"request\"\r\n           emptyMessage=\"No requests\"\r\n           headerContent={\r\n-            <div className=\"flex items-center gap-2 mt-2\" onClick={handleUnassignedClick}>\r\n+            <div className=\"flex items-center gap-2 mt-2\" onClick={onUnassignedClick}>\r\n               <div className={`\r\n                 relative flex items-center gap-2 px-3 py-1.5 rounded-full \r\n                 border-2 transition-all duration-300\r\n                 ${hasRequests\r\n"
+                },
+                {
+                    "date": 1767981018186,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -110,9 +110,9 @@\n           colorScheme=\"pink\"\r\n           icon=\"request\"\r\n           emptyMessage=\"No requests\"\r\n           headerContent={\r\n-            <div className=\"flex items-center gap-2 mt-2\" onClick={onUnassignedClick}>\r\n+            <div className=\"flex items-center gap-2 mt-2\" onClick={() => onUnassignedClick!(trader.trader)}>\r\n               <div className={`\r\n                 relative flex items-center gap-2 px-3 py-1.5 rounded-full \r\n                 border-2 transition-all duration-300\r\n                 ${hasRequests\r\n"
+                },
+                {
+                    "date": 1767985224258,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -110,9 +110,9 @@\n           colorScheme=\"pink\"\r\n           icon=\"request\"\r\n           emptyMessage=\"No requests\"\r\n           headerContent={\r\n-            <div className=\"flex items-center gap-2 mt-2\" onClick={() => onUnassignedClick!(trader.trader)}>\r\n+            <div className=\"flex items-center gap-2 mt-2\" onClick={() => onUnassignedClick!(trader)}>\r\n               <div className={`\r\n                 relative flex items-center gap-2 px-3 py-1.5 rounded-full \r\n                 border-2 transition-all duration-300\r\n                 ${hasRequests\r\n"
                 }
             ],
             "date": 1762249738197,

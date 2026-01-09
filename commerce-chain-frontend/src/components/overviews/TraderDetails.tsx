@@ -9,7 +9,8 @@ export default function TraderDetails({
   entity: trader,
   addProduct,
   onProductClick,
-  onEntityClick
+  onEntityClick,
+  onUnassignedClick
 }: DetailsProps<TraderDetails>) {
   const getProductQuantity = (productId: string) => {
     return trader.trader["products-available"].find(productItem => productId === productItem["product-id"])?.quantity;
@@ -110,7 +111,7 @@ export default function TraderDetails({
           icon="request"
           emptyMessage="No requests"
           headerContent={
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-2" onClick={() => onUnassignedClick!(trader)}>
               <div className={`
                 relative flex items-center gap-2 px-3 py-1.5 rounded-full 
                 border-2 transition-all duration-300

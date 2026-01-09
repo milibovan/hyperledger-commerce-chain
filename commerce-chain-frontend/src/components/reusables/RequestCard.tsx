@@ -14,33 +14,43 @@ export default function RequestCard({ request, onClick, colorScheme = "purple" }
     const isCompleted = request.status === 'COMPLETED';
     const isCancelled = request.status === 'CANCELLED';
 
-    // Status color logic
+    // Helper: Determine base text color based on scheme
+    const themeTextColor = colorScheme === "pink"
+        ? "text-pink-300"
+        : colorScheme === "amber"
+            ? "text-amber-300"
+            : "text-purple-300";
+
+    // Status color logic (falls back to themeTextColor if not a specific status)
     const statusColor = isCreated
         ? "text-green-300"
         : isCompleted
             ? "text-blue-300"
             : isCancelled
                 ? "text-red-300"
-                : "text-purple-300";
+                : themeTextColor;
 
     // Border and shadow colors based on colorScheme
     const borderColor = colorScheme === "pink"
         ? "border-pink-400"
-        : "border-purple-400";
+        : colorScheme === "amber"
+            ? "border-amber-400"
+            : "border-purple-400";
 
     const shadowColor = colorScheme === "pink"
         ? "hover:shadow-pink-400/50"
-        : "hover:shadow-purple-400/50";
+        : colorScheme === "amber"
+            ? "hover:shadow-amber-400/50"
+            : "hover:shadow-purple-400/50";
 
     const focusRing = colorScheme === "pink"
         ? "focus:ring-pink-400"
-        : "focus:ring-purple-400";
+        : colorScheme === "amber"
+            ? "focus:ring-amber-400"
+            : "focus:ring-purple-400";
 
-    const textColor = colorScheme === "pink"
-        ? "text-pink-300"
-        : "text-purple-300";
-
-    const fontBold = `font-bold ${textColor}`;
+    // Use the theme text color calculated earlier
+    const fontBold = `font-bold ${themeTextColor}`;
 
     return (
         <div
