@@ -100,6 +100,7 @@ func CreateServer() {
 	router.GET("/traders/details/:traderId/:channel", getTraderDetails)
 	router.GET("/receipts/details/:receiptId/:channel", getReceiptDetails)
 	router.GET("/orders/details/:orderId/:channel", getOrderDetails)
+	router.GET("/requests/details/:requestId/:channel", getRequestDetails)
 
 	router.POST("/order/request/:channel", createProductRequest)
 
@@ -566,7 +567,7 @@ func getUserDetails(c *gin.Context) {
 	var orders []*models.Order
 	var receipts []*models.Receipt
 	var products []*models.Product
-	var requests []*models.ProductsRequest
+	var requests []*models.RequestDetailsResponse
 	channel = c.Param("channel")
 	userId = c.Param("userId")
 
@@ -605,16 +606,30 @@ func getUserDetails(c *gin.Context) {
 
 	// Get its requests
 	if len(user.RequestsIDs) > 0 {
-		requests, err = client.GetRequestsByIds(activeGW, channel, user.RequestsIDs)
+		userRequests, err := client.GetRequestsByIds(activeGW, channel, user.RequestsIDs)
 		if err != nil {
 			c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+		}
+
+		for _, request := range userRequests {
+			productIds := getAllProductIds(request.Products)
+
+			products, err = client.GetProductsByIds(activeGW, channel, productIds)
+			if err != nil {
+				c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to get products by request %s", err)})
+			}
+
+			requests = append(requests, &models.RequestDetailsResponse{
+				Request:  request,
+				Products: products,
+			})
 		}
 	}
 
 	// Build response
 	response = models.UserDetailsResponse{
 		User:     user,
-		Orders:   buildOrdersWithDetails(orders, products, receipts),
+		Orders:   buildOrdersDetailsResponse(orders, products, receipts),
 		Requests: requests,
 	}
 
@@ -626,7 +641,7 @@ func getTraderDetails(c *gin.Context) {
 	var channel, traderId string
 	var receipts []*models.Receipt
 	var receiptsProducts, availableProducts []*models.Product
-	var requests, availableRequests []*models.ProductsRequest
+	var requests, availableRequests []*models.RequestDetailsResponse
 	channel = c.Param("channel")
 	traderId = c.Param("traderId")
 
@@ -674,17 +689,52 @@ func getTraderDetails(c *gin.Context) {
 	}
 
 	if len(trader.RequestsIDs) > 0 {
-		requests, err = client.GetRequestsByIds(activeGW, channel, trader.RequestsIDs)
+		traderRequests, err := client.GetRequestsByIds(activeGW, channel, trader.RequestsIDs)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
+			c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+		}
+
+		for _, request := range traderRequests {
+			productIds := getAllProductIds(request.Products)
+
+			products, err = client.GetProductsByIds(activeGW, channel, productIds)
+			if err != nil {
+				c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to get products by request %s", err)})
+			}
+
+			requests = append(requests, &models.RequestDetailsResponse{
+				Request:  request,
+				Products: products,
+			})
 		}
 	}
 
-	availableRequests, err = client.GetUnassignedRequests(activeGW, channel)
+	unassignedRequests, err := client.GetUnassignedRequests(activeGW, channel)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
+	}
+
+	if len(unassignedRequests) > 0 {
+		for _, request := range unassignedRequests {
+			productIds = getAllProductIds(request.Products)
+
+			products, err = client.GetProductsByIds(activeGW, channel, productIds)
+			if err != nil {
+				c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to get products by request %s", err)})
+			}
+
+			user, err := client.GetUserById(activeGW, channel, request.UserId)
+			if err != nil {
+				c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to get users by request %s", err)})
+			}
+
+			availableRequests = append(availableRequests, &models.RequestDetailsResponse{
+				Request:  request,
+				Products: products,
+				User:     user,
+			})
+		}
 	}
 
 	// Build response
@@ -747,7 +797,7 @@ func getReceiptDetails(c *gin.Context) {
 // getOrderDetails fetches all necessary entities for User Details
 func getOrderDetails(c *gin.Context) {
 	var channel, orderId string
-	var response models.OrderWithDetails
+	var response models.OrderDetailsResponse
 	var receipts []*models.Receipt
 	var products []*models.Product
 	channel = c.Param("channel")
@@ -774,10 +824,48 @@ func getOrderDetails(c *gin.Context) {
 	}
 
 	// Build response
-	response = models.OrderWithDetails{
+	response = models.OrderDetailsResponse{
 		Order:    order,
 		Products: products,
 		Receipts: receipts,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+// getRequestDetails fetches all necessary entities for User Details
+func getRequestDetails(c *gin.Context) {
+	var channel, requestId string
+	var response models.RequestDetailsResponse
+	var products []*models.Product
+	channel = c.Param("channel")
+	requestId = c.Param("requestId")
+
+	// Get request by id
+	request, err := client.GetRequestById(activeGW, channel, requestId)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+
+	// Get user by id
+	user, err := client.GetUserById(activeGW, channel, request.UserId)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+
+	// Get products by ids
+	productIds := getAllProductIds(request.Products)
+
+	products, err = client.GetProductsByIds(activeGW, channel, productIds)
+	if err != nil {
+		c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to establish connection %s", err)})
+	}
+
+	// Build response
+	response = models.RequestDetailsResponse{
+		Products: products,
+		Request:  request,
+		User:     user,
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -870,8 +958,8 @@ func createProductRequest(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"Message": fmt.Sprintf("Order created %d %s", blockNumber, ID)})
 }
 
-// buildOrdersWithDetails helper function for building response
-func buildOrdersWithDetails(orders []*models.Order, allProducts []*models.Product, allReceipts []*models.Receipt) []models.OrderWithDetails {
+// buildOrdersDetailsResponse helper function for building response
+func buildOrdersDetailsResponse(orders []*models.Order, allProducts []*models.Product, allReceipts []*models.Receipt) []models.OrderDetailsResponse {
 	// Create maps for quick lookup
 	productMap := make(map[string]*models.Product)
 	for _, p := range allProducts {
@@ -884,7 +972,7 @@ func buildOrdersWithDetails(orders []*models.Order, allProducts []*models.Produc
 	}
 
 	// Build detailed orders
-	result := make([]models.OrderWithDetails, 0, len(orders))
+	result := make([]models.OrderDetailsResponse, 0, len(orders))
 	for _, order := range orders {
 		orderProducts := make([]*models.Product, 0)
 		for _, productItem := range order.Products {
@@ -900,7 +988,7 @@ func buildOrdersWithDetails(orders []*models.Order, allProducts []*models.Produc
 			}
 		}
 
-		result = append(result, models.OrderWithDetails{
+		result = append(result, models.OrderDetailsResponse{
 			Order:    order,
 			Products: orderProducts,
 			Receipts: orderReceipts,

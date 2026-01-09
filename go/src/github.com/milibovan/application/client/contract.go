@@ -572,12 +572,12 @@ func GetRequestById(gw *fabricClient.Gateway, channel, id string) (*models.Produ
 		return nil, fmt.Errorf("failed to evaluate transaction: %w", err)
 	}
 
-	var order models.ProductsRequest
-	if err = json.Unmarshal(resultBytes, &order); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal order: %w", err)
+	var request models.ProductsRequest
+	if err = json.Unmarshal(resultBytes, &request); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal request: %w", err)
 	}
 
-	return &order, nil
+	return &request, nil
 }
 
 func GetTradersEmails(gw *fabricClient.Gateway, channel string) ([]string, error) {
