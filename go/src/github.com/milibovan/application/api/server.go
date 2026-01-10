@@ -964,23 +964,23 @@ func approveRequest(c *gin.Context) {
 	var channel, traderId, requestId string
 
 	var request struct {
-		UserId     string  `json:"user-id"`
-		UserEmail  string  `json:"user-email"`
-		TraderName string  `json:"trader-name"`
-		DueDate    string  `json:"due-date"`
-		TotalCost  float64 `json:"total-cost"`
+		UserId      string  `json:"user-id"`
+		UserEmail   string  `json:"user-email"`
+		TraderName  string  `json:"trader-name"`
+		TraderEmail string  `json:"trader-email"`
+		DueDate     string  `json:"due-date"`
+		TotalCost   float64 `json:"total-cost"`
 	}
 
 	channel = c.Param("channel")
 	traderId = c.Param("traderId")
 	requestId = c.Param("requestId")
 
-	totalCost := strconv.FormatFloat(request.TotalCost, 'f', 3, 64)
-
 	if err := c.BindJSON(&request); err != nil {
 		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
 		return
 	}
+	totalCost := strconv.FormatFloat(request.TotalCost, 'f', 3, 64)
 
 	blockNumber, err := client.UpdateRequest(activeGW, channel, requestId, "APPROVED", "", traderId)
 	if err != nil {
@@ -988,7 +988,6 @@ func approveRequest(c *gin.Context) {
 		return
 	}
 
-	// TODO Produce to Kafka
 	requestApprovedNotification := models.NotificationEvent{
 		Id:                requestId,
 		EventType:         models.RequestApproved,
@@ -1004,6 +1003,7 @@ func approveRequest(c *gin.Context) {
 			"request_id":    requestId,
 			"approval_date": time.Now().Format(time.RFC3339),
 			"trader_name":   request.TraderName,
+			"trader_email":  request.TraderEmail,
 			"deadline_date": request.DueDate,
 			"total_amount":  totalCost,
 			"recipient":     request.UserEmail,

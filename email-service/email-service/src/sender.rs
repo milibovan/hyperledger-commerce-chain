@@ -86,13 +86,10 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                     .unwrap_or_default()
                     .parse()
                     .unwrap_or_default(),
-                approval_date: event
+                approval_date: format_date_pretty(&event
                     .data
                     .get("approval_date")
-                    .cloned()
-                    .unwrap_or_default()
-                    .parse()
-                    .unwrap_or_default(), // Safe parse
+                    .cloned().unwrap_or_default()), // Safe parse
                 url: event.data.get("url").cloned().unwrap_or_default(),
                 trader_name: event
                     .data
@@ -108,13 +105,10 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                     .unwrap_or_default()
                     .parse()
                     .unwrap_or_default(),
-                deadline_date: event
+                deadline_date: format_date_pretty(&event
                     .data
                     .get("deadline_date")
-                    .cloned()
-                    .unwrap_or_default()
-                    .parse()
-                    .unwrap(),
+                    .cloned().unwrap_or_default()),
                 total_amount: event
                     .data
                     .get("total_amount")
