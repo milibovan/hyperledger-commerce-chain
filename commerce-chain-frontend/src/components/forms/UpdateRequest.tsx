@@ -41,6 +41,7 @@ export default function UpdateRequest({ entity: request, selectedTrader }: Detai
                         "user-id": request.user.id,
                         "user-email": request.user.email,
                         "trader-name": selectedTrader?.name,
+                        "trader-email": selectedTrader?.email,
                         "due-date": request.request["due-date"],
                         "total-cost": request.request["total-cost"]
                     }),
