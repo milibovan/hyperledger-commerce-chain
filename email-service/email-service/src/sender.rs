@@ -13,7 +13,13 @@ pub(crate) async fn send_email(event: NotificationEvent) {
     match event.event_type {
         EventType::RequestInsufficientBalance => {
             let template = RequestInsufficientBalance {
-                request_id: event.request_id,
+                request_id: event
+                     .data
+                     .get("request_id")
+                     .cloned()
+                     .unwrap_or_default()
+                     .parse()
+                     .unwrap_or_default(),
                 request_date: event
                     .data
                     .get("request_date")

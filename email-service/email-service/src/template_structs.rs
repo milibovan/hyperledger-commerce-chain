@@ -1,7 +1,6 @@
 use askama::Template;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
-use crate::notification_event::RecipientType;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RequestItem {

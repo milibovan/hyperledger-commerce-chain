@@ -84,6 +84,8 @@ func CreateServer() {
 	router.PUT("/traders/:channel", updateTrader)
 	router.PUT("/products/:channel", updateProduct)
 
+	router.PUT("/request/approve/:traderId/:requestId/:channel", approveRequest)
+
 	router.DELETE("/users/:channel/:id", deleteUser)
 	router.DELETE("/traders/:channel/:id", deleteTrader)
 	router.DELETE("/products/:channel/:id", deleteProduct)
@@ -955,6 +957,67 @@ func createProductRequest(c *gin.Context) {
 	fmt.Println(emails)
 
 	c.JSON(http.StatusCreated, gin.H{"Message": fmt.Sprintf("Request created %d %s", blockNumber, ID)})
+}
+
+// approveRequest Approve and assign request to trader
+func approveRequest(c *gin.Context) {
+	var channel, traderId, requestId string
+
+	var request struct {
+		UserId     string  `json:"user-id"`
+		UserEmail  string  `json:"user-email"`
+		TraderName string  `json:"trader-name"`
+		DueDate    string  `json:"due-date"`
+		TotalCost  float64 `json:"total-cost"`
+	}
+
+	channel = c.Param("channel")
+	traderId = c.Param("traderId")
+	requestId = c.Param("requestId")
+
+	totalCost := strconv.FormatFloat(request.TotalCost, 'f', 3, 64)
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
+		return
+	}
+
+	blockNumber, err := client.UpdateRequest(activeGW, channel, requestId, "APPROVED", "", traderId)
+	if err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot update request", "Error": err.Error()})
+		return
+	}
+
+	// TODO Produce to Kafka
+	requestApprovedNotification := models.NotificationEvent{
+		Id:                requestId,
+		EventType:         models.RequestApproved,
+		RecipientType:     []models.RecipientType{models.USER},
+		RecipientID:       request.UserId,
+		Timestamp:         nil,
+		ScheduledSendTime: nil,
+		Channel:           models.EMAIL,
+		OrderID:           "",
+		UserID:            request.UserId,
+		TraderID:          traderId,
+		Data: map[string]string{
+			"request_id":    requestId,
+			"approval_date": time.Now().Format(time.RFC3339),
+			"trader_name":   request.TraderName,
+			"deadline_date": request.DueDate,
+			"total_amount":  totalCost,
+			"recipient":     request.UserEmail,
+			"url":           "https://hyperledger.commerce/requests/ord_987654",
+		},
+	}
+
+	err = kafka.ProduceToKafka(requestApprovedNotification, topic)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"Message": fmt.Sprintf("Request updated %d %s", blockNumber, requestId)})
 }
 
 // buildOrdersDetailsResponse helper function for building response
