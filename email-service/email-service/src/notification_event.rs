@@ -3,17 +3,17 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum EventType {
-    OrderInsufficientBalance,
-    OrderPaymentCompleted,
-    OrderApproved,
-    OrderFulfilled,
-    OrderCancelled,
-    OrderCreated,
-    OrderRejected,
-    NewOrderPendingApproval,
-    OrderFulfillmentReminderDay1,
-    OrderFulfillmentReminderDay2,
-    OrderFulfillmentReminderDay3,
+    RequestInsufficientBalance,
+    RequestPaymentCompleted,
+    RequestApproved,
+    RequestFulfilled,
+    RequestCancelled,
+    RequestCreated,
+    RequestRejected,
+    NewRequestPendingApproval,
+    RequestFulfillmentReminderDay1,
+    RequestFulfillmentReminderDay2,
+    RequestFulfillmentReminderDay3,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]

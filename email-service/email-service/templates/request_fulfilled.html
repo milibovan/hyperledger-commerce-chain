@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Approved</title>
+    <title>Request Fulfilled</title>
     <style>
         body {
             margin: 0;
@@ -16,7 +16,7 @@
             margin: 0 auto;
             background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
             border: 2px solid #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5), 0 0 60px rgba(0, 255, 255, 0.3);
         }
         .header {
             background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
@@ -38,54 +38,59 @@
         }
         .status-badge {
             display: inline-block;
-            background: rgba(0, 255, 0, 0.15);
-            border: 2px solid #00ff00;
+            background: rgba(0, 255, 0, 0.2);
+            border: 3px solid #00ff00;
             color: #00ff00;
-            padding: 10px 20px;
+            padding: 12px 25px;
             margin: 20px 0;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             font-weight: bold;
-            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
-            animation: approvedGlow 2s infinite;
+            font-size: 16px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+            animation: successPulse 2s infinite;
         }
-        @keyframes approvedGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); }
-            50% { box-shadow: 0 0 25px rgba(0, 255, 0, 0.8); }
+        @keyframes successPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 35px rgba(0, 255, 0, 0.9);
+                transform: scale(1.02);
+            }
         }
         .success-icon {
             text-align: center;
             margin: 30px 0;
         }
-        .checkmark-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid #00ff00;
+        .star-burst {
+            width: 120px;
+            height: 120px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
-            animation: scaleIn 0.8s ease-in-out;
+            animation: burstIn 1s ease-in-out;
         }
-        @keyframes scaleIn {
-            0% { transform: scale(0); opacity: 0; }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); opacity: 1; }
+        @keyframes burstIn {
+            0% { transform: scale(0) rotate(0deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(180deg); }
+            100% { transform: scale(1) rotate(360deg); opacity: 1; }
         }
-        .checkmark-circle::before {
-            content: '✓';
-            font-size: 60px;
+        .star-burst::before {
+            content: '★';
+            font-size: 80px;
             color: #00ff00;
-            animation: checkAppear 0.5s 0.3s ease-in-out forwards;
-            opacity: 0;
+            text-shadow: 0 0 30px rgba(0, 255, 0, 0.8);
+            animation: starGlow 1.5s infinite;
         }
-        @keyframes checkAppear {
-            to { opacity: 1; }
+        @keyframes starGlow {
+            0%, 100% { text-shadow: 0 0 30px rgba(0, 255, 0, 0.8); }
+            50% { text-shadow: 0 0 50px rgba(0, 255, 0, 1); }
         }
-        .order-details {
-            background: rgba(0, 255, 0, 0.08);
+        .request-details {
+            background: rgba(0, 255, 0, 0.1);
             border-left: 4px solid #00ff00;
             padding: 20px;
             margin: 20px 0;
@@ -106,15 +111,19 @@
         .value {
             color: #00ff00;
         }
-        .timeline-box {
-            background: rgba(0, 255, 255, 0.08);
+        .celebration-box {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1) 0%, rgba(0, 255, 0, 0.1) 100%);
             border: 2px solid #00ffff;
-            padding: 20px;
+            padding: 25px;
             margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
         }
-        .timeline-item {
-            padding: 10px 0;
-            color: #00ffff;
+        .celebration-text {
+            color: #00ff00;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0;
         }
         .button {
             display: inline-block;
@@ -122,11 +131,14 @@
             color: #000;
             text-decoration: none;
             padding: 15px 40px;
-            margin: 20px 0;
+            margin: 10px 5px;
             text-transform: uppercase;
             font-weight: bold;
             border: none;
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        .button-secondary {
+            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 100%);
         }
         .footer {
             background: rgba(0, 0, 0, 0.3);
@@ -181,38 +193,41 @@
     </div>
 
     <div class="content">
-        <h1 style="color: #00ff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Order Approved!</h1>
+        <h1 style="color: #00ff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">🎉 Request Complete! 🎉</h1>
 
         <div class="cyber-line"></div>
 
         <div class="success-icon">
-            <div class="checkmark-circle"></div>
+            <div class="star-burst"></div>
         </div>
 
-        <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
-            Great news! Your order has been approved by the trader and is now in progress.
-        </p>
+        <div class="celebration-box">
+            <div class="celebration-text">SUCCESS!</div>
+            <p style="color: #00ffff; margin: 10px 0; font-size: 16px;">
+                Your request has been successfully fulfilled and completed!
+            </p>
+        </div>
 
         <div style="text-align: center;">
-            <span class="status-badge">⟡ APPROVED ⟡</span>
+            <span class="status-badge">⟡ FULFILLED ⟡</span>
         </div>
 
-        <div class="order-details">
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{request_id}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">APPROVED:</span>
-                <span class="value">{{approval_date}}</span>
+                <span class="label">COMPLETED:</span>
+                <span class="value">{{cancelled_date}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">TRADER:</span>
                 <span class="value">{{trader_name}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">FULFILLMENT DEADLINE:</span>
-                <span class="value">{{deadline_date}}</span>
+                <span class="label">ITEMS DELIVERED:</span>
+                <span class="value">{{item_count}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">TOTAL VALUE:</span>
@@ -220,28 +235,24 @@
             </div>
         </div>
 
-        <div class="timeline-box">
-            <h3 style="color: #00ffff; margin-top: 0;">What Happens Next?</h3>
-            <div class="timeline-item">
-                <strong>1.</strong> The trader will acquire the requested items within the specified timeframe
-            </div>
-            <div class="timeline-item">
-                <strong>2.</strong> Once items are obtained, the trader will fulfill your order
-            </div>
-            <div class="timeline-item">
-                <strong>3.</strong> You'll receive a notification when your order is completed
-            </div>
-            <div class="timeline-item">
-                <strong>4.</strong> Payment will be processed and released to the trader
-            </div>
-        </div>
+        <p style="color: #fff; line-height: 1.6; font-size: 16px;">
+            The trader has successfully delivered all requested items. Payment has been processed and the transaction is now complete. Your items are ready for use!
+        </p>
 
-        <p style="color: #fff; line-height: 1.6;">
-            The trader has committed to fulfilling your order by <strong style="color: #00ff00;">{{deadline_date}}</strong>. You can track the progress of your order at any time through your dashboard.
+        <p style="color: #00ffff; line-height: 1.6;">
+            We hope you enjoyed using CHAINCODE TRADE. Your feedback helps us improve our platform and trader network.
         </p>
 
         <div style="text-align: center;">
-            <a href="{{url}}" class="button">Track Order Status</a>
+            <a href="{{request_url}}" class="button">View Request Details</a>
+            <a href="{{review_url}}" class="button button-secondary">Leave a Review</a>
+        </div>
+
+        <div style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.3); padding: 15px; margin: 30px 0; text-align: center;">
+            <p style="color: #00ffff; margin: 0; font-size: 14px;">
+                Thank you for trading with <strong>{{trader_name}}</strong>!<br>
+                <span style="color: #999;">Transaction completed in {{fulfillment_time}}</span>
+            </p>
         </div>
     </div>
 

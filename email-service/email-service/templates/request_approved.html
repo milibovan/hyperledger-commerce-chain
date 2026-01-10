@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Rejected</title>
+    <title>Request Approved</title>
     <style>
         body {
             margin: 0;
@@ -15,8 +15,8 @@
             max-width: 600px;
             margin: 0 auto;
             background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
-            border: 2px solid #ff6600;
-            box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
         }
         .header {
             background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
@@ -38,41 +38,55 @@
         }
         .status-badge {
             display: inline-block;
-            background: rgba(255, 102, 0, 0.15);
-            border: 2px solid #ff6600;
-            color: #ff6600;
+            background: rgba(0, 255, 0, 0.15);
+            border: 2px solid #00ff00;
+            color: #00ff00;
             padding: 10px 20px;
             margin: 20px 0;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 102, 0, 0.4);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            animation: approvedGlow 2s infinite;
         }
-        .reject-icon {
+        @keyframes approvedGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(0, 255, 0, 0.5); }
+            50% { box-shadow: 0 0 25px rgba(0, 255, 0, 0.8); }
+        }
+        .success-icon {
             text-align: center;
             margin: 30px 0;
         }
-        .reject-symbol {
+        .checkmark-circle {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            border: 4px solid #ff6600;
+            border: 4px solid #00ff00;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+            animation: scaleIn 0.8s ease-in-out;
+        }
+        @keyframes scaleIn {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .checkmark-circle::before {
+            content: '✓';
             font-size: 60px;
-            color: #ff6600;
-            box-shadow: 0 0 20px rgba(255, 102, 0, 0.5);
-            animation: shakeIn 0.8s ease-in-out;
+            color: #00ff00;
+            animation: checkAppear 0.5s 0.3s ease-in-out forwards;
+            opacity: 0;
         }
-        @keyframes shakeIn {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        @keyframes checkAppear {
+            to { opacity: 1; }
         }
-        .order-details {
-            background: rgba(255, 102, 0, 0.08);
-            border-left: 4px solid #ff6600;
+        .request-details {
+            background: rgba(0, 255, 0, 0.08);
+            border-left: 4px solid #00ff00;
             padding: 20px;
             margin: 20px 0;
         }
@@ -80,7 +94,7 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 102, 0, 0.2);
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
         }
         .detail-row:last-child {
             border-bottom: none;
@@ -90,36 +104,21 @@
             font-weight: bold;
         }
         .value {
-            color: #ff6600;
+            color: #00ff00;
         }
-        .reason-box {
-            background: rgba(255, 165, 0, 0.1);
-            border: 2px solid #ffa500;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .refund-box {
+        .timeline-box {
             background: rgba(0, 255, 255, 0.08);
             border: 2px solid #00ffff;
             padding: 20px;
             margin: 20px 0;
-            text-align: center;
         }
-        .refund-amount {
+        .timeline-item {
+            padding: 10px 0;
             color: #00ffff;
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .trader-info {
-            background: rgba(255, 0, 255, 0.08);
-            border: 1px solid rgba(255, 0, 255, 0.3);
-            padding: 15px;
-            margin: 20px 0;
         }
         .button {
             display: inline-block;
-            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 100%);
+            background: linear-gradient(90deg, #00ff00 0%, #00ffff 100%);
             color: #000;
             text-decoration: none;
             padding: 15px 40px;
@@ -127,7 +126,7 @@
             text-transform: uppercase;
             font-weight: bold;
             border: none;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
         }
         .footer {
             background: rgba(0, 0, 0, 0.3);
@@ -135,11 +134,11 @@
             text-align: center;
             color: #666;
             font-size: 12px;
-            border-top: 1px solid rgba(255, 102, 0, 0.2);
+            border-top: 1px solid rgba(0, 255, 0, 0.2);
         }
         .cyber-line {
             height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #ff6600 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, #00ff00 50%, transparent 100%);
             margin: 20px 0;
         }
     </style>
@@ -182,80 +181,67 @@
     </div>
 
     <div class="content">
-        <h1 style="color: #ff6600; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Order Rejected by Trader</h1>
+        <h1 style="color: #00ff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Request Approved!</h1>
 
         <div class="cyber-line"></div>
 
-        <div class="reject-icon">
-            <div class="reject-symbol">⊘</div>
+        <div class="success-icon">
+            <div class="checkmark-circle"></div>
         </div>
 
         <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
-            The trader has declined your order request.
+            Great news! Your request has been approved by the trader and is now in progress.
         </p>
 
         <div style="text-align: center;">
-            <span class="status-badge">⟡ REJECTED ⟡</span>
+            <span class="status-badge">⟡ APPROVED ⟡</span>
         </div>
 
-        <div class="order-details">
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{request_id}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">REJECTED:</span>
-                <span class="value">{{rejection_date}}</span>
+                <span class="label">APPROVED:</span>
+                <span class="value">{{approval_date}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">TRADER:</span>
                 <span class="value">{{trader_name}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">ORIGINAL AMOUNT:</span>
+                <span class="label">FULFILLMENT DEADLINE:</span>
+                <span class="value">{{deadline_date}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">TOTAL VALUE:</span>
                 <span class="value">{{total_amount}}</span>
             </div>
         </div>
 
-        <div class="reason-box">
-            <h3 style="color: #ffa500; margin-top: 0;">Rejection Reason</h3>
-            <p style="color: #fff; line-height: 1.6; margin: 0;">
-                {{rejection_reason}}
-            </p>
-        </div>
-
-        <div class="trader-info">
-            <p style="color: #ff00ff; margin: 0; font-size: 14px;">
-                <strong>Trader's Note:</strong>
-            </p>
-            <p style="color: #fff; margin: 10px 0 0 0; line-height: 1.5;">
-                {{trader_message}}
-            </p>
-        </div>
-
-        <div class="refund-box">
-            <h3 style="color: #00ffff; margin-top: 0;">Refund Processed</h3>
-            <p style="color: #fff; margin: 10px 0;">
-                Your reserved funds have been released:
-            </p>
-            <div class="refund-amount">{{refund_amount}}</div>
-            <p style="color: #00ffff; margin: 10px 0; font-size: 14px;">
-                Available in your account immediately
-            </p>
+        <div class="timeline-box">
+            <h3 style="color: #00ffff; margin-top: 0;">What Happens Next?</h3>
+            <div class="timeline-item">
+                <strong>1.</strong> The trader will acquire the requested items within the specified timeframe
+            </div>
+            <div class="timeline-item">
+                <strong>2.</strong> Once items are obtained, the trader will fulfill your request
+            </div>
+            <div class="timeline-item">
+                <strong>3.</strong> You'll receive a notification when your request is completed
+            </div>
+            <div class="timeline-item">
+                <strong>4.</strong> Payment will be processed and released to the trader
+            </div>
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
-            We're sorry this order didn't work out. You may want to try adjusting your order requirements or working with a different trader who can better meet your needs.
+            The trader has committed to fulfilling your request by <strong style="color: #00ff00;">{{deadline_date}}</strong>. You can track the progress of your request at any time through your dashboard.
         </p>
 
         <div style="text-align: center;">
-            <a href="{{url}}" class="button">Create New Order</a>
-        </div>
-
-        <div style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); padding: 15px; margin: 30px 0;">
-            <p style="color: #00ffff; margin: 0; font-size: 13px; line-height: 1.6;">
-                <strong>💡 Tip:</strong> Consider reaching out to multiple traders or adjusting your order specifications to increase the likelihood of acceptance. You can also check trader profiles to see their specialties and success rates.
-            </p>
+            <a href="{{url}}" class="button">Track Request Status</a>
         </div>
     </div>
 

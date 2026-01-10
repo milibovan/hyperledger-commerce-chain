@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if recipient_type == "TRADER" %}New Order Request{% else %}Order Created{% endif %}</title>
+    <title>{% if recipient_type == "TRADER" %}New Request Request{% else %}Request Created{% endif %}</title>
     <style>
         body {
             margin: 0;
@@ -80,7 +80,7 @@
             10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
             20%, 40%, 60%, 80% { transform: rotate(10deg); }
         }
-        .order-details {
+        .request-details {
             background: rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.08);
             border-left: 4px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
             padding: 20px;
@@ -268,7 +268,7 @@
 
     <div class="content">
         <h1 style="color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %}; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">
-        {% if recipient_type == "TRADER" %}🔔 New Order Request{% else %}Order Successfully Created!{% endif %}
+        {% if recipient_type == "TRADER" %}🔔 New Request Request{% else %}Request Successfully Created!{% endif %}
         </h1>
 
         <div class="cyber-line"></div>
@@ -279,9 +279,9 @@
 
         <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
             {% if recipient_type == "TRADER" %}
-            You have received a new order request that requires your attention.
+            You have received a new request request that requires your attention.
             {% else %}
-            Your order has been successfully created and is now entering the approval process.
+            Your request has been successfully created and is now entering the approval process.
             {% endif %}
         </p>
 
@@ -297,14 +297,14 @@
         </div>
         {% endif %}
 
-        <div class="order-details">
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{ order_id }}</span>
+                <span class="value">{{ request_id }}</span>
             </div>
             <div class="detail-row">
                 <span class="label">{% if recipient_type == "TRADER" %}REQUEST DATE{% else %}CREATED{% endif %}:</span>
-                <span class="value">{{ order_date }}</span>
+                <span class="value">{{ request_date }}</span>
             </div>
             {% if recipient_type == "USER" %}
             <div class="detail-row">
@@ -327,7 +327,7 @@
             <h3 style="color: #ffff00; margin-top: 0;">⏰ Fulfillment Deadline</h3>
             <div class="deadline-date">{{ due_date }}</div>
             <p style="color: #fff; margin: 10px 0; font-size: 14px;">
-                Order must be fulfilled by this date
+                Request must be fulfilled by this date
             </p>
         </div>
         {% endif %}
@@ -347,15 +347,15 @@
             <h3 style="color: #00ff00; margin-top: 0;">Next Steps</h3>
             <div class="action-item">
                 <span class="action-number">1</span>
-                <span>Review the order details and product requirements</span>
+                <span>Review the request details and product requirements</span>
             </div>
             <div class="action-item">
                 <span class="action-number">2</span>
-                <span>Verify you can fulfill this order by the deadline</span>
+                <span>Verify you can fulfill this request by the deadline</span>
             </div>
             <div class="action-item">
                 <span class="action-number">3</span>
-                <span>Approve or reject the order in your pending requests</span>
+                <span>Approve or reject the request in your pending requests</span>
             </div>
             <div class="action-item">
                 <span class="action-number">4</span>
@@ -367,11 +367,11 @@
             <h3 style="color: #00ff00; margin-top: 0;">What Happens Next?</h3>
             <div class="step">
                 <span class="step-number">1</span>
-                <span>Your order will be reviewed by available traders</span>
+                <span>Your request will be reviewed by available traders</span>
             </div>
             <div class="step">
                 <span class="step-number">2</span>
-                <span>A trader will approve or reject your order (typically within 24-48 hours)</span>
+                <span>A trader will approve or reject your request (typically within 24-48 hours)</span>
             </div>
             <div class="step">
                 <span class="step-number">3</span>
@@ -387,18 +387,18 @@
         <div class="info-box">
             <p style="color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %}; margin: 0; font-size: 14px; line-height: 1.6;">
             {% if recipient_type == "TRADER" %}
-            <strong>💡 Tip:</strong> Responding quickly to orders improves your trader rating and increases customer satisfaction.
+            <strong>💡 Tip:</strong> Responding quickly to requests improves your trader rating and increases customer satisfaction.
             {% else %}
-            <strong>💡 Important:</strong> Your payment has been reserved and is secure. You'll be notified immediately once a trader reviews your order. You can track your order status at any time through your dashboard.
+            <strong>💡 Important:</strong> Your payment has been reserved and is secure. You'll be notified immediately once a trader reviews your request. You can track your request status at any time through your dashboard.
             {% endif %}
             </p>
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
             {% if recipient_type == "TRADER" %}
-            Please review this order request and respond as soon as possible. The customer is waiting for your decision.
+            Please review this request request and respond as soon as possible. The customer is waiting for your decision.
             {% else %}
-            Thank you for using NEXUS TRADE! We'll keep you updated on every step of your order's progress.
+            Thank you for using NEXUS TRADE! We'll keep you updated on every step of your request's progress.
             {% endif %}
         </p>
 
@@ -407,14 +407,14 @@
             <a href="{{ url }}" class="button button-approve">View & Approve</a>
             <a href="{{ url }}" class="button button-reject">View & Reject</a>
             {% else %}
-            <a href="{{ url }}" class="button">View Order Details</a>
+            <a href="{{ url }}" class="button">View Request Details</a>
             {% endif %}
         </div>
 
         {% if recipient_type == "USER" %}
         <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 255, 255, 0.2); padding: 15px; margin: 30px 0; text-align: center;">
             <p style="color: #999; margin: 0; font-size: 13px;">
-                Order Reference: <strong style="color: #00ffff;">{{ order_reference }}</strong><br>
+                Request Reference: <strong style="color: #00ffff;">{{ request_reference }}</strong><br>
                 <span style="font-size: 11px;">Save this reference for future inquiries</span>
             </p>
         </div>

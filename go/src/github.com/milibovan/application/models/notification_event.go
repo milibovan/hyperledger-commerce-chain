@@ -7,17 +7,17 @@ import (
 type EventTypes string
 
 const (
-	OrderCreated                 EventTypes = "OrderCreated"
-	OrderInsufficientBalance     EventTypes = "OrderInsufficientBalance"
-	OrderPaymentCompleted        EventTypes = "OrderPaymentCompleted"
-	OrderApproved                EventTypes = "OrderApproved"
-	OrderFulfilled               EventTypes = "OrderFulfilled"
-	OrderCancelled               EventTypes = "OrderCancelled"
-	OrderRejected                EventTypes = "OrderRejected"
-	NewOrderPendingApproval      EventTypes = "NewOrderPendingApproval"
-	OrderFulfillmentReminderDay1 EventTypes = "OrderFulfillmentReminderDay1"
-	OrderFulfillmentReminderDay2 EventTypes = "OrderFulfillmentReminderDay2"
-	OrderFulfillmentReminderDay3 EventTypes = "OrderFulfillmentReminderDay3"
+	RequestCreated                 EventTypes = "RequestCreated"
+	RequestInsufficientBalance     EventTypes = "RequestInsufficientBalance"
+	RequestPaymentCompleted        EventTypes = "RequestPaymentCompleted"
+	RequestApproved                EventTypes = "RequestApproved"
+	RequestFulfilled               EventTypes = "RequestFulfilled"
+	RequestCancelled               EventTypes = "RequestCancelled"
+	RequestRejected                EventTypes = "RequestRejected"
+	NewRequestPendingApproval      EventTypes = "NewRequestPendingApproval"
+	RequestFulfillmentReminderDay1 EventTypes = "RequestFulfillmentReminderDay1"
+	RequestFulfillmentReminderDay2 EventTypes = "RequestFulfillmentReminderDay2"
+	RequestFulfillmentReminderDay3 EventTypes = "RequestFulfillmentReminderDay3"
 )
 
 type RecipientType string

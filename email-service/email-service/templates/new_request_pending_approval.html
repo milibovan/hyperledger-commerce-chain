@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Pending Approval</title>
+    <title>Request Pending Approval</title>
     <style>
         body {
             margin: 0;
@@ -48,7 +48,7 @@
             font-weight: bold;
             box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
         }
-        .order-details {
+        .request-details {
             background: rgba(0, 255, 255, 0.05);
             border-left: 4px solid #00ffff;
             padding: 20px;
@@ -136,26 +136,26 @@
     </div>
 
     <div class="content">
-        <h1 style="color: #00ffff; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Order Awaiting Approval</h1>
+        <h1 style="color: #00ffff; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Request Awaiting Approval</h1>
 
         <div class="cyber-line"></div>
 
         <p style="color: #fff; line-height: 1.6;">
-            Your order has been successfully created and is now waiting for trader approval.
+            Your request has been successfully created and is now waiting for trader approval.
         </p>
 
         <div style="text-align: center;">
             <span class="status-badge">⟡ PENDING APPROVAL ⟡</span>
         </div>
 
-        <div class="order-details">
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{request_id}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">CREATED:</span>
-                <span class="value">{{order_date}}</span>
+                <span class="value">{{request_date}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">ITEMS:</span>
@@ -168,11 +168,11 @@
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
-            You'll receive a notification once the trader reviews and approves your order. This typically takes 24-48 hours.
+            You'll receive a notification once the trader reviews and approves your request. This typically takes 24-48 hours.
         </p>
 
         <div style="text-align: center;">
-            <a href="{{url}}" class="button">View Order Details</a>
+            <a href="{{url}}" class="button">View Request Details</a>
         </div>
     </div>
 

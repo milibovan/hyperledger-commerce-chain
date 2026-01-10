@@ -921,9 +921,9 @@ func createProductRequest(c *gin.Context) {
 		return
 	}
 
-	orderCreatedNotification := models.NotificationEvent{
+	requestCreatedNotification := models.NotificationEvent{
 		Id:                ID,
-		EventType:         models.OrderCreated,
+		EventType:         models.RequestCreated,
 		RecipientType:     []models.RecipientType{models.USER, models.TRADER},
 		RecipientID:       requestData.UserId,
 		Timestamp:         nil,
@@ -933,29 +933,28 @@ func createProductRequest(c *gin.Context) {
 		UserID:            requestData.UserId,
 		TraderID:          "",
 		Data: map[string]string{
-			"order_id":          createRequest.Id,
-			"order_date":        createRequest.CreatedDate,
+			"request_id":        createRequest.Id,
+			"request_date":      createRequest.CreatedDate,
 			"due_date":          createRequest.DueDate,
 			"item_count":        strconv.Itoa(len(createRequest.Products)),
 			"products":          strings.Join(products, ","),
 			"total_amount":      totalCost,
-			"url":               "https://hyperledger.commerce/orders/ord_987654",
+			"url":               "https://hyperledger.commerce/requests/ord_987654",
 			"user_name":         requestData.UserName,
 			"recipients":        requestData.UserEmail,
 			"trader_recipients": strings.Join(emails, ","),
 		},
 	}
 
-	err = kafka.ProduceToKafka(orderCreatedNotification, topic)
+	err = kafka.ProduceToKafka(requestCreatedNotification, topic)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	// TODO Produce to all trader emails
 	fmt.Println(emails)
 
-	c.JSON(http.StatusCreated, gin.H{"Message": fmt.Sprintf("Order created %d %s", blockNumber, ID)})
+	c.JSON(http.StatusCreated, gin.H{"Message": fmt.Sprintf("Request created %d %s", blockNumber, ID)})
 }
 
 // buildOrdersDetailsResponse helper function for building response

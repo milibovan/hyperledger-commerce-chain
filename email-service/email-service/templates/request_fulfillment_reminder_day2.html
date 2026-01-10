@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fulfillment Reminder - Day 1</title>
+    <title>Fulfillment Reminder - Day 2</title>
     <style>
         body {
             margin: 0;
@@ -15,8 +15,8 @@
             max-width: 600px;
             margin: 0 auto;
             background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
-            border: 2px solid #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 255, 0.2);
+            border: 2px solid #ffff00;
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.4), 0 0 40px rgba(255, 0, 255, 0.2);
         }
         .header {
             background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
@@ -38,24 +38,30 @@
         }
         .status-badge {
             display: inline-block;
-            background: rgba(0, 255, 0, 0.1);
-            border: 2px solid #00ff00;
-            color: #00ff00;
+            background: rgba(255, 255, 0, 0.15);
+            border: 2px solid #ffff00;
+            color: #ffff00;
             padding: 10px 20px;
             margin: 20px 0;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-            animation: pulse 2s infinite;
+            box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
+            animation: urgentPulse 1.5s infinite;
         }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
+        @keyframes urgentPulse {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.02);
+            }
         }
-        .order-details {
-            background: rgba(0, 255, 0, 0.05);
-            border-left: 4px solid #00ff00;
+        .request-details {
+            background: rgba(255, 255, 0, 0.08);
+            border-left: 4px solid #ffff00;
             padding: 20px;
             margin: 20px 0;
         }
@@ -63,7 +69,7 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 0, 0.2);
         }
         .detail-row:last-child {
             border-bottom: none;
@@ -73,25 +79,31 @@
             font-weight: bold;
         }
         .value {
-            color: #00ff00;
+            color: #ffff00;
         }
         .warning-box {
-            background: rgba(255, 255, 0, 0.1);
-            border: 2px solid #ffff00;
+            background: rgba(255, 165, 0, 0.15);
+            border: 2px solid #ffa500;
             padding: 20px;
             margin: 20px 0;
-            color: #ffff00;
+            color: #ffa500;
+            font-weight: bold;
         }
         .timer {
             text-align: center;
-            font-size: 36px;
-            color: #00ff00;
+            font-size: 42px;
+            color: #ffff00;
             margin: 20px 0;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            text-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
+            animation: timerBlink 1s infinite;
+        }
+        @keyframes timerBlink {
+            0%, 49%, 100% { opacity: 1; }
+            50%, 99% { opacity: 0.7; }
         }
         .button {
             display: inline-block;
-            background: linear-gradient(90deg, #00ff00 0%, #00ffff 100%);
+            background: linear-gradient(90deg, #ffff00 0%, #ffa500 100%);
             color: #000;
             text-decoration: none;
             padding: 15px 40px;
@@ -99,7 +111,7 @@
             text-transform: uppercase;
             font-weight: bold;
             border: none;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.6);
         }
         .footer {
             background: rgba(0, 0, 0, 0.3);
@@ -107,11 +119,11 @@
             text-align: center;
             color: #666;
             font-size: 12px;
-            border-top: 1px solid rgba(0, 255, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 0, 0.2);
         }
         .cyber-line {
             height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #00ff00 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, #ffff00 50%, transparent 100%);
             margin: 20px 0;
         }
     </style>
@@ -154,26 +166,26 @@
     </div>
 
     <div class="content">
-        <h1 style="color: #00ff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Fulfillment Reminder</h1>
+        <h1 style="color: #ffff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">⚠ Urgent Fulfillment Reminder</h1>
 
         <div class="cyber-line"></div>
 
-        <p style="color: #fff; line-height: 1.6;">
-            This is a friendly reminder that your approved order is awaiting fulfillment.
+        <p style="color: #fff; line-height: 1.6; font-weight: bold;">
+            Your request fulfillment deadline is approaching soon. Immediate action is required.
         </p>
 
         <div style="text-align: center;">
-            <span class="status-badge">⟡ ACTION REQUIRED ⟡</span>
+            <span class="status-badge">⟡ URGENT ACTION NEEDED ⟡</span>
         </div>
 
         <div class="timer">
             {{days_remaining}} DAYS
         </div>
 
-        <div class="order-details">
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{request_id}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">APPROVED:</span>
@@ -190,15 +202,15 @@
         </div>
 
         <div class="warning-box">
-            <strong>⚠ IMPORTANT:</strong> Please fulfill this order within the specified timeframe. Failure to complete the order by the deadline may result in automatic cancellation.
+            <strong>⚠ CRITICAL WARNING:</strong> This is your second reminder. You have limited time remaining to fulfill this request. Failure to complete by the deadline will result in automatic cancellation and may affect your trader rating.
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
-            Complete the order by delivering the requested items and marking the order as fulfilled in your trader dashboard.
+            Please prioritize this request and mark it as fulfilled as soon as possible to avoid penalties.
         </p>
 
         <div style="text-align: center;">
-            <a href="{{url}}" class="button">Fulfill Order Now</a>
+            <a href="{{url}}" class="button">Fulfill Request Immediately</a>
         </div>
     </div>
 

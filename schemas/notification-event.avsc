@@ -14,17 +14,17 @@
         "type": "enum",
         "name": "EventTypes",
         "symbols": [
-          "OrderCreated",
-          "OrderInsufficientBalance",
-          "OrderPaymentCompleted",
-          "OrderApproved",
-          "OrderFulfilled",
-          "OrderCancelled",
-          "OrderRejected",
-          "NewOrderPendingApproval",
-          "OrderFulfillmentReminderDay1",
-          "OrderFulfillmentReminderDay2",
-          "OrderFulfillmentReminderDay3"
+          "RequestCreated",
+          "RequestInsufficientBalance",
+          "RequestPaymentCompleted",
+          "RequestApproved",
+          "RequestFulfilled",
+          "RequestCancelled",
+          "RequestRejected",
+          "NewRequestPendingApproval",
+          "RequestFulfillmentReminderDay1",
+          "RequestFulfillmentReminderDay2",
+          "RequestFulfillmentReminderDay3"
         ]
       },
       "doc": "Event type and also email template"

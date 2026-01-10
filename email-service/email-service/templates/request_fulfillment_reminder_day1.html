@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Cancelled</title>
+    <title>Fulfillment Reminder - Day 1</title>
     <style>
         body {
             margin: 0;
@@ -15,8 +15,8 @@
             max-width: 600px;
             margin: 0 auto;
             background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
-            border: 2px solid #999;
-            box-shadow: 0 0 20px rgba(153, 153, 153, 0.3);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 255, 0.2);
         }
         .header {
             background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
@@ -38,40 +38,24 @@
         }
         .status-badge {
             display: inline-block;
-            background: rgba(153, 153, 153, 0.15);
-            border: 2px solid #999;
-            color: #999;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            color: #00ff00;
             padding: 10px 20px;
             margin: 20px 0;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: bold;
-            box-shadow: 0 0 10px rgba(153, 153, 153, 0.3);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+            animation: pulse 2s infinite;
         }
-        .cancel-icon {
-            text-align: center;
-            margin: 30px 0;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
         }
-        .cancel-symbol {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid #999;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px;
-            color: #999;
-            box-shadow: 0 0 20px rgba(153, 153, 153, 0.4);
-            animation: fadeIn 0.8s ease-in-out;
-        }
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: scale(0.8); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        .order-details {
-            background: rgba(153, 153, 153, 0.08);
-            border-left: 4px solid #999;
+        .request-details {
+            background: rgba(0, 255, 0, 0.05);
+            border-left: 4px solid #00ff00;
             padding: 20px;
             margin: 20px 0;
         }
@@ -79,7 +63,7 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(153, 153, 153, 0.2);
+            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
         }
         .detail-row:last-child {
             border-bottom: none;
@@ -89,30 +73,25 @@
             font-weight: bold;
         }
         .value {
-            color: #999;
+            color: #00ff00;
         }
-        .reason-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #666;
+        .warning-box {
+            background: rgba(255, 255, 0, 0.1);
+            border: 2px solid #ffff00;
             padding: 20px;
             margin: 20px 0;
+            color: #ffff00;
         }
-        .refund-box {
-            background: rgba(0, 255, 255, 0.08);
-            border: 2px solid #00ffff;
-            padding: 20px;
-            margin: 20px 0;
+        .timer {
             text-align: center;
-        }
-        .refund-amount {
-            color: #00ffff;
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0;
+            font-size: 36px;
+            color: #00ff00;
+            margin: 20px 0;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
         .button {
             display: inline-block;
-            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 100%);
+            background: linear-gradient(90deg, #00ff00 0%, #00ffff 100%);
             color: #000;
             text-decoration: none;
             padding: 15px 40px;
@@ -120,7 +99,7 @@
             text-transform: uppercase;
             font-weight: bold;
             border: none;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
         }
         .footer {
             background: rgba(0, 0, 0, 0.3);
@@ -128,11 +107,11 @@
             text-align: center;
             color: #666;
             font-size: 12px;
-            border-top: 1px solid rgba(153, 153, 153, 0.2);
+            border-top: 1px solid rgba(0, 255, 0, 0.2);
         }
         .cyber-line {
             height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #999 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, #00ff00 50%, transparent 100%);
             margin: 20px 0;
         }
     </style>
@@ -175,68 +154,51 @@
     </div>
 
     <div class="content">
-        <h1 style="color: #999; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Order Cancelled</h1>
+        <h1 style="color: #00ff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Fulfillment Reminder</h1>
 
         <div class="cyber-line"></div>
 
-        <div class="cancel-icon">
-            <div class="cancel-symbol">✕</div>
-        </div>
-
-        <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
-            Your order has been cancelled and will not be fulfilled.
+        <p style="color: #fff; line-height: 1.6;">
+            This is a friendly reminder that your approved request is awaiting fulfillment.
         </p>
 
         <div style="text-align: center;">
-            <span class="status-badge">⟡ CANCELLED ⟡</span>
+            <span class="status-badge">⟡ ACTION REQUIRED ⟡</span>
         </div>
 
-        <div class="order-details">
+        <div class="timer">
+            {{days_remaining}} DAYS
+        </div>
+
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{request_id}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">CANCELLED:</span>
-                <span class="value">{{cancelled_date}}</span>
+                <span class="label">APPROVED:</span>
+                <span class="value">{{approval_date}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">ORIGINAL AMOUNT:</span>
+                <span class="label">DEADLINE:</span>
+                <span class="value">{{deadline_date}}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">TOTAL VALUE:</span>
                 <span class="value">{{total_amount}}</span>
             </div>
         </div>
 
-        <div class="reason-box">
-            <h3 style="color: #999; margin-top: 0;">Cancellation Reason</h3>
-            <p style="color: #fff; line-height: 1.6; margin: 0;">
-                {{cancellation_reason}}
-            </p>
-        </div>
-
-        <div class="refund-box">
-            <h3 style="color: #00ffff; margin-top: 0;">Refund Status</h3>
-            <p style="color: #fff; margin: 10px 0;">
-                Your reserved funds have been released back to your account:
-            </p>
-            <div class="refund-amount">{{refund_amount}}</div>
-            <p style="color: #00ffff; margin: 10px 0; font-size: 14px;">
-                Funds should appear in your balance immediately
-            </p>
+        <div class="warning-box">
+            <strong>⚠ IMPORTANT:</strong> Please fulfill this request within the specified timeframe. Failure to complete the request by the deadline may result in automatic cancellation.
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
-            We apologize for any inconvenience. You're welcome to create a new order at any time, and we'll work to ensure a better experience.
+            Complete the request by delivering the requested items and marking the request as fulfilled in your trader dashboard.
         </p>
 
         <div style="text-align: center;">
-            <a href="{{url}}" class="button">Create New Order</a>
-        </div>
-
-        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(153, 153, 153, 0.2); padding: 15px; margin: 30px 0; text-align: center;">
-            <p style="color: #999; margin: 0; font-size: 13px;">
-                If you believe this cancellation was made in error or have questions,<br>
-                please contact our support team for assistance.
-            </p>
+            <a href="{{url}}" class="button">Fulfill Request Now</a>
         </div>
     </div>
 

@@ -75,7 +75,7 @@
             50% { transform: scale(1.1); }
             100% { transform: scale(1); opacity: 1; }
         }
-        .order-details {
+        .request-details {
             background: rgba(0, 255, 255, 0.08);
             border-left: 4px solid #00ffff;
             padding: 20px;
@@ -179,17 +179,17 @@
         </div>
 
         <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
-            Your payment has been successfully processed and funds have been reserved for your order.
+            Your payment has been successfully processed and funds have been reserved for your request.
         </p>
 
         <div style="text-align: center;">
             <span class="status-badge">⟡ PAYMENT SECURED ⟡</span>
         </div>
 
-        <div class="order-details">
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{request_id}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">PAYMENT DATE:</span>
@@ -207,11 +207,11 @@
 
         <div class="highlight-box">
             <strong>✓ FUNDS RESERVED</strong><br>
-            <span style="font-size: 14px;">Your payment is secured and will be held until order completion</span>
+            <span style="font-size: 14px;">Your payment is secured and will be held until request completion</span>
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
-            Your order is now awaiting trader approval. Once approved, the trader will have a specified timeframe to fulfill your order. You'll receive notifications at each step of the process.
+            Your request is now awaiting trader approval. Once approved, the trader will have a specified timeframe to fulfill your request. You'll receive notifications at each step of the process.
         </p>
 
         <p style="color: #00ff00; line-height: 1.6; font-weight: bold;">
@@ -219,7 +219,7 @@
         </p>
 
         <div style="text-align: center;">
-            <a href="{{url}}" class="button">View Order Status</a>
+            <a href="{{url}}" class="button">View Request Status</a>
         </div>
     </div>
 

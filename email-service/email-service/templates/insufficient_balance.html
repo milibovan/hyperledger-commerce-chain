@@ -48,7 +48,7 @@
             font-weight: bold;
             box-shadow: 0 0 15px rgba(255, 102, 0, 0.4);
         }
-        .order-details {
+        .request-details {
             background: rgba(255, 102, 0, 0.08);
             border-left: 4px solid #ff6600;
             padding: 20px;
@@ -153,26 +153,26 @@
     </div>
 
     <div class="content">
-        <h1 style="color: #ff6600; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Order Created - Action Required</h1>
+        <h1 style="color: #ff6600; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Request Created - Action Required</h1>
 
         <div class="cyber-line"></div>
 
         <p style="color: #fff; line-height: 1.6;">
-            Your order has been successfully created, but there are insufficient funds in your account to complete the transaction.
+            Your request has been successfully created, but there are insufficient funds in your account to complete the transaction.
         </p>
 
         <div style="text-align: center;">
             <span class="status-badge">⟡ AWAITING FUNDS ⟡</span>
         </div>
 
-        <div class="order-details">
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{request_id}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">CREATED:</span>
-                <span class="value">{{order_date}}</span>
+                <span class="value">{{request_date}}</span>
             </div>
             <div class="detail-row">
                 <span class="label">ITEMS:</span>
@@ -202,11 +202,11 @@
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
-            <strong>Important:</strong> Your order will remain on hold until sufficient funds are available. Even when the trader obtains the requested items, the order cannot proceed until your account balance meets the required amount.
+            <strong>Important:</strong> Your request will remain on hold until sufficient funds are available. Even when the trader obtains the requested items, the request cannot proceed until your account balance meets the required amount.
         </p>
 
         <p style="color: #ffa500; line-height: 1.6;">
-            Please add funds to your account to activate this order and allow fulfillment to proceed.
+            Please add funds to your account to activate this request and allow fulfillment to proceed.
         </p>
 
         <div style="text-align: center;">

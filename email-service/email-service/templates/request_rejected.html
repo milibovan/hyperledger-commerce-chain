@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fulfillment Reminder - Day 2</title>
+    <title>Request Rejected</title>
     <style>
         body {
             margin: 0;
@@ -15,8 +15,8 @@
             max-width: 600px;
             margin: 0 auto;
             background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
-            border: 2px solid #ffff00;
-            box-shadow: 0 0 20px rgba(255, 255, 0, 0.4), 0 0 40px rgba(255, 0, 255, 0.2);
+            border: 2px solid #ff6600;
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.3);
         }
         .header {
             background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
@@ -38,30 +38,41 @@
         }
         .status-badge {
             display: inline-block;
-            background: rgba(255, 255, 0, 0.15);
-            border: 2px solid #ffff00;
-            color: #ffff00;
+            background: rgba(255, 102, 0, 0.15);
+            border: 2px solid #ff6600;
+            color: #ff6600;
             padding: 10px 20px;
             margin: 20px 0;
             text-transform: uppercase;
             letter-spacing: 2px;
             font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 255, 0, 0.5);
-            animation: urgentPulse 1.5s infinite;
+            box-shadow: 0 0 15px rgba(255, 102, 0, 0.4);
         }
-        @keyframes urgentPulse {
-            0%, 100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.7;
-                transform: scale(1.02);
-            }
+        .reject-icon {
+            text-align: center;
+            margin: 30px 0;
         }
-        .order-details {
-            background: rgba(255, 255, 0, 0.08);
-            border-left: 4px solid #ffff00;
+        .reject-symbol {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #ff6600;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            color: #ff6600;
+            box-shadow: 0 0 20px rgba(255, 102, 0, 0.5);
+            animation: shakeIn 0.8s ease-in-out;
+        }
+        @keyframes shakeIn {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .request-details {
+            background: rgba(255, 102, 0, 0.08);
+            border-left: 4px solid #ff6600;
             padding: 20px;
             margin: 20px 0;
         }
@@ -69,7 +80,7 @@
             display: flex;
             justify-content: space-between;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 102, 0, 0.2);
         }
         .detail-row:last-child {
             border-bottom: none;
@@ -79,31 +90,36 @@
             font-weight: bold;
         }
         .value {
-            color: #ffff00;
+            color: #ff6600;
         }
-        .warning-box {
-            background: rgba(255, 165, 0, 0.15);
+        .reason-box {
+            background: rgba(255, 165, 0, 0.1);
             border: 2px solid #ffa500;
             padding: 20px;
             margin: 20px 0;
-            color: #ffa500;
-            font-weight: bold;
         }
-        .timer {
-            text-align: center;
-            font-size: 42px;
-            color: #ffff00;
+        .refund-box {
+            background: rgba(0, 255, 255, 0.08);
+            border: 2px solid #00ffff;
+            padding: 20px;
             margin: 20px 0;
-            text-shadow: 0 0 15px rgba(255, 255, 0, 0.6);
-            animation: timerBlink 1s infinite;
+            text-align: center;
         }
-        @keyframes timerBlink {
-            0%, 49%, 100% { opacity: 1; }
-            50%, 99% { opacity: 0.7; }
+        .refund-amount {
+            color: #00ffff;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .trader-info {
+            background: rgba(255, 0, 255, 0.08);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            padding: 15px;
+            margin: 20px 0;
         }
         .button {
             display: inline-block;
-            background: linear-gradient(90deg, #ffff00 0%, #ffa500 100%);
+            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 100%);
             color: #000;
             text-decoration: none;
             padding: 15px 40px;
@@ -111,7 +127,7 @@
             text-transform: uppercase;
             font-weight: bold;
             border: none;
-            box-shadow: 0 0 20px rgba(255, 255, 0, 0.6);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
         }
         .footer {
             background: rgba(0, 0, 0, 0.3);
@@ -119,11 +135,11 @@
             text-align: center;
             color: #666;
             font-size: 12px;
-            border-top: 1px solid rgba(255, 255, 0, 0.2);
+            border-top: 1px solid rgba(255, 102, 0, 0.2);
         }
         .cyber-line {
             height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #ffff00 50%, transparent 100%);
+            background: linear-gradient(90deg, transparent 0%, #ff6600 50%, transparent 100%);
             margin: 20px 0;
         }
     </style>
@@ -166,51 +182,80 @@
     </div>
 
     <div class="content">
-        <h1 style="color: #ffff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">⚠ Urgent Fulfillment Reminder</h1>
+        <h1 style="color: #ff6600; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Request Rejected by Trader</h1>
 
         <div class="cyber-line"></div>
 
-        <p style="color: #fff; line-height: 1.6; font-weight: bold;">
-            Your order fulfillment deadline is approaching soon. Immediate action is required.
+        <div class="reject-icon">
+            <div class="reject-symbol">⊘</div>
+        </div>
+
+        <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
+            The trader has declined your request request.
         </p>
 
         <div style="text-align: center;">
-            <span class="status-badge">⟡ URGENT ACTION NEEDED ⟡</span>
+            <span class="status-badge">⟡ REJECTED ⟡</span>
         </div>
 
-        <div class="timer">
-            {{days_remaining}} DAYS
-        </div>
-
-        <div class="order-details">
+        <div class="request-details">
             <div class="detail-row">
                 <span class="label">ORDER ID:</span>
-                <span class="value">{{order_id}}</span>
+                <span class="value">{{request_id}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">APPROVED:</span>
-                <span class="value">{{approval_date}}</span>
+                <span class="label">REJECTED:</span>
+                <span class="value">{{rejection_date}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">DEADLINE:</span>
-                <span class="value">{{deadline_date}}</span>
+                <span class="label">TRADER:</span>
+                <span class="value">{{trader_name}}</span>
             </div>
             <div class="detail-row">
-                <span class="label">TOTAL VALUE:</span>
+                <span class="label">ORIGINAL AMOUNT:</span>
                 <span class="value">{{total_amount}}</span>
             </div>
         </div>
 
-        <div class="warning-box">
-            <strong>⚠ CRITICAL WARNING:</strong> This is your second reminder. You have limited time remaining to fulfill this order. Failure to complete by the deadline will result in automatic cancellation and may affect your trader rating.
+        <div class="reason-box">
+            <h3 style="color: #ffa500; margin-top: 0;">Rejection Reason</h3>
+            <p style="color: #fff; line-height: 1.6; margin: 0;">
+                {{rejection_reason}}
+            </p>
+        </div>
+
+        <div class="trader-info">
+            <p style="color: #ff00ff; margin: 0; font-size: 14px;">
+                <strong>Trader's Note:</strong>
+            </p>
+            <p style="color: #fff; margin: 10px 0 0 0; line-height: 1.5;">
+                {{trader_message}}
+            </p>
+        </div>
+
+        <div class="refund-box">
+            <h3 style="color: #00ffff; margin-top: 0;">Refund Processed</h3>
+            <p style="color: #fff; margin: 10px 0;">
+                Your reserved funds have been released:
+            </p>
+            <div class="refund-amount">{{refund_amount}}</div>
+            <p style="color: #00ffff; margin: 10px 0; font-size: 14px;">
+                Available in your account immediately
+            </p>
         </div>
 
         <p style="color: #fff; line-height: 1.6;">
-            Please prioritize this order and mark it as fulfilled as soon as possible to avoid penalties.
+            We're sorry this request didn't work out. You may want to try adjusting your request requirements or working with a different trader who can better meet your needs.
         </p>
 
         <div style="text-align: center;">
-            <a href="{{url}}" class="button">Fulfill Order Immediately</a>
+            <a href="{{url}}" class="button">Create New Request</a>
+        </div>
+
+        <div style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); padding: 15px; margin: 30px 0;">
+            <p style="color: #00ffff; margin: 0; font-size: 13px; line-height: 1.6;">
+                <strong>💡 Tip:</strong> Consider reaching out to multiple traders or adjusting your request specifications to increase the likelihood of acceptance. You can also check trader profiles to see their specialties and success rates.
+            </p>
         </div>
     </div>
 

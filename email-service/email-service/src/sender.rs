@@ -1,6 +1,6 @@
 // sender.rs
 use crate::notification_event::{EventType, NotificationEvent, RecipientType};
-use crate::template_structs::{OrderCreated, OrderInsufficientBalance, OrderItem};
+use crate::template_structs::{RequestCreated, RequestInsufficientBalance, RequestItem};
 use askama::Template;
 use chrono::DateTime;
 use lettre::message::{header, Message, SinglePart};
@@ -11,12 +11,12 @@ use std::env;
 
 pub(crate) async fn send_email(event: NotificationEvent) {
     match event.event_type {
-        EventType::OrderInsufficientBalance => {
-            let template = OrderInsufficientBalance {
-                order_id: event.order_id,
-                order_date: event
+        EventType::RequestInsufficientBalance => {
+            let template = RequestInsufficientBalance {
+                request_id: event.request_id,
+                request_date: event
                     .data
-                    .get("order_date")
+                    .get("request_date")
                     .cloned()
                     .unwrap_or_default()
                     .parse()
@@ -66,33 +66,33 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                 send_email_via_smtp(
                     recipient,
                     html_body,
-                    "Order Insufficient Balance".to_string(),
+                    "Request Insufficient Balance".to_string(),
                 );
             }
         }
-        EventType::OrderPaymentCompleted => {}
-        EventType::OrderApproved => {}
-        EventType::OrderFulfilled => {}
-        EventType::OrderCancelled => {}
-        EventType::OrderCreated => {
+        EventType::RequestPaymentCompleted => {}
+        EventType::RequestApproved => {}
+        EventType::RequestFulfilled => {}
+        EventType::RequestCancelled => {}
+        EventType::RequestCreated => {
             // ... (Your parsing logic here is correct) ...
             let products_str = event.data.get("products").cloned().unwrap_or_default();
             let parts: Vec<&str> = products_str.split(',').collect();
-            let mut items: Vec<OrderItem> = Vec::new();
+            let mut items: Vec<RequestItem> = Vec::new();
 
             for chunk in parts.chunks(2) {
                 if chunk.len() == 2 {
-                    items.push(OrderItem {
+                    items.push(RequestItem {
                         name: chunk[0].to_string(),
                         quantity: chunk[1].parse().unwrap_or(1),
                     });
                 }
             }
 
-            let base_template = OrderCreated {
-                order_id: event.data.get("order_id").cloned().unwrap_or_default(),
-                order_date: format_date_pretty(
-                    &event.data.get("order_date").cloned().unwrap_or_default(),
+            let base_template = RequestCreated {
+                request_id: event.data.get("request_id").cloned().unwrap_or_default(),
+                request_date: format_date_pretty(
+                    &event.data.get("request_date").cloned().unwrap_or_default(),
                 ),
 
                 due_date: format_date_pretty(&event.data.get("due_date").cloned().unwrap_or_default()),
@@ -104,9 +104,9 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                     .unwrap_or(0),
                 total_amount: event.data.get("total_amount").cloned().unwrap_or_default(),
                 items,
-                order_reference: event
+                request_reference: event
                     .data
-                    .get("order_reference")
+                    .get("request_reference")
                     .cloned()
                     .unwrap_or_default(),
                 user_name: event
@@ -130,7 +130,7 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                             send_email_via_smtp(
                                 user_email,
                                 html_body,
-                                "✅ Order Successfully Created".to_string(),
+                                "✅ Request Successfully Created".to_string(),
                             );
                         }
                     }
@@ -152,7 +152,7 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                                     send_email_via_smtp(
                                         email_clean.to_string(),
                                         html_body.clone(),
-                                        "🔔 New Order Request Available".to_string(),
+                                        "🔔 New Request Available".to_string(),
                                     );
                                 }
                             }
