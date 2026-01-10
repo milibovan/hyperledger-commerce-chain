@@ -173,14 +173,12 @@ func (s *SmartContract) UpdateProduct(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().PutState(productKey, productJSON)
 }
 func (s *SmartContract) UpdateRequest(ctx contractapi.TransactionContextInterface, id, status, orderId, traderId string) error {
-	exists, err := s.AssetExists(ctx, id, structs.RequestET)
+	request, err := s.ReadRequest(ctx, id)
 	if err != nil {
 		return err
 	}
-	if !exists {
-		return fmt.Errorf("Request %s doesn't exists", id)
-	}
-	request, err := s.ReadRequest(ctx, id)
+
+	trader, err := s.ReadTrader(ctx, traderId)
 	if err != nil {
 		return err
 	}
@@ -207,6 +205,21 @@ func (s *SmartContract) UpdateRequest(ctx contractapi.TransactionContextInterfac
 
 	if !changed {
 		return fmt.Errorf("No changes have been made")
+	}
+
+	trader.RequestsIDs = append(trader.RequestsIDs, request.Id)
+	traderJSON, err := json.Marshal(trader)
+	if err != nil {
+		return err
+	}
+
+	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
+	if err != nil {
+		return err
+	}
+	err = ctx.GetStub().PutState(traderKey, traderJSON)
+	if err != nil {
+		return err
 	}
 
 	requestJSON, err := json.Marshal(request)
