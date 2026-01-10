@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 250,
+            "activePatchIndex": 252,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -1008,6 +1008,14 @@
                 {
                     "date": 1767989987056,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -142,8 +142,10 @@\n               }}\r\n             />\r\n           );\r\n \r\n+\r\n+        // TODO Guard if there is no unassigned\r\n         case \"showUnassigned\":\r\n           return (\r\n             <UnassignedRequests\r\n               entity={traderDetails}\r\n"
+                },
+                {
+                    "date": 1768071604876,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -156,9 +156,9 @@\n         case \"updateRequest\":\r\n           if (!selectedRequestForUpdate) {\r\n             return <LoadingSkeleton />;\r\n           }\r\n-          return <UpdateRequest entity={selectedRequestForUpdate} />;\r\n+          return <UpdateRequest entity={selectedRequestForUpdate} selectedTrader={selectedTrader} />;\r\n \r\n         default:\r\n           if (viewNestedDetails && selectedNestedEntity) {\r\n             if ('price' in selectedNestedEntity) {\r\n"
+                },
+                {
+                    "date": 1768076522152,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -143,9 +143,8 @@\n             />\r\n           );\r\n \r\n \r\n-        // TODO Guard if there is no unassigned\r\n         case \"showUnassigned\":\r\n           return (\r\n             <UnassignedRequests\r\n               entity={traderDetails}\r\n"
                 }
             ],
             "date": 1761645486253,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 128,
+            "activePatchIndex": 129,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -520,6 +520,10 @@
                 {
                     "date": 1767987899506,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,16 +12,16 @@\n   onUpdateClick: (trader: T) => void;\r\n   onDeleteClick: (trader: T) => void;\r\n }\r\n \r\n-export interface DetailsProps<T, N = any> {\r\n+export interface DetailsProps<T> {\r\n   entity: T;\r\n   date?: string;\r\n   products?: ProductData[];\r\n   productsLoading?: boolean;\r\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n-  onEntityClick?: (entity: N) => void;\r\n+  onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData | RequestDetails) => void;\r\n   onUnassignedClick?: (trader: TraderDetails) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n"
+                },
+                {
+                    "date": 1768071637493,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,8 +14,9 @@\n }\r\n \r\n export interface DetailsProps<T> {\r\n   entity: T;\r\n+  selectedTrader?: TraderData,\r\n   date?: string;\r\n   products?: ProductData[];\r\n   productsLoading?: boolean;\r\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n"
                 }
             ],
             "date": 1762248920808,

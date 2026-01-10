@@ -144,7 +144,6 @@ export default function TradersPanel() {
           );
 
 
-        // TODO Guard if there is no unassigned
         case "showUnassigned":
           return (
             <UnassignedRequests
@@ -157,7 +156,7 @@ export default function TradersPanel() {
           if (!selectedRequestForUpdate) {
             return <LoadingSkeleton />;
           }
-          return <UpdateRequest entity={selectedRequestForUpdate} />;
+          return <UpdateRequest entity={selectedRequestForUpdate} selectedTrader={selectedTrader} />;
 
         default:
           if (viewNestedDetails && selectedNestedEntity) {

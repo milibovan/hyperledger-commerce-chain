@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 189,
+            "activePatchIndex": 191,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -764,6 +764,14 @@
                 {
                     "date": 1767985224258,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -110,9 +110,9 @@\n           colorScheme=\"pink\"\r\n           icon=\"request\"\r\n           emptyMessage=\"No requests\"\r\n           headerContent={\r\n-            <div className=\"flex items-center gap-2 mt-2\" onClick={() => onUnassignedClick!(trader.trader)}>\r\n+            <div className=\"flex items-center gap-2 mt-2\" onClick={() => onUnassignedClick!(trader)}>\r\n               <div className={`\r\n                 relative flex items-center gap-2 px-3 py-1.5 rounded-full \r\n                 border-2 transition-all duration-300\r\n                 ${hasRequests\r\n"
+                },
+                {
+                    "date": 1768069437058,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -110,8 +110,9 @@\n           colorScheme=\"pink\"\r\n           icon=\"request\"\r\n           emptyMessage=\"No requests\"\r\n           headerContent={\r\n+            // TODO to disable onClick when !hasRequests\r\n             <div className=\"flex items-center gap-2 mt-2\" onClick={() => onUnassignedClick!(trader)}>\r\n               <div className={`\r\n                 relative flex items-center gap-2 px-3 py-1.5 rounded-full \r\n                 border-2 transition-all duration-300\r\n"
+                },
+                {
+                    "date": 1768076510402,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -110,9 +110,8 @@\n           colorScheme=\"pink\"\r\n           icon=\"request\"\r\n           emptyMessage=\"No requests\"\r\n           headerContent={\r\n-            // TODO to disable onClick when !hasRequests\r\n             <div className=\"flex items-center gap-2 mt-2\" onClick={() => onUnassignedClick!(trader)}>\r\n               <div className={`\r\n                 relative flex items-center gap-2 px-3 py-1.5 rounded-full \r\n                 border-2 transition-all duration-300\r\n"
                 }
             ],
             "date": 1762249738197,
