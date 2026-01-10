@@ -34,12 +34,13 @@ pub struct RequestInsufficientBalance {
 #[derive(Template)]
 #[template(path="../templates/request_approved.html")]
 pub struct RequestApproved {
-    request_id: String,
-    approval_date: DateTime<Utc>,
-    trader_name: String,
-    deadline_date: DateTime<Utc>,
-    total_amount: f32,
-    url: String,
+    pub(crate) request_id: String,
+    pub(crate) approval_date: DateTime<Utc>,
+    pub(crate) trader_name: String,
+    pub(crate) trader_email: String,
+    pub(crate) deadline_date: DateTime<Utc>,
+    pub(crate) total_amount: f32,
+    pub(crate) url: String,
 }
 
 #[derive(Template)]
