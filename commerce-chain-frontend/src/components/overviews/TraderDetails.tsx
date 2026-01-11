@@ -4,6 +4,7 @@ import ProductCard from "../reusables/ProductCard";
 import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 import NestedEntityListSection from "../reusables/NestedEntityListSection";
 import RequestCard from "../reusables/RequestCard";
+import { Receipt, User, DollarSign, Calendar, Package } from "lucide-react";
 
 export default function TraderDetails({
   entity: trader,
@@ -85,19 +86,67 @@ export default function TraderDetails({
           renderItem={(receipt: ReceiptData) => (
             <div
               onClick={() => onEntityClick?.(receipt)}
-              className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-pink-400 hover:shadow-lg hover:shadow-pink-400/50 hover:bg-gray-600 cursor-pointer"
+              className="relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border-2 border-pink-400 hover:shadow-xl hover:shadow-pink-400/50 cursor-pointer transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-pink-400 hover:scale-[1.01]"
             >
-              <div className="flex-1">
-                <h5 className="font-bold text-pink-300">
-                  Products sold: {trader["receipts-products"].length}
-                </h5>
-                <p className="text-xs text-gray-400">Buyer id: {receipt["user-id"]}</p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-pink-300">Total cost: ${receipt["total-cost"]}</p>
-                <p className="text-xs text-gray-400">
-                  Order placed: {new Date(receipt.date).toLocaleDateString()}
-                </p>
+              {/* Decorative accent line */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-500 to-pink-400"></div>
+
+              <div className="p-4">
+                {/* Header Section */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-pink-900/30">
+                      <Receipt size={20} className="text-pink-300" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-base text-pink-300">
+                        {trader["receipts-products"].length} {trader["receipts-products"].length === 1 ? 'Product' : 'Products'} Sold
+                      </h5>
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <User size={12} />
+                        Buyer ID: {receipt["user-id"]}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Receipt Badge */}
+                  <span className="px-3 py-1.5 rounded-full text-xs font-semibold border bg-pink-900/40 border-pink-500/50 text-pink-300 uppercase tracking-wide">
+                    Completed
+                  </span>
+                </div>
+
+                {/* Details Section */}
+                <div className="flex items-center justify-between gap-4">
+                  {/* Total Cost */}
+                  <div className="flex items-center gap-2">
+                    <DollarSign size={14} className="text-gray-400" />
+                    <div>
+                      <p className="text-xs text-gray-400">Total Cost</p>
+                      <p className="font-bold text-lg text-pink-300">
+                        ${receipt["total-cost"].toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Order Date */}
+                  <div className="flex items-center gap-2">
+                    <Calendar size={14} className="text-gray-400" />
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400">Order Placed</p>
+                      <p className="text-sm font-medium text-gray-300">
+                        {new Date(receipt.date).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Optional: Products count highlight */}
+                <div className="mt-3 p-2 bg-pink-900/20 border border-pink-500/30 rounded flex items-center gap-2">
+                  <Package size={14} className="text-pink-400" />
+                  <span className="text-xs text-pink-300">
+                    {trader["receipts-products"].length} item{trader["receipts-products"].length !== 1 ? 's' : ''} in this receipt
+                  </span>
+                </div>
               </div>
             </div>
           )}
@@ -142,6 +191,7 @@ export default function TraderDetails({
               request={request.request}
               onClick={() => onEntityClick?.(request.request)}
               colorScheme="pink"
+              trader={trader}
             />
           )}
         />

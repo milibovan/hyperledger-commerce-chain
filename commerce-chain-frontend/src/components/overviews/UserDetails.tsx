@@ -3,6 +3,7 @@ import type { DetailsProps } from "../../utils/propsUtils";
 import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 import NestedEntityListSection from "../reusables/NestedEntityListSection";
 import RequestCard from "../reusables/RequestCard";
+import { ShoppingBag, Hash, DollarSign, Calendar, Package } from "lucide-react";
 
 export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {
   return (
@@ -40,21 +41,67 @@ export default function UserDetails({ entity: userDetails, onEntityClick }: Deta
           renderItem={(order: OrderDetails) => (
             <div
               onClick={() => onEntityClick?.(order.order)}
-              className="flex items-center justify-between px-4 py-3 bg-gray-700 rounded border border-purple-400 hover:shadow-lg hover:shadow-purple-400/50 hover:bg-gray-600 cursor-pointer"
+              className="relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg border-2 border-purple-400 hover:shadow-xl hover:shadow-purple-400/50 cursor-pointer transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-400 hover:scale-[1.01]"
             >
-              <div className="flex-1">
-                <h5 className="font-bold text-purple-300">
-                  Products bought: {order.products.length}
-                </h5>
-                <p className="text-xs text-gray-400">ID: {order.order.id}</p>
-              </div>
-              <div className="text-right">
-                <p className="font-bold text-purple-300">
-                  Total cost: ${order.order["total-cost"]}
-                </p>
-                <p className="text-xs text-gray-400">
-                  Order placed: {new Date(order.receipts[0].date).toLocaleDateString()}
-                </p>
+              {/* Decorative accent line */}
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400"></div>
+
+              <div className="p-4">
+                {/* Header Section */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-purple-900/30">
+                      <ShoppingBag size={20} className="text-purple-300" />
+                    </div>
+                    <div>
+                      <h5 className="font-bold text-base text-purple-300">
+                        {order.products.length} {order.products.length === 1 ? 'Product' : 'Products'} Bought
+                      </h5>
+                      <div className="flex items-center gap-1 text-xs text-gray-500">
+                        <Hash size={12} />
+                        {order.order.id}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Order Badge */}
+                  <span className="px-3 py-1.5 rounded-full text-xs font-semibold border bg-purple-900/40 border-purple-500/50 text-purple-300 uppercase tracking-wide">
+                    Completed
+                  </span>
+                </div>
+
+                {/* Details Section */}
+                <div className="flex items-center justify-between gap-4">
+                  {/* Total Cost */}
+                  <div className="flex items-center gap-2">
+                    <DollarSign size={14} className="text-gray-400" />
+                    <div>
+                      <p className="text-xs text-gray-400">Total Cost</p>
+                      <p className="font-bold text-lg text-purple-300">
+                        ${order.order["total-cost"].toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Order Date */}
+                  <div className="flex items-center gap-2">
+                    <Calendar size={14} className="text-gray-400" />
+                    <div className="text-right">
+                      <p className="text-xs text-gray-400">Order Placed</p>
+                      <p className="text-sm font-medium text-gray-300">
+                        {new Date(order.receipts[0].date).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Optional: Products count highlight */}
+                <div className="mt-3 p-2 bg-purple-900/20 border border-purple-500/30 rounded flex items-center gap-2">
+                  <Package size={14} className="text-purple-400" />
+                  <span className="text-xs text-purple-300">
+                    {order.products.length} item{order.products.length !== 1 ? 's' : ''} in this order
+                  </span>
+                </div>
               </div>
             </div>
           )}

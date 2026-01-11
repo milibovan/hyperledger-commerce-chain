@@ -183,4 +183,6 @@ export interface RequestCardProps {
     request: RequestData;
     onClick?: () => void;
     colorScheme?: "pink" | "purple" | "amber";
+    trader?: TraderDetails;
+    user?: UserData;
 }
