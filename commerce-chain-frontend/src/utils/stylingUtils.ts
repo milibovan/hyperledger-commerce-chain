@@ -1,7 +1,7 @@
 export type ColorScheme = 'purple' | 'pink' | 'cyan' | 'green' | 'indigo' | 'blue' | 'red' | 'gray' | 'amber';
 
 // Base button styles (common across all buttons)
-const baseButtonStyle = "flex items-center justify-center gap-3 rounded border-2 transition-all font-semibold";
+const baseButtonStyle = "relative overflow-hidden flex items-center justify-center gap-3 rounded-lg border-2 transition-all duration-300 font-semibold";
 
 // Static color classes - Tailwind needs complete class names
 const colorClassesMap: Record<ColorScheme, {
@@ -13,6 +13,8 @@ const colorClassesMap: Record<ColorScheme, {
   shadow: string;
   shadowStrong: string;
   button: string;
+  buttonHover: string;
+  accentGradient: string;
   title: string;
   loading: string;
 }> = {
@@ -24,7 +26,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-purple-500',
     shadow: 'hover:shadow-purple-400/50',
     shadowStrong: 'shadow-purple-500/50',
-    button: 'bg-purple-600 hover:bg-purple-500 border-purple-400',
+    button: 'bg-gradient-to-br from-purple-600 to-purple-700',
+    buttonHover: 'hover:from-purple-500 hover:to-purple-600',
+    accentGradient: 'from-purple-400 to-purple-300',
     title: 'text-purple-400',
     loading: 'text-purple-300',
   },
@@ -36,7 +40,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-pink-500',
     shadow: 'hover:shadow-pink-400/50',
     shadowStrong: 'shadow-pink-500/50',
-    button: 'bg-pink-600 hover:bg-pink-500 border-pink-400',
+    button: 'bg-gradient-to-br from-pink-600 to-pink-700',
+    buttonHover: 'hover:from-pink-500 hover:to-pink-600',
+    accentGradient: 'from-pink-400 to-pink-300',
     title: 'text-pink-400',
     loading: 'text-pink-300',
   },
@@ -48,7 +54,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-cyan-500',
     shadow: 'hover:shadow-cyan-400/50',
     shadowStrong: 'shadow-cyan-500/50',
-    button: 'bg-cyan-600 hover:bg-cyan-500 border-cyan-400',
+    button: 'bg-gradient-to-br from-cyan-600 to-cyan-700',
+    buttonHover: 'hover:from-cyan-500 hover:to-cyan-600',
+    accentGradient: 'from-cyan-400 to-cyan-300',
     title: 'text-cyan-400',
     loading: 'text-cyan-300',
   },
@@ -60,7 +68,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-green-500',
     shadow: 'hover:shadow-green-400/50',
     shadowStrong: 'shadow-green-500/50',
-    button: 'bg-green-600 hover:bg-green-500 border-green-400',
+    button: 'bg-gradient-to-br from-green-600 to-green-700',
+    buttonHover: 'hover:from-green-500 hover:to-green-600',
+    accentGradient: 'from-green-400 to-green-300',
     title: 'text-green-400',
     loading: 'text-green-300',
   },
@@ -72,7 +82,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-indigo-500',
     shadow: 'hover:shadow-indigo-400/50',
     shadowStrong: 'shadow-indigo-500/50',
-    button: 'bg-indigo-600 hover:bg-indigo-500 border-indigo-400',
+    button: 'bg-gradient-to-br from-indigo-600 to-indigo-700',
+    buttonHover: 'hover:from-indigo-500 hover:to-indigo-600',
+    accentGradient: 'from-indigo-400 to-indigo-300',
     title: 'text-indigo-400',
     loading: 'text-indigo-300',
   },
@@ -84,7 +96,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-blue-500',
     shadow: 'hover:shadow-blue-400/50',
     shadowStrong: 'shadow-blue-500/50',
-    button: 'bg-blue-600 hover:bg-blue-500 border-blue-400',
+    button: 'bg-gradient-to-br from-blue-600 to-blue-700',
+    buttonHover: 'hover:from-blue-500 hover:to-blue-600',
+    accentGradient: 'from-blue-400 to-blue-300',
     title: 'text-blue-400',
     loading: 'text-blue-300',
   },
@@ -96,7 +110,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-red-500',
     shadow: 'hover:shadow-red-400/50',
     shadowStrong: 'shadow-red-500/50',
-    button: 'bg-red-600 hover:bg-red-500 border-red-400',
+    button: 'bg-gradient-to-br from-red-600 to-red-700',
+    buttonHover: 'hover:from-red-500 hover:to-red-600',
+    accentGradient: 'from-red-400 to-red-300',
     title: 'text-red-400',
     loading: 'text-red-300',
   },
@@ -108,7 +124,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-gray-500',
     shadow: 'hover:shadow-gray-400/50',
     shadowStrong: 'shadow-gray-500/50',
-    button: 'bg-gray-600 hover:bg-gray-500 border-gray-400',
+    button: 'bg-gradient-to-br from-gray-600 to-gray-700',
+    buttonHover: 'hover:from-gray-500 hover:to-gray-600',
+    accentGradient: 'from-gray-400 to-gray-300',
     title: 'text-gray-400',
     loading: 'text-gray-300',
   },
@@ -120,7 +138,9 @@ const colorClassesMap: Record<ColorScheme, {
     borderThick: 'border-amber-500',
     shadow: 'hover:shadow-amber-400/50',
     shadowStrong: 'shadow-amber-500/50',
-    button: 'bg-amber-600 hover:bg-amber-500 border-amber-400',
+    button: 'bg-gradient-to-br from-amber-600 to-amber-700',
+    buttonHover: 'hover:from-amber-500 hover:to-amber-600',
+    accentGradient: 'from-amber-400 to-amber-300',
     title: 'text-amber-400',
     loading: 'text-amber-300',
   },
@@ -136,16 +156,22 @@ const buttonSizeMap = {
   lg: 'px-6 py-3'
 };
 
-// Button style generators
+// Accent line component (to be added inside buttons)
+// const getAccentLine = (scheme: ColorScheme) => {
+//   const colors = colorClassesMap[scheme];
+//   return `<div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${colors.accentGradient}"></div>`;
+// };
+
+// Button style generators with modern design
 export const getButtonStyle = (scheme: ColorScheme, size: 'sm' | 'md' | 'lg' = 'md') => {
   const colors = colorClassesMap[scheme];
-  return `${baseButtonStyle} ${buttonSizeMap[size]} ${colors.button} text-white`;
+  return `${baseButtonStyle} ${buttonSizeMap[size]} ${colors.button} ${colors.buttonHover} ${colors.border} text-white hover:shadow-xl ${colors.shadow} hover:scale-105`;
 };
 
 // Create button with shadow
 export const getCreateButtonStyle = (scheme: ColorScheme) => {
   const colors = colorClassesMap[scheme];
-  return `flex items-center gap-2 px-6 py-3 ${colors.button} text-white font-semibold rounded border-2 transition-all duration-200 hover:shadow-lg ${colors.shadow}`;
+  return `${baseButtonStyle} px-6 py-3 ${colors.button} ${colors.buttonHover} ${colors.border} text-white hover:shadow-xl ${colors.shadow} hover:scale-105`;
 };
 
 // List container style
@@ -158,11 +184,11 @@ export const getListContainerStyle = (scheme: ColorScheme) => {
     itemBorder: colors.border,
     itemShadow: colors.shadow,
     loading: colors.loading,
-    button: `${colors.button} ${colors.shadow}`,
+    button: `${colors.button} ${colors.buttonHover} ${colors.shadow}`,
   };
 };
 
-// Predefined button styles
+// Predefined button styles with modern design
 export const addButtonStyle = getButtonStyle('green', 'md');
 export const updateButtonStyle = getButtonStyle('blue', 'md');
 export const deleteButtonStyle = getButtonStyle('red', 'md');
@@ -174,7 +200,7 @@ export const deleteButtonSm = getButtonStyle('red', 'sm');
 // Modal styles
 export const modalDialogClassName = "backdrop:bg-black/80 bg-gray-800 border-2 rounded-lg p-8 shadow-2xl max-w-2xl w-full";
 export const modalCancelButtonStyle = getButtonStyle('gray', 'lg');
-export const modalConfirmButtonStyle = `${getButtonStyle('red', 'lg')} hover:shadow-lg hover:shadow-red-400/50`;
+export const modalConfirmButtonStyle = getButtonStyle('red', 'lg');
 
 // Entity-specific styles
 export const traderFontSemibold = colorClassesMap.pink.textSemibold;
