@@ -1,6 +1,6 @@
 import { Package, Plus, Receipt, CircleQuestionMark } from "lucide-react";
 import type { EntityListSectionProps as NestedEntityListSectionProps } from "../../utils/propsUtils";
-import { colorSchemes } from "../../utils/stylingUtils";
+import { colorSchemes, getCreateButtonStyle } from "../../utils/stylingUtils";
 
 const NestedEntityListSection = <T,>({
     title,
@@ -49,7 +49,7 @@ const NestedEntityListSection = <T,>({
                 {actionButton && (
                     <button
                         onClick={actionButton.onClick}
-                        className={`flex items-center px-3 py-2 gap-3 ${colors.button} text-white font-semibold rounded border-2 transition-all duration-200 hover:shadow-lg ${colors.shadow}`}
+                        className={`flex items-center px-3 py-2 gap-3 ${colors.button} ${getCreateButtonStyle(colorScheme)} text-white font-semibold rounded border-2 transition-all duration-200 hover:shadow-lg ${colors.shadow}`}
                         title={actionButton.label}
                     >
                         {actionButton.icon || <Plus size={18} />}

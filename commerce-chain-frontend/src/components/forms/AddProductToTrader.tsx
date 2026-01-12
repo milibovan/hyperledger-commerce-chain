@@ -5,7 +5,7 @@ import { useProducts } from "../hooks/useProducts";
 import { traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 import { useEntityActions } from "../hooks/useEntityActions";
 import Modal, { type ModalHandle } from "../modals/DeleteModal";
-import { host, httpMethod } from "../../utils/utils";
+import { addProductsToTrader } from "../../utils/utils";
 import SuccessProductAddingModal from "../modals/SuccessProductAddingModal";
 import ConfirmationModal from "../modals/ConfirmationModal";
 import type { TraderData } from "../../utils/dataTypesUtils";
@@ -96,14 +96,7 @@ export default function AddProductsToTrader({
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`${host}/traders-products/channel-a`, {
-        method: httpMethod.POST,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          products: productsToAdd,
-          "trader-id": trader.id,
-        }),
-      });
+      const response = await addProductsToTrader(productsToAdd, trader.id)
 
       if (response.ok) {
         const data = await response.json();
