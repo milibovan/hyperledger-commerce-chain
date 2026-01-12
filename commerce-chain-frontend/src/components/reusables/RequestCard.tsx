@@ -1,6 +1,6 @@
 import { getFormattedDate } from "../../utils/dataTypesUtils";
 import type { RequestCardProps } from "../../utils/propsUtils";
-import { Package, Calendar, DollarSign, CheckCircle, AlertTriangle, ShoppingCart, Plus } from "lucide-react";
+import { Package, Calendar, DollarSign, CheckCircle, AlertTriangle, ShoppingCart, Plus, XCircle } from "lucide-react";
 
 export default function RequestCard({ request, onClick, trader, colorScheme = "purple" }: RequestCardProps) {
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -13,9 +13,8 @@ export default function RequestCard({ request, onClick, trader, colorScheme = "p
     function couldBeFullfilled() {
         let hasEnoughProducts = true
         request.products.forEach((element) => {
-            console.log(element)
             const tradersProduct = trader?.trader["products-available"].find(product => product["product-id"] === element["product-id"])
-            console.log(tradersProduct)
+
             if (!tradersProduct) {
                 hasEnoughProducts = false
             } else {
@@ -28,7 +27,30 @@ export default function RequestCard({ request, onClick, trader, colorScheme = "p
         return hasEnoughProducts
     }
 
+    function hasEnoughQuantityStocked() {
+        let hasEnoughQuantityStocked = true;
+        request.products.forEach((element) => {
+            const tradersProduct = trader?.["available-products"].find(product => product.id === element["product-id"])
+
+            if (!tradersProduct) {
+                hasEnoughQuantityStocked = false
+            } else {
+                if (element.quantity > tradersProduct.quantity) {
+                    hasEnoughQuantityStocked = false
+                }
+            }
+        })
+
+        return hasEnoughQuantityStocked
+    }
+
     const hasEnoughProducts = couldBeFullfilled();
+    const hasEnoughStocked = hasEnoughQuantityStocked();
+
+    // Logic for action states
+    const canFulfill = hasEnoughProducts;
+    const canRestock = !hasEnoughProducts && hasEnoughStocked;
+    const isGlobalStockMissing = !hasEnoughProducts && !hasEnoughStocked;
 
     // Determine status styling
     const isCreated = request.status === 'CREATED';
@@ -79,23 +101,29 @@ export default function RequestCard({ request, onClick, trader, colorScheme = "p
                     : theme.badge;
 
     // Border and shadow colors based on fulfillment status
-    const borderColor = !hasEnoughProducts && !isFulfilled && trader
+    const borderColor = isGlobalStockMissing && !isFulfilled && trader
         ? "border-red-500"
-        : hasEnoughProducts && !isFulfilled && trader
-            ? "border-green-500"
-            : theme.border;
+        : canRestock && !isFulfilled && trader
+            ? "border-amber-500"
+            : canFulfill && !isFulfilled && trader
+                ? "border-green-500"
+                : theme.border;
 
-    const shadowColor = !hasEnoughProducts && !isFulfilled && trader
+    const shadowColor = isGlobalStockMissing && !isFulfilled && trader
         ? "hover:shadow-red-500/50"
-        : hasEnoughProducts && !isFulfilled && trader
-            ? "hover:shadow-green-500/50"
-            : theme.shadow;
+        : canRestock && !isFulfilled && trader
+            ? "hover:shadow-amber-500/50" // Changed from red to amber for consistency
+            : canFulfill && !isFulfilled && trader
+                ? "hover:shadow-green-500/50"
+                : theme.shadow;
 
-    const focusRing = !hasEnoughProducts && !isFulfilled && trader
+    const focusRing = isGlobalStockMissing && !isFulfilled && trader
         ? "focus:ring-red-400"
-        : hasEnoughProducts && !isFulfilled && trader
-            ? "focus:ring-green-400"
-            : theme.ring;
+        : canRestock && !isFulfilled && trader
+            ? "focus:ring-amber-400"
+            : canFulfill && !isFulfilled && trader
+                ? "focus:ring-green-400"
+                : theme.ring;
 
     return (
         <div className="space-y-2">
@@ -108,14 +136,14 @@ export default function RequestCard({ request, onClick, trader, colorScheme = "p
                 aria-label={`View details for request ${request.id}`}
             >
                 {/* Decorative accent line */}
-                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${hasEnoughProducts && !isFulfilled && trader ? "from-green-500 to-green-400" : !hasEnoughProducts && !isFulfilled && trader ? "from-red-500 to-red-400" : colorScheme === "purple" ? "from-purple-500 to-purple-400" : colorScheme === "pink" ? "from-pink-500 to-pink-400" : "from-amber-500 to-amber-400"}`}></div>
+                <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${canFulfill && !isFulfilled && trader ? "from-green-500 to-green-400" : isGlobalStockMissing && !isFulfilled && trader ? "from-red-500 to-red-400" : canRestock && !isFulfilled && trader ? "from-amber-500 to-amber-400" : colorScheme === "purple" ? "from-purple-500 to-purple-400" : colorScheme === "pink" ? "from-pink-500 to-pink-400" : "from-amber-500 to-amber-400"}`}></div>
 
                 <div className="p-5">
                     {/* Header Section */}
                     <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                            <div className={`p-2.5 rounded-lg ${hasEnoughProducts && !isFulfilled && trader ? "bg-green-900/30" : !hasEnoughProducts && !isFulfilled && trader ? "bg-red-900/30" : colorScheme === "purple" ? "bg-purple-900/30" : colorScheme === "pink" ? "bg-pink-900/30" : "bg-amber-900/30"}`}>
-                                <Package size={22} className={hasEnoughProducts && !isFulfilled && trader ? "text-green-400" : !hasEnoughProducts && !isFulfilled && trader ? "text-red-400" : theme.text} />
+                            <div className={`p-2.5 rounded-lg ${canFulfill && !isFulfilled && trader ? "bg-green-900/30" : isGlobalStockMissing && !isFulfilled && trader ? "bg-red-900/30" : canRestock && !isFulfilled && trader ? "bg-amber-900/30" : colorScheme === "purple" ? "bg-purple-900/30" : colorScheme === "pink" ? "bg-pink-900/30" : "bg-amber-900/30"}`}>
+                                <Package size={22} className={canFulfill && !isFulfilled && trader ? "text-green-400" : isGlobalStockMissing && !isFulfilled && trader ? "text-red-400" : canRestock && !isFulfilled && trader ? "text-amber-400" : theme.text} />
                             </div>
                             <div>
                                 <h5 className={`font-bold text-lg ${theme.text}`}>
@@ -171,9 +199,12 @@ export default function RequestCard({ request, onClick, trader, colorScheme = "p
 
             {/* Action Section */}
             {!isFulfilled && trader && (
-                <div className={`flex items-center justify-between p-4 rounded-lg border-2 ${hasEnoughProducts ? "bg-green-900/20 border-green-500/50" : "bg-red-900/20 border-red-500/50"}`}>
+                <div className={`flex items-center justify-between p-4 rounded-lg border-2 ${canFulfill ? "bg-green-900/20 border-green-500/50" :
+                    canRestock ? "bg-amber-900/20 border-amber-500/50" :
+                        "bg-red-900/20 border-red-500/50"
+                    }`}>
                     <div className="flex items-center gap-3">
-                        {hasEnoughProducts ? (
+                        {canFulfill ? (
                             <>
                                 <CheckCircle size={20} className="text-green-400" />
                                 <div>
@@ -181,12 +212,20 @@ export default function RequestCard({ request, onClick, trader, colorScheme = "p
                                     <p className="text-xs text-green-300/70">All products available in inventory</p>
                                 </div>
                             </>
+                        ) : canRestock ? (
+                            <>
+                                <AlertTriangle size={20} className="text-amber-400" />
+                                <div>
+                                    <p className="font-semibold text-amber-400">Insufficient Stock</p>
+                                    <p className="text-xs text-amber-300/70">Add products to fulfill this request</p>
+                                </div>
+                            </>
                         ) : (
                             <>
-                                <AlertTriangle size={20} className="text-red-400" />
+                                <XCircle size={20} className="text-red-400" />
                                 <div>
-                                    <p className="font-semibold text-red-400">Insufficient Stock</p>
-                                    <p className="text-xs text-red-300/70">Add products to fulfill this request</p>
+                                    <p className="font-semibold text-red-400">Global Stock Missing</p>
+                                    <p className="text-xs text-red-300/70">Products unavailable in global stock</p>
                                 </div>
                             </>
                         )}
@@ -195,22 +234,31 @@ export default function RequestCard({ request, onClick, trader, colorScheme = "p
                     <button
                         onClick={(e) => {
                             e.stopPropagation();
+                            if (isGlobalStockMissing) return; // Prevent action if globally missing
                             // Add your fulfill/add products handler here
                         }}
-                        className={`flex items-center gap-2 px-4 py-2 font-semibold rounded border-2 transition-all duration-200 hover:shadow-lg ${hasEnoughProducts
-                            ? "bg-green-600 hover:bg-green-500 border-green-400 text-white hover:shadow-green-400/50"
-                            : "bg-red-600 hover:bg-red-500 border-red-400 text-white hover:shadow-red-400/50"
+                        disabled={isGlobalStockMissing}
+                        className={`flex items-center gap-2 px-4 py-2 font-semibold rounded border-2 transition-all duration-200 ${canFulfill
+                            ? "bg-green-600 hover:bg-green-500 border-green-400 text-white hover:shadow-lg hover:shadow-green-400/50"
+                            : canRestock
+                                ? "bg-amber-600 hover:bg-amber-500 border-amber-400 text-white hover:shadow-lg hover:shadow-amber-400/50"
+                                : "bg-red-900/40 border-red-500/50 text-red-300 cursor-not-allowed opacity-80"
                             }`}
                     >
-                        {hasEnoughProducts ? (
+                        {canFulfill ? (
                             <>
                                 <ShoppingCart size={16} />
                                 Fulfill
                             </>
-                        ) : (
+                        ) : canRestock ? (
                             <>
                                 <Plus size={16} />
                                 Add Products
+                            </>
+                        ) : (
+                            <>
+                                <XCircle size={16} />
+                                Unavailable
                             </>
                         )}
                     </button>

@@ -210,9 +210,8 @@ export default function AddProductsToTrader({
           <div>
             <p className="text-sm text-gray-400 mb-1">Remaining Balance</p>
             <p
-              className={`text-2xl font-bold ${
-                hasInsufficientFunds ? "text-red-500" : "text-green-400"
-              }`}
+              className={`text-2xl font-bold ${hasInsufficientFunds ? "text-red-500" : "text-green-400"
+                }`}
             >
               ${remainingBalance.toFixed(2)}
             </p>
@@ -253,13 +252,12 @@ export default function AddProductsToTrader({
                   key={product.id}
                   className={`
                       border-2 rounded-lg p-4 transition-all duration-200 cursor-pointer
-                      ${
-                        isSelected
-                          ? "bg-pink-900/20 border-pink-400 shadow-lg shadow-pink-400/20"
-                          : "bg-gray-800 border-gray-600 hover:border-pink-400/50"
-                      }
+                      ${isSelected
+                      ? "bg-pink-900/20 border-pink-400 shadow-lg shadow-pink-400/20"
+                      : "bg-gray-800 border-gray-600 hover:border-pink-400/50"
+                    }
                     `}
-                  onClick={() => !isSelected && toggleProduct(product.id)}
+                  onClick={() => !isSelected && product.quantity > 0 && toggleProduct(product.id)}
                 >
                   {/* Product Header */}
                   <div className="flex items-start justify-between mb-3">
@@ -301,11 +299,10 @@ export default function AddProductsToTrader({
                           className={`
                               flex-1 px-3 py-2 bg-gray-700 text-white rounded font-semibold
                               transition-all duration-200 focus:outline-none
-                              ${
-                                error || (hasInsufficientFunds && quantity > 0)
-                                  ? "border-2 border-red-500 focus:border-red-400"
-                                  : "border-2 border-pink-500 focus:border-pink-300"
-                              }
+                              ${error || (hasInsufficientFunds && quantity > 0)
+                              ? "border-2 border-red-500 focus:border-red-400"
+                              : "border-2 border-pink-500 focus:border-pink-300"
+                            }
                             `}
                         />
                         <button
@@ -325,11 +322,10 @@ export default function AddProductsToTrader({
                       <div className="flex justify-between items-center pt-2 border-t border-gray-700">
                         <span className="text-sm text-gray-400">Subtotal:</span>
                         <span
-                          className={`text-lg font-bold ${
-                            hasInsufficientFunds && quantity > 0
-                              ? "text-red-400"
-                              : "text-pink-300"
-                          }`}
+                          className={`text-lg font-bold ${hasInsufficientFunds && quantity > 0
+                            ? "text-red-400"
+                            : "text-pink-300"
+                            }`}
                         >
                           ${productTotal.toFixed(2)}
                         </span>
@@ -337,7 +333,7 @@ export default function AddProductsToTrader({
                     </div>
                   )}
 
-                  {!isSelected && (
+                  {!isSelected && product.quantity > 0 && (
                     <div className="text-center pt-2 border-t border-gray-700">
                       <span className="text-sm text-pink-300 font-semibold">
                         Click to add
