@@ -313,14 +313,6 @@ func (s *SmartContract) DepositMoney(ctx contractapi.TransactionContextInterface
 		return err
 	}
 
-	exists, err := s.AssetExists(ctx, id, structs.UserET)
-	if err != nil {
-		return err
-	}
-	if !exists {
-		return fmt.Errorf("Asset type %s with ID %s does not exist", userType, id)
-	}
-
 	if amountFl <= 0 {
 		return fmt.Errorf("deposit amount must be positive")
 	}
