@@ -4,39 +4,35 @@ import type { AddOrBuyProductProps } from "../../utils/propsUtils";
 import { useProducts } from "../hooks/useProducts";
 import { traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 import { useEntityActions } from "../hooks/useEntityActions";
-import Modal, { type ModalHandle } from "../modals/DeleteModal";
-import { addProductsToTrader } from "../../utils/utils";
-import SuccessProductAddingModal from "../modals/SuccessProductAddingModal";
-import ConfirmationModal from "../modals/ConfirmationModal";
-import type { TraderData } from "../../utils/dataTypesUtils";
+import { type ModalHandle } from "../modals/DeleteModal";
+import type { ProductInventory, TraderData } from "../../utils/dataTypesUtils";
+import AddProductToTraderModals from "../modals/AddProductToTraderModals";
+
 
 export default function AddProductsToTrader({
   trader,
-  onSuccess,
 }: AddOrBuyProductProps<TraderData>) {
   const successModalRef = useRef<ModalHandle>(null);
   const confirmModalRef = useRef<ModalHandle>(null);
   const { products, loading, fetchProducts } = useProducts();
-  const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(
-    new Map()
-  );
+
+  const [selectedProducts, setSelectedProducts] = useState<ProductInventory[]>([]);
+
   const [errors, setErrors] = useState<Map<string, string>>(new Map());
   const { resetActions, resetNestedView } = useEntityActions();
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
   const calculateTotal = (): number => {
-    let total = 0;
-    selectedProducts.forEach((quantity, productId) => {
-      const product = products.find((p) => p.id === productId);
-      if (product && quantity > 0) {
-        total += product.price * quantity;
+    return selectedProducts.reduce((total, item) => {
+      const product = products.find((p) => p.id === item["product-id"]);
+      if (product && item.quantity > 0) {
+        return total + product.price * item.quantity;
       }
-    });
-    return total;
+      return total;
+    }, 0);
   };
 
   const totalCost = calculateTotal();
@@ -45,18 +41,18 @@ export default function AddProductsToTrader({
 
   const toggleProduct = (productId: string) => {
     setSelectedProducts((prev) => {
-      const newMap = new Map(prev);
-      if (newMap.has(productId)) {
-        newMap.delete(productId);
+      const exists = prev.find((item) => item["product-id"] === productId);
+
+      if (exists) {
         setErrors((prevErrors) => {
           const newErrors = new Map(prevErrors);
           newErrors.delete(productId);
           return newErrors;
         });
+        return prev.filter((item) => item["product-id"] !== productId);
       } else {
-        newMap.set(productId, 1);
+        return [...prev, { "product-id": productId, quantity: 1 }];
       }
-      return newMap;
     });
   };
 
@@ -64,15 +60,18 @@ export default function AddProductsToTrader({
     const product = products.find((p) => p.id === productId);
     if (!product) return;
 
-    setSelectedProducts((prev) => {
-      const newMap = new Map(prev);
-      if (quantity > 0) {
-        newMap.set(productId, quantity);
-      } else {
-        newMap.delete(productId);
-      }
-      return newMap;
-    });
+    if (quantity <= 0) {
+      toggleProduct(productId);
+      return;
+    }
+
+    setSelectedProducts((prev) =>
+      prev.map((item) =>
+        item["product-id"] === productId
+          ? { ...item, quantity: quantity }
+          : item
+      )
+    );
 
     setErrors((prev) => {
       const newErrors = new Map(prev);
@@ -85,96 +84,30 @@ export default function AddProductsToTrader({
     });
   };
 
-  const handleConfirm = async () => {
-    const productsToAdd = Array.from(selectedProducts.entries()).map(
-      ([productId, quantity]) => ({
-        "product-id": productId,
-        quantity,
-      })
-    );
-
-    setIsSubmitting(true);
-
-    try {
-      const response = await addProductsToTrader(productsToAdd, trader.id)
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Success: ", data.Message);
-
-        confirmModalRef.current?.close();
-
-        if (onSuccess) {
-          await onSuccess();
-        }
-
-        successModalRef.current?.open();
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || "Failed to add products");
-        successModalRef.current?.close();
-      }
-    } catch (err) {
-      alert(`Error: ${err instanceof Error ? err.message : String(err)}`);
-      successModalRef.current?.close();
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleSubmit = () => {
-    if (hasInsufficientFunds || errors.size > 0 || selectedProducts.size === 0)
+    if (hasInsufficientFunds || errors.size > 0 || selectedProducts.length === 0)
       return;
     confirmModalRef.current?.open();
   };
 
   const isSubmitDisabled =
     loading ||
-    selectedProducts.size === 0 ||
+    selectedProducts.length === 0 ||
     hasInsufficientFunds ||
     errors.size > 0;
 
   return (
     <div className="space-y-6">
-      <Modal
-        ref={successModalRef}
-        onConfirm={() => {
-          successModalRef.current?.close();
-          resetNestedView();
-        }}
-        confirmLabel="Close"
-        showActions={true}
-        cancelClassName="hidden"
-        confirmClassName="px-6 py-3 bg-green-600 hover:bg-green-500 rounded border-2 border-green-400 transition-all duration-200 hover:shadow-lg hover:shadow-green-400/50 text-white font-semibold"
-        dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-green-500 rounded-lg p-8 shadow-2xl shadow-green-500/50 max-w-2xl w-full"
-      >
-        <SuccessProductAddingModal
-          trader={trader}
-          selectedProducts={selectedProducts}
-          totalCost={totalCost}
-          remainingBalance={remainingBalance}
-        />
-      </Modal>
-
-      {/* Confirmation Modal */}
-      <Modal
-        ref={confirmModalRef}
-        onConfirm={handleConfirm}
-        onCancel={() => confirmModalRef.current?.close()}
-        confirmLabel={isSubmitting ? "Processing..." : "Confirm Purchase"}
-        cancelLabel="Review Again"
-        confirmClassName="px-6 py-3 bg-pink-600 hover:bg-pink-500 rounded border-2 border-pink-400 transition-all duration-200 hover:shadow-lg hover:shadow-pink-400/50 text-white font-semibold"
-        cancelClassName="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded border-2 border-gray-600 transition-all duration-200 text-pink-300 font-semibold"
-        dialogClassName="backdrop:bg-black/80 bg-gray-800 border-2 border-pink-500 rounded-lg p-8 shadow-2xl shadow-pink-500/50 max-w-3xl w-full"
-      >
-        <ConfirmationModal
-          trader={trader}
-          selectedProducts={selectedProducts}
-          totalCost={totalCost}
-          remainingBalance={remainingBalance}
-          products={products}
-        />
-      </Modal>
+      <AddProductToTraderModals
+        successModalRef={successModalRef}
+        confirmModalRef={confirmModalRef}
+        resetNestedView={resetNestedView}
+        trader={trader}
+        selectedProducts={selectedProducts}
+        totalCost={totalCost}
+        balance={remainingBalance}
+        products={products}
+      />
 
       {/* Header */}
       <div className="relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-pink-500 rounded-lg p-6 shadow-xl shadow-pink-500/30">
@@ -259,8 +192,11 @@ export default function AddProductsToTrader({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {products.map((product) => {
-              const isSelected = selectedProducts.has(product.id);
-              const quantity = selectedProducts.get(product.id) || 0;
+              // CHANGED: Find product in array
+              const selection = selectedProducts.find(p => p["product-id"] === product.id);
+              const isSelected = !!selection;
+              const quantity = selection?.quantity || 0;
+
               const error = errors.get(product.id);
               const productTotal = product.price * quantity;
 
@@ -365,31 +301,31 @@ export default function AddProductsToTrader({
       </div>
 
       {/* Selected Products Summary */}
-      {selectedProducts.size > 0 && (
+      {selectedProducts.length > 0 && (
         <div className="relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-pink-400 rounded-lg p-4 shadow-lg shadow-pink-400/20">
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-400 to-pink-300"></div>
           <h3 className="text-lg font-bold text-pink-300 mb-3">
-            Selected Products ({selectedProducts.size})
+            Selected Products ({selectedProducts.length})
           </h3>
           <div className="space-y-2">
-            {Array.from(selectedProducts.entries()).map(
-              ([productId, quantity]) => {
-                const product = products.find((p) => p.id === productId);
-                if (!product) return null;
-                return (
-                  <div
-                    key={productId}
-                    className="flex justify-between items-center p-2 bg-gray-800/50 rounded border border-gray-700"
-                  >
-                    <span className="text-sm text-gray-300">
-                      {product.name} × {quantity}
-                    </span>
-                    <span className="font-bold text-pink-300">
-                      ${(product.price * quantity).toFixed(2)}
-                    </span>
-                  </div>
-                );
-              }
+            {/* CHANGED: Map over the array directly */}
+            {selectedProducts.map((item) => {
+              const product = products.find((p) => p.id === item["product-id"]);
+              if (!product) return null;
+              return (
+                <div
+                  key={item["product-id"]}
+                  className="flex justify-between items-center p-2 bg-gray-800/50 rounded border border-gray-700"
+                >
+                  <span className="text-sm text-gray-300">
+                    {product.name} × {item.quantity}
+                  </span>
+                  <span className="font-bold text-pink-300">
+                    ${(product.price * item.quantity).toFixed(2)}
+                  </span>
+                </div>
+              );
+            }
             )}
           </div>
         </div>
@@ -411,7 +347,7 @@ export default function AddProductsToTrader({
         >
           <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-pink-300 to-pink-200"></div>
           <Send size={20} />
-          {loading ? "Adding..." : `Add ${selectedProducts.size} Product(s)`}
+          {loading ? "Adding..." : `Add ${selectedProducts.length} Product(s)`}
         </button>
       </div>
     </div>

@@ -14,7 +14,7 @@ export default function ProductsTabs({
   products,
   loading,
   onSuccess,
-  selectedProducts,
+  selectedProducts, // Now expected to be ProductInventory[]
   hasInsufficientFunds,
   errors,
   toggleProduct,
@@ -29,12 +29,12 @@ export default function ProductsTabs({
   const confirmModalRef = useRef<ModalHandle>(null);
 
   const handleConfirm = async () => {
-    const productsToAdd = Array.from(selectedProducts.entries()).map(
-      ([productId, quantity]) => ({
-        "product-id": productId,
-        quantity,
-      })
-    );
+    // CHANGED: selectedProducts is already in the correct format (ProductInventory[])
+    // We can pass it directly or map it if we need to ensure cleanliness
+    const productsToAdd = selectedProducts.map(item => ({
+      "product-id": item["product-id"],
+      quantity: item.quantity
+    }));
 
     setIsSubmitting(true);
 
@@ -73,14 +73,15 @@ export default function ProductsTabs({
   };
 
   const handleSubmit = () => {
-    if (hasInsufficientFunds || errors.size > 0 || selectedProducts.size === 0)
+    // CHANGED: .size to .length
+    if (hasInsufficientFunds || errors.size > 0 || selectedProducts.length === 0)
       return;
     confirmModalRef.current?.open();
   };
 
   const isSubmitDisabled =
     loading ||
-    selectedProducts.size === 0 ||
+    selectedProducts.length === 0 || // CHANGED: .size to .length
     hasInsufficientFunds ||
     errors.size > 0;
 
@@ -139,8 +140,11 @@ export default function ProductsTabs({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {products.map((product) => {
-              const isSelected = selectedProducts.has(product.id);
-              const quantity = selectedProducts.get(product.id) || 0;
+              // CHANGED: Find product in array instead of Map.has/get
+              const selection = selectedProducts.find(p => p["product-id"] === product.id);
+              const isSelected = !!selection;
+              const quantity = selection?.quantity || 0;
+
               const error = errors.get(product.id);
               const productTotal = product.price * quantity;
               const isOutOfStock = product.quantity === 0;
@@ -269,31 +273,36 @@ export default function ProductsTabs({
       </div>
 
       {/* Selected Products Summary */}
-      {selectedProducts.size > 0 &&
-        [...selectedProducts.values()].every((quantity) => quantity > 0) && (
+      {selectedProducts.length > 0 &&
+        // CHANGED: .every on array directly
+        selectedProducts.every((p) => p.quantity > 0) && (
           <div className="bg-gray-800 border-2 border-purple-400 rounded-lg p-4 mb-6">
             <h3 className="text-lg font-bold text-purple-300 mb-3">
-              Selected Products ({selectedProducts.size})
+              Selected Products ({selectedProducts.length})
             </h3>
             <div className="space-y-2">
-              {Array.from(selectedProducts.entries()).map(
-                ([productId, quantity]) => {
-                  const product = products.find((p) => p.id === productId);
-                  if (!product) return null;
-                  return (
-                    <div
-                      key={productId}
-                      className="flex justify-between items-center text-sm text-gray-300"
-                    >
-                      <span>
-                        {product.name} × {quantity}
-                      </span>
-                      <span className="font-bold text-purple-300">
-                        ${(product.price * quantity).toFixed(2)}
-                      </span>
-                    </div>
-                  );
-                }
+              {/* CHANGED: Map over the array directly */}
+              {selectedProducts.map((item) => {
+                const productId = item["product-id"];
+                const quantity = item.quantity;
+                const product = products.find((p) => p.id === productId);
+
+                if (!product) return null;
+
+                return (
+                  <div
+                    key={productId}
+                    className="flex justify-between items-center text-sm text-gray-300"
+                  >
+                    <span>
+                      {product.name} × {quantity}
+                    </span>
+                    <span className="font-bold text-purple-300">
+                      ${(product.price * quantity).toFixed(2)}
+                    </span>
+                  </div>
+                );
+              }
               )}
             </div>
           </div>
@@ -312,7 +321,7 @@ export default function ProductsTabs({
           className="flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-purple-300 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-600 disabled:to-gray-700"
         >
           <Send size={20} />
-          {loading ? "Buying..." : `Buy ${selectedProducts.size} Product(s)`}
+          {loading ? "Buying..." : `Buy ${selectedProducts.length} Product(s)`}
         </button>
       </div>
     </div>

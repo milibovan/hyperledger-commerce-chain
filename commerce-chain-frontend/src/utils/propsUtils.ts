@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab, RequestData, RequestDetails, TraderDetails } from "./dataTypesUtils";
+import type { TraderData, ProductData, UserData, ProductsData, ReceiptData, OrderData, FieldConfig, BalanceItem, Tab, RequestData, RequestDetails, TraderDetails, ProductInventory } from "./dataTypesUtils";
 import type { ColorScheme } from "./stylingUtils";
 
 export interface ListProps<T> {
@@ -23,6 +23,7 @@ export interface DetailsProps<T> {
   onProductClick?: (product: ProductData) => void;
   onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData | RequestDetails) => void;
   onUnassignedClick?: (trader: TraderDetails) => void;
+  onDeposit?: () => void;
 }
 
 export interface CreateFormsProps {
@@ -79,7 +80,7 @@ export interface AddOrBuyProductProps<T> {
 
 export interface ModalProps {
   trader: TraderData | UserData;
-  selectedProducts: Map<string, number>;
+  selectedProducts: ProductInventory[];
   totalCost: number;
   remainingBalance: number;
   products?: ProductData[];
@@ -92,7 +93,7 @@ export interface ProductsTabsProps {
   products: ProductData[];
   loading: boolean;
   onSuccess: (() => Promise<void>) | undefined;
-  selectedProducts: Map<string, number>;
+  selectedProducts: ProductInventory[];
   hasInsufficientFunds: boolean;
   errors: Map<string, string>;
   toggleProduct: (productId: string) => void;
@@ -185,4 +186,5 @@ export interface RequestCardProps {
     colorScheme?: "pink" | "purple" | "amber";
     trader?: TraderDetails;
     user?: UserData;
+    handleDeposit?: () => void;
 }

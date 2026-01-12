@@ -27,7 +27,7 @@ export default function SuccessProductAddingModal({
           <div className="flex justify-between text-gray-300">
             <span>Products Added:</span>
             <span className="font-bold text-green-300">
-              {selectedProducts.size}
+              {selectedProducts.length}
             </span>
           </div>
           <div className="flex justify-between text-gray-300">

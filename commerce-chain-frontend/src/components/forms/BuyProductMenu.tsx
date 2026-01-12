@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import type { UserData } from "../../utils/dataTypesUtils";
+import type { ProductInventory, UserData } from "../../utils/dataTypesUtils";
 import type { AddOrBuyProductProps } from "../../utils/propsUtils";
 import { userFontSemibold } from "../../utils/stylingUtils";
 import { useProducts } from "../hooks/useProducts";
@@ -20,47 +20,51 @@ export default function BuyProduct({
     fetchProductsByIds,
     fetchTraders,
   } = useTraders();
-  const [selectedProducts, setSelectedProducts] = useState<Map<string, number>>(
-    new Map()
-  );
+
+  // CHANGED: State is now ProductInventory[]
+  const [selectedProducts, setSelectedProducts] = useState<ProductInventory[]>([]);
 
   const [errors, setErrors] = useState<Map<string, string>>(new Map());
   const [activeTab, setActiveTab] = useState<"available" | "request">(
     "available"
   );
 
+  // CHANGED: Calculate total using Array.reduce
   const calculateTotal = (): number => {
-    let total = 0;
-    selectedProducts.forEach((quantity, productId) => {
-      const product = products.find((p) => p.id === productId);
-      if (product && quantity > 0) {
-        total += product.price * quantity;
+    return selectedProducts.reduce((total, item) => {
+      const product = products.find((p) => p.id === item["product-id"]);
+      if (product && item.quantity > 0) {
+        return total + product.price * item.quantity;
       }
-    });
-    return total;
+      return total;
+    }, 0);
   };
 
   const totalCost = calculateTotal();
   const remainingBalance = user.balance - totalCost;
   const hasInsufficientFunds = remainingBalance < 0;
 
+  // CHANGED: Toggle logic for Array
   const toggleProduct = (productId: string) => {
-    setSelectedProducts((prev: Map<string, number>) => {
-      const newMap = new Map(prev);
-      if (newMap.has(productId)) {
-        newMap.delete(productId);
+    setSelectedProducts((prev) => {
+      const exists = prev.find(item => item["product-id"] === productId);
+
+      if (exists) {
+        // Remove
         setErrors((prevErrors) => {
           const newErrors = new Map(prevErrors);
           newErrors.delete(productId);
           return newErrors;
         });
+        return prev.filter(item => item["product-id"] !== productId);
       } else {
-        newMap.set(productId, 1);
+        // Add with quantity 1
+        return [...prev, { "product-id": productId, quantity: 1 }];
       }
-      return newMap;
     });
   };
 
+  // CHANGED: Update Quantity logic for Array
   const updateQuantity = (productId: string, quantity: number) => {
     let product = undefined;
 
@@ -72,19 +76,23 @@ export default function BuyProduct({
 
     if (!product) return;
 
-    setSelectedProducts((prev: Map<string, number>) => {
-      const newMap = new Map(prev);
-      newMap.set(productId, quantity);
+    if (quantity <= 0) {
+      toggleProduct(productId);
+      return;
+    }
 
-      return newMap;
-    });
+    setSelectedProducts((prev) =>
+      prev.map(item =>
+        item["product-id"] === productId
+          ? { ...item, quantity }
+          : item
+      )
+    );
 
     setErrors((prev) => {
       const newErrors = new Map(prev);
       if (quantity > product.quantity) {
         newErrors.set(productId, `Only ${product.quantity} available`);
-      } else if (quantity < 0) {
-        newErrors.set(productId, `Negative values aren't allowed`);
       } else {
         newErrors.delete(productId);
       }
@@ -94,7 +102,8 @@ export default function BuyProduct({
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId as "available" | "request");
-    setSelectedProducts(new Map());
+    setSelectedProducts([]); // CHANGED: Reset to empty array
+    setErrors(new Map());
   };
 
   useEffect(() => {

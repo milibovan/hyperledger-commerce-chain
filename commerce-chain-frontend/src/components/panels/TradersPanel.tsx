@@ -185,6 +185,7 @@ export default function TradersPanel() {
                 onProductClick={viewNestedEntityDetails}
                 onEntityClick={viewNestedEntityDetails}
                 onUnassignedClick={() => handleAction("showUnassigned", selectedTrader)}
+                onDeposit={() => handleAction("deposit", selectedTrader)}
               />
             );
           }

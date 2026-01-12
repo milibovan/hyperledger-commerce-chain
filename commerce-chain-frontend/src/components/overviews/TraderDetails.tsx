@@ -11,7 +11,8 @@ export default function TraderDetails({
   addProduct,
   onProductClick,
   onEntityClick,
-  onUnassignedClick
+  onUnassignedClick,
+  onDeposit
 }: DetailsProps<TraderDetails>) {
   const getProductQuantity = (productId: string) => {
     return trader.trader["products-available"].find(productItem => productId === productItem["product-id"])?.quantity;
@@ -192,6 +193,7 @@ export default function TraderDetails({
               onClick={() => onEntityClick?.(request.request)}
               colorScheme="pink"
               trader={trader}
+              handleDeposit={onDeposit}
             />
           )}
         />

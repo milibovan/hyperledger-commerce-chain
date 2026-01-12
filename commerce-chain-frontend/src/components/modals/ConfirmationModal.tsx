@@ -30,37 +30,37 @@ export default function ConfirmationModal({
       {/* Products List in Modal */}
       <div className={`bg-gray-900/50 border border-${themeColor}-500/30 rounded-lg p-4 mb-6 max-h-64 overflow-y-auto`}>
         <div className="space-y-3">
-          {Array.from(selectedProducts.entries()).map(
-            ([productId, quantity]) => {
-              const product = products?.find((p) => p.id === productId);
-              if (!product) return null;
-              const itemTotal = product.price * quantity;
+          {selectedProducts.map((item) => {
+            const productId = item["product-id"];
+            const quantity = item.quantity;
 
-              return (
-                <div
-                  key={productId}
-                  className={`flex items-center justify-between p-3 bg-gray-800/50 rounded border border-${themeColor}-500/20`}
-                >
-                  <div className="flex-1">
-                    <h4 className={`font-semibold text-${themeColor}-300`}>
-                      {product.name}
-                    </h4>
-                    <p className="text-xs text-gray-400">
-                      ${product.price.toFixed(2)} × {quantity} units
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p className={`font-bold text-${themeColor}-300`}>
-                      ${itemTotal.toFixed(2)}
-                    </p>
-                  </div>
+            const product = products?.find((p) => p.id === productId);
+            if (!product) return null;
+            const itemTotal = product.price * quantity;
+
+            return (
+              <div
+                key={productId}
+                className={`flex items-center justify-between p-3 bg-gray-800/50 rounded border border-${themeColor}-500/20`}
+              >
+                <div className="flex-1">
+                  <h4 className={`font-semibold text-${themeColor}-300`}>
+                    {product.name}
+                  </h4>
+                  <p className="text-xs text-gray-400">
+                    ${product.price.toFixed(2)} × {quantity} units
+                  </p>
                 </div>
-              );
-            }
-          )}
+                <div className="text-right">
+                  <p className={`font-bold text-${themeColor}-300`}>
+                    ${itemTotal.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
-
       {/* Summary */}
       <div className={`bg-${themeColor}-900/20 border-2 border-${themeColor}-500 rounded-lg p-4`}>
         <div className="space-y-2">
