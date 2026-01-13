@@ -1,4 +1,4 @@
-import type { ProductInventory } from "./dataTypesUtils";
+import { channels, type ProductInventory } from "./dataTypesUtils";
 
 export const host = "http://localhost:7070";
 export const headers = { "Content-Type": "application/json" };
@@ -70,6 +70,16 @@ export async function createTrader(channel: string, name: string, traderType:str
         balance: parseFloat(balance),
         channel: channel,
       }),
+    }
+  );
+}
+
+export async function fulfillRequest(requestId: string) {
+  return await fetch(
+    `${host}/request/fulfill/${requestId}/${channels[0]}`,
+    {
+      method: httpMethod.PUT,
+      headers: { "Content-Type": "application/json" },
     }
   );
 }

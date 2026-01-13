@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 44,
+            "activePatchIndex": 48,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -184,6 +184,22 @@
                 {
                     "date": 1767985131355,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,5 +6,5 @@\n   PUT = \"PUT\",\r\n   DELETE = \"DELETE\",\r\n }\r\n \r\n-export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | \"shop\" | \"showUnassigned\" | null;\n\\ No newline at end of file\n+export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | \"shop\" | \"showUnassigned\" | \"updateRequest\" | null;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768327229965,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,6 @@\n+import type { ProductInventory } from \"./dataTypesUtils\";\r\n+\r\n export const host = \"http://localhost:7070\";\r\n export const headers = { \"Content-Type\": \"application/json\" };\r\n export enum httpMethod {\r\n   GET = \"GET\",\r\n@@ -6,5 +8,81 @@\n   PUT = \"PUT\",\r\n   DELETE = \"DELETE\",\r\n }\r\n \r\n-export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | \"shop\" | \"showUnassigned\" | \"updateRequest\" | null;\n\\ No newline at end of file\n+// TODO Move to dataTypes\r\n+export type ActionType = \"create\" | \"update\" | \"deposit\" | \"delete\" | \"addProduct\" | \"shop\" | \"showUnassigned\" | \"updateRequest\" | null;\r\n+\r\n+export async function addProductsToTrader(productsToAdd: Array<ProductInventory>, traderId: string) {\r\n+  return await fetch(`${host}/traders-products/channel-a`, {\r\n+    method: httpMethod.POST,\r\n+    headers: { \"Content-Type\": \"application/json\" },\r\n+    body: JSON.stringify({\r\n+      products: productsToAdd,\r\n+      \"trader-id\": traderId,\r\n+    }),\r\n+  });\r\n+}\r\n+\r\n+export async function createProduct(channel: string, traderType: string, expiryDate: string, quantity: string, price: string, name: string) {\r\n+  return await fetch(\r\n+    `${host}/product/${channel}`,\r\n+    {\r\n+      method: httpMethod.POST,\r\n+      headers: { \"Content-Type\": \"application/json\" },\r\n+      body: JSON.stringify({\r\n+        \"trader-type\": traderType,\r\n+        \"expiry-date\": expiryDate.replace(\"T\", \" \"),\r\n+        quantity: parseInt(quantity),\r\n+        price: parseFloat(price),\r\n+        name: name,\r\n+      }),\r\n+    }\r\n+  );\r\n+}\r\n+\r\n+export async function createUser(channel: string, name: string, surname: string, email: string, balance: string) {\r\n+  return await fetch(\r\n+    `${host}/user/${channel}`,\r\n+    {\r\n+      method: httpMethod.POST,\r\n+      headers: { \"Content-Type\": \"application/json\" },\r\n+      body: JSON.stringify({\r\n+        name: name,\r\n+        surname: surname,\r\n+        email: email,\r\n+        balance: parseFloat(balance),\r\n+      }),\r\n+    }\r\n+  );\r\n+}\r\n+\r\n+export async function createTrader(channel: string, name: string, traderType:string, vat: string, email: string, balance: string) {\r\n+  return await fetch(\r\n+    `${host}/trader/${channel}`,\r\n+    {\r\n+      method: httpMethod.POST,\r\n+      headers: { \"Content-Type\": \"application/json\" },\r\n+      body: JSON.stringify({\r\n+        name: name,\r\n+        \"trader-type\": traderType,\r\n+        vat: vat,\r\n+        email: email,\r\n+        balance: parseFloat(balance),\r\n+        channel: channel,\r\n+      }),\r\n+    }\r\n+  );\r\n+}\r\n+\r\n+export async function fulfillRequest() {\r\n+  return await fetch(\r\n+    `${host}/trader/${channels[0]}`,\r\n+    {\r\n+      method: httpMethod.POST,\r\n+      headers: { \"Content-Type\": \"application/json\" },\r\n+      body: JSON.stringify({\r\n+\r\n+      }),\r\n+    }\r\n+  );\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768327248916,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -75,11 +75,11 @@\n }\r\n \r\n export async function fulfillRequest() {\r\n   return await fetch(\r\n-    `${host}/trader/${channels[0]}`,\r\n+    `${host}/request/fulfill/${channels[0]}`,\r\n     {\r\n-      method: httpMethod.POST,\r\n+      method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n       body: JSON.stringify({\r\n \r\n       }),\r\n"
+                },
+                {
+                    "date": 1768327256786,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { ProductInventory } from \"./dataTypesUtils\";\r\n+import { channels, type ProductInventory } from \"./dataTypesUtils\";\r\n \r\n export const host = \"http://localhost:7070\";\r\n export const headers = { \"Content-Type\": \"application/json\" };\r\n export enum httpMethod {\r\n"
+                },
+                {
+                    "date": 1768327408960,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -73,11 +73,11 @@\n     }\r\n   );\r\n }\r\n \r\n-export async function fulfillRequest() {\r\n+export async function fulfillRequest(requestId: string) {\r\n   return await fetch(\r\n-    `${host}/request/fulfill/${channels[0]}`,\r\n+    `${host}/request/fulfill/${requestId}/${channels[0]}`,\r\n     {\r\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n       body: JSON.stringify({\r\n"
                 }
             ],
             "date": 1761645950564,

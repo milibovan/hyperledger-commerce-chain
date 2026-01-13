@@ -6,8 +6,8 @@ import { traderFontBold, traderFontSemibold } from "../../utils/stylingUtils";
 import { useEntityActions } from "../hooks/useEntityActions";
 import { type ModalHandle } from "../modals/DeleteModal";
 import type { ProductInventory, TraderData } from "../../utils/dataTypesUtils";
-import AddProductToTraderModals from "../modals/AddProductToTraderModals";
-
+import { addProductsToTrader } from "../../utils/utils";
+import TransactionModals from "../modals/TransactionModals";
 
 export default function AddProductsToTrader({
   trader,
@@ -84,6 +84,10 @@ export default function AddProductsToTrader({
     });
   };
 
+  const handleRestockTransaction = async () => {
+    return await addProductsToTrader(selectedProducts, trader.id);
+  };
+
   const handleSubmit = () => {
     if (hasInsufficientFunds || errors.size > 0 || selectedProducts.length === 0)
       return;
@@ -98,7 +102,7 @@ export default function AddProductsToTrader({
 
   return (
     <div className="space-y-6">
-      <AddProductToTraderModals
+      <TransactionModals
         successModalRef={successModalRef}
         confirmModalRef={confirmModalRef}
         resetNestedView={resetNestedView}
@@ -107,6 +111,8 @@ export default function AddProductsToTrader({
         totalCost={totalCost}
         balance={remainingBalance}
         products={products}
+        mode="RESTOCK" // Force RESTOCK mode for this component
+        onConfirmTransaction={handleRestockTransaction} // Pass the specific API call
       />
 
       {/* Header */}
@@ -192,7 +198,6 @@ export default function AddProductsToTrader({
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {products.map((product) => {
-              // CHANGED: Find product in array
               const selection = selectedProducts.find(p => p["product-id"] === product.id);
               const isSelected = !!selection;
               const quantity = selection?.quantity || 0;
@@ -308,7 +313,6 @@ export default function AddProductsToTrader({
             Selected Products ({selectedProducts.length})
           </h3>
           <div className="space-y-2">
-            {/* CHANGED: Map over the array directly */}
             {selectedProducts.map((item) => {
               const product = products.find((p) => p.id === item["product-id"]);
               if (!product) return null;

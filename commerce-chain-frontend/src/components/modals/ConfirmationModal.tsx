@@ -1,6 +1,11 @@
-import { Package } from "lucide-react";
+import { Package, CheckCircle2 } from "lucide-react";
 import type { ModalProps } from "../../utils/propsUtils";
 import { isUserData } from "../../utils/dataTypesUtils";
+
+// Extend the props to include the mode
+interface ExtendedModalProps extends ModalProps {
+  mode?: "RESTOCK" | "FULFILL";
+}
 
 export default function ConfirmationModal({
   trader,
@@ -8,23 +13,49 @@ export default function ConfirmationModal({
   totalCost,
   remainingBalance,
   products,
-}: ModalProps) {
+  mode = "RESTOCK", // Default to RESTOCK for backward compatibility
+}: ExtendedModalProps) {
   const isUser = isUserData(trader);
-  const themeColor = isUser ? "purple" : "pink";
+  const isRestock = mode === "RESTOCK";
+
+  // Dynamic Theme Logic
+  // RESTOCK: Pink (if user) / Purple (if trader)
+  // FULFILL: Green (Always, implies success/money coming in)
+  const themeColor = !isRestock
+    ? "green"
+    : isUser
+      ? "purple"
+      : "pink";
+
+  const title = isRestock ? "Confirm Purchase" : "Confirm Fulfillment";
+
+  const description = isRestock
+    ? <span>You are about to add the following products to <span className={`font-semibold text-${themeColor}-300`}>{trader.name}</span>'s inventory:</span>
+    : <span>You are about to fulfill a request for <span className={`font-semibold text-${themeColor}-300`}>{trader.name}</span> containing:</span>;
+
+  const costLabel = isRestock ? "Total Cost:" : "Total Revenue:";
+  const costSign = isRestock ? "-" : "+";
+  const costTextColor = isRestock ? "text-red-400" : "text-green-400"; // Red for spending, Green for earning
+
+  const footerText = isRestock
+    ? "This will update inventory and deduct funds from the balance."
+    : "This will remove items from inventory and add funds to the balance.";
 
   return (
     <div>
       <div className="flex items-center gap-3 mb-4">
         <div className={`p-3 bg-${themeColor}-900/30 rounded-full`}>
-          <Package size={24} className={`text-${themeColor}-400`} />
+          {isRestock ? (
+            <Package size={24} className={`text-${themeColor}-400`} />
+          ) : (
+            <CheckCircle2 size={24} className={`text-${themeColor}-400`} />
+          )}
         </div>
-        <h2 className={`text-2xl font-bold text-${themeColor}-400`}>Confirm Purchase</h2>
+        <h2 className={`text-2xl font-bold text-${themeColor}-400`}>{title}</h2>
       </div>
 
       <p className="text-gray-300 mb-6">
-        You are about to add the following products to{" "}
-        <span className={`font-semibold text-${themeColor}-300`}>{trader.name}</span>'s
-        inventory:
+        {description}
       </p>
 
       {/* Products List in Modal */}
@@ -61,6 +92,7 @@ export default function ConfirmationModal({
           })}
         </div>
       </div>
+
       {/* Summary */}
       <div className={`bg-${themeColor}-900/20 border-2 border-${themeColor}-500 rounded-lg p-4`}>
         <div className="space-y-2">
@@ -68,14 +100,16 @@ export default function ConfirmationModal({
             <span>Current Balance:</span>
             <span className="font-semibold">${trader.balance.toFixed(2)}</span>
           </div>
-          <div className="flex justify-between text-yellow-400">
-            <span>Total Cost:</span>
-            <span className="font-bold">-${totalCost.toFixed(2)}</span>
+          <div className="flex justify-between">
+            <span className="text-gray-300">{costLabel}</span>
+            <span className={`font-bold ${costTextColor}`}>
+              {costSign}${totalCost.toFixed(2)}
+            </span>
           </div>
           <div className={`h-px bg-${themeColor}-500/30 my-2`}></div>
           <div className="flex justify-between text-lg">
             <span className={`font-semibold text-${themeColor}-300`}>New Balance:</span>
-            <span className="font-bold text-green-400">
+            <span className="font-bold text-white">
               ${remainingBalance.toFixed(2)}
             </span>
           </div>
@@ -83,7 +117,7 @@ export default function ConfirmationModal({
       </div>
 
       <p className="text-sm text-gray-400 mt-4 text-center">
-        This will update your inventory and deduct funds from your balance.
+        {footerText}
       </p>
     </div>
   );
