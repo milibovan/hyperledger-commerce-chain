@@ -143,8 +143,8 @@ add_products_payload = {
     "trader-id": trader_id_1,
     "products": [
         {"product-id": product_id_1, "quantity": 3},
-        {"product-id": product_id_2, "quantity": 38},
-        {"product-id": product_id_3, "quantity": 72}
+        {"product-id": product_id_2, "quantity": 37},
+        {"product-id": product_id_3, "quantity": 71}
     ]
 }
 make_request("POST", "/traders-products/channel-a", add_products_payload, "Adding Products to Trader 1")

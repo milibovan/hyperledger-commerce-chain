@@ -676,29 +676,40 @@ func UpdateProduct(gw *fabricClient.Gateway, channel, id, name, expiryDate, pric
 
 	return status.BlockNumber, nil
 }
-func UpdateRequest(gw *fabricClient.Gateway, channel, id, requestStatus, orderId, traderId string) (uint64, error) {
+func UpdateRequest(gw *fabricClient.Gateway, channel, id, requestStatus, orderId, traderId string) (uint64, string, error) {
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
 	fmt.Printf("\n--> Submit transaction: UpdateRequest, ID: %s on channel %s\n", id, channel)
 
-	_, commit, err := ccContract.SubmitAsync("UpdateRequest", fabricClient.WithArguments(id, requestStatus, orderId, traderId))
+	// Capture txnResult (payload) here
+	txnResult, commit, err := ccContract.SubmitAsync("UpdateRequest", fabricClient.WithArguments(id, requestStatus, orderId, traderId))
 	if err != nil {
-		return uint64(0), fmt.Errorf("failed to submit transaction: %w", err)
+		// Now legitimate errors are actual failures
+		return uint64(0), "", fmt.Errorf("failed to submit transaction: %w", err)
 	}
 
 	status, err := commit.Status()
 	if err != nil {
-		return uint64(0), fmt.Errorf("failed to get transaction commit status: %w", err)
+		return uint64(0), "", fmt.Errorf("failed to get transaction commit status: %w", err)
 	}
 
 	if !status.Successful {
-		return uint64(0), fmt.Errorf("failed to commit transaction with status code %v", status.Code)
+		return uint64(0), "", fmt.Errorf("failed to commit transaction with status code %v", status.Code)
 	}
 
-	fmt.Println("\n*** UpdateRequest committed successfully")
+	// The chaincode now returns the final status string in the transaction result
+	finalStatus := string(txnResult)
+	description := ""
 
-	return status.BlockNumber, nil
+	// Check if the chaincode returned PENDING_FUNDS
+	if finalStatus == "PENDING_FUNDS" { // Assuming structs.PENDING_FUNDS resolves to this string
+		description = "Status set to PENDING_FUNDS due to insufficient balance"
+	}
+
+	fmt.Println("\n*** UpdateRequest committed successfully. Final Status:", finalStatus)
+
+	return status.BlockNumber, description, nil
 }
 
 func DeleteUser(gw *fabricClient.Gateway, channel, id string) (uint64, error) {

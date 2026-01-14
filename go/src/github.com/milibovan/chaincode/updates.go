@@ -172,28 +172,48 @@ func (s *SmartContract) UpdateProduct(ctx contractapi.TransactionContextInterfac
 	}
 	return ctx.GetStub().PutState(productKey, productJSON)
 }
-func (s *SmartContract) UpdateRequest(ctx contractapi.TransactionContextInterface, id, status, orderId, traderId string) error {
+func (s *SmartContract) UpdateRequest(ctx contractapi.TransactionContextInterface, id, status, orderId, traderId string) (string, error) {
 	request, err := s.ReadRequest(ctx, id)
 	if err != nil {
-		return err
+		return "", err
+	}
+
+	if traderId == "" {
+		traderId = request.TraderId
 	}
 
 	trader, err := s.ReadTrader(ctx, traderId)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	requestStatus, err := structs.GetRequestStatusFromString(status)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	changed := false
 
-	if request.Status != requestStatus {
-		request.Status = requestStatus
-		changed = true
+	if status == "FULFILLED" {
+		hasSufficientBalance, err := s.checkFulfillmentPrerequisites(ctx, request)
+		if err != nil {
+			return "", err
+		}
+
+		if hasSufficientBalance {
+			fmt.Println("Has sufficient")
+		} else {
+			request.Status = structs.PENDING_FUNDS
+			changed = true
+		}
+
+	} else {
+		if request.Status != requestStatus {
+			request.Status = requestStatus
+			changed = true
+		}
 	}
+
 	if request.OrderId != orderId {
 		request.OrderId = orderId
 		changed = true
@@ -204,32 +224,51 @@ func (s *SmartContract) UpdateRequest(ctx contractapi.TransactionContextInterfac
 	}
 
 	if !changed {
-		return fmt.Errorf("No changes have been made")
+		return "", fmt.Errorf("No changes have been made")
 	}
 
-	trader.RequestsIDs = append(trader.RequestsIDs, request.Id)
-	traderJSON, err := json.Marshal(trader)
-	if err != nil {
-		return err
-	}
+	if request.TraderId != "" {
+		trader.RequestsIDs = append(trader.RequestsIDs, request.Id)
+		traderJSON, err := json.Marshal(trader)
+		if err != nil {
+			return "", err
+		}
 
-	traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
-	if err != nil {
-		return err
-	}
-	err = ctx.GetStub().PutState(traderKey, traderJSON)
-	if err != nil {
-		return err
+		traderKey, err := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
+		if err != nil {
+			return "", err
+		}
+		err = ctx.GetStub().PutState(traderKey, traderJSON)
+		if err != nil {
+			return "", err
+		}
 	}
 
 	requestJSON, err := json.Marshal(request)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	requestKey, err := ctx.GetStub().CreateCompositeKey("request", []string{request.Id})
 	if err != nil {
-		return err
+		return "", err
 	}
-	return ctx.GetStub().PutState(requestKey, requestJSON)
+
+	err = ctx.GetStub().PutState(requestKey, requestJSON)
+
+	// Return the final status to the client
+	return string(request.Status), nil
+}
+
+func (s *SmartContract) checkFulfillmentPrerequisites(ctx contractapi.TransactionContextInterface, request *structs.ProductsRequest) (bool, error) {
+	user, err := s.ReadUser(ctx, request.UserId)
+	if err != nil {
+		return false, err
+	}
+
+	if user.Balance < request.TotalCost {
+		return false, nil
+	}
+
+	return true, nil
 }

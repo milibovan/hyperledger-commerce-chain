@@ -85,6 +85,7 @@ func CreateServer() {
 	router.PUT("/products/:channel", updateProduct)
 
 	router.PUT("/request/approve/:traderId/:requestId/:channel", approveRequest)
+	router.PUT("/request/fulfill/:requestId/:channel", fulfillRequest)
 
 	router.DELETE("/users/:channel/:id", deleteUser)
 	router.DELETE("/traders/:channel/:id", deleteTrader)
@@ -703,10 +704,15 @@ func getTraderDetails(c *gin.Context) {
 			if err != nil {
 				c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to get products by request %s", err)})
 			}
+			user, err := client.GetUserById(activeGW, channel, request.UserId)
+			if err != nil {
+				c.JSON(500, gin.H{"Message": fmt.Sprintf("Failed to get products by request %s", err)})
+			}
 
 			requests = append(requests, &models.RequestDetailsResponse{
 				Request:  request,
 				Products: products,
+				User:     user,
 			})
 		}
 	}
@@ -982,7 +988,7 @@ func approveRequest(c *gin.Context) {
 	}
 	totalCost := strconv.FormatFloat(request.TotalCost, 'f', 3, 64)
 
-	blockNumber, err := client.UpdateRequest(activeGW, channel, requestId, "APPROVED", "", traderId)
+	blockNumber, _, err := client.UpdateRequest(activeGW, channel, requestId, "APPROVED", "", traderId)
 	if err != nil {
 		c.JSON(400, gin.H{"Message": "Cannot update request", "Error": err.Error()})
 		return
@@ -1018,6 +1024,85 @@ func approveRequest(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"Message": fmt.Sprintf("Request updated %d %s", blockNumber, requestId)})
+}
+
+// fulfillRequest Try to fulfill or put in some pending state
+func fulfillRequest(c *gin.Context) {
+	var channel, requestId string
+	var request struct {
+		Request *models.RequestDetailsResponse `json:"request"`
+	}
+
+	// 1. Bind JSON
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request body", "Error": err.Error()})
+		return
+	}
+
+	if request.Request.Request == nil {
+		c.JSON(400, gin.H{"Message": "Invalid payload: 'request' data is missing"})
+		return
+	}
+	if request.Request.User == nil {
+		c.JSON(400, gin.H{"Message": "Invalid payload: 'user' data is missing"})
+		return
+	}
+
+	// Now it is safe to access fields
+	totalCost := strconv.FormatFloat(request.Request.Request.TotalCost, 'f', 3, 64)
+
+	channel = c.Param("channel")
+	requestId = c.Param("requestId")
+
+	blockNumber, description, err := client.UpdateRequest(activeGW, channel, requestId, "FULFILLED", "", "")
+	if err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot update request on blockchain", "Error": err.Error()})
+		return
+	}
+
+	// Recalculate these safely now that we know request.User exists
+	balance := strconv.FormatFloat(request.Request.User.Balance, 'f', 3, 64)
+	shortageVal := request.Request.User.Balance - request.Request.Request.TotalCost
+	// If shortage is negative (meaning they have enough funds), we might want to handle that logic,
+	// but for formatting:
+	shortage := strconv.FormatFloat(shortageVal, 'f', 3, 64)
+
+	if strings.Contains(description, "status PENDING_FUNDS") {
+		requestApprovedNotification := models.NotificationEvent{
+			Id:                requestId,
+			EventType:         models.RequestInsufficientBalance,
+			RecipientType:     []models.RecipientType{models.USER},
+			RecipientID:       request.Request.Request.UserId,
+			Timestamp:         nil,
+			ScheduledSendTime: nil,
+			Channel:           models.EMAIL,
+			OrderID:           "",
+			UserID:            request.Request.Request.UserId,
+			TraderID:          request.Request.Request.TraderId,
+			Data: map[string]string{
+				"request_id":      requestId,
+				"request_date":    request.Request.Request.CreatedDate,
+				"item_count":      strconv.Itoa(len(request.Request.Request.Products)),
+				"total_amount":    totalCost,
+				"current_balance": balance,
+				"required_amount": totalCost,
+				"shortage_amount": shortage,
+				"recipient":       request.Request.Request.UserEmail,
+				"url":             "https://hyperledger.commerce/requests/ord_987654",
+			},
+		}
+
+		err = kafka.ProduceToKafka(requestApprovedNotification, topic)
+		if err != nil {
+			fmt.Println("Kafka Error:", err)
+			// Don't return here if you still want to send the HTTP response to the frontend
+			// return
+		}
+	} else {
+		fmt.Println("Fulfilled successfully")
+	}
+
+	c.JSON(http.StatusOK, gin.H{"Message": fmt.Sprintf("Request updated in block %d for ID %s", blockNumber, requestId)})
 }
 
 // buildOrdersDetailsResponse helper function for building response
