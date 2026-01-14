@@ -5,9 +5,9 @@ import type { ModalHandle } from "../modals/DeleteModal";
 import { useRef, useState } from "react";
 import { useEntityActions } from "../hooks/useEntityActions";
 import TransactionModals, { type TransactionMode } from "../modals/TransactionModals"; // Updated Import
-import { addProductsToTrader } from "../../utils/utils"; // Import your API calls
+import { addProductsToTrader, fulfillRequest } from "../../utils/utils"; // Import your API calls
 
-export default function RequestCard({ request, onClick, handleDeposit, trader, colorScheme = "purple" }: RequestCardProps) {
+export default function RequestCard({ request, onClick, handleDeposit, trader, requestDetails, colorScheme = "purple" }: RequestCardProps) {
     const [transactionMode, setTransactionMode] = useState<TransactionMode>("RESTOCK");
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -144,10 +144,7 @@ export default function RequestCard({ request, onClick, handleDeposit, trader, c
         } else {
             // Call your Fulfill Request API (Placeholder example)
             // You will need to implement/import this function
-            return await fetch(`/api/requests/${request.id}/fulfill`, {
-                method: 'POST',
-                body: JSON.stringify({ traderId: trader!.trader.id })
-            });
+            return await fulfillRequest(requestDetails!)
         }
     };
 

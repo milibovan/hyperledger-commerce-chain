@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Send, AlertCircle, CheckCircle, Plus } from "lucide-react";
 import type {
-  UpdateProductFormsProps,
   Product,
 } from "../../utils/dataTypesUtils";
 import { channels, formatDate, TraderType } from "../../utils/dataTypesUtils";
+import type { UpdateProductFormsProps } from "../../utils/propsUtils";
 
 export default function UpdateProductForm({
   onSuccess,

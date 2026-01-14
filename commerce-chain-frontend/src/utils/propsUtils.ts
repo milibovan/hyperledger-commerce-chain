@@ -187,4 +187,5 @@ export interface RequestCardProps {
     trader?: TraderDetails;
     user?: UserData;
     handleDeposit?: () => void;
+    requestDetails?: RequestDetails
 }

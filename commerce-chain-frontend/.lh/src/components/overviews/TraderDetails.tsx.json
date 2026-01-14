@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 194,
+            "activePatchIndex": 196,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -784,6 +784,14 @@
                 {
                     "date": 1768168494107,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,8 +3,9 @@\n import ProductCard from \"../reusables/ProductCard\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n import RequestCard from \"../reusables/RequestCard\";\r\n+import { Receipt, User, DollarSign, Calendar, Package } from \"lucide-react\";\r\n \r\n export default function TraderDetails({\r\n   entity: trader,\r\n   addProduct,\r\n"
+                },
+                {
+                    "date": 1768424595560,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -10,9 +10,10 @@\n   entity: trader,\r\n   addProduct,\r\n   onProductClick,\r\n   onEntityClick,\r\n-  onUnassignedClick\r\n+  onUnassignedClick,\r\n+  onDeposit\r\n }: DetailsProps<TraderDetails>) {\r\n   const getProductQuantity = (productId: string) => {\r\n     return trader.trader[\"products-available\"].find(productItem => productId === productItem[\"product-id\"])?.quantity;\r\n   };\r\n@@ -187,12 +188,13 @@\n             </div>\r\n           }\r\n           renderItem={(request: RequestDetails) => (\r\n             <RequestCard\r\n-              request={request.request}\r\n+              request={request}\r\n               onClick={() => onEntityClick?.(request.request)}\r\n               colorScheme=\"pink\"\r\n               trader={trader}\r\n+              handleDeposit={onDeposit}\r\n             />\r\n           )}\r\n         />\r\n       </div>\r\n"
+                },
+                {
+                    "date": 1768424636409,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -188,13 +188,14 @@\n             </div>\r\n           }\r\n           renderItem={(request: RequestDetails) => (\r\n             <RequestCard\r\n-              request={request}\r\n+              request={request.request}\r\n               onClick={() => onEntityClick?.(request.request)}\r\n               colorScheme=\"pink\"\r\n               trader={trader}\r\n               handleDeposit={onDeposit}\r\n+              requestDetails={request}\r\n             />\r\n           )}\r\n         />\r\n       </div>\r\n"
                 }
             ],
             "date": 1762249738197,

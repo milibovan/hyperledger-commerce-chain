@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 17,
+            "activePatchIndex": 18,
             "patches": [
                 {
                     "date": 1761916620413,
@@ -76,6 +76,10 @@
                 {
                     "date": 1762204279025,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,10 +2,10 @@\n import { Send, AlertCircle, CheckCircle, Plus } from \"lucide-react\";\r\n import type {\r\n   UpdateProductFormsProps,\r\n   Product,\r\n-} from \"../../utils/utils\";\r\n-import { channels, formatDate, TraderType } from \"../../utils/utils\";\r\n+} from \"../../utils/dataTypesUtils\";\r\n+import { channels, formatDate, TraderType } from \"../../utils/dataTypesUtils\";\r\n \r\n export default function UpdateProductForm({\r\n   onSuccess,\r\n   product,\r\n"
+                },
+                {
+                    "date": 1768416383581,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,11 +1,11 @@\n import { useState } from \"react\";\r\n import { Send, AlertCircle, CheckCircle, Plus } from \"lucide-react\";\r\n import type {\r\n-  UpdateProductFormsProps,\r\n   Product,\r\n } from \"../../utils/dataTypesUtils\";\r\n import { channels, formatDate, TraderType } from \"../../utils/dataTypesUtils\";\r\n+import type { UpdateProductFormsProps } from \"../../utils/propsUtils\";\r\n \r\n export default function UpdateProductForm({\r\n   onSuccess,\r\n   product,\r\n"
                 }
             ],
             "date": 1761916620411,

@@ -194,6 +194,7 @@ export default function TraderDetails({
               colorScheme="pink"
               trader={trader}
               handleDeposit={onDeposit}
+              requestDetails={request}
             />
           )}
         />
