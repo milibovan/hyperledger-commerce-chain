@@ -22,7 +22,7 @@ pub struct RequestPendingApproval {
 #[template(path="../templates/insufficient_balance.html")]
 pub struct RequestInsufficientBalance {
     pub(crate) request_id: String,
-    pub(crate) request_date: DateTime<Utc>,
+    pub(crate) request_date: String,
     pub(crate) item_count: i32,
     pub(crate) total_amount: f32,
     pub(crate) current_balance: f32,
@@ -69,17 +69,17 @@ pub struct RequestCreated {
     pub recipient_type: String,
 }
 
-#[derive(Template)]
+#[derive(Template, Clone)]
 #[template(path="../templates/request_fulfilled.html")]
 pub struct RequestFulfilled {
-    request_id: String,
-    cancelled_date: DateTime<Utc>,
-    trader_name: String,
-    item_count: i32,
-    total_amount: f32,
-    request_url: String,
-    review_url: String,
-    fulfillment_time: DateTime<Utc>
+    pub(crate) request_id: String,
+    pub(crate) completed_date: String,
+    pub(crate) trader_name: String,
+    pub(crate) item_count: i32,
+    pub(crate) total_amount: f32,
+    pub(crate) request_url: String,
+    pub(crate) review_url: String,
+    pub(crate) fulfillment_time: String
 }
 
 #[derive(Template)]
@@ -132,9 +132,9 @@ pub struct RequestRejected {
 #[derive(Template)]
 #[template(path="../templates/payment_completed.html")]
 pub struct PaymentCompleted {
-    request_id: String,
-    payment_date: DateTime<Utc>,
-    transaction_id: String,
-    total_amount: f32,
-    url: String,
+    pub(crate) request_id: String,
+    pub(crate) payment_date: String,
+    pub(crate) transaction_id: String,
+    pub(crate) total_amount: f32,
+    pub(crate) url: String,
 }

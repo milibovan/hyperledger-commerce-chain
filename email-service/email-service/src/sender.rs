@@ -1,6 +1,6 @@
 // sender.rs
 use crate::notification_event::{EventType, NotificationEvent, RecipientType};
-use crate::template_structs::{RequestApproved, RequestCreated, RequestInsufficientBalance, RequestItem};
+use crate::template_structs::{PaymentCompleted, RequestApproved, RequestCreated, RequestFulfilled, RequestInsufficientBalance, RequestItem};
 use askama::Template;
 use chrono::DateTime;
 use lettre::message::{header, Message, SinglePart};
@@ -14,19 +14,15 @@ pub(crate) async fn send_email(event: NotificationEvent) {
         EventType::RequestInsufficientBalance => {
             let template = RequestInsufficientBalance {
                 request_id: event
-                     .data
-                     .get("request_id")
-                     .cloned()
-                     .unwrap_or_default()
-                     .parse()
-                     .unwrap_or_default(),
-                request_date: event
                     .data
-                    .get("request_date")
+                    .get("request_id")
                     .cloned()
                     .unwrap_or_default()
                     .parse()
-                    .unwrap_or_default(), // Safe parse
+                    .unwrap_or_default(),
+                request_date: format_date_pretty(
+                    &event.data.get("request_date").cloned().unwrap_or_default(),
+                ), // Safe parse
                 url: event.data.get("url").cloned().unwrap_or_default(),
                 item_count: event
                     .data
@@ -66,8 +62,7 @@ pub(crate) async fn send_email(event: NotificationEvent) {
 
             let html_body = template.render().expect("Failed to render email template");
 
-            // FIXED: Added quotes around "recipients" and handled Option
-            let recipient = event.data.get("recipients").cloned().unwrap_or_default();
+            let recipient = event.data.get("recipient").cloned().unwrap_or_default();
             if !recipient.is_empty() {
                 send_email_via_smtp(
                     recipient,
@@ -76,7 +71,85 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                 );
             }
         }
-        EventType::RequestPaymentCompleted => {}
+        EventType::RequestPaymentCompleted => {
+            let template = PaymentCompleted {
+                request_id: event
+                    .data
+                    .get("request_id")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or_default(),
+                payment_date: format_date_pretty(
+                    &event
+                        .data
+                        .get("payment_date")
+                        .cloned()
+                        .unwrap_or_default(),
+                ), // Safe parse
+                transaction_id: event
+                    .data
+                    .get("transaction_id")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or_default(),
+                total_amount: event
+                    .data
+                    .get("total_amount")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or(0.0),
+                url: event
+                    .data
+                    .get("url")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or_default(),
+            };
+
+            for recipient_type in &event.recipient_types {
+                match recipient_type {
+                    RecipientType::USER => {
+                        let html_body = template.render().expect("Failed to render email template");
+                        let user_email = event.data.get("recipients").cloned().unwrap_or_default();
+                        if !user_email.is_empty() {
+                            send_email_via_smtp(
+                                user_email,
+                                html_body,
+                                "✅ Payment successful".to_string(),
+                            );
+                        }
+                    }
+                    RecipientType::TRADER => {
+                        let html_body = template.render().expect("Failed to render email template");
+                        let traders_str = event
+                            .data
+                            .get("trader_recipients")
+                            .cloned()
+                            .unwrap_or_default();
+                        if !traders_str.is_empty() {
+                            let html_body =
+                                template.render().expect("Failed to render Trader template");
+
+                            for trader_email in traders_str.split(',') {
+                                let email_clean = trader_email.trim();
+                                if !email_clean.is_empty() {
+                                    send_email_via_smtp(
+                                        email_clean.to_string(),
+                                        html_body.clone(),
+                                        "✅ Payment successful".to_string(),
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
         EventType::RequestApproved => {
             let template = RequestApproved {
                 request_id: event
@@ -86,10 +159,9 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                     .unwrap_or_default()
                     .parse()
                     .unwrap_or_default(),
-                approval_date: format_date_pretty(&event
-                    .data
-                    .get("approval_date")
-                    .cloned().unwrap_or_default()), // Safe parse
+                approval_date: format_date_pretty(
+                    &event.data.get("approval_date").cloned().unwrap_or_default(),
+                ), // Safe parse
                 url: event.data.get("url").cloned().unwrap_or_default(),
                 trader_name: event
                     .data
@@ -105,34 +177,125 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                     .unwrap_or_default()
                     .parse()
                     .unwrap_or_default(),
-                deadline_date: format_date_pretty(&event
-                    .data
-                    .get("deadline_date")
-                    .cloned().unwrap_or_default()),
+                deadline_date: format_date_pretty(
+                    &event.data.get("deadline_date").cloned().unwrap_or_default(),
+                ),
                 total_amount: event
                     .data
                     .get("total_amount")
                     .cloned()
                     .unwrap_or_default()
                     .parse()
-                    .unwrap_or(0.0)
+                    .unwrap_or(0.0),
             };
 
             let html_body = template.render().expect("Failed to render email template");
 
             let recipient = event.data.get("recipient").cloned().unwrap_or_default();
             if !recipient.is_empty() {
-                send_email_via_smtp(
-                    recipient,
-                    html_body,
-                    "✅ Request Approved".to_string(),
-                );
+                send_email_via_smtp(recipient, html_body, "✅ Request Approved".to_string());
             }
         }
-        EventType::RequestFulfilled => {}
+        EventType::RequestFulfilled => {
+            let template = RequestFulfilled {
+                request_id: event
+                    .data
+                    .get("request_id")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or_default(),
+                completed_date: format_date_pretty(
+                    &event
+                        .data
+                        .get("completed_date")
+                        .cloned()
+                        .unwrap_or_default(),
+                ), // Safe parse
+                trader_name: event
+                    .data
+                    .get("trader_name")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or_default(),
+                item_count: event
+                    .data
+                    .get("item_count")
+                    .and_then(|v| v.parse().ok())
+                    .unwrap_or(0),
+                total_amount: event
+                    .data
+                    .get("total_amount")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or(0.0),
+                request_url: event
+                    .data
+                    .get("request_url")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or_default(),
+                review_url: event
+                    .data
+                    .get("review_url")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or_default(),
+                fulfillment_time: event
+                    .data
+                    .get("fulfillment_time")
+                    .cloned()
+                    .unwrap_or_default()
+                    .parse()
+                    .unwrap_or_default(),
+            };
+
+            for recipient_type in &event.recipient_types {
+                match recipient_type {
+                    RecipientType::USER => {
+                        let html_body = template.render().expect("Failed to render email template");
+                        let user_email = event.data.get("recipients").cloned().unwrap_or_default();
+                        if !user_email.is_empty() {
+                            send_email_via_smtp(
+                                user_email,
+                                html_body,
+                                "✅ Request Successfully Fulfilled".to_string(),
+                            );
+                        }
+                    }
+                    RecipientType::TRADER => {
+                        let html_body = template.render().expect("Failed to render email template");
+                        let traders_str = event
+                            .data
+                            .get("trader_recipients")
+                            .cloned()
+                            .unwrap_or_default();
+                        if !traders_str.is_empty() {
+                            let html_body =
+                                template.render().expect("Failed to render Trader template");
+
+                            for trader_email in traders_str.split(',') {
+                                let email_clean = trader_email.trim();
+                                if !email_clean.is_empty() {
+                                    send_email_via_smtp(
+                                        email_clean.to_string(),
+                                        html_body.clone(),
+                                        "✅ Request Successfully Fulfilled".to_string(),
+                                    );
+                                }
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
         EventType::RequestCancelled => {}
         EventType::RequestCreated => {
-            // ... (Your parsing logic here is correct) ...
             let products_str = event.data.get("products").cloned().unwrap_or_default();
             let parts: Vec<&str> = products_str.split(',').collect();
             let mut items: Vec<RequestItem> = Vec::new();
@@ -152,7 +315,9 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                     &event.data.get("request_date").cloned().unwrap_or_default(),
                 ),
 
-                due_date: format_date_pretty(&event.data.get("due_date").cloned().unwrap_or_default()),
+                due_date: format_date_pretty(
+                    &event.data.get("due_date").cloned().unwrap_or_default(),
+                ),
                 url: event.data.get("url").cloned().unwrap_or_default(),
                 item_count: event
                     .data
@@ -219,6 +384,10 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                 }
             }
         }
+        EventType::RequestRejected => {}
+        EventType::RequestFulfillmentReminderDay1 => {}
+        EventType::RequestFulfillmentReminderDay2 => {}
+        EventType::RequestFulfillmentReminderDay3 => {}
         _ => {}
     }
 }
@@ -227,7 +396,11 @@ pub(crate) async fn send_email(event: NotificationEvent) {
 fn send_email_via_smtp(email: String, html_body: String, subject: String) {
     // ... (SMTP logic same as before)
     let email_msg = Message::builder()
-        .from("Chaincode Trade Team <josejosemou8@gmail.com>".parse().unwrap())
+        .from(
+            "Chaincode Trade Team <josejosemou8@gmail.com>"
+                .parse()
+                .unwrap(),
+        )
         .to(email.parse().unwrap())
         .subject(subject)
         .singlepart(
