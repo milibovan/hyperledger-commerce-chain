@@ -8,6 +8,7 @@ import { useTraders } from "../hooks/useTraders";
 import BalanceSummary from "../reusables/BalanceSummary";
 import TabNavigation from "../reusables/TabNavigation";
 import RequestProductsTabs from "../forms/RequestProductsTab";
+import { Users } from "lucide-react";
 
 export default function BuyProduct({
   trader: user,
@@ -21,15 +22,12 @@ export default function BuyProduct({
     fetchTraders,
   } = useTraders();
 
-  // CHANGED: State is now ProductInventory[]
   const [selectedProducts, setSelectedProducts] = useState<ProductInventory[]>([]);
-
   const [errors, setErrors] = useState<Map<string, string>>(new Map());
   const [activeTab, setActiveTab] = useState<"available" | "request">(
     "available"
   );
 
-  // CHANGED: Calculate total using Array.reduce
   const calculateTotal = (): number => {
     return selectedProducts.reduce((total, item) => {
       const product = products.find((p) => p.id === item["product-id"]);
@@ -44,13 +42,11 @@ export default function BuyProduct({
   const remainingBalance = user.balance - totalCost;
   const hasInsufficientFunds = remainingBalance < 0;
 
-  // CHANGED: Toggle logic for Array
   const toggleProduct = (productId: string) => {
     setSelectedProducts((prev) => {
       const exists = prev.find(item => item["product-id"] === productId);
 
       if (exists) {
-        // Remove
         setErrors((prevErrors) => {
           const newErrors = new Map(prevErrors);
           newErrors.delete(productId);
@@ -58,13 +54,11 @@ export default function BuyProduct({
         });
         return prev.filter(item => item["product-id"] !== productId);
       } else {
-        // Add with quantity 1
         return [...prev, { "product-id": productId, quantity: 1 }];
       }
     });
   };
 
-  // CHANGED: Update Quantity logic for Array
   const updateQuantity = (productId: string, quantity: number) => {
     let product = undefined;
 
@@ -102,7 +96,7 @@ export default function BuyProduct({
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId as "available" | "request");
-    setSelectedProducts([]); // CHANGED: Reset to empty array
+    setSelectedProducts([]);
     setErrors(new Map());
   };
 
@@ -119,8 +113,7 @@ export default function BuyProduct({
 
       fetchProductsByIds(productIds);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchProductsByIds, traders.length]);
+  }, [fetchProductsByIds, traders]);
 
   const productQuantityMap = new Map<string, number>();
 
@@ -136,13 +129,10 @@ export default function BuyProduct({
 
   availableProducts.forEach((availableProduct) => {
     const productId = availableProduct.id;
-
     const totalQuantity = productQuantityMap.get(productId) || 0;
-
     availableProduct.quantity = totalQuantity;
   });
 
-  // Prepare balance summary data
   const balanceItems = [
     {
       label: "Current Balance",
@@ -161,7 +151,6 @@ export default function BuyProduct({
     },
   ];
 
-  // Prepare tabs data
   const tabs = [
     {
       id: "available",
@@ -186,13 +175,21 @@ export default function BuyProduct({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-purple-400 mb-2">
-          Buy Products
-        </h1>
-        <p className="text-xl text-gray-300">
-          <span className={userFontSemibold}>User:</span> {user.name}
-        </p>
+      <div className="relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-purple-500 rounded-lg p-6 shadow-xl shadow-purple-500/30">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400"></div>
+        <div className="flex items-center gap-3">
+          <div className="p-3 rounded-lg bg-purple-900/30">
+            <Users size={32} className="text-purple-400" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-purple-400">
+              Buy Products
+            </h1>
+            <p className="text-lg text-gray-300">
+              <span className={userFontSemibold}>User:</span> {user.name}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Balance Summary */}
@@ -210,7 +207,9 @@ export default function BuyProduct({
       />
 
       {/* Content */}
-      <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
+      <div className="relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50">
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-purple-300"></div>
+
         {activeTab === "available" ? (
           <ProductsTabs
             user={user}

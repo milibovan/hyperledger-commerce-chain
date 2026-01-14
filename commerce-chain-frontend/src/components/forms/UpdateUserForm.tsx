@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, AlertCircle, CheckCircle, Plus } from "lucide-react";
+import { Send, AlertCircle, CheckCircle, Plus, DollarSign, Edit } from "lucide-react";
 import { type User, channels } from "../../utils/dataTypesUtils";
 import { host } from "../../utils/utils";
 import type { UpdateUserFormsProps } from "../../utils/propsUtils";
@@ -96,107 +96,145 @@ export default function UpdateUserForm({
 
   return (
     <div className="w-full max-w-2xl">
-      <div className="bg-gray-800 border-2 border-purple-500 rounded-lg p-8 shadow-2xl shadow-purple-500/50 space-y-6">
-        <div>
-          <h3 className="text-3xl font-bold text-purple-400 mb-2">
-            Update User
-          </h3>
-          <p className="text-sm text-gray-400">
-            Editing user in{" "}
-            <span className="text-purple-300 font-semibold">
-              {formData.channel}
-            </span>
-          </p>
-        </div>
+      <div className="relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-purple-500 rounded-lg shadow-2xl shadow-purple-500/50">
+        {/* Top accent line */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-purple-500 to-purple-400"></div>
 
-        {/* Current balance display (not editable, but informative) */}
-        <div className="px-4 py-3 bg-purple-900/20 border border-purple-500/30 rounded">
-          <div className="flex justify-between items-center">
+        <div className="p-8 space-y-6">
+          {/* Header */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-3 rounded-lg bg-purple-900/30">
+              <Edit size={32} className="text-purple-400" />
+            </div>
             <div>
-              <span className="text-sm text-purple-300">Current Balance:</span>
-              <p className="text-lg font-bold text-purple-300">
-                ${formData.balance}
+              <h3 className="text-3xl font-bold text-purple-400">
+                Update User
+              </h3>
+              <p className="text-sm text-gray-400">
+                Editing user in{" "}
+                <span className="text-purple-300 font-semibold">
+                  {formData.channel}
+                </span>
               </p>
             </div>
-
-            <p className="text-xs text-gray-400 mt-1">
-              Use the deposit feature to modify balance
-            </p>
-            <button
-              onClick={() => handleActionClick("deposit", user)}
-              className="px-4 py-2 bg-green-600 hover:bg-green-500 text-white font-semibold rounded border-2 border-green-400 transition-all flex items-center gap-2"
-            >
-              <Plus size={18} />
-              Deposit
-            </button>
           </div>
-        </div>
 
-        {/* Only editable fields */}
-        <div>
-          <label className="block text-purple-300 font-semibold mb-2">
-            First Name *
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder="Enter first name"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-purple-300 font-semibold mb-2">
-            Last Name *
-          </label>
-          <input
-            type="text"
-            name="surname"
-            value={formData.surname}
-            onChange={handleChange}
-            placeholder="Enter last name"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
-          />
-        </div>
-
-        <div>
-          <label className="block text-purple-300 font-semibold mb-2">
-            Email *
-          </label>
-          <input
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder="Enter email address"
-            className="w-full px-4 py-3 bg-gray-700 border-2 border-purple-500 text-white rounded font-semibold placeholder-gray-500 transition-all duration-200 focus:outline-none focus:border-purple-300 focus:shadow-lg focus:shadow-purple-400/50"
-          />
-        </div>
-
-        {error && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-red-900 border-2 border-red-500 text-red-200 rounded">
-            <AlertCircle size={20} />
-            <span className="font-semibold">{error}</span>
+          {/* Current Balance Display with Deposit Button */}
+          <div className="relative overflow-hidden bg-purple-900/20 border-2 border-purple-500/50 rounded-lg p-4">
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-purple-300 opacity-50"></div>
+            <div className="flex justify-between items-center gap-4">
+              <div className="flex items-center gap-3">
+                <DollarSign size={20} className="text-purple-400" />
+                <div>
+                  <span className="text-sm text-purple-300">Current Balance:</span>
+                  <p className="text-lg font-bold text-purple-300">
+                    ${formData.balance}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <p className="text-xs text-gray-400">
+                  Use the deposit feature to modify balance
+                </p>
+                <button
+                  onClick={() => handleActionClick("deposit", user)}
+                  className="relative overflow-hidden px-4 py-2 bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white font-semibold rounded-lg border-2 border-green-400 transition-all duration-300 flex items-center gap-2 hover:shadow-lg hover:shadow-green-400/30"
+                >
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-300 to-green-200"></div>
+                  <Plus size={18} />
+                  Deposit
+                </button>
+              </div>
+            </div>
           </div>
-        )}
 
-        {success && (
-          <div className="flex items-center gap-3 px-4 py-3 bg-green-900 border-2 border-green-500 text-green-200 rounded">
-            <CheckCircle size={20} />
-            <span className="font-semibold">{success}</span>
+          {/* First Name */}
+          <div>
+            <label className="block text-purple-300 font-semibold mb-2">
+              First Name *
+            </label>
+            <div className="relative overflow-hidden rounded-lg">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-purple-300 opacity-0 focus-within:opacity-100 transition-opacity"></div>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter first name"
+                className="w-full px-4 py-3 bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-600 text-white rounded-lg font-semibold placeholder-gray-500 transition-all duration-300 focus:outline-none focus:border-purple-400 focus:shadow-lg focus:shadow-purple-400/30 hover:border-purple-500"
+              />
+            </div>
           </div>
-        )}
 
-        <button
-          onClick={handleSubmit}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-purple-300 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide"
-        >
-          <Send size={20} />
-          {loading ? "Updating..." : "Update User"}
-        </button>
+          {/* Last Name */}
+          <div>
+            <label className="block text-purple-300 font-semibold mb-2">
+              Last Name *
+            </label>
+            <div className="relative overflow-hidden rounded-lg">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-purple-300 opacity-0 focus-within:opacity-100 transition-opacity"></div>
+              <input
+                type="text"
+                name="surname"
+                value={formData.surname}
+                onChange={handleChange}
+                placeholder="Enter last name"
+                className="w-full px-4 py-3 bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-600 text-white rounded-lg font-semibold placeholder-gray-500 transition-all duration-300 focus:outline-none focus:border-purple-400 focus:shadow-lg focus:shadow-purple-400/30 hover:border-purple-500"
+              />
+            </div>
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-purple-300 font-semibold mb-2">
+              Email *
+            </label>
+            <div className="relative overflow-hidden rounded-lg">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-purple-300 opacity-0 focus-within:opacity-100 transition-opacity"></div>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter email address"
+                className="w-full px-4 py-3 bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-600 text-white rounded-lg font-semibold placeholder-gray-500 transition-all duration-300 focus:outline-none focus:border-purple-400 focus:shadow-lg focus:shadow-purple-400/30 hover:border-purple-500"
+              />
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="relative overflow-hidden px-4 py-3 bg-red-900/40 border-2 border-red-500 text-red-200 rounded-lg">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-red-400 to-pink-400"></div>
+              <div className="flex items-center gap-3">
+                <AlertCircle size={20} />
+                <span className="font-semibold">{error}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div className="relative overflow-hidden px-4 py-3 bg-green-900/40 border-2 border-green-500 text-green-200 rounded-lg">
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-green-400 to-green-300"></div>
+              <div className="flex items-center gap-3">
+                <CheckCircle size={20} />
+                <span className="font-semibold">{success}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Submit Button */}
+          <button
+            onClick={handleSubmit}
+            disabled={loading}
+            className="relative overflow-hidden w-full flex items-center justify-center gap-2 py-4 px-6 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold text-lg rounded-lg border-2 border-purple-400 transition-all duration-300 hover:shadow-xl hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide hover:scale-105"
+          >
+            <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-300 to-purple-200"></div>
+            <Send size={20} />
+            {loading ? "Updating..." : "Update User"}
+          </button>
+        </div>
       </div>
     </div>
   );

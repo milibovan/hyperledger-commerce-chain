@@ -109,6 +109,7 @@ export default function RequestCard({ request, onClick, handleDeposit, trader, r
     const isCompleted = request.status === 'COMPLETED';
     const isCancelled = request.status === 'CANCELLED';
     const isFulfilled = request.status === 'FULFILLED';
+    const isPending = request.status === "PENDING_FUNDS";
 
     const themeColors = {
         purple: { text: "text-purple-300", badge: "bg-purple-900/40 border-purple-500/50 text-purple-300", border: "border-purple-400", shadow: "hover:shadow-purple-400/50", ring: "focus:ring-purple-400", button: "bg-purple-600 hover:bg-purple-500 border-purple-400 text-white hover:shadow-purple-400/50" },
@@ -235,7 +236,7 @@ export default function RequestCard({ request, onClick, handleDeposit, trader, r
             </div>
 
             {/* Action Section */}
-            {!isFulfilled && trader && (
+            {!isFulfilled && !isPending && trader && (
                 <div className={`flex items-center justify-between p-4 rounded-lg border-2 ${canFulfill ? "bg-green-900/20 border-green-500/50" :
                     canRestock
                         ? (hasSufficientBalance ? "bg-amber-900/20 border-amber-500/50" : "bg-orange-900/20 border-orange-600/50")

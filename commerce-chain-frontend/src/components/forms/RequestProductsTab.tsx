@@ -17,7 +17,6 @@ export default function RequestProductsTabs({
     const { resetActions, resetNestedView } = useEntityActions();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Map of productId -> { quantity, deliveryDays }
     const [requestedProducts, setRequestedProducts] = useState<Map<string, ProductRequest>>(
         new Map()
     );
@@ -32,7 +31,7 @@ export default function RequestProductsTabs({
         if (product.quantity > 0) {
             return product.quantity < quantityToCheck ? 7 : 3;
         } else {
-            return effectiveStock > 0 ? 3 : 7; // In stock: 3 days, Out of stock: 7 days
+            return effectiveStock > 0 ? 3 : 7;
         }
     };
 
@@ -64,7 +63,6 @@ export default function RequestProductsTabs({
             const current = newMap.get(productId);
             if (current) {
                 const newMinDays = getMinDeliveryDays(product, quantity);
-                // const updatedDeliveryDays = Math.max(current.deliveryDays, newMinDays);
                 newMap.set(productId, { quantity, deliveryDays: newMinDays });
             }
             return newMap;
@@ -106,7 +104,6 @@ export default function RequestProductsTabs({
                     `Minimum ${minDays} days required for ${product.quantity > 0 ? "in-stock" : "out-of-stock"} items`
                 );
             } else {
-                // Only clear delivery day errors, keep quantity errors if they exist
                 const currentError = newErrors.get(productId);
                 if (currentError?.includes("days required")) {
                     newErrors.delete(productId);
@@ -313,20 +310,24 @@ export default function RequestProductsTabs({
                             return (
                                 <div
                                     key={product.id}
-                                    className={`
-                    border-2 rounded-lg p-4 transition-all duration-200
-                    ${isRequested
-                                            ? "bg-purple-900/20 border-purple-400 shadow-lg shadow-purple-400/20 cursor-pointer"
-                                            : "bg-gray-800 border-gray-600 hover:border-purple-400/50 cursor-pointer"
-                                        }
-                  `}
+                                    className={`relative overflow-hidden rounded-lg p-4 transition-all duration-300 cursor-pointer hover:scale-[1.02] ${isRequested
+                                        ? "bg-gradient-to-br from-purple-900/30 to-purple-900/20 border-2 border-purple-400 shadow-lg shadow-purple-400/30"
+                                        : "bg-gradient-to-br from-gray-700 to-gray-800 border-2 border-gray-600 hover:border-purple-400/50"
+                                        }`}
                                     onClick={() => !isRequested && toggleProduct(product.id)}
                                 >
+                                    <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-purple-300 ${isRequested ? "opacity-100" : "opacity-0"}`}></div>
+
                                     {/* Product Header */}
                                     <div className="flex items-start justify-between mb-3">
-                                        <div className="flex-1">
-                                            <h3 className={userFontBold}>{product.name}</h3>
-                                            <p className="text-xs text-gray-400">ID: {product.id}</p>
+                                        <div className="flex-1 flex items-center gap-2">
+                                            <div className="p-1.5 rounded bg-purple-900/30">
+                                                <Package size={16} className="text-purple-400" />
+                                            </div>
+                                            <div>
+                                                <h3 className={userFontBold}>{product.name}</h3>
+                                                <p className="text-xs text-gray-400">ID: {product.id}</p>
+                                            </div>
                                         </div>
                                         <div className="text-right">
                                             <p className={userFontBold}>${product.price.toFixed(2)}</p>
@@ -334,7 +335,7 @@ export default function RequestProductsTabs({
                                                 {isInStock ? (
                                                     <span className="text-green-400 font-semibold flex items-center gap-1">
                                                         <Package size={12} />
-                                                        In Stock: {product.quantity}
+                                                        Stock: {product.quantity}
                                                     </span>
                                                 ) : (
                                                     <span className="text-yellow-400 font-semibold flex items-center gap-1">
@@ -361,14 +362,10 @@ export default function RequestProductsTabs({
                                                         updateQuantity(product.id, parseInt(e.target.value) || 0)
                                                     }
                                                     min="1"
-                                                    className={`
-                            flex-1 px-3 py-2 bg-gray-700 text-white rounded font-semibold
-                            transition-all duration-200 focus:outline-none
-                            ${error && error.includes("Quantity")
-                                                            ? "border-2 border-red-500 focus:border-red-400"
-                                                            : "border-2 border-purple-500 focus:border-purple-300"
-                                                        }
-                          `}
+                                                    className={`flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg font-semibold transition-all duration-200 focus:outline-none ${error && error.includes("Quantity")
+                                                        ? "border-2 border-red-500 focus:border-red-400"
+                                                        : "border-2 border-purple-500 focus:border-purple-300"
+                                                        }`}
                                                 />
                                             </div>
 
@@ -385,14 +382,10 @@ export default function RequestProductsTabs({
                                                         updateDeliveryDays(product.id, parseInt(e.target.value) || minDays)
                                                     }
                                                     min={minDays}
-                                                    className={`
-                            flex-1 px-3 py-2 bg-gray-700 text-white rounded font-semibold
-                            transition-all duration-200 focus:outline-none
-                            ${error && error.includes("days")
-                                                            ? "border-2 border-red-500 focus:border-red-400"
-                                                            : "border-2 border-purple-500 focus:border-purple-300"
-                                                        }
-                          `}
+                                                    className={`flex-1 px-3 py-2 bg-gray-700 text-white rounded-lg font-semibold transition-all duration-200 focus:outline-none ${error && error.includes("days")
+                                                        ? "border-2 border-red-500 focus:border-red-400"
+                                                        : "border-2 border-purple-500 focus:border-purple-300"
+                                                        }`}
                                                 />
                                                 <span className="text-xs text-gray-400 flex-shrink-0">
                                                     (min: {minDays})
@@ -401,7 +394,7 @@ export default function RequestProductsTabs({
 
                                             <button
                                                 onClick={() => toggleProduct(product.id)}
-                                                className="w-full px-3 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-300 rounded border border-red-500 font-semibold text-sm transition-all"
+                                                className="w-full px-3 py-2 bg-red-600/30 hover:bg-red-600/50 text-red-300 rounded-lg border-2 border-red-500 font-semibold text-sm transition-all"
                                             >
                                                 Remove Request
                                             </button>
@@ -426,7 +419,7 @@ export default function RequestProductsTabs({
                                             <span className="text-sm text-purple-300 font-semibold">
                                                 Click to request
                                             </span>
-                                            <p className="text-xs text-fuchsia-400 text-bold mt-1">
+                                            <p className="text-xs text-fuchsia-400 font-bold mt-1">
                                                 Min. {minDays} days delivery
                                             </p>
                                         </div>
@@ -440,7 +433,8 @@ export default function RequestProductsTabs({
 
             {/* Requested Products Summary */}
             {requestedProducts.size > 0 && (
-                <div className="bg-gray-800 border-2 border-purple-400 rounded-lg p-4 mb-6">
+                <div className="relative overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-purple-400 rounded-lg p-4 mb-6 shadow-lg shadow-purple-400/20">
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-400 to-purple-300"></div>
                     <h3 className="text-lg font-bold text-purple-300 mb-3">
                         Requested Products ({requestedProducts.size})
                     </h3>
@@ -451,9 +445,9 @@ export default function RequestProductsTabs({
                             return (
                                 <div
                                     key={productId}
-                                    className="flex justify-between items-center text-sm text-gray-300"
+                                    className="flex justify-between items-center p-2 bg-gray-800/50 rounded border border-gray-700"
                                 >
-                                    <span>
+                                    <span className="text-sm text-gray-300">
                                         {product.name} × {request.quantity}{" "}
                                         <span className="text-xs text-gray-500">
                                             ({request.deliveryDays}d)
@@ -476,18 +470,20 @@ export default function RequestProductsTabs({
             )}
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t-2 border-purple-400">
+            <div className="flex gap-3 pt-4">
                 <button
                     onClick={resetActions}
-                    className="flex-1 py-3 px-6 bg-gray-700 hover:bg-gray-600 text-purple-300 font-bold rounded border-2 border-gray-600 transition-all duration-200"
+                    className="relative overflow-hidden flex-1 py-3 px-6 bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-purple-300 font-bold rounded-lg border-2 border-gray-600 hover:border-purple-500 transition-all duration-300 hover:shadow-lg hover:shadow-purple-400/20"
                 >
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-gray-500 to-gray-600"></div>
                     Cancel
                 </button>
                 <button
                     onClick={handleSubmit}
                     disabled={isSubmitDisabled}
-                    className="flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-400 hover:to-blue-400 text-gray-900 font-bold text-lg rounded border-2 border-purple-300 transition-all duration-200 hover:shadow-lg hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:from-gray-600 disabled:to-gray-700"
+                    className="relative overflow-hidden flex-1 flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-bold text-lg rounded-lg border-2 border-purple-400 transition-all duration-300 hover:shadow-xl hover:shadow-purple-400/50 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
                 >
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-purple-300 to-purple-200"></div>
                     <Send size={20} />
                     {loading ? "Submitting..." : `Request ${requestedProducts.size} Product(s)`}
                 </button>
