@@ -27,7 +27,7 @@ export default function OrderDetails({ entity: order, onEntityClick, onProductCl
                     },
                     {
                         label: 'Order placed',
-                        value: order.receipts[0].date,
+                        value: order.order["created-date"],
                         formatter: (val: Date) => getFormattedDate(val)
                     },
                 ]}
@@ -71,7 +71,7 @@ export default function OrderDetails({ entity: order, onEntityClick, onProductCl
                             <div className="text-right">
                                 <p className="font-bold text-indigo-300">Total cost: ${receipt["total-cost"]}</p>
                                 <p className="text-xs text-gray-400">
-                                    Order placed: {getFormattedDate(receipt.date)}
+                                    Order placed: {getFormattedDate(order.order["created-date"])}
                                 </p>
                             </div>
                         </div>

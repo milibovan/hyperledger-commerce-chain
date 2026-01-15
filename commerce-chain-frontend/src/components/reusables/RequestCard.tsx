@@ -145,7 +145,7 @@ export default function RequestCard({ request, onClick, handleDeposit, trader, r
         } else {
             // Call your Fulfill Request API (Placeholder example)
             // You will need to implement/import this function
-            return await fulfillRequest(requestDetails!)
+            return await fulfillRequest(requestDetails!, trader!.trader)
         }
     };
 

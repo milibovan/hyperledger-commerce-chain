@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 59,
+            "activePatchIndex": 65,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -244,6 +244,30 @@
                 {
                     "date": 1768424703419,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { type ProductInventory, type RequestData, type RequestDetails } from \"./dataTypesUtils\";\r\n+import { type ProductInventory, type RequestDetails } from \"./dataTypesUtils\";\r\n \r\n export const host = \"http://localhost:7070\";\r\n export const headers = { \"Content-Type\": \"application/json\" };\r\n export enum httpMethod {\r\n@@ -75,9 +75,9 @@\n }\r\n \r\n export async function fulfillRequest(request: RequestDetails) {\r\n   return await fetch(\r\n-    `${host}/request/fulfill/${request.id}/channel-a`,\r\n+    `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n       body: JSON.stringify({\r\n"
+                },
+                {
+                    "date": 1768428726209,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -74,8 +74,9 @@\n   );\r\n }\r\n \r\n export async function fulfillRequest(request: RequestDetails) {\r\n+  console.log(request)\r\n   return await fetch(\r\n     `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n"
+                },
+                {
+                    "date": 1768430409991,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -74,9 +74,8 @@\n   );\r\n }\r\n \r\n export async function fulfillRequest(request: RequestDetails) {\r\n-  console.log(request)\r\n   return await fetch(\r\n     `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n"
+                },
+                {
+                    "date": 1768486820101,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -73,16 +73,17 @@\n     }\r\n   );\r\n }\r\n \r\n-export async function fulfillRequest(request: RequestDetails) {\r\n+export async function fulfillRequest(request: RequestDetails, traderEmail: string) {\r\n   return await fetch(\r\n     `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n       body: JSON.stringify({\r\n-        request\r\n+        request,\r\n+        \"trader-email\": traderEmail\r\n       }),\r\n     }\r\n   );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768487369422,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -81,9 +81,9 @@\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n       body: JSON.stringify({\r\n         request,\r\n-        \"trader-email\": traderEmail\r\n+        \"trader\": trader\r\n       }),\r\n     }\r\n   );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768487376638,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -73,17 +73,17 @@\n     }\r\n   );\r\n }\r\n \r\n-export async function fulfillRequest(request: RequestDetails, traderEmail: string) {\r\n+export async function fulfillRequest(request: RequestDetails, trader: string) {\r\n   return await fetch(\r\n     `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n       body: JSON.stringify({\r\n         request,\r\n-        \"trader\": trader\r\n+        trader\r\n       }),\r\n     }\r\n   );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768487396855,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { type ProductInventory, type RequestDetails } from \"./dataTypesUtils\";\r\n+import { type ProductInventory, type RequestDetails, type TraderData } from \"./dataTypesUtils\";\r\n \r\n export const host = \"http://localhost:7070\";\r\n export const headers = { \"Content-Type\": \"application/json\" };\r\n export enum httpMethod {\r\n@@ -73,9 +73,9 @@\n     }\r\n   );\r\n }\r\n \r\n-export async function fulfillRequest(request: RequestDetails, trader: string) {\r\n+export async function fulfillRequest(request: RequestDetails, trader: TraderData) {\r\n   return await fetch(\r\n     `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n"
                 }
             ],
             "date": 1761645950564,

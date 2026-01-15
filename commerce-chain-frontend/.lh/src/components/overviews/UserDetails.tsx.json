@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 96,
+            "activePatchIndex": 100,
             "patches": [
                 {
                     "date": 1762356648891,
@@ -392,6 +392,22 @@
                 {
                     "date": 1768168713851,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,8 +2,9 @@\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n import RequestCard from \"../reusables/RequestCard\";\r\n+import { ShoppingBag, Hash, DollarSign, Calendar, Package } from \"lucide-react\";\r\n \r\n export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {\r\n   return (\r\n     <div className=\"space-y-6\">\r\n"
+                },
+                {
+                    "date": 1768489569207,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n import RequestCard from \"../reusables/RequestCard\";\r\n import { ShoppingBag, Hash, DollarSign, Calendar, Package } from \"lucide-react\";\r\n \r\n export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {\r\n+  console.log(userDetails)\r\n   return (\r\n     <div className=\"space-y-6\">\r\n       <EntityDetailsDisplay\r\n         title=\"User Details\"\r\n"
+                },
+                {
+                    "date": 1768491156540,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -84,17 +84,17 @@\n                     </div>\r\n                   </div>\r\n \r\n                   {/* Order Date */}\r\n-                  <div className=\"flex items-center gap-2\">\r\n+                  {/* <div className=\"flex items-center gap-2\">\r\n                     <Calendar size={14} className=\"text-gray-400\" />\r\n                     <div className=\"text-right\">\r\n                       <p className=\"text-xs text-gray-400\">Order Placed</p>\r\n                       <p className=\"text-sm font-medium text-gray-300\">\r\n                         {new Date(order.receipts[0].date).toLocaleDateString()}\r\n                       </p>\r\n                     </div>\r\n-                  </div>\r\n+                  </div> */}\r\n                 </div>\r\n \r\n                 {/* Optional: Products count highlight */}\r\n                 <div className=\"mt-3 p-2 bg-purple-900/20 border border-purple-500/30 rounded flex items-center gap-2\">\r\n"
+                },
+                {
+                    "date": 1768491566437,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -84,17 +84,17 @@\n                     </div>\r\n                   </div>\r\n \r\n                   {/* Order Date */}\r\n-                  {/* <div className=\"flex items-center gap-2\">\r\n+                  <div className=\"flex items-center gap-2\">\r\n                     <Calendar size={14} className=\"text-gray-400\" />\r\n                     <div className=\"text-right\">\r\n                       <p className=\"text-xs text-gray-400\">Order Placed</p>\r\n                       <p className=\"text-sm font-medium text-gray-300\">\r\n                         {new Date(order.receipts[0].date).toLocaleDateString()}\r\n                       </p>\r\n                     </div>\r\n-                  </div> */}\r\n+                  </div>\r\n                 </div>\r\n \r\n                 {/* Optional: Products count highlight */}\r\n                 <div className=\"mt-3 p-2 bg-purple-900/20 border border-purple-500/30 rounded flex items-center gap-2\">\r\n"
+                },
+                {
+                    "date": 1768492819690,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import type { OrderDetails, RequestDetails, UserDetails } from \"../../utils/dataTypesUtils\";\r\n+import { getFormattedDate, type OrderDetails, type RequestDetails, type UserDetails } from \"../../utils/dataTypesUtils\";\r\n import type { DetailsProps } from \"../../utils/propsUtils\";\r\n import EntityDetailsDisplay from \"../reusables/EntityDetailsDisplay\";\r\n import NestedEntityListSection from \"../reusables/NestedEntityListSection\";\r\n import RequestCard from \"../reusables/RequestCard\";\r\n@@ -89,9 +89,9 @@\n                     <Calendar size={14} className=\"text-gray-400\" />\r\n                     <div className=\"text-right\">\r\n                       <p className=\"text-xs text-gray-400\">Order Placed</p>\r\n                       <p className=\"text-sm font-medium text-gray-300\">\r\n-                        {new Date(order.receipts[0].date).toLocaleDateString()}\r\n+                        {getFormattedDate(order.order[\"created-date\"])}\r\n                       </p>\r\n                     </div>\r\n                   </div>\r\n                 </div>\r\n"
                 }
             ],
             "date": 1762356648891,

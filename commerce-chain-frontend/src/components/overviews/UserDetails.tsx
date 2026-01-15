@@ -1,4 +1,4 @@
-import type { OrderDetails, RequestDetails, UserDetails } from "../../utils/dataTypesUtils";
+import { getFormattedDate, type OrderDetails, type RequestDetails, type UserDetails } from "../../utils/dataTypesUtils";
 import type { DetailsProps } from "../../utils/propsUtils";
 import EntityDetailsDisplay from "../reusables/EntityDetailsDisplay";
 import NestedEntityListSection from "../reusables/NestedEntityListSection";
@@ -6,6 +6,7 @@ import RequestCard from "../reusables/RequestCard";
 import { ShoppingBag, Hash, DollarSign, Calendar, Package } from "lucide-react";
 
 export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {
+  console.log(userDetails)
   return (
     <div className="space-y-6">
       <EntityDetailsDisplay
@@ -89,7 +90,7 @@ export default function UserDetails({ entity: userDetails, onEntityClick }: Deta
                     <div className="text-right">
                       <p className="text-xs text-gray-400">Order Placed</p>
                       <p className="text-sm font-medium text-gray-300">
-                        {new Date(order.receipts[0].date).toLocaleDateString()}
+                        {getFormattedDate(order.order["created-date"])}
                       </p>
                     </div>
                   </div>

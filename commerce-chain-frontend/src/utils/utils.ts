@@ -1,4 +1,4 @@
-import { type ProductInventory, type RequestDetails } from "./dataTypesUtils";
+import { type ProductInventory, type RequestDetails, type TraderData } from "./dataTypesUtils";
 
 export const host = "http://localhost:7070";
 export const headers = { "Content-Type": "application/json" };
@@ -74,14 +74,15 @@ export async function createTrader(channel: string, name: string, traderType:str
   );
 }
 
-export async function fulfillRequest(request: RequestDetails) {
+export async function fulfillRequest(request: RequestDetails, trader: TraderData) {
   return await fetch(
     `${host}/request/fulfill/${request.request.id}/channel-a`,
     {
       method: httpMethod.PUT,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        request
+        request,
+        trader
       }),
     }
   );
