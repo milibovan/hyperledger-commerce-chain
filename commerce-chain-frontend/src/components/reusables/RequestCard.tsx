@@ -7,7 +7,7 @@ import { useEntityActions } from "../hooks/useEntityActions";
 import TransactionModals, { type TransactionMode } from "../modals/TransactionModals"; // Updated Import
 import { addProductsToTrader, fulfillRequest } from "../../utils/utils"; // Import your API calls
 
-export default function RequestCard({ request, onClick, handleDeposit, trader, requestDetails, colorScheme = "purple" }: RequestCardProps) {
+export default function RequestCard({ request, onClick, handleDeposit, trader, user, requestDetails, colorScheme = "purple" }: RequestCardProps) {
     const [transactionMode, setTransactionMode] = useState<TransactionMode>("RESTOCK");
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -46,6 +46,12 @@ export default function RequestCard({ request, onClick, handleDeposit, trader, r
     // Products needed for Restocking (Calculated diff)
     const restockProducts = getSelectedProducts();
     const restockCost = getTotalCost(restockProducts);
+
+    const depositAmountNeeded = trader
+        ? Math.max(0, restockCost - trader.trader.balance)
+        : user
+            ? Math.max(0, request["total-cost"] - (user.balance || 0))
+            : 0;
 
     // Products needed for Fulfillment (The full request)
     const fulfillProducts = request.products;
@@ -295,7 +301,7 @@ export default function RequestCard({ request, onClick, handleDeposit, trader, r
                                 if (hasSufficientBalance) {
                                     handleOpenRestock();
                                 } else {
-                                    handleDeposit!();
+                                    handleDeposit!(depositAmountNeeded, request.id);
                                 }
                             }
                         }}
@@ -333,6 +339,31 @@ export default function RequestCard({ request, onClick, handleDeposit, trader, r
                                 Unavailable
                             </>
                         )}
+                    </button>
+                </div>
+            )}
+
+            {isPending && user && (
+                <div className="flex items-center justify-between p-4 rounded-lg border-2 bg-blue-900/20 border-blue-500/50">
+                    <div className="flex items-center gap-3">
+                        <Wallet size={20} className="text-blue-400" />
+                        <div>
+                            <p className="font-semibold text-blue-400">Insufficient Funds</p>
+                            <p className="text-xs text-blue-300/70">
+                                Cost: ${request["total-cost"].toFixed(2)} | Your Bal: ${user.balance.toFixed(2)}
+                            </p>
+                        </div>
+                    </div>
+
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (handleDeposit) handleDeposit(depositAmountNeeded, request.id);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 font-semibold rounded border-2 transition-all duration-200 bg-blue-600 hover:bg-blue-500 border-blue-400 text-white hover:shadow-lg hover:shadow-blue-400/50"
+                    >
+                        <Plus size={16} />
+                        Deposit ${depositAmountNeeded.toFixed(0)}
                     </button>
                 </div>
             )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import CreateTraderForm from "../forms/CreateTraderForm";
 import { Plus, Edit, Trash2 } from "lucide-react";
 import type { OrderData, ProductData, ReceiptData, RequestDetails, TraderData, UserData } from "../../utils/dataTypesUtils";
@@ -45,6 +45,8 @@ export default function TradersPanel() {
 
   const { receiptDetails, fetchReceiptDetails } = useReceipts();
   const { requestDetails, fetchRequestDetails } = useRequests();
+  const [prefilledDepositAmount, setPrefilledDepositAmount] = useState<number>(0);
+
 
   const {
     action,
@@ -111,7 +113,11 @@ export default function TradersPanel() {
           return (
             <DepositMoneyForm
               user={selectedTrader}
-              onSuccess={fetchTraders}
+              amount={prefilledDepositAmount.toLocaleString()}
+              onSuccess={() => {
+                fetchTraders();
+                setPrefilledDepositAmount(0);
+              }}
               handleBackToList={resetActions}
             />
           );
@@ -185,7 +191,10 @@ export default function TradersPanel() {
                 onProductClick={viewNestedEntityDetails}
                 onEntityClick={viewNestedEntityDetails}
                 onUnassignedClick={() => handleAction("showUnassigned", selectedTrader)}
-                onDeposit={() => handleAction("deposit", selectedTrader)}
+                onDeposit={(amountNeeded) => {
+                  if (amountNeeded) setPrefilledDepositAmount(amountNeeded);
+                  handleAction("deposit", selectedTrader);
+                }}
               />
             );
           }
@@ -197,6 +206,7 @@ export default function TradersPanel() {
     if (viewNestedDetails) {
       resetNestedView();
     } else {
+      setPrefilledDepositAmount(0);
       resetActions();
     }
   };

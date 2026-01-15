@@ -87,3 +87,30 @@ export async function fulfillRequest(request: RequestDetails, trader: TraderData
     }
   );
 }
+
+export async function depositMoney(channel: string, amount: string, userId: string) {
+  return await fetch(
+        `${host}/deposit-money/${channel}`,
+        {
+          method: httpMethod.POST,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            "user-id": userId,
+            amount: parseFloat(amount),
+          }),
+        }
+      );
+}
+
+export async function updateRequestStatus(requestId: string) {
+    return await fetch(
+    `${host}/request/${requestId}/channel-a`,
+    {
+      method: httpMethod.PUT,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        status: "APPROVED"
+      }),
+    }
+  );
+}

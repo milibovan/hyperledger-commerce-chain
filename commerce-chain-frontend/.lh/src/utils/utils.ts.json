@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 65,
+            "activePatchIndex": 72,
             "patches": [
                 {
                     "date": 1761645950564,
@@ -268,6 +268,34 @@
                 {
                     "date": 1768487396855,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { type ProductInventory, type RequestDetails } from \"./dataTypesUtils\";\r\n+import { type ProductInventory, type RequestDetails, type TraderData } from \"./dataTypesUtils\";\r\n \r\n export const host = \"http://localhost:7070\";\r\n export const headers = { \"Content-Type\": \"application/json\" };\r\n export enum httpMethod {\r\n@@ -73,9 +73,9 @@\n     }\r\n   );\r\n }\r\n \r\n-export async function fulfillRequest(request: RequestDetails, trader: string) {\r\n+export async function fulfillRequest(request: RequestDetails, trader: TraderData) {\r\n   return await fetch(\r\n     `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n"
+                },
+                {
+                    "date": 1768497662473,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -85,5 +85,19 @@\n         trader\r\n       }),\r\n     }\r\n   );\r\n+}\r\n+\r\n+export async function depositMoney() {\r\n+  return await fetch(\r\n+        `${host}/deposit-money/${formData.channel}`,\r\n+        {\r\n+          method: httpMethod.POST,\r\n+          headers: { \"Content-Type\": \"application/json\" },\r\n+          body: JSON.stringify({\r\n+            \"user-id\": user.id,\r\n+            amount: parseFloat(formData.amount),\r\n+          }),\r\n+        }\r\n+      );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768497694901,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -87,17 +87,17 @@\n     }\r\n   );\r\n }\r\n \r\n-export async function depositMoney() {\r\n+export async function depositMoney(channel: string, amount: string, userId: string) {\r\n   return await fetch(\r\n-        `${host}/deposit-money/${formData.channel}`,\r\n+        `${host}/deposit-money/${channel}`,\r\n         {\r\n           method: httpMethod.POST,\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n             \"user-id\": user.id,\r\n-            amount: parseFloat(formData.amount),\r\n+            amount: parseFloat(amount),\r\n           }),\r\n         }\r\n       );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768499194811,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -94,10 +94,20 @@\n         {\r\n           method: httpMethod.POST,\r\n           headers: { \"Content-Type\": \"application/json\" },\r\n           body: JSON.stringify({\r\n-            \"user-id\": user.id,\r\n+            \"user-id\": userId,\r\n             amount: parseFloat(amount),\r\n           }),\r\n         }\r\n       );\r\n+}\r\n+\r\n+export async function updateRequestStatus(requestId: string) {\r\n+    return await fetch(\r\n+    `${host}/request/fulfill/${requestId}/channel-a`,\r\n+    {\r\n+      method: httpMethod.PUT,\r\n+      headers: { \"Content-Type\": \"application/json\" },\r\n+    }\r\n+  );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768499203474,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,9 +103,9 @@\n }\r\n \r\n export async function updateRequestStatus(requestId: string) {\r\n     return await fetch(\r\n-    `${host}/request/fulfill/${requestId}/channel-a`,\r\n+    `${host}/request/${requestId}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n     }\r\n"
+                },
+                {
+                    "date": 1768499260676,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,11 +103,14 @@\n }\r\n \r\n export async function updateRequestStatus(requestId: string) {\r\n     return await fetch(\r\n-    `${host}/request/${requestId}/channel-a`,\r\n+    `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n+      body: JSON.stringify({\r\n+        status: \"APROVED\"\r\n+      }),\r\n     }\r\n   );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768499299825,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,14 +103,14 @@\n }\r\n \r\n export async function updateRequestStatus(requestId: string) {\r\n     return await fetch(\r\n-    `${host}/request/fulfill/${request.request.id}/channel-a`,\r\n+    `${host}/request/status/${requestId}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n       body: JSON.stringify({\r\n-        status: \"APROVED\"\r\n+        status: \"APPROVED\"\r\n       }),\r\n     }\r\n   );\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768500829997,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -103,9 +103,9 @@\n }\r\n \r\n export async function updateRequestStatus(requestId: string) {\r\n     return await fetch(\r\n-    `${host}/request/status/${requestId}/channel-a`,\r\n+    `${host}/request/${requestId}/channel-a`,\r\n     {\r\n       method: httpMethod.PUT,\r\n       headers: { \"Content-Type\": \"application/json\" },\r\n       body: JSON.stringify({\r\n"
                 }
             ],
             "date": 1761645950564,

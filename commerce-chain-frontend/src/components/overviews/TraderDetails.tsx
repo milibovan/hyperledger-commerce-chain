@@ -193,7 +193,7 @@ export default function TraderDetails({
               onClick={() => onEntityClick?.(request.request)}
               colorScheme="pink"
               trader={trader}
-              handleDeposit={onDeposit}
+              handleDeposit={(amount, requestId) => onDeposit?.(amount, requestId)}
               requestDetails={request}
             />
           )}

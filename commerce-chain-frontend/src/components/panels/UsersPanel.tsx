@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { OrderData, ProductData, ReceiptData, RequestData, TraderData, UserData } from "../../utils/dataTypesUtils";
 import { Plus, Edit, Trash2, ShoppingBag } from "lucide-react";
 import CreateUserForm from "../forms/CreateUserForm";
@@ -16,7 +16,7 @@ import {
   createUserButton,
 } from "../../utils/stylingUtils";
 import { useUsers } from "../hooks/useUsers";
-import type { ActionType } from "../../utils/utils";
+import { updateRequestStatus, type ActionType } from "../../utils/utils";
 import UserDetails from "../overviews/UserDetails";
 import UsersList from "../lists/UsersList";
 import { useEntityActions } from "../hooks/useEntityActions";
@@ -37,6 +37,8 @@ export default function UsersPanel() {
   const { orderDetails, fetchOrderDetails } = useOrders();
   const { receiptDetails, fetchReceiptDetails } = useReceipts();
   const { requestDetails, fetchRequestDetails } = useRequests();
+  const [depositContext, setDepositContext] = useState<{ amount: number, requestId?: string }>({ amount: 0 });
+
 
   const {
     action,
@@ -103,8 +105,19 @@ export default function UsersPanel() {
           return (
             <DepositMoneyForm
               user={selectedUser!}
-              onSuccess={fetchUsers}
-              handleBackToList={resetActions}
+              amount={depositContext.amount.toLocaleString()}
+              onSuccess={async () => {
+                await fetchUsers();
+
+                if (depositContext.requestId) {
+                  const request = await updateRequestStatus(depositContext.requestId);
+                  await fetchUserDetails(selectedUser.id);
+                  console.log(request)
+                }
+
+                setDepositContext({ amount: 0 });
+              }}
+              handleBackToList={handleBackClick}
             />
           );
 
@@ -151,7 +164,10 @@ export default function UsersPanel() {
           }
 
           if (viewDetails && userDetails) {
-            return <UserDetails entity={userDetails} onEntityClick={viewNestedEntityDetails} />;
+            return <UserDetails entity={userDetails} onEntityClick={viewNestedEntityDetails} onDeposit={(amountNeeded, relatedRequestId) => {
+              setDepositContext({ amount: amountNeeded || 0, requestId: relatedRequestId });
+              handleAction("deposit", selectedUser);
+            }} />;
           }
           return null;
       }
@@ -162,9 +178,11 @@ export default function UsersPanel() {
     if (viewNestedDetails) {
       resetNestedView();
     } else {
+      setDepositContext({ amount: 0 });
       resetActions();
     }
   };
+
 
   if (action || viewDetails) {
     return (

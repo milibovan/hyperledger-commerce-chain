@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 134,
+            "activePatchIndex": 144,
             "patches": [
                 {
                     "date": 1762248920808,
@@ -544,6 +544,46 @@
                 {
                     "date": 1768424649035,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -186,5 +186,6 @@\n     colorScheme?: \"pink\" | \"purple\" | \"amber\";\r\n     trader?: TraderDetails;\r\n     user?: UserData;\r\n     handleDeposit?: () => void;\r\n+    requestDetails?: RequestDetails\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768497987419,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,8 +63,9 @@\n export interface DepositMoneyProps {\r\n   user: UserData | TraderData;\r\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n+  amount?: string\r\n }\r\n \r\n export interface IncreaseQuantityProps {\r\n   product: ProductData;\r\n"
+                },
+                {
+                    "date": 1768498138753,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -186,7 +186,7 @@\n     onClick?: () => void;\r\n     colorScheme?: \"pink\" | \"purple\" | \"amber\";\r\n     trader?: TraderDetails;\r\n     user?: UserData;\r\n-    handleDeposit?: () => void;\r\n+    handleDeposit?: (amountNeeded?: number) => void;\r\n     requestDetails?: RequestDetails\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768498615841,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,9 +22,9 @@\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n   onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData | RequestDetails) => void;\r\n   onUnassignedClick?: (trader: TraderDetails) => void;\r\n-  onDeposit?: () => void;\r\n+  onDeposit?: (amount?: number) => void;\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1768498652625,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,9 +63,9 @@\n export interface DepositMoneyProps {\r\n   user: UserData | TraderData;\r\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n-  amount?: string\r\n+  amount?: number\r\n }\r\n \r\n export interface IncreaseQuantityProps {\r\n   product: ProductData;\r\n"
+                },
+                {
+                    "date": 1768498673039,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -63,9 +63,9 @@\n export interface DepositMoneyProps {\r\n   user: UserData | TraderData;\r\n   onSuccess?: () => void;\r\n   handleBackToList: () => void;\r\n-  amount?: number\r\n+  amount?: string\r\n }\r\n \r\n export interface IncreaseQuantityProps {\r\n   product: ProductData;\r\n"
+                },
+                {
+                    "date": 1768500492362,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,9 +22,9 @@\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n   onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData | RequestDetails) => void;\r\n   onUnassignedClick?: (trader: TraderDetails) => void;\r\n-  onDeposit?: (amount?: number) => void;\r\n+  onDeposit: (amount: number, reqId: string) => void\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1768500507180,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,9 +22,9 @@\n   addProduct?: (trader: TraderData, products?: ProductsData | ProductData[]) => void;\r\n   onProductClick?: (product: ProductData) => void;\r\n   onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData | RequestDetails) => void;\r\n   onUnassignedClick?: (trader: TraderDetails) => void;\r\n-  onDeposit: (amount: number, reqId: string) => void\r\n+  onDeposit?: (amount: number, reqId: string) => void\r\n }\r\n \r\n export interface CreateFormsProps {\r\n   onSuccess?: () => void;\r\n"
+                },
+                {
+                    "date": 1768500558069,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -186,7 +186,7 @@\n     onClick?: () => void;\r\n     colorScheme?: \"pink\" | \"purple\" | \"amber\";\r\n     trader?: TraderDetails;\r\n     user?: UserData;\r\n-    handleDeposit?: (amountNeeded?: number) => void;\r\n+    handleDeposit?: (amountNeeded?: number, requestId: string) => void;\r\n     requestDetails?: RequestDetails\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768500598295,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -186,7 +186,7 @@\n     onClick?: () => void;\r\n     colorScheme?: \"pink\" | \"purple\" | \"amber\";\r\n     trader?: TraderDetails;\r\n     user?: UserData;\r\n-    handleDeposit?: (amountNeeded?: number, requestId: string) => void;\r\n+    handleDeposit?: (amountNeeded?: number, requestId?: string) => void;\r\n     requestDetails?: RequestDetails\r\n }\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1768500668701,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -186,7 +186,7 @@\n     onClick?: () => void;\r\n     colorScheme?: \"pink\" | \"purple\" | \"amber\";\r\n     trader?: TraderDetails;\r\n     user?: UserData;\r\n-    handleDeposit?: (amountNeeded?: number, requestId?: string) => void;\r\n+    handleDeposit?: (amountNeeded: number, requestId: string) => void;\r\n     requestDetails?: RequestDetails\r\n }\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1762248920808,

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 196,
+            "activePatchIndex": 198,
             "patches": [
                 {
                     "date": 1762249738197,
@@ -792,6 +792,14 @@
                 {
                     "date": 1768424636409,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -188,13 +188,14 @@\n             </div>\r\n           }\r\n           renderItem={(request: RequestDetails) => (\r\n             <RequestCard\r\n-              request={request}\r\n+              request={request.request}\r\n               onClick={() => onEntityClick?.(request.request)}\r\n               colorScheme=\"pink\"\r\n               trader={trader}\r\n               handleDeposit={onDeposit}\r\n+              requestDetails={request}\r\n             />\r\n           )}\r\n         />\r\n       </div>\r\n"
+                },
+                {
+                    "date": 1768498927141,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -192,9 +192,9 @@\n               request={request.request}\r\n               onClick={() => onEntityClick?.(request.request)}\r\n               colorScheme=\"pink\"\r\n               trader={trader}\r\n-              handleDeposit={onDeposit}\r\n+              handleDeposit={(amount) => onDeposit?.(amount)}\r\n               requestDetails={request}\r\n             />\r\n           )}\r\n         />\r\n"
+                },
+                {
+                    "date": 1768500690986,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -192,9 +192,9 @@\n               request={request.request}\r\n               onClick={() => onEntityClick?.(request.request)}\r\n               colorScheme=\"pink\"\r\n               trader={trader}\r\n-              handleDeposit={(amount) => onDeposit?.(amount)}\r\n+              handleDeposit={(amount, requestId) => onDeposit?.(amount, requestId)}\r\n               requestDetails={request}\r\n             />\r\n           )}\r\n         />\r\n"
                 }
             ],
             "date": 1762249738197,

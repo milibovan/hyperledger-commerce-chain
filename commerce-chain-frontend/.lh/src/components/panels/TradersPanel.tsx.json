@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 252,
+            "activePatchIndex": 257,
             "patches": [
                 {
                     "date": 1761645486253,
@@ -1016,6 +1016,26 @@
                 {
                     "date": 1768076522152,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -143,9 +143,8 @@\n             />\r\n           );\r\n \r\n \r\n-        // TODO Guard if there is no unassigned\r\n         case \"showUnassigned\":\r\n           return (\r\n             <UnassignedRequests\r\n               entity={traderDetails}\r\n"
+                },
+                {
+                    "date": 1768498764025,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,9 +44,11 @@\n   } = useTraders();\r\n \r\n   const { receiptDetails, fetchReceiptDetails } = useReceipts();\r\n   const { requestDetails, fetchRequestDetails } = useRequests();\r\n+  const [prefilledDepositAmount, setPrefilledDepositAmount] = useState<number>(0);\r\n \r\n+\r\n   const {\r\n     action,\r\n     selectedEntity: selectedTrader,\r\n     viewDetails,\r\n@@ -184,8 +186,9 @@\n                 addProduct={() => handleAction(\"addProduct\", selectedTrader)}\r\n                 onProductClick={viewNestedEntityDetails}\r\n                 onEntityClick={viewNestedEntityDetails}\r\n                 onUnassignedClick={() => handleAction(\"showUnassigned\", selectedTrader)}\r\n+                onDeposit={() => handleAction(\"deposit\", selectedTrader)}\r\n               />\r\n             );\r\n           }\r\n       }\r\n"
+                },
+                {
+                    "date": 1768498854620,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-import { useEffect, useRef } from \"react\";\r\n+import { useEffect, useRef, useState } from \"react\";\r\n import CreateTraderForm from \"../forms/CreateTraderForm\";\r\n import { Plus, Edit, Trash2 } from \"lucide-react\";\r\n import type { OrderData, ProductData, ReceiptData, RequestDetails, TraderData, UserData } from \"../../utils/dataTypesUtils\";\r\n import DepositMoneyForm from \"../forms/DepositMoneyForm\";\r\n@@ -198,8 +198,9 @@\n   const handleBackClick = () => {\r\n     if (viewNestedDetails) {\r\n       resetNestedView();\r\n     } else {\r\n+      setPrefilledDepositAmount(0);\r\n       resetActions();\r\n     }\r\n   };\r\n \r\n"
+                },
+                {
+                    "date": 1768498868104,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -112,9 +112,12 @@\n         case \"deposit\":\r\n           return (\r\n             <DepositMoneyForm\r\n               user={selectedTrader}\r\n-              onSuccess={fetchTraders}\r\n+              onSuccess={() => {\r\n+                fetchTraders();\r\n+                setPrefilledDepositAmount(0);\r\n+              }}\r\n               handleBackToList={resetActions}\r\n             />\r\n           );\r\n         case \"update\":\r\n"
+                },
+                {
+                    "date": 1768498875515,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -112,8 +112,10 @@\n         case \"deposit\":\r\n           return (\r\n             <DepositMoneyForm\r\n               user={selectedTrader}\r\n+\r\n+              amount={prefilledDepositAmount.toLocaleString()}\r\n               onSuccess={() => {\r\n                 fetchTraders();\r\n                 setPrefilledDepositAmount(0);\r\n               }}\r\n"
+                },
+                {
+                    "date": 1768498897343,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -112,9 +112,8 @@\n         case \"deposit\":\r\n           return (\r\n             <DepositMoneyForm\r\n               user={selectedTrader}\r\n-\r\n               amount={prefilledDepositAmount.toLocaleString()}\r\n               onSuccess={() => {\r\n                 fetchTraders();\r\n                 setPrefilledDepositAmount(0);\r\n@@ -191,9 +190,12 @@\n                 addProduct={() => handleAction(\"addProduct\", selectedTrader)}\r\n                 onProductClick={viewNestedEntityDetails}\r\n                 onEntityClick={viewNestedEntityDetails}\r\n                 onUnassignedClick={() => handleAction(\"showUnassigned\", selectedTrader)}\r\n-                onDeposit={() => handleAction(\"deposit\", selectedTrader)}\r\n+                onDeposit={(amountNeeded) => {\r\n+                  if (amountNeeded) setPrefilledDepositAmount(amountNeeded);\r\n+                  handleAction(\"deposit\", selectedUser);\r\n+                }}\r\n               />\r\n             );\r\n           }\r\n       }\r\n"
                 }
             ],
             "date": 1761645486253,

@@ -5,8 +5,7 @@ import NestedEntityListSection from "../reusables/NestedEntityListSection";
 import RequestCard from "../reusables/RequestCard";
 import { ShoppingBag, Hash, DollarSign, Calendar, Package } from "lucide-react";
 
-export default function UserDetails({ entity: userDetails, onEntityClick }: DetailsProps<UserDetails>) {
-  console.log(userDetails)
+export default function UserDetails({ entity: userDetails, onEntityClick, onDeposit }: DetailsProps<UserDetails>) {
   return (
     <div className="space-y-6">
       <EntityDetailsDisplay
@@ -119,6 +118,8 @@ export default function UserDetails({ entity: userDetails, onEntityClick }: Deta
             <RequestCard
               request={request.request}
               onClick={() => onEntityClick?.(request.request)}
+              handleDeposit={(amount, requestId) => onDeposit?.(amount, requestId)}
+              user={userDetails.user}
               colorScheme="purple"
             />
           )}

@@ -23,7 +23,7 @@ export interface DetailsProps<T> {
   onProductClick?: (product: ProductData) => void;
   onEntityClick?: (entity: UserData | TraderData | ReceiptData | OrderData | RequestData | RequestDetails) => void;
   onUnassignedClick?: (trader: TraderDetails) => void;
-  onDeposit?: () => void;
+  onDeposit?: (amount: number, reqId: string) => void
 }
 
 export interface CreateFormsProps {
@@ -64,6 +64,7 @@ export interface DepositMoneyProps {
   user: UserData | TraderData;
   onSuccess?: () => void;
   handleBackToList: () => void;
+  amount?: string
 }
 
 export interface IncreaseQuantityProps {
@@ -186,6 +187,6 @@ export interface RequestCardProps {
     colorScheme?: "pink" | "purple" | "amber";
     trader?: TraderDetails;
     user?: UserData;
-    handleDeposit?: () => void;
+    handleDeposit?: (amountNeeded: number, requestId: string) => void;
     requestDetails?: RequestDetails
 }

@@ -3,15 +3,16 @@ import { channels } from "../../utils/dataTypesUtils";
 import { useState, useMemo } from "react";
 import { Send, AlertCircle, CheckCircle, DollarSign, Users, TrendingUp } from "lucide-react";
 import type { DepositMoneyProps } from "../../utils/propsUtils";
-import { host, httpMethod } from "../../utils/utils";
+import { depositMoney } from "../../utils/utils";
 
 export default function DepositMoneyForm({
   user,
   onSuccess,
   handleBackToList,
+  amount
 }: DepositMoneyProps) {
   const [formData, setFormData] = useState<Deposit>({
-    amount: "",
+    amount: amount ? amount : "",
     channel: "",
   });
 
@@ -70,17 +71,7 @@ export default function DepositMoneyForm({
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${host}/deposit-money/${formData.channel}`,
-        {
-          method: httpMethod.POST,
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            "user-id": user.id,
-            amount: parseFloat(formData.amount),
-          }),
-        }
-      );
+      const response = await depositMoney(formData.channel, formData.amount, user.id)
 
       if (response.ok) {
         const data = await response.json();
