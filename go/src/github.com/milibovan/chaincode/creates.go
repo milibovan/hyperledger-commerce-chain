@@ -152,7 +152,7 @@ func (s *SmartContract) CreateProduct(ctx contractapi.TransactionContextInterfac
 	return ctx.GetStub().PutState(productKey, productJSON)
 }
 
-func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface, id, args string) (string, error) {
+func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface, id, traderId, args string) (string, error) {
 	// Check if order already exists
 	exists, err := s.AssetExists(ctx, id, structs.OrderET)
 	if err != nil {
@@ -175,12 +175,39 @@ func (s *SmartContract) CreateOrder(ctx contractapi.TransactionContextInterface,
 	}
 
 	// Find optimal trader allocation and create receipts
-	receiptIds, err := s.FindAndCreateOptimalReceipts(ctx, id, userId, products)
-	if err != nil {
-		return "", fmt.Errorf("failed to create receipts: %w", err)
+	var receiptIds []string
+	var totalCost float64
+
+	// If there is no traderId then it is order, if there is then it is fulfillment request
+	if traderId == "" {
+		receiptIds, err = s.FindAndCreateOptimalReceipts(ctx, id, userId, products)
+		if err != nil {
+			return "", fmt.Errorf("failed to create receipts: %w", err)
+		}
+	} else {
+		trader, err := s.ReadTrader(ctx, traderId)
+		if err != nil {
+			return "", err
+		}
+
+		var receipt *structs.Receipt
+		receipt, totalCost, err = s.internalCreateOrder(ctx, id, trader, products, userId)
+		if err != nil {
+			return "", err
+		}
+
+		receiptIds = append(receiptIds, receipt.Id)
+
+		traderJSON, _ := json.Marshal(trader)
+		traderKey, _ := ctx.GetStub().CreateCompositeKey("trader", []string{trader.Id})
+		ctx.GetStub().PutState(traderKey, traderJSON)
+
+		receiptJSON, _ := json.Marshal(receipt)
+		receiptKey, _ := ctx.GetStub().CreateCompositeKey("receipt", []string{receipt.Id})
+		ctx.GetStub().PutState(receiptKey, receiptJSON)
 	}
 
-	totalCost, err := s.calculateTotalCost(ctx, products)
+	totalCost, err = s.calculateTotalCost(ctx, products)
 	if err != nil {
 		return "", err
 	}
@@ -648,4 +675,21 @@ func (s *SmartContract) calculateTotalCost(ctx contractapi.TransactionContextInt
 		}
 	}
 	return totalCost, nil
+}
+
+// internalCreateOrder contains the core logic but DOES NOT save the trader.
+// It returns the orderId, totalCost, and generated receipt (so the caller can save them).
+func (s *SmartContract) internalCreateOrder(ctx contractapi.TransactionContextInterface, id string, trader *structs.Trader, products []structs.ProductInventory, userId string) (*structs.Receipt, float64, error) {
+	for _, product := range products {
+		if err := trader.DeductProduct(product.ProductId, product.Quantity); err != nil {
+			return nil, 0, fmt.Errorf("failed to deduct product %s: %w", product.ProductId, err)
+		}
+	}
+
+	receipt, err := s.CreateReceipt(ctx, trader, id, userId, products, 1)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return receipt, receipt.TotalCost, nil
 }

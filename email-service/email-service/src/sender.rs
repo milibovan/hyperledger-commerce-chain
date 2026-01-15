@@ -114,7 +114,7 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                 match recipient_type {
                     RecipientType::USER => {
                         let html_body = template.render().expect("Failed to render email template");
-                        let user_email = event.data.get("recipients").cloned().unwrap_or_default();
+                        let user_email = event.data.get("recipient").cloned().unwrap_or_default();
                         if !user_email.is_empty() {
                             send_email_via_smtp(
                                 user_email,
@@ -127,7 +127,7 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                         let html_body = template.render().expect("Failed to render email template");
                         let traders_str = event
                             .data
-                            .get("trader_recipients")
+                            .get("trader_recipient")
                             .cloned()
                             .unwrap_or_default();
                         if !traders_str.is_empty() {
@@ -258,7 +258,7 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                 match recipient_type {
                     RecipientType::USER => {
                         let html_body = template.render().expect("Failed to render email template");
-                        let user_email = event.data.get("recipients").cloned().unwrap_or_default();
+                        let user_email = event.data.get("recipient").cloned().unwrap_or_default();
                         if !user_email.is_empty() {
                             send_email_via_smtp(
                                 user_email,
@@ -271,7 +271,7 @@ pub(crate) async fn send_email(event: NotificationEvent) {
                         let html_body = template.render().expect("Failed to render email template");
                         let traders_str = event
                             .data
-                            .get("trader_recipients")
+                            .get("trader_recipient")
                             .cloned()
                             .unwrap_or_default();
                         if !traders_str.is_empty() {

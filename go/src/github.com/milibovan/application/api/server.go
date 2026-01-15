@@ -929,12 +929,13 @@ func createProductRequest(c *gin.Context) {
 		return
 	}
 
+	currentTime := time.Now()
 	requestCreatedNotification := models.NotificationEvent{
 		Id:                ID,
 		EventType:         models.RequestCreated,
 		RecipientType:     []models.RecipientType{models.USER, models.TRADER},
 		RecipientID:       requestData.UserId,
-		Timestamp:         nil,
+		Timestamp:         &currentTime,
 		ScheduledSendTime: nil,
 		Channel:           models.EMAIL,
 		OrderID:           "",
@@ -994,12 +995,13 @@ func approveRequest(c *gin.Context) {
 		return
 	}
 
+	currentTime := time.Now()
 	requestApprovedNotification := models.NotificationEvent{
 		Id:                requestId,
 		EventType:         models.RequestApproved,
 		RecipientType:     []models.RecipientType{models.USER},
 		RecipientID:       request.UserId,
-		Timestamp:         nil,
+		Timestamp:         &currentTime,
 		ScheduledSendTime: nil,
 		Channel:           models.EMAIL,
 		OrderID:           "",
@@ -1031,6 +1033,7 @@ func fulfillRequest(c *gin.Context) {
 	var channel, requestId string
 	var request struct {
 		Request *models.RequestDetailsResponse `json:"request"`
+		Trader  *models.Trader                 `json:"trader"`
 	}
 
 	// 1. Bind JSON
@@ -1068,12 +1071,13 @@ func fulfillRequest(c *gin.Context) {
 	shortage := strconv.FormatFloat(shortageVal, 'f', 3, 64)
 
 	if strings.Contains(description, "status PENDING_FUNDS") {
+		currentTime := time.Now()
 		requestApprovedNotification := models.NotificationEvent{
 			Id:                requestId,
 			EventType:         models.RequestInsufficientBalance,
 			RecipientType:     []models.RecipientType{models.USER},
 			RecipientID:       request.Request.Request.UserId,
-			Timestamp:         nil,
+			Timestamp:         &currentTime,
 			ScheduledSendTime: nil,
 			Channel:           models.EMAIL,
 			OrderID:           "",
@@ -1095,11 +1099,88 @@ func fulfillRequest(c *gin.Context) {
 		err = kafka.ProduceToKafka(requestApprovedNotification, topic)
 		if err != nil {
 			fmt.Println("Kafka Error:", err)
-			// Don't return here if you still want to send the HTTP response to the frontend
-			// return
 		}
 	} else {
-		fmt.Println("Fulfilled successfully")
+		split := strings.SplitAfter(description, "order ")
+		orderId := split[1]
+
+		currentTime := time.Now()
+		requestPaymentCompletedNotification := models.NotificationEvent{
+			Id:                requestId,
+			EventType:         models.RequestPaymentCompleted,
+			RecipientType:     []models.RecipientType{models.USER, models.TRADER},
+			RecipientID:       request.Request.Request.UserId,
+			Timestamp:         &currentTime,
+			ScheduledSendTime: nil,
+			Channel:           models.EMAIL,
+			OrderID:           orderId,
+			UserID:            request.Request.Request.UserId,
+			TraderID:          request.Request.Request.TraderId,
+			Data: map[string]string{
+				"request_id":       requestId,
+				"payment_date":     time.Now().Format(time.RFC3339),
+				"transaction_id":   fmt.Sprintf("req_%s_ord_%s", requestId, orderId),
+				"total_amount":     totalCost,
+				"recipient":        request.Request.Request.UserEmail,
+				"trader_recipient": request.Trader.Email,
+				"url":              "https://hyperledger.commerce/requests/ord_987654",
+			},
+		}
+
+		err = kafka.ProduceToKafka(requestPaymentCompletedNotification, topic)
+		if err != nil {
+			fmt.Println("Kafka Error:", err)
+		}
+
+		layout := time.RFC3339
+		dateString := request.Request.Request.CreatedDate
+
+		parsedTime, err := time.Parse(layout, dateString)
+		if err != nil {
+			fmt.Println("Error parsing time:", err)
+			return
+		}
+
+		duration := time.Since(parsedTime)
+		var fulfillmentTime string
+
+		if duration.Hours() >= 24 {
+			days := int(duration.Hours() / 24)
+			fulfillmentTime = fmt.Sprintf("%d days", days)
+		} else {
+			hours := int(duration.Hours())
+			fulfillmentTime = fmt.Sprintf("%d hours", hours)
+		}
+
+		requestFulfilledNotification := models.NotificationEvent{
+			Id:                requestId,
+			EventType:         models.RequestFulfilled,
+			RecipientType:     []models.RecipientType{models.USER, models.TRADER},
+			RecipientID:       request.Request.Request.UserId,
+			Timestamp:         &currentTime,
+			ScheduledSendTime: nil,
+			Channel:           models.EMAIL,
+			OrderID:           orderId,
+			UserID:            request.Request.Request.UserId,
+			TraderID:          request.Request.Request.TraderId,
+			Data: map[string]string{
+				"request_id":       requestId,
+				"completed_date":   time.Now().Format(time.RFC3339),
+				"trader_name":      request.Trader.Name,
+				"item_count":       strconv.Itoa(len(request.Request.Request.Products)),
+				"total_amount":     totalCost,
+				"request_url":      "https://hyperledger.commerce/requests/ord_987654",
+				"review_url":       "https://hyperledger.commerce/requests/ord_987654",
+				"fulfillment_time": fulfillmentTime,
+				"recipient":        request.Request.Request.UserEmail,
+				"trader_recipient": request.Trader.Email,
+			},
+		}
+
+		err = kafka.ProduceToKafka(requestFulfilledNotification, topic)
+		if err != nil {
+			fmt.Println("Kafka Error:", err)
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"Message": fmt.Sprintf("Request updated in block %d for ID %s", blockNumber, requestId)})

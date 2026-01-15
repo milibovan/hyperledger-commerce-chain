@@ -138,7 +138,7 @@ func CreateOrder(gw *fabricClient.Gateway, channel string, args []string) (uint6
 	fmt.Printf("\n--> Submit transaction: CreateOrder, ID: %s on channel %s\n", ID, channel)
 
 	//fmt.Printf("%s %s %s %s %s %s", ID, name, expiryDate, price, quantity, traderTypeStr)
-	_, commit, err := ccContract.SubmitAsync("CreateOrder", fabricClient.WithArguments(ID, strings.Join(args, ",")))
+	_, commit, err := ccContract.SubmitAsync("CreateOrder", fabricClient.WithArguments(ID, "", strings.Join(args, ",")))
 	if err != nil {
 		panic(fmt.Errorf("failed to submit transaction: %w", err))
 	}
@@ -677,6 +677,10 @@ func UpdateProduct(gw *fabricClient.Gateway, channel, id, name, expiryDate, pric
 	return status.BlockNumber, nil
 }
 func UpdateRequest(gw *fabricClient.Gateway, channel, id, requestStatus, orderId, traderId string) (uint64, string, error) {
+	if requestStatus == "FULFILLED" {
+		orderId = createId("ORDER")
+	}
+
 	net := gw.GetNetwork(channel)
 	ccContract := net.GetContract(ChaincodeName)
 
@@ -705,6 +709,8 @@ func UpdateRequest(gw *fabricClient.Gateway, channel, id, requestStatus, orderId
 	// Check if the chaincode returned PENDING_FUNDS
 	if finalStatus == "PENDING_FUNDS" { // Assuming structs.PENDING_FUNDS resolves to this string
 		description = "Status set to PENDING_FUNDS due to insufficient balance"
+	} else {
+		description = fmt.Sprintf("Created order %s", orderId)
 	}
 
 	fmt.Println("\n*** UpdateRequest committed successfully. Final Status:", finalStatus)
