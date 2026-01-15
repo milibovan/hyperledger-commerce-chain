@@ -83,6 +83,7 @@ func CreateServer() {
 	router.PUT("/users/:channel", updateUser)
 	router.PUT("/traders/:channel", updateTrader)
 	router.PUT("/products/:channel", updateProduct)
+	router.PUT("/request/:requestId/:channel", updateRequest)
 
 	router.PUT("/request/approve/:traderId/:requestId/:channel", approveRequest)
 	router.PUT("/request/fulfill/:requestId/:channel", fulfillRequest)
@@ -341,6 +342,28 @@ func updateProduct(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{"Message": fmt.Sprintf("Product updated %d", blockNumber)})
+}
+func updateRequest(c *gin.Context) {
+	var request struct {
+		Status string `json:"status"`
+	}
+	var channel, requestId string
+
+	channel = c.Param("channel")
+	requestId = c.Param("requestId")
+
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(400, gin.H{"Message": "Cannot parse request", "Error": err.Error()})
+		return
+	}
+
+	blockNumber, _, err := client.UpdateRequest(activeGW, channel, requestId, request.Status, "", "")
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"Message": fmt.Sprintf("Request updated %d", blockNumber)})
 }
 
 func deleteUser(c *gin.Context) {
