@@ -1,0 +1,16 @@
+[package]
+name = "auth-service"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4.12.1"
+argon2 = "0.5.3"
+chrono = "0.4.43"
+jsonwebtoken = "10.2.0"
+serde = "1.0.228"
+serde_json = "1.0.149"
+sqlx = "0.8.6"
+tokio = "1.49.0"
+uuid = "1.19.0"
+validator = "0.20.0"
