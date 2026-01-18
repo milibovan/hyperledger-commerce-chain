@@ -141,6 +141,45 @@ services:
     networks:
       - kafka-net
 
+  auth-service:
+    build:
+      context: ./auth-service/auth-service
+      dockerfile: Dockerfile
+    environment:
+      PORT: "5050"
+    ports:
+      - "5050:5050"
+    depends_on:
+      - go-backend
+    networks:
+      - kafka-net
+
+  postgres:
+    image: postgres:16
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 1MUAw9FvbtFpgqE9
+      POSTGRES_DB: auth_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - kafka-net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: 1MUAw9FvbtFpgqE9
+    ports:
+      - "5454:80"
+    depends_on:
+      - postgres_db
+
 #  redis:
 #    image: redis:7.4-alpine
 #    restart: always
@@ -180,3 +219,4 @@ services:
 volumes:
   redis_data:
     driver: local
+  postgres_data:
