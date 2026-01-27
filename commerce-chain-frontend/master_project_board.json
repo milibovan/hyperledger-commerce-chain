@@ -1,0 +1,1158 @@
+{
+  "name": "Master Project: Implementation",
+  "desc": "Generated Implementation Board",
+  "idOrganization": "641dfaa7ebaaea9294e49f2f",
+  "closed": false,
+  "labelNames": {
+    "green": "Phase 1: Foundation",
+    "yellow": "Phase 2: Data/Infra",
+    "orange": "Phase 3: K8s/Cloud",
+    "blue": "Phase 4: Data Lake",
+    "purple": "Phase 5: Streaming",
+    "red": "Phase 6: Orchestration",
+    "sky": "Phase 7: Viz",
+    "pink": "Optional",
+    "lime": "",
+    "black": ""
+  },
+  "lists": [
+    {
+      "id": "696a80779689369f174b1578",
+      "name": "Backlog",
+      "pos": 10000,
+      "closed": false
+    },
+    {
+      "id": "696a80779689369f174b1579",
+      "name": "Design",
+      "pos": 20000,
+      "closed": false
+    },
+    {
+      "id": "696a80779689369f174b157a",
+      "name": "To Do",
+      "pos": 30000,
+      "closed": false
+    },
+    {
+      "id": "696a80779689369f174b157b",
+      "name": "Doing",
+      "pos": 40000,
+      "closed": false
+    },
+    {
+      "id": "696a80779689369f174b157d",
+      "name": "Code Review",
+      "pos": 50000,
+      "closed": false
+    },
+    {
+      "id": "696a80779689369f174b157e",
+      "name": "Testing",
+      "pos": 60000,
+      "closed": false
+    },
+    {
+      "id": "696a80779689369f174b157c",
+      "name": "Done \ud83c\udf89",
+      "pos": 70000,
+      "closed": false
+    }
+  ],
+  "cards": [
+    {
+      "id": "b6100d1add68dac2a2aa741a",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 1: Authentication Service",
+      "desc": "**Phase 1: Foundation & Security**\n\nSee checklist for tasks.",
+      "pos": 1000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "green",
+          "name": "Phase 1: Foundation & Security"
+        }
+      ],
+      "idChecklists": [
+        "f89e3e6a2d1c358b1daafbae"
+      ]
+    },
+    {
+      "id": "66b2dafba8485e1b1789ea23",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 1: Database & Models",
+      "desc": "**Phase 1: Foundation & Security**\n\nSee checklist for tasks.",
+      "pos": 2000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "green",
+          "name": "Phase 1: Foundation & Security"
+        }
+      ],
+      "idChecklists": [
+        "ccdb1c3aec152d51a6d141a6"
+      ]
+    },
+    {
+      "id": "d04b1d786ca7b23167a56fd8",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 1: Core Auth Logic",
+      "desc": "**Phase 1: Foundation & Security**\n\nSee checklist for tasks.",
+      "pos": 3000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "green",
+          "name": "Phase 1: Foundation & Security"
+        }
+      ],
+      "idChecklists": [
+        "0c7ef4d3abcb5fccae9fb85b"
+      ]
+    },
+    {
+      "id": "5f9aaeaf23a58ec8cbbce8ae",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 2: Email & Passwords",
+      "desc": "**Phase 1: Foundation & Security**\n\nSee checklist for tasks.",
+      "pos": 4000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "green",
+          "name": "Phase 1: Foundation & Security"
+        }
+      ],
+      "idChecklists": [
+        "e0f4bcbc8f3d03cccbb76dfc"
+      ]
+    },
+    {
+      "id": "febe1530ad7c81d9e8c3f033",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 2: API Gateway",
+      "desc": "**Phase 1: Foundation & Security**\n\nSee checklist for tasks.",
+      "pos": 5000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "green",
+          "name": "Phase 1: Foundation & Security"
+        }
+      ],
+      "idChecklists": [
+        "dadae2dc0edafcb20ef587d7"
+      ]
+    },
+    {
+      "id": "ffca0c40fccbdd2fccc3acbf",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 2-3: Historical Data",
+      "desc": "**Phase 2: Data & Infra**\n\nSee checklist for tasks.",
+      "pos": 6000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "yellow",
+          "name": "Phase 2: Data & Infra"
+        }
+      ],
+      "idChecklists": [
+        "ef4dbff6dfaed1bfcbde46e4"
+      ]
+    },
+    {
+      "id": "ffcb6fbb28eacadab70ffcdc",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 3: Real-time Generator",
+      "desc": "**Phase 2: Data & Infra**\n\nSee checklist for tasks.",
+      "pos": 7000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "yellow",
+          "name": "Phase 2: Data & Infra"
+        }
+      ],
+      "idChecklists": [
+        "ca8a565315ba1cd1fde88ca8"
+      ]
+    },
+    {
+      "id": "8b97eff7b73ba3c119f53bb1",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 3: Terraform Infra",
+      "desc": "**Phase 2: Data & Infra**\n\nSee checklist for tasks.",
+      "pos": 8000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "yellow",
+          "name": "Phase 2: Data & Infra"
+        }
+      ],
+      "idChecklists": [
+        "c30ec647aad97cccbea10aff"
+      ]
+    },
+    {
+      "id": "6d30c5ae97fdbafde0400bcd",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 4: Stateless Deployments",
+      "desc": "**Phase 3: Kubernetes**\n\nSee checklist for tasks.",
+      "pos": 9000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "orange",
+          "name": "Phase 3: Kubernetes"
+        }
+      ],
+      "idChecklists": [
+        "8f0fa446ddded3f25be5033f"
+      ]
+    },
+    {
+      "id": "8f006fcbbf3aca58dc00ad04",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 4: Stateful Deployments",
+      "desc": "**Phase 3: Kubernetes**\n\nSee checklist for tasks.",
+      "pos": 10000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "orange",
+          "name": "Phase 3: Kubernetes"
+        }
+      ],
+      "idChecklists": [
+        "27718f1b16c2f51c5f9e475f"
+      ]
+    },
+    {
+      "id": "9c100cebe8726762d158cf2c",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 4: CI/CD",
+      "desc": "**Phase 3: Kubernetes**\n\nSee checklist for tasks.",
+      "pos": 11000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "orange",
+          "name": "Phase 3: Kubernetes"
+        }
+      ],
+      "idChecklists": [
+        "8bfae6cfe1dfcc57bd38d1e4"
+      ]
+    },
+    {
+      "id": "8544222fcc0d75ce8ad4aed1",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 5: HDFS Setup",
+      "desc": "**Phase 4: Data Lake**\n\nSee checklist for tasks.",
+      "pos": 12000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "blue",
+          "name": "Phase 4: Data Lake"
+        }
+      ],
+      "idChecklists": [
+        "e26ca6cd8f2cfcf63f51fd16"
+      ]
+    },
+    {
+      "id": "f5c1d81466e19cec18433eff",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 5: Spark Cluster",
+      "desc": "**Phase 4: Data Lake**\n\nSee checklist for tasks.",
+      "pos": 13000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "blue",
+          "name": "Phase 4: Data Lake"
+        }
+      ],
+      "idChecklists": [
+        "4ae721deaf62f7ae8badecb7"
+      ]
+    },
+    {
+      "id": "b678cae4dbf36ff2babf5bd6",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 6: Batch Queries (1-5)",
+      "desc": "**Phase 4: Data Lake**\n\nSee checklist for tasks.",
+      "pos": 14000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "blue",
+          "name": "Phase 4: Data Lake"
+        }
+      ],
+      "idChecklists": [
+        "bf761bbd6e24de627fc6c085"
+      ]
+    },
+    {
+      "id": "baaf5e57bb4c5ffe4c4ab051",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 6: Batch Queries (6-10)",
+      "desc": "**Phase 4: Data Lake**\n\nSee checklist for tasks.",
+      "pos": 15000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "blue",
+          "name": "Phase 4: Data Lake"
+        }
+      ],
+      "idChecklists": [
+        "3ba9cbc6066fe0bdadcac7db"
+      ]
+    },
+    {
+      "id": "ebce3bb8acac6d7cd6a90baf",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 7: Flink/Streams Setup",
+      "desc": "**Phase 5: Streaming**\n\nSee checklist for tasks.",
+      "pos": 16000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "purple",
+          "name": "Phase 5: Streaming"
+        }
+      ],
+      "idChecklists": [
+        "32cdacb1ecd4afd7ffea9dd3"
+      ]
+    },
+    {
+      "id": "8acc46d01a978aeeb25c8da5",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 7: Transformations",
+      "desc": "**Phase 5: Streaming**\n\nSee checklist for tasks.",
+      "pos": 17000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "purple",
+          "name": "Phase 5: Streaming"
+        }
+      ],
+      "idChecklists": [
+        "f83bc4cdc9efe1bc88bdcb9d"
+      ]
+    },
+    {
+      "id": "824cf1b5bfadd134193544bc",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 8: Airflow",
+      "desc": "**Phase 6: Orchestration**\n\nSee checklist for tasks.",
+      "pos": 18000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "red",
+          "name": "Phase 6: Orchestration"
+        }
+      ],
+      "idChecklists": [
+        "f2d5b01b55ca43dc02818b08"
+      ]
+    },
+    {
+      "id": "459a75ba8b9a0ca9b62b8e6b",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 8: Monitoring",
+      "desc": "**Phase 6: Orchestration**\n\nSee checklist for tasks.",
+      "pos": 19000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "red",
+          "name": "Phase 6: Orchestration"
+        }
+      ],
+      "idChecklists": [
+        "efed822b0405eeefce824fff"
+      ]
+    },
+    {
+      "id": "14b3a5e98fd88accea702c0f",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 9: Superset",
+      "desc": "**Phase 7: Visualization**\n\nSee checklist for tasks.",
+      "pos": 20000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "sky",
+          "name": "Phase 7: Visualization"
+        }
+      ],
+      "idChecklists": [
+        "2e09ab20036aadfea6e76e77"
+      ]
+    },
+    {
+      "id": "eef0cd11aa8deadbc0ecda27",
+      "idList": "696a80779689369f174b1578",
+      "name": "Week 9: Custom UI",
+      "desc": "**Phase 7: Visualization**\n\nSee checklist for tasks.",
+      "pos": 21000,
+      "closed": false,
+      "idLabels": [],
+      "labels": [
+        {
+          "color": "sky",
+          "name": "Phase 7: Visualization"
+        }
+      ],
+      "idChecklists": [
+        "3e0ca9bb2f1e7b32bc1a3b7e"
+      ]
+    }
+  ],
+  "checklists": [
+    {
+      "id": "f89e3e6a2d1c358b1daafbae",
+      "idCard": "b6100d1add68dac2a2aa741a",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "d8d6df56cba46c1ff55ec4dc",
+          "name": "Create Rust workspace",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "38bbf80bb9fe674feacb9eae",
+          "name": "Init auth-service crate",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "df5b317daef2db1f1bbe935b",
+          "name": "Add Cargo dependencies",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "a08a10efe76fcdedf5be1bca",
+          "name": "Setup project structure",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "8c6efafdd20baabdbec5e95b",
+          "name": "Configure .env",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "ccdb1c3aec152d51a6d141a6",
+      "idCard": "66b2dafba8485e1b1789ea23",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "7afbcb1c5cbc7a9024b3a16e",
+          "name": "Provision PostgreSQL",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "1b631564e6ae347aaeed4eee",
+          "name": "Create users table schema",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "abaca87ba007b6b489ccbb00",
+          "name": "Create verification_tokens schema",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "331b4da77082f6d2edec1e8a",
+          "name": "Write migration scripts",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "d1fe7f78017dac9c9d21ecec",
+          "name": "Impl DB connection pool",
+          "state": "incomplete",
+          "pos": 401
+        },
+        {
+          "id": "e9ced1d8fe6cdfbf0fa0fbff",
+          "name": "Create User struct",
+          "state": "incomplete",
+          "pos": 501
+        }
+      ]
+    },
+    {
+      "id": "0c7ef4d3abcb5fccae9fb85b",
+      "idCard": "d04b1d786ca7b23167a56fd8",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "6cf54b72fa42d6dcfaa2fb0f",
+          "name": "Impl registration endpoint",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "f2a8feb6c1817ee1aadb2ed8",
+          "name": "Impl login endpoint",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "f3bd3bca7ab791f2f1ac8468",
+          "name": "Impl JWT generation",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "f0d2a62a1d5b28fabcb6ee69",
+          "name": "Impl JWT validation",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "dfd1534eeaf67bed60023d1b",
+          "name": "Impl refresh token logic",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "e0f4bcbc8f3d03cccbb76dfc",
+      "idCard": "5f9aaeaf23a58ec8cbbce8ae",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "e1ec4f5f0716caa0b8a7ddfd",
+          "name": "Impl email verification",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "fcbb5f686fffa4aaebeac5f6",
+          "name": "Integrate Kafka for email events",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "052653bf875c1c25a9c68dfd",
+          "name": "Impl forgot password",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "3bf3dd3fa0aae0fafc4ec4af",
+          "name": "Impl reset password",
+          "state": "incomplete",
+          "pos": 301
+        }
+      ]
+    },
+    {
+      "id": "dadae2dc0edafcb20ef587d7",
+      "idCard": "febe1530ad7c81d9e8c3f033",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "af124d0a8c5a0c462cb7ae2e",
+          "name": "Create gateway-service crate",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "7a3faa3c6fa8fdc2fc5ccc8e",
+          "name": "Impl reverse proxy",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "c4fef56cbb702ae8dca7f175",
+          "name": "Impl Auth middleware",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "df8e4ddd65ff895bff9baf63",
+          "name": "Impl Rate Limiting (Redis)",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "3dd3bffc0b67b5a346f8c2e8",
+          "name": "Impl Request Logging",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "ef4dbff6dfaed1bfcbde46e4",
+      "idCard": "ffca0c40fccbdd2fccc3acbf",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "9f53bab27cd1fc3cf2c25d4f",
+          "name": "Setup Python Faker",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "4cccacbeb90bdcc2dc9e27c9",
+          "name": "Generate Users CSV (50k)",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "f96fbe0ce1cfaeb18ed012ab",
+          "name": "Generate Orders CSV (500k)",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "cbaafa12cfd1e5da4eeaebeb",
+          "name": "Generate Products CSV",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "fdf3a6114b8c1ba3081feb7e",
+          "name": "Export to Parquet",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "ca8a565315ba1cd1fde88ca8",
+      "idCard": "ffcb6fbb28eacadab70ffcdc",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "efe3e44d04b6f2d6bcbe0279",
+          "name": "Create realtime-generator service",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "8c621e0bd5f3f36f1aacfcdc",
+          "name": "Define Event types (JSON/Avro)",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "ccfe1f4dfb070aece72fa0fe",
+          "name": "Impl Kafka Producer",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "ec5df14b138b34193b4ea5d8",
+          "name": "Config rate limiting",
+          "state": "incomplete",
+          "pos": 301
+        }
+      ]
+    },
+    {
+      "id": "c30ec647aad97cccbea10aff",
+      "idCard": "8b97eff7b73ba3c119f53bb1",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "8eddb7cf2ffa8c270d7eaffc",
+          "name": "Init Terraform",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "fbfe39b0073a4bc0fda8b4ec",
+          "name": "Create VCN/Network module",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "0fecb5ffee316ed27ab79ced",
+          "name": "Create Compute module (VMs)",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "beedc5dfbefbebfea616acda",
+          "name": "Create K8s module (k3s)",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "7efaa8be56778a3be60a6f80",
+          "name": "Apply Infrastructure",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "8f0fa446ddded3f25be5033f",
+      "idCard": "6d30c5ae97fdbafde0400bcd",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "dab8447add4ef36eaae91d1b",
+          "name": "Deploy Frontend",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "40aabbd19aa126a8a290dc4b",
+          "name": "Deploy Backend",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "cb07ce21767fa0ae3fe8682e",
+          "name": "Deploy Gateway",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "c41dcde9ebaf266d394a17fc",
+          "name": "Deploy Auth Service",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "7c13bec7e59a35687d1f17d8",
+          "name": "Create ConfigMaps/Secrets",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "27718f1b16c2f51c5f9e475f",
+      "idCard": "8f006fcbbf3aca58dc00ad04",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "b9b51cef3a5a7f3ceeb0f933",
+          "name": "Deploy Postgres (StatefulSet)",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "c22a0d6fef64e4f4f781c44f",
+          "name": "Deploy Redis",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "ad05ae999a72bddc7cdbed5c",
+          "name": "Deploy Kafka (Strimzi)",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "43d9a3c2bb14de2a44ef29b0",
+          "name": "Deploy Fabric Peers",
+          "state": "incomplete",
+          "pos": 301
+        }
+      ]
+    },
+    {
+      "id": "8bfae6cfe1dfcc57bd38d1e4",
+      "idCard": "9c100cebe8726762d158cf2c",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "fadd0e9badeaba8edfef1eb8",
+          "name": "Create GitHub Actions (Build)",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "eabdc555fef1c7daccfed7a7",
+          "name": "Create GitHub Actions (Deploy)",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "0e5d9ddf41af775254be920f",
+          "name": "Config GHCR Registry",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "a7acaa10bd0fd2f494e77ef5",
+          "name": "Verify Pipeline",
+          "state": "incomplete",
+          "pos": 301
+        }
+      ]
+    },
+    {
+      "id": "e26ca6cd8f2cfcf63f51fd16",
+      "idCard": "8544222fcc0d75ce8ad4aed1",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "2b9b33dfaf8fdfbb23c6747e",
+          "name": "Deploy HDFS Cluster",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "58e85146f47faff9f282e5e2",
+          "name": "Create /raw, /curated zones",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "e99ad5b5ddabccb93bedf36f",
+          "name": "Run historic ingestion",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "8ef65ccc5603fe6d87576e78",
+          "name": "Deploy Kafka Connect HDFS Sink",
+          "state": "incomplete",
+          "pos": 301
+        }
+      ]
+    },
+    {
+      "id": "4ae721deaf62f7ae8badecb7",
+      "idCard": "f5c1d81466e19cec18433eff",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "8a55a8f209c8d7ca8e28206a",
+          "name": "Deploy Spark Operator",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "c1901e0b8c48b2d9cfbe7354",
+          "name": "Config Spark-HDFS connection",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "d7ec3d5ff23b029abf61b02b",
+          "name": "Test Spark Job submission",
+          "state": "incomplete",
+          "pos": 201
+        }
+      ]
+    },
+    {
+      "id": "bf761bbd6e24de627fc6c085",
+      "idCard": "b678cae4dbf36ff2babf5bd6",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "a9f2bdcaabbde29fb27360cb",
+          "name": "Query 1: Total Revenue",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "95ec6d87fe3b4fddff2f9b0a",
+          "name": "Query 2: User Avg Order",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "9d82cf0b2cc6e4cdd6cdcc9b",
+          "name": "Query 3: Top Products",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "63e174c6837bcbc820abab1a",
+          "name": "Query 4: Fulfillment Rate",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "a0ca0cdcbfb9fbcfc5ecf139",
+          "name": "Query 5: Sales Trends",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "3ba9cbc6066fe0bdadcac7db",
+      "idCard": "baaf5e57bb4c5ffe4c4ab051",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "fa8e557fdaaacdd4cdbed01c",
+          "name": "Query 6: RFM Analysis",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "44bfcefaafd3d1e9a420daf2",
+          "name": "Query 7: Stock Turnover",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "a9f8f8d75f4ffba8cdf1e3bd",
+          "name": "Query 8: Price Fluctuations",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "bba91adfcbf3b2edec2834fa",
+          "name": "Query 9: Peak Hours",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "a848ceddefcd20c2caa46f81",
+          "name": "Query 10: Forecasting",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "32cdacb1ecd4afd7ffea9dd3",
+      "idCard": "ebce3bb8acac6d7cd6a90baf",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "c530fe0c876f6ef5bf76afb9",
+          "name": "Deploy Flink Cluster",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "48d80d4d5addeedb3d5cee36",
+          "name": "Config Kafka Source",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "a3710dbc36200ce9f1c54ed1",
+          "name": "Deploy Elasticsearch/TimescaleDB",
+          "state": "incomplete",
+          "pos": 201
+        }
+      ]
+    },
+    {
+      "id": "f83bc4cdc9efe1bc88bdcb9d",
+      "idCard": "8acc46d01a978aeeb25c8da5",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "fc39d1fe29dd7cd0f37c4c3d",
+          "name": "Trans 1: Inventory Updates",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "5352cbad1aabbfab1cf49b5b",
+          "name": "Trans 2: Price Alerts",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "6b0097deb4ee7ebaf376fbe5",
+          "name": "Trans 3: Fraud Detection",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "bacad5cd4aae2c1f7a42ed9d",
+          "name": "Trans 4: Live Dashboard",
+          "state": "incomplete",
+          "pos": 301
+        },
+        {
+          "id": "7dd98bbff32ff4a692bd8dc7",
+          "name": "Trans 5: Trader Ranking",
+          "state": "incomplete",
+          "pos": 401
+        }
+      ]
+    },
+    {
+      "id": "f2d5b01b55ca43dc02818b08",
+      "idCard": "824cf1b5bfadd134193544bc",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "6bdcedf8f63bcb9dcfe788c4",
+          "name": "Deploy Airflow",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "3bfbafef8c1b345f3e269fb6",
+          "name": "DAG 1: Daily Batch",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "a5ab057caffd8c61dc866864",
+          "name": "DAG 2: Data Quality",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "3b78f1ff1cee8c53abfdc4bd",
+          "name": "DAG 3: Reports",
+          "state": "incomplete",
+          "pos": 301
+        }
+      ]
+    },
+    {
+      "id": "efed822b0405eeefce824fff",
+      "idCard": "459a75ba8b9a0ca9b62b8e6b",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "caea9b9ccbfe4eda9aee9fbb",
+          "name": "Deploy Prometheus",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "5f2d6d81d0e6db56f3cfc017",
+          "name": "Deploy Grafana",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "a13ea96ebf3fbb58c41330c6",
+          "name": "Setup Dashboards (System, App, Kafka)",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "dade4aebbacbdc4a3ca0bc4b",
+          "name": "Config Alerts",
+          "state": "incomplete",
+          "pos": 301
+        }
+      ]
+    },
+    {
+      "id": "2e09ab20036aadfea6e76e77",
+      "idCard": "14b3a5e98fd88accea702c0f",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "ed9ecce6f2e3d1bece76ac32",
+          "name": "Deploy Superset",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "1bfeaf0c7a153ef7a0b8436f",
+          "name": "Connect Hive/Postgres",
+          "state": "incomplete",
+          "pos": 101
+        },
+        {
+          "id": "afd287ab7bc1bd6a251d5859",
+          "name": "Build Sales Dashboard",
+          "state": "incomplete",
+          "pos": 201
+        },
+        {
+          "id": "de8fbb1fac4bcaacd267b2a4",
+          "name": "Build Trader Dashboard",
+          "state": "incomplete",
+          "pos": 301
+        }
+      ]
+    },
+    {
+      "id": "3e0ca9bb2f1e7b32bc1a3b7e",
+      "idCard": "eef0cd11aa8deadbc0ecda27",
+      "name": "Implementation Tasks",
+      "pos": 1,
+      "checkItems": [
+        {
+          "id": "15150edcceef823559ccbdb4",
+          "name": "Build Analytics Frontend Route",
+          "state": "incomplete",
+          "pos": 1
+        },
+        {
+          "id": "9de7929cee9fa4ac0cbede90",
+          "name": "Integrate WebSockets for Real-time charts",
+          "state": "incomplete",
+          "pos": 101
+        }
+      ]
+    }
+  ]
+}
