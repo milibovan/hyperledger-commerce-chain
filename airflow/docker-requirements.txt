@@ -1,3 +1,3 @@
 apache-airflow-providers-apache-flink
-apache-airflow-providers-http
+apache-airflow-providers-apache-hdfs
 apache-flink==1.18.0
