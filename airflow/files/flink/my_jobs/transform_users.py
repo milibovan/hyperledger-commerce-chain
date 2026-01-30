@@ -17,6 +17,9 @@ def run_transformation():
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
+    t_env.get_config().set("rest.address", "flink-jobmanager-1")
+    t_env.get_config().set("rest.port", "8081")
+
     # Source: Raw Users from JSONL
     t_env.execute_sql("""
         CREATE TABLE raw_users (
@@ -31,7 +34,7 @@ def run_transformation():
             deleted BOOLEAN
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/raw/users.jsonl',
+            'path' = 'hdfs://namenode:9000/datalake/raw/users.jsonl',
             'format' = 'json',
             'json.fail-on-missing-field' = 'false',
             'json.ignore-parse-errors' = 'true'
@@ -53,7 +56,7 @@ def run_transformation():
             request_count INT
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/users_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/users_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -107,7 +110,7 @@ def run_transformation():
     """).wait()
 
     print("Users transformation completed successfully!")
-    print("   - Valid records written to: hdfs:///datalake/transform/users_transformed.parquet")
+    print("   - Valid records written to: hdfs://namenode:9000/datalake/transform/users_transformed.parquet")
 
 if __name__ == '__main__':
     run_transformation()

@@ -18,6 +18,9 @@ def run_transformation():
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
+    t_env.get_config().set("rest.address", "flink-jobmanager-1")
+    t_env.get_config().set("rest.port", "8081")
+
     # Source: Raw Product Requests from JSONL
     t_env.execute_sql("""
         CREATE TABLE raw_product_requests (
@@ -35,7 +38,7 @@ def run_transformation():
             deleted BOOLEAN
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/raw/order_requests.jsonl',
+            'path' = 'hdfs://namenode:9000/datalake/raw/order_requests.jsonl',
             'format' = 'json',
             'json.fail-on-missing-field' = 'false',
             'json.ignore-parse-errors' = 'true'
@@ -49,7 +52,7 @@ def run_transformation():
             email STRING
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/users_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/users_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -61,7 +64,7 @@ def run_transformation():
             `trader-type` STRING
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/traders_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/traders_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -73,7 +76,7 @@ def run_transformation():
             `user-id` STRING
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/orders_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/orders_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -85,7 +88,7 @@ def run_transformation():
             price DOUBLE
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/products_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/products_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -107,14 +110,14 @@ def run_transformation():
             status STRING,
             `order-id` STRING,
             deleted BOOLEAN,
-            product_count INT,
+            product_count BIGINT NOT NULL,
             total_items INT,
             delivery_days INT,
-            is_overdue BOOLEAN,
+            is_overdue BOOLEAN NOT NULL,
             trader_type STRING
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/product_requests_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/product_requests_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -152,13 +155,13 @@ def run_transformation():
         INSERT INTO transform_product_requests
         SELECT 
             rc.`doc-type`,
-            rc.request_id as id,
+            rc.request_id as id,   -- Fixed: Use request_id from view
             rc.`user-id`,
             rc.`trader-id`,
             LOWER(TRIM(rc.`user-email`)) as `user-email`,
             rc.products,
-            TO_TIMESTAMP(rc.`created-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') as `created-date`,
-            TO_TIMESTAMP(rc.`due-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') as `due-date`,
+            rc.ts_created as `created-date`,
+            rc.ts_due as `due-date`,
             rc.`total-cost`,
             rc.calculated_cost as `calculated-cost`,
             ABS(rc.`total-cost` - rc.calculated_cost) as `cost-variance`,
@@ -167,89 +170,38 @@ def run_transformation():
             rc.deleted,
             rc.product_count,
             rc.total_items,
-            TIMESTAMPDIFF(
-                DAY, 
-                TO_TIMESTAMP(rc.`created-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''),
-                TO_TIMESTAMP(rc.`due-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''')
-            ) as delivery_days,
+            TIMESTAMPDIFF(DAY, rc.ts_created, rc.ts_due) as delivery_days, -- Calculated here
             CASE 
-                WHEN TO_TIMESTAMP(rc.`due-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') < CURRENT_TIMESTAMP 
+                WHEN rc.ts_due < CAST(CURRENT_TIMESTAMP AS TIMESTAMP(3)) 
                      AND rc.status NOT IN ('FULFILLED', 'CANCELED', 'REJECTED')
                 THEN true 
                 ELSE false 
             END as is_overdue,
-            vt.`trader-type` as trader_type
+            rc.trader_type
         FROM (
-            SELECT *,
-                   ROW_NUMBER() OVER (PARTITION BY request_id ORDER BY `total-cost` DESC) as rn
+            SELECT 
+                rc.*,
+                vt.`trader-type` as trader_type,
+                TO_TIMESTAMP(rc.`created-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') as ts_created,
+                TO_TIMESTAMP(rc.`due-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') as ts_due,
+                ROW_NUMBER() OVER (PARTITION BY request_id ORDER BY `total-cost` DESC) as rn
             FROM request_calculations rc
+            INNER JOIN valid_users vu ON rc.`user-id` = vu.id
+            INNER JOIN valid_traders vt ON rc.`trader-id` = vt.id
+            LEFT JOIN valid_orders vo ON rc.`order-id` = vo.id
             WHERE 
-                -- 1. ID Validation: UUID format
                 rc.request_id IS NOT NULL 
                 AND CHAR_LENGTH(rc.request_id) = 36
-                AND rc.request_id LIKE '%-%-%-%-%'
-                
-                -- 2. User Link: Must exist in valid users
-                AND rc.`user-id` IS NOT NULL
-                AND EXISTS (SELECT 1 FROM valid_users vu WHERE vu.id = rc.`user-id`)
-                
-                -- 3. Trader Link: Must exist in valid traders
-                AND rc.`trader-id` IS NOT NULL
-                AND EXISTS (SELECT 1 FROM valid_traders vt WHERE vt.id = rc.`trader-id`)
-                
-                -- 4. Email Validation
-                AND rc.`user-email` IS NOT NULL
-                AND rc.`user-email` LIKE '%@%.%'
-                AND CHAR_LENGTH(rc.`user-email`) >= 5
-                
-                -- 5. Status Validation: Must be valid Go constant
-                AND rc.status IS NOT NULL
                 AND rc.status IN ('CREATED', 'PENDING_FUNDS', 'APPROVED', 'REJECTED', 'EXPIRED', 'FULFILLED', 'CANCELED')
-                
-                -- 6. Date Validation: Both dates must exist
-                AND rc.`created-date` IS NOT NULL
-                AND rc.`created-date` <> ''
-                AND rc.`due-date` IS NOT NULL
-                AND rc.`due-date` <> ''
-                
-                -- 7. Delivery Logic: Due date must be after created date (positive delivery days)
-                AND TO_TIMESTAMP(rc.`due-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') > 
-                    TO_TIMESTAMP(rc.`created-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''')
-                
-                -- 8. Products Validation
-                AND rc.products IS NOT NULL
-                AND CARDINALITY(rc.products) > 0
-                
-                -- 9. Product Existence: All products must exist
                 AND rc.calculated_cost IS NOT NULL
-                
-                -- 10. Cost Validation
-                AND rc.`total-cost` IS NOT NULL
-                AND rc.`total-cost` > 0
-                
-                -- 11. Order-ID Link: If FULFILLED, order must exist and belong to same user
-                AND (
-                    (rc.status = 'FULFILLED' 
-                     AND rc.`order-id` IS NOT NULL 
-                     AND rc.`order-id` <> ''
-                     AND EXISTS (
-                         SELECT 1 FROM valid_orders vo 
-                         WHERE vo.id = rc.`order-id` 
-                         AND vo.`user-id` = rc.`user-id`
-                     ))
-                    OR
-                    (rc.status <> 'FULFILLED')
-                )
-                
-                -- 12. Data Quality: Not deleted
                 AND rc.deleted = false
+                AND (rc.status <> 'FULFILLED' OR (rc.status = 'FULFILLED' AND vo.id IS NOT NULL AND vo.`user-id` = rc.`user-id`))
         ) rc
-        INNER JOIN valid_traders vt ON rc.`trader-id` = vt.id
-        WHERE rn = 1  -- Deduplication
+        WHERE rn = 1
     """).wait()
 
     print("✅ Product Requests transformation completed successfully!")
-    print("   - Valid records written to: hdfs:///datalake/transform/product_requests_transformed.parquet")
+    print("   - Valid records written to: hdfs://namenode:9000/datalake/transform/product_requests_transformed.parquet")
 
 if __name__ == '__main__':
     run_transformation()

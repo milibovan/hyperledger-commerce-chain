@@ -6,7 +6,7 @@ const COUNTS = {
     traders: 5000,
     products: 20000,
     orders: 500000,
-    receipts: 1000000,
+    receipts: 500000,
     requests: 100000
 };
 

@@ -15,6 +15,9 @@ def run_transformation():
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
+    t_env.get_config().set("rest.address", "flink-jobmanager-1")
+    t_env.get_config().set("rest.port", "8081")
+
     # Source: Raw Products from JSONL
     t_env.execute_sql("""
         CREATE TABLE raw_products (
@@ -28,20 +31,19 @@ def run_transformation():
             deleted BOOLEAN
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/raw/products.jsonl',
+            'path' = 'hdfs://namenode:9000/datalake/raw/products.jsonl',
             'format' = 'json',
             'json.fail-on-missing-field' = 'false',
             'json.ignore-parse-errors' = 'true'
         )
     """)
 
-    -- Load valid trader types for referential integrity check
     t_env.execute_sql("""
         CREATE TABLE valid_traders (
             `trader-type` STRING
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/traders_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/traders_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -61,7 +63,7 @@ def run_transformation():
             days_until_expiry INT
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/products_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/products_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -85,7 +87,9 @@ def run_transformation():
             CASE WHEN p.`expiry-date` IS NOT NULL AND p.`expiry-date` <> '' THEN true ELSE false END as has_expiry,
             CASE 
                 WHEN p.`expiry-date` IS NOT NULL AND p.`expiry-date` <> '' 
-                THEN TIMESTAMPDIFF(DAY, CURRENT_TIMESTAMP, TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''))
+                THEN TIMESTAMPDIFF(DAY, 
+                        CAST(CURRENT_TIMESTAMP AS TIMESTAMP(3)), -- Added CAST here
+                        TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''))
                 ELSE NULL
             END as days_until_expiry
         FROM (
@@ -132,7 +136,7 @@ def run_transformation():
     """).wait()
 
     print("Products transformation completed successfully!")
-    print("   - Valid records written to: hdfs:///datalake/transform/products_transformed.parquet")
+    print("   - Valid records written to: hdfs://namenode:9000/datalake/transform/products_transformed.parquet")
 
 if __name__ == '__main__':
     run_transformation()

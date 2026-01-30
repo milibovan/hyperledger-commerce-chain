@@ -16,6 +16,9 @@ def run_transformation():
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
+    t_env.get_config().set("rest.address", "flink-jobmanager-1")
+    t_env.get_config().set("rest.port", "8081")
+
     # Source: Raw Traders from JSONL
     t_env.execute_sql("""
         CREATE TABLE raw_traders (
@@ -32,7 +35,7 @@ def run_transformation():
             deleted BOOLEAN
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/raw/traders.jsonl',
+            'path' = 'hdfs://namenode:9000/datalake/raw/traders.jsonl',
             'format' = 'json',
             'json.fail-on-missing-field' = 'false',
             'json.ignore-parse-errors' = 'true'
@@ -58,7 +61,7 @@ def run_transformation():
             request_count INT
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/traders_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/traders_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -123,7 +126,7 @@ def run_transformation():
     """).wait()
 
     print("✅ Traders transformation completed successfully!")
-    print("   - Valid records written to: hdfs:///datalake/transform/traders_transformed.parquet")
+    print("   - Valid records written to: hdfs://namenode:9000/datalake/transform/traders_transformed.parquet")
 
 if __name__ == '__main__':
     run_transformation()

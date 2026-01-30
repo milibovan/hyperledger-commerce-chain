@@ -80,7 +80,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/files:/opt/airflow/files # added for data
   user: "${AIRFLOW_UID:-50000}:0"
   networks:
-    - data-lake_asvsp
+    - hdfs_asvsp
   depends_on:
     &airflow-common-depends-on
     redis:
@@ -97,7 +97,7 @@ services:
       POSTGRES_PASSWORD: airflow
       POSTGRES_DB: airflow
     networks:
-      - data-lake_asvsp
+      - hdfs_asvsp
     volumes:
       - postgres-db-volume:/var/lib/postgresql/data
     healthcheck:
@@ -115,7 +115,7 @@ services:
     expose:
       - 6379
     networks:
-      - data-lake_asvsp
+      - hdfs_asvsp
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -352,6 +352,6 @@ volumes:
   postgres-db-volume:
 
 networks:
-  data-lake_asvsp:
-    name: data-lake_asvsp
+  hdfs_asvsp:
+    name: hdfs_asvsp
     external: true

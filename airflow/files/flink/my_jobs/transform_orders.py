@@ -16,6 +16,9 @@ def run_transformation():
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
+    t_env.get_config().set("rest.address", "flink-jobmanager-1")
+    t_env.get_config().set("rest.port", "8081")
+
     # Source: Raw Orders from JSONL
     t_env.execute_sql("""
         CREATE TABLE raw_orders (
@@ -31,7 +34,7 @@ def run_transformation():
             deleted BOOLEAN
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/raw/orders.jsonl',
+            'path' = 'hdfs://namenode:9000/datalake/raw/orders.jsonl',
             'format' = 'json',
             'json.fail-on-missing-field' = 'false',
             'json.ignore-parse-errors' = 'true'
@@ -44,7 +47,7 @@ def run_transformation():
             id STRING
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/users_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/users_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -56,7 +59,7 @@ def run_transformation():
             price DOUBLE
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/products_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/products_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -76,11 +79,11 @@ def run_transformation():
             `cost-variance` DOUBLE,
             `request-id` STRING,
             deleted BOOLEAN,
-            product_count INT,
+            product_count BIGINT NOT NULL,
             total_items INT
         ) WITH (
             'connector' = 'filesystem',
-            'path' = 'hdfs:///datalake/transform/orders_transformed.parquet',
+            'path' = 'hdfs://namenode:9000/datalake/transform/orders_transformed.parquet',
             'format' = 'parquet'
         )
     """)
@@ -130,49 +133,27 @@ def run_transformation():
             oc.product_count,
             oc.total_items
         FROM (
-            SELECT *,
+            SELECT oc.*, 
                    ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY `total-cost` DESC) as rn
             FROM order_calculations oc
+            -- USE AN INNER JOIN INSTEAD OF EXISTS
+            INNER JOIN valid_users vu ON oc.`user-id` = vu.id
             WHERE 
-                -- 1. ID Validation: UUID format
                 oc.order_id IS NOT NULL 
                 AND CHAR_LENGTH(oc.order_id) = 36
                 AND oc.order_id LIKE '%-%-%-%-%'
-                
-                -- 2. User Check: Must exist in valid users (CRITICAL)
-                AND EXISTS (
-                    SELECT 1 FROM valid_users vu 
-                    WHERE vu.id = oc.`user-id`
-                )
-                
-                -- 3. Status Validation: Must be valid Go constant
-                AND oc.status IS NOT NULL
                 AND oc.status IN ('PENDING', 'APPROVED', 'FULFILLED', 'CANCELLED', 'REJECTED')
-                
-                -- 4. Products Validation: Non-empty array
-                AND oc.products IS NOT NULL
                 AND CARDINALITY(oc.products) > 0
-                
-                -- 5. Product Existence: All products must exist (checked via calculated_cost not NULL)
                 AND oc.calculated_cost IS NOT NULL
-                
-                -- 6. Calculation Audit: Cost variance within acceptable range (5% tolerance)
-                AND oc.`total-cost` IS NOT NULL
                 AND oc.`total-cost` > 0
                 AND ABS(oc.`total-cost` - oc.calculated_cost) / oc.`total-cost` <= 0.05
-                
-                -- 7. Date validation
-                AND oc.`created-date` IS NOT NULL
-                AND oc.`created-date` <> ''
-                
-                -- 8. Data Quality: Not deleted
                 AND oc.deleted = false
         ) oc
-        WHERE rn = 1  -- Deduplication
+        WHERE rn = 1
     """).wait()
 
     print("✅ Orders transformation completed successfully!")
-    print("   - Valid records written to: hdfs:///datalake/transform/orders_transformed.parquet")
+    print("   - Valid records written to: hdfs://namenode:9000/datalake/transform/orders_transformed.parquet")
 
 if __name__ == '__main__':
     run_transformation()

@@ -1,19 +1,32 @@
 services:
   jobmanager:
-    image: flink:1.20
+    build:
+      context: ./
+      dockerfile: Dockerfile
     hostname: jobmanager
     ports:
       - "8081:8081"
     command: jobmanager
     environment:
+      - |
+        FLINK_PROPERTIES=
+        jobmanager.archive.expiration-time: 1 hour
+        historyserver.archive.clean-up: false
+        # Path where completed jobs are stored
+        jobmanager.archive.fs.dir: file:///opt/flink/completed-jobs
       - HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop
       - HADOOP_CLASSPATH=/opt/hadoop/etc/hadoop
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     networks:
-      - data-lake_asvsp
+      - hdfs_asvsp
+    volumes:
+      - ../airflow/files/flink/my_jobs:/opt/flink/usrlib
+      - flink_history:/opt/flink/completed-jobs
       
   taskmanager:
-    image: flink:1.20
+    build:
+      context: ./
+      dockerfile: Dockerfile
     hostname: taskmanager
     command: taskmanager
     environment:
@@ -26,4 +39,15 @@ services:
     deploy:
       replicas: 2
     networks:
-      - data-lake_asvsp
+      - hdfs_asvsp
+    volumes:
+      - ../airflow/files/flink/my_jobs:/opt/flink/usrlib
+      - flink_history:/opt/flink/completed-jobs
+
+volumes:
+  flink_history:
+
+networks:
+  hdfs_asvsp:
+    name: hdfs_asvsp
+    external: true
