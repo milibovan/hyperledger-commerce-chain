@@ -47,6 +47,7 @@ def submit_pyflink_job(script_name, parallelism=1, **context):
     logging.info(f"Executing command: {' '.join(cmd)}")
     
     env = os.environ.copy()
+    env['FLINK_ENV_JAVA_OPTS'] = '--add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.net=ALL-UNNAMED --add-opens java.base/java.io=ALL-UNNAMED --add-opens java.base/java.lang.invoke=ALL-UNNAMED'
     
     result = subprocess.run(
         cmd,

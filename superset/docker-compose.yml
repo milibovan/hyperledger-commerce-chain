@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  superset_db:
+    image: postgres:16
+    container_name: superset_db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=ZDEax7FMemXlXhnD
+      - POSTGRES_DB=superset
+    volumes:
+      - superset_db_data:/var/lib/postgresql/data
+    networks:
+      - hdfs_asvsp
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  superset:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: superset_app
+    ports:
+      - "3033:8088"
+    environment:
+      - SUPERSET_SECRET_KEY=o9fGMQ4Om7TV1RfW
+      - SQLALCHEMY_DATABASE_URI=postgresql://postgres:ZDEax7FMemXlXhnD@superset_db:5432/superset
+    networks:
+      - hdfs_asvsp
+    depends_on:
+      superset_db:
+        condition: service_healthy
+    volumes:
+      - superset_home:/app/superset_home
+      - ./superset-init.sh:/superset-init.sh
+    entrypoint: ["/bin/bash", "/superset-init.sh"]
+
+networks:
+  hdfs_asvsp:
+    name: hdfs_asvsp
+    external: true
+
+volumes:
+  superset_db_data:
+  superset_home:

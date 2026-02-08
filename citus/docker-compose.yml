@@ -1,0 +1,68 @@
+version: '3.8'
+services:
+  citus_master:
+    container_name: citus_coordinator
+    image: citusdata/citus:alpine
+    ports:
+      - "5432:5432"
+    environment: &citus-env
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0Hf9Vnnxe3Cay5ZE
+      POSTGRES_DB: curated_zone
+    networks:
+      - hdfs_asvsp
+    volumes:
+      - citus_master_data:/var/lib/postgresql/data
+
+  citus_worker_1:
+    container_name: citus_worker_1
+    image: citusdata/citus:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0Hf9Vnnxe3Cay5ZE
+      POSTGRES_DB: curated_zone
+    networks:
+      - hdfs_asvsp
+    volumes:
+      - citus_worker_1_data:/var/lib/postgresql/data
+
+  citus_worker_2:
+    container_name: citus_worker_2
+    image: citusdata/citus:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 0Hf9Vnnxe3Cay5ZE
+      POSTGRES_DB: curated_zone
+    networks:
+      - hdfs_asvsp
+    volumes:
+      - citus_worker_2_data:/var/lib/postgresql/data
+
+  citus-pgadmin:
+    container_name: citus-pgadmin
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    networks:
+      - hdfs_asvsp
+    depends_on:
+      - citus_master
+    restart: unless-stopped
+
+volumes:
+  citus_master_data:
+  citus_worker_1_data:
+  citus_worker_2_data:
+  pgadmin_data:
+
+networks:
+  hdfs_asvsp:
+    name: hdfs_asvsp
+    external: true

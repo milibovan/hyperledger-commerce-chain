@@ -51,16 +51,16 @@ def run_transformation():
     # Target: Transformed Products in Parquet
     t_env.execute_sql("""
         CREATE TABLE transform_products (
-            `doc-type` STRING,
+            `doc-type` STRING,         
             id STRING,
             name STRING,
             `expiry-date` TIMESTAMP(3),
             price DOUBLE,
-            quantity INT,
-            `trader-type` STRING,
+            quantity INT,              
+            `trader-type` STRING,      
             deleted BOOLEAN,
-            has_expiry BOOLEAN,
-            days_until_expiry INT
+            has_expiry BOOLEAN,        
+            days_until_expiry INT      
         ) WITH (
             'connector' = 'filesystem',
             'path' = 'hdfs://namenode:9000/datalake/transform/products_transformed.parquet',

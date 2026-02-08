@@ -9,6 +9,7 @@ import os
     start_date=datetime(2026, 1, 28),
     max_active_runs=1,
     catchup=False,
+    tags=['hdfs']
 )
 
 def load_raw_data():
