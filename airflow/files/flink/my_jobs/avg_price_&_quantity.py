@@ -88,11 +88,13 @@ def run_transformation():
         SELECT 
             DATE_FORMAT(pr.`created-date`, 'yyyy-MM') as `month`,
             AVG(p.price) as avg_price,
-            AVG(CAST(pr.total_items AS DOUBLE) / CAST(pr.product_count AS DOUBLE)) as avg_quantity,
+            AVG(CAST(pr.total_items AS DOUBLE)) as avg_quantity,
             AVG(CAST(pr.delivery_days AS DOUBLE)) as avg_validity_days
         FROM transform_product_requests pr
-        JOIN transform_products p ON pr.`trader-id` = p.`trader-type`  -- Adjust join condition as needed
-        WHERE pr.deleted = FALSE AND p.deleted = FALSE
+        JOIN transform_products p ON pr.trader_type = p.`trader-type`
+        WHERE pr.deleted = FALSE 
+        AND p.deleted = FALSE
+        AND pr.`created-date` IS NOT NULL
         GROUP BY DATE_FORMAT(pr.`created-date`, 'yyyy-MM')
     """).wait()
 
