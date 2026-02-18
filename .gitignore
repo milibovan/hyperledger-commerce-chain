@@ -86,3 +86,24 @@ go/src/github.com/milibovan/install-fabric.sh
 /kafka1/
 /kafka2/
 /kafka3/
+/superset/tests/
+/superset/superset-frontend/node_modules/
+/superset/docker/
+/superset/.claude/
+/superset/.cursor/
+/superset/superset/static/assets/
+# Ignore local environment overrides
+**/docker/.env-local
+**/.env-local
+
+# Ignore heavy frontend artifacts
+**/node_modules/
+**/dist/
+
+# Ignore local AI/IDE folders
+.claude/
+.cursor/
+.aider*
+
+# Ignore OS junk
+.DS_Store
