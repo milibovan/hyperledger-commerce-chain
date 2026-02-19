@@ -22,6 +22,14 @@ RUN wget https://archive.apache.org/dist/flink/flink-${FLINK_VERSION}/flink-${FL
 
 RUN ln -s /usr/lib/jvm/$(ls /usr/lib/jvm/ | grep temurin) /usr/lib/jvm/default-java
 ENV JAVA_HOME=/usr/lib/jvm/default-java
+
+# Install Confluent CLI
+# RUN curl -sL --http1.1 https://cnfl.io/cli | sh -s -- -b /usr/local/bin
+
+# # You no longer need the local Flink TGZ or FLINK_HOME
+# # But keep JAVA as it's required for some CLI operations
+# ENV PATH="/usr/local/bin:${PATH}"
+
 ENV FLINK_HOME=/opt/flink
 ENV PATH=$JAVA_HOME/bin:$FLINK_HOME/bin:$PATH
 
