@@ -76,6 +76,12 @@ with DAG(
         sql="SELECT 1;",
     )
 
+    # drop_table = SQLExecuteQueryOperator(
+    #     task_id='drop_old_citus_table',
+    #     conn_id='citus',
+    #     sql="DROP TABLE IF EXISTS weekly_loss;",
+    # )
+
     create_table = SQLExecuteQueryOperator(
         task_id='create_citus_table',
         conn_id='citus',
@@ -83,7 +89,7 @@ with DAG(
             CREATE TABLE IF NOT EXISTS weekly_loss (
                 week INTEGER,
                 cumulative_loss DOUBLE PRECISION,
-                trader_id VARCHAR(7),
+                trader_id VARCHAR(36),
                 year INTEGER
             );
         """,
@@ -110,4 +116,4 @@ with DAG(
     
     hdfs_input_path = check_hdfs_path("/datalake/transform/")
     
-    check_citus >> hdfs_input_path >> weekly_loss >> verify_citus_data
+    check_citus >> hdfs_input_path >> create_table >> weekly_loss >> verify_citus_data
