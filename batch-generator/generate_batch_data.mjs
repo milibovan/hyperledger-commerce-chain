@@ -10,19 +10,29 @@ const COUNTS = {
     requests: 100000
 };
 
+const TRADER_TYPES = ["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"];
+const VERSATILE_USER_COUNT = 5000; // ~10% of users guaranteed to hit HAVING >= 3 trader types
+const VERSATILE_RECEIPT_RATIO = 0.4; // 40% of receipts go to versatile users
+
 const pools = {
     userIds: [],
     traderIds: [],
     productIds: [],
     orderIds: [],
-    productsByTrader: {}, // Map trader types to their products
+    productsByTrader: {},
     // Relationship tracking
-    userOrders: {}, // userId -> [orderIds]
-    userRequests: {}, // userId -> [requestIds]
-    traderReceipts: {}, // traderId -> [receiptIds]
-    traderRequests: {}, // traderId -> [requestIds]
-    traderProducts: {}, // traderId -> [productInventory]
-    orderReceipts: {} // orderId -> [receiptIds]
+    userOrders: {},
+    userRequests: {},
+    traderReceipts: {},
+    traderRequests: {},
+    traderProducts: {},
+    orderReceipts: {},
+    // New: trader type map and per-type trader lists
+    traderTypeMap: {},       // traderId -> traderType
+    tradersByType: {},       // traderType -> [traderIds]
+    // New: versatile buyer tracking
+    versatileUserIds: null,  // Set of userIds designated as versatile buyers
+    versatileUserCoverage: {} // userId -> Set of trader types already covered
 };
 
 // Realistic product categories by trader type
@@ -94,20 +104,23 @@ const PRODUCT_CATEGORIES = {
         { name: 'Amortizer', priceRange: [4000, 15000], expiry: false },
         { name: 'Motorno ulje', priceRange: [2000, 8000], expiry: false },
         { name: 'Antifriz', priceRange: [1000, 3000], expiry: false },
-        { name: 'Akumulator', priceRange: [8000, 25000], expiry: false },
         { name: 'Starter', priceRange: [10000, 30000], expiry: false },
         { name: 'Alternator', priceRange: [15000, 40000], expiry: false }
     ]
 };
 
 const writeJSONL = (filename, count, generator) => {
-    const stream = fs.createWriteStream(filename);
-    for (let i = 0; i < count; i++) {
-        const record = generator();
-        stream.write(JSON.stringify(record) + '\n');
-    }
-    stream.end();
-    console.log(`Created ${filename} (${count} records)`);
+    return new Promise((resolve) => {
+        const stream = fs.createWriteStream(filename);
+        for (let i = 0; i < count; i++) {
+            const record = generator();
+            stream.write(JSON.stringify(record) + '\n');
+        }
+        stream.end(() => {
+            console.log(`Created ${filename} (${count} records)`);
+            resolve();
+        });
+    });
 };
 
 const genUser = () => {
@@ -131,14 +144,20 @@ const genUser = () => {
 
 const genTrader = () => {
     const id = faker.string.uuid();
-    const traderType = faker.helpers.arrayElement(["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"]);
+    const traderType = faker.helpers.arrayElement(TRADER_TYPES);
     
     pools.traderIds.push(id);
     pools.traderReceipts[id] = [];
     pools.traderRequests[id] = [];
     pools.traderProducts[id] = [];
+
+    // Store trader type for lookup during receipt generation
+    pools.traderTypeMap[id] = traderType;
+    if (!pools.tradersByType[traderType]) {
+        pools.tradersByType[traderType] = [];
+    }
+    pools.tradersByType[traderType].push(id);
     
-    // Initialize product list for this trader type if not exists
     if (!pools.productsByTrader[traderType]) {
         pools.productsByTrader[traderType] = [];
     }
@@ -150,7 +169,7 @@ const genTrader = () => {
         "email": faker.internet.email(),
         "trader-type": traderType,
         "vat": "VAT-" + faker.string.alphanumeric(8).toUpperCase(), 
-        "products-available": [], // Will be populated when linking products
+        "products-available": [],
         "receipts-ids": [],
         "requests-ids": [],
         "balance": 0, 
@@ -160,15 +179,13 @@ const genTrader = () => {
 
 const genProduct = () => {
     const id = faker.string.uuid();
-    const traderType = faker.helpers.arrayElement(["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"]);
+    const traderType = faker.helpers.arrayElement(TRADER_TYPES);
     const category = faker.helpers.arrayElement(PRODUCT_CATEGORIES[traderType]);
     
-    // Generate product with brand/variant
     const productName = `${category.name} ${faker.commerce.productAdjective()}`;
     
     pools.productIds.push(id);
     
-    // Track which trader type this product belongs to
     if (!pools.productsByTrader[traderType]) {
         pools.productsByTrader[traderType] = [];
     }
@@ -185,10 +202,9 @@ const genProduct = () => {
         })),
         "quantity": faker.number.int({ min: 50, max: 1000 }),
         "trader-type": traderType,
-        "deleted": !category.expiry // If no expiry date, mark as deleted
+        "deleted": !category.expiry
     };
     
-    // Add expiry date only for perishable products
     if (category.expiry) {
         product["expiry-date"] = faker.date.between({ 
             from: '2026-02-01', 
@@ -208,9 +224,14 @@ const genOrder = () => {
     pools.orderReceipts[id] = [];
     
     const orderDate = faker.date.between({ from: '2024-01-01', to: '2026-01-28' });
-    const status = faker.helpers.arrayElement(["PENDING", "APPROVED", "FULFILLED", "CANCELLED"]);
+    const status = faker.helpers.weightedArrayElement([
+        { weight: 30, value: "COMPLETED" },
+        { weight: 30, value: "FULFILLED" },
+        { weight: 20, value: "APPROVED" },
+        { weight: 10, value: "PENDING" },
+        { weight: 10, value: "CANCELLED" }
+    ]);
     
-    // Generate 1-8 products per order (weighted towards fewer items)
     const numProducts = faker.helpers.weightedArrayElement([
         { weight: 10, value: 1 },
         { weight: 15, value: 2 },
@@ -222,19 +243,15 @@ const genOrder = () => {
         { weight: 5, value: 8 }
     ]);
     
-    // Pick products from the same trader type for realism
-    const traderType = faker.helpers.arrayElement(["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"]);
+    const traderType = faker.helpers.arrayElement(TRADER_TYPES);
     const availableProducts = pools.productsByTrader[traderType] || pools.productIds;
     
-    // Generate unique products for this order
     const selectedProducts = new Set();
     const products = [];
     
     for (let i = 0; i < numProducts; i++) {
         let productId;
         let attempts = 0;
-        
-        // Try to get a unique product (max 10 attempts)
         do {
             productId = faker.helpers.arrayElement(availableProducts);
             attempts++;
@@ -242,8 +259,6 @@ const genOrder = () => {
         
         if (!selectedProducts.has(productId)) {
             selectedProducts.add(productId);
-            
-            // Quantity weighted towards smaller amounts
             const quantity = faker.helpers.weightedArrayElement([
                 { weight: 40, value: 1 },
                 { weight: 30, value: 2 },
@@ -251,15 +266,10 @@ const genOrder = () => {
                 { weight: 10, value: 4 },
                 { weight: 5, value: 5 }
             ]);
-            
-            products.push({
-                "product-id": productId,
-                "quantity": quantity
-            });
+            products.push({ "product-id": productId, "quantity": quantity });
         }
     }
     
-    // Calculate realistic total cost (base + slight variation)
     const baseCost = products.length * faker.number.float({ min: 200, max: 800, fractionDigits: 2 });
     const totalCost = parseFloat(baseCost.toFixed(2));
     
@@ -277,24 +287,64 @@ const genOrder = () => {
     };
 };
 
+const initVersatileUsers = () => {
+    pools.versatileUserIds = new Set(
+        faker.helpers.arrayElements(pools.userIds, VERSATILE_USER_COUNT)
+    );
+    console.log(`Designated ${VERSATILE_USER_COUNT} versatile buyers.`);
+};
+
 const genReceipt = () => {
     const receiptId = faker.string.uuid();
-    const userId = faker.helpers.arrayElement(pools.userIds);
-    const orderId = faker.helpers.arrayElement(pools.orderIds);
-    const traderId = faker.helpers.arrayElement(pools.traderIds);
+
+    let userId, traderId;
+
+    // For versatile users: bias toward uncovered trader types so they hit >= 3
+    if (pools.versatileUserIds && Math.random() < VERSATILE_RECEIPT_RATIO) {
+        userId = faker.helpers.arrayElement([...pools.versatileUserIds]);
+
+        if (!pools.versatileUserCoverage[userId]) {
+            pools.versatileUserCoverage[userId] = new Set();
+        }
+
+        const covered = pools.versatileUserCoverage[userId];
+        const uncovered = TRADER_TYPES.filter(t => !covered.has(t));
+
+        // Prioritise an uncovered type until all 4 are hit; then pick randomly
+        const targetType = uncovered.length > 0
+            ? faker.helpers.arrayElement(uncovered)
+            : faker.helpers.arrayElement(TRADER_TYPES);
+
+        const tradersOfType = pools.tradersByType[targetType] || pools.traderIds;
+        traderId = faker.helpers.arrayElement(tradersOfType);
+
+        // Mark this trader type as covered for this user
+        covered.add(pools.traderTypeMap[traderId]);
+    } else {
+        userId = faker.helpers.arrayElement(pools.userIds);
+        traderId = faker.helpers.arrayElement(pools.traderIds);
+    }
+
+    // NOW grab the user's orders, because userId actually exists!
+    const userOrdersList = pools.userOrders[userId];
     
-    // Track relationships
+    // Fallback to a random order ONLY if the user somehow generated 0 orders
+    const orderId = (userOrdersList && userOrdersList.length > 0) 
+        ? faker.helpers.arrayElement(userOrdersList) 
+        : faker.helpers.arrayElement(pools.orderIds);
+    
     pools.traderReceipts[traderId].push(receiptId);
     pools.orderReceipts[orderId].push(receiptId);
     
-    const receiptDate = faker.date.between({ from: '2024-01-01', to: '2026-01-28' });
+    // Use a recent date so the Flink query's 30-day window is satisfied
+    const receiptDate = faker.date.between({ from: '2026-02-01', to: '2026-03-01' });
+
     const status = faker.helpers.weightedArrayElement([
         { weight: 85, value: "COMPLETED" },
         { weight: 10, value: "IN_PROGRESS" },
         { weight: 5, value: "CANCELLED" }
     ]);
     
-    // Generate 1-6 products per receipt (weighted towards fewer items)
     const numProducts = faker.helpers.weightedArrayElement([
         { weight: 15, value: 1 },
         { weight: 25, value: 2 },
@@ -310,7 +360,6 @@ const genReceipt = () => {
     for (let i = 0; i < numProducts; i++) {
         let productId;
         let attempts = 0;
-        
         do {
             productId = faker.helpers.arrayElement(pools.productIds);
             attempts++;
@@ -318,7 +367,6 @@ const genReceipt = () => {
         
         if (!selectedProducts.has(productId)) {
             selectedProducts.add(productId);
-            
             const quantity = faker.helpers.weightedArrayElement([
                 { weight: 45, value: 1 },
                 { weight: 30, value: 2 },
@@ -326,13 +374,7 @@ const genReceipt = () => {
                 { weight: 7, value: 4 },
                 { weight: 3, value: 5 }
             ]);
-            
-            products.push({
-                "product-id": productId,
-                "quantity": quantity
-            });
-            
-            // Track products for trader
+            products.push({ "product-id": productId, "quantity": quantity });
             pools.traderProducts[traderId].push({
                 "product-id": productId,
                 "quantity": faker.number.int({ min: 10, max: 500 })
@@ -356,12 +398,8 @@ const genReceipt = () => {
         "deleted": false
     };
     
-    // Add cancellation details if cancelled
     if (status === "CANCELLED") {
-        receipt["cancelled-date"] = faker.date.between({ 
-            from: receiptDate, 
-            to: '2026-01-28' 
-        }).toISOString();
+        receipt["cancelled-date"] = faker.date.between({ from: receiptDate, to: '2026-03-01' }).toISOString();
         receipt["cancelled-by"] = faker.helpers.arrayElement([userId, traderId]);
     } else {
         receipt["cancelled-date"] = "";
@@ -376,7 +414,6 @@ const genRequest = () => {
     const userId = faker.helpers.arrayElement(pools.userIds);
     const traderId = faker.helpers.arrayElement(pools.traderIds);
     
-    // Track relationships
     pools.userRequests[userId].push(requestId);
     pools.traderRequests[traderId].push(requestId);
     
@@ -391,7 +428,6 @@ const genRequest = () => {
         { weight: 2, value: "CANCELED" }
     ]);
     
-    // Generate 1-10 products per request
     const numProducts = faker.helpers.weightedArrayElement([
         { weight: 8, value: 1 },
         { weight: 12, value: 2 },
@@ -411,7 +447,6 @@ const genRequest = () => {
     for (let i = 0; i < numProducts; i++) {
         let productId;
         let attempts = 0;
-        
         do {
             productId = faker.helpers.arrayElement(pools.productIds);
             attempts++;
@@ -419,24 +454,15 @@ const genRequest = () => {
         
         if (!selectedProducts.has(productId)) {
             selectedProducts.add(productId);
-            
-            const quantity = faker.number.int({ min: 1, max: 10 });
-            
-            products.push({
-                "product-id": productId,
-                "quantity": quantity
-            });
+            products.push({ "product-id": productId, "quantity": faker.number.int({ min: 1, max: 10 }) });
         }
     }
     
     const baseCost = products.reduce((sum, p) => sum + (p.quantity * 300), 0);
     const totalCost = parseFloat(faker.number.float({ 
-        min: baseCost * 0.8, 
-        max: baseCost * 1.2,
-        fractionDigits: 2 
+        min: baseCost * 0.8, max: baseCost * 1.2, fractionDigits: 2 
     }).toFixed(2));
     
-    // Due date is 7-30 days after creation
     const dueDate = new Date(createdDate);
     dueDate.setDate(dueDate.getDate() + faker.number.int({ min: 7, max: 30 }));
     
@@ -456,7 +482,8 @@ const genRequest = () => {
     };
 };
 
-// Update entities with relationship IDs
+// ── Relationship update helpers (unchanged) ────────────────────────────────
+
 const updateUsersWithRelationships = () => {
     console.log("Updating users with order and request IDs...");
     const users = [];
@@ -467,8 +494,7 @@ const updateUsersWithRelationships = () => {
         usersStream.on('data', (chunk) => {
             buffer += chunk;
             const lines = buffer.split('\n');
-            buffer = lines.pop(); // Keep incomplete line in buffer
-            
+            buffer = lines.pop();
             lines.forEach(line => {
                 if (line.trim()) {
                     const user = JSON.parse(line);
@@ -478,7 +504,6 @@ const updateUsersWithRelationships = () => {
                 }
             });
         });
-        
         usersStream.on('end', () => {
             if (buffer.trim()) {
                 const user = JSON.parse(buffer);
@@ -486,7 +511,6 @@ const updateUsersWithRelationships = () => {
                 user['requests-ids'] = pools.userRequests[user.id] || [];
                 users.push(user);
             }
-            
             const stream = fs.createWriteStream('users.jsonl');
             users.forEach(user => stream.write(JSON.stringify(user) + '\n'));
             stream.end();
@@ -507,12 +531,9 @@ const updateTradersWithRelationships = () => {
             buffer += chunk;
             const lines = buffer.split('\n');
             buffer = lines.pop();
-            
             lines.forEach(line => {
                 if (line.trim()) {
                     const trader = JSON.parse(line);
-                    
-                    // Consolidate products and remove duplicates
                     const productMap = new Map();
                     (pools.traderProducts[trader.id] || []).forEach(p => {
                         if (productMap.has(p['product-id'])) {
@@ -521,7 +542,6 @@ const updateTradersWithRelationships = () => {
                             productMap.set(p['product-id'], { ...p });
                         }
                     });
-                    
                     trader['products-available'] = Array.from(productMap.values());
                     trader['receipts-ids'] = pools.traderReceipts[trader.id] || [];
                     trader['requests-ids'] = pools.traderRequests[trader.id] || [];
@@ -529,7 +549,6 @@ const updateTradersWithRelationships = () => {
                 }
             });
         });
-        
         tradersStream.on('end', () => {
             if (buffer.trim()) {
                 const trader = JSON.parse(buffer);
@@ -546,7 +565,6 @@ const updateTradersWithRelationships = () => {
                 trader['requests-ids'] = pools.traderRequests[trader.id] || [];
                 traders.push(trader);
             }
-            
             const stream = fs.createWriteStream('traders.jsonl');
             traders.forEach(trader => stream.write(JSON.stringify(trader) + '\n'));
             stream.end();
@@ -567,7 +585,6 @@ const updateOrdersWithReceipts = () => {
             buffer += chunk;
             const lines = buffer.split('\n');
             buffer = lines.pop();
-            
             lines.forEach(line => {
                 if (line.trim()) {
                     const order = JSON.parse(line);
@@ -576,14 +593,12 @@ const updateOrdersWithReceipts = () => {
                 }
             });
         });
-        
         ordersStream.on('end', () => {
             if (buffer.trim()) {
                 const order = JSON.parse(buffer);
                 order['receipts-ids'] = pools.orderReceipts[order.id] || [];
                 orders.push(order);
             }
-            
             const stream = fs.createWriteStream('orders.jsonl');
             orders.forEach(order => stream.write(JSON.stringify(order) + '\n'));
             stream.end();
@@ -593,33 +608,27 @@ const updateOrdersWithReceipts = () => {
     });
 };
 
-console.log("Starting generation...");
-console.log("Generating users...");
-writeJSONL('users.jsonl', COUNTS.users, genUser);
-
-console.log("Generating traders...");
-writeJSONL('traders.jsonl', COUNTS.traders, genTrader);
-
-console.log("Generating products...");
-writeJSONL('products.jsonl', COUNTS.products, genProduct);
-
-setTimeout(() => {
-    console.log("Generating orders...");
-    writeJSONL('orders.jsonl', COUNTS.orders, genOrder);
+// ── Main generation sequence ───────────────────────────────────────────────
+const runAll = async () => {
+    console.log("Starting generation...");
+    await writeJSONL('users.jsonl', COUNTS.users, genUser);
+    await writeJSONL('traders.jsonl', COUNTS.traders, genTrader);
+    await writeJSONL('products.jsonl', COUNTS.products, genProduct);
+    await writeJSONL('orders.jsonl', COUNTS.orders, genOrder);
+    await writeJSONL('order_requests.jsonl', COUNTS.requests, genRequest);
     
-    console.log("Generating product requests...");
-    writeJSONL('order_requests.jsonl', COUNTS.requests, genRequest);
+    initVersatileUsers();
     
-    setTimeout(() => {
-        console.log("Generating receipts...");
-        writeJSONL('receipts.jsonl', COUNTS.receipts, genReceipt);
-        
-        // Update all entities with their relationships
-        setTimeout(async () => {
-            await updateUsersWithRelationships();
-            await updateTradersWithRelationships();
-            await updateOrdersWithReceipts();
-            console.log("✅ All data generated successfully with relationships!");
-        }, 500);
-    }, 200);
-}, 200);
+    await writeJSONL('receipts.jsonl', COUNTS.receipts, genReceipt);
+    
+    const coverage = Object.values(pools.versatileUserCoverage);
+    const fullyVersatile = coverage.filter(s => s.size >= 3).length;
+    console.log(`Versatile users with >= 3 trader types covered: ${fullyVersatile} / ${VERSATILE_USER_COUNT}`);
+    
+    await updateUsersWithRelationships();
+    await updateTradersWithRelationships();
+    await updateOrdersWithReceipts();
+    console.log("✅ All data generated successfully with relationships!");
+};
+
+runAll();

@@ -81,12 +81,12 @@ with DAG(
         conn_id='citus',
         sql="""
             CREATE TABLE IF NOT EXISTS versatile_buyers (
-                user_id VARCHAR(16),
+                user_id VARCHAR(36),
                 user_name VARCHAR(16),
                 user_surname VARCHAR(16),
                 user_email VARCHAR(166),
-                trader_ids VARCHAR(16)[],
-                trader_types VARCHAR(16)[],
+                trader_ids VARCHAR[],
+                trader_types VARCHAR[],
                 orders_placed INTEGER,
                 receipts_created INTEGER,
                 products_bought INTEGER,

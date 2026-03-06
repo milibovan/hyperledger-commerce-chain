@@ -119,7 +119,7 @@ def run_transformation():
             WHERE tt.deleted = FALSE
             AND tr.deleted = FALSE
             AND tu.deleted = FALSE
-            AND tr.`date` >= CURRENT_TIMESTAMP - INTERVAL '30' DAY
+            AND tr.`date` >= TIMESTAMP '2024-01-01 00:00:00'
             AND tr.status = 'COMPLETED'
         )
         GROUP BY `user-id`, `user-name`, `user-surname`, `user-email`
