@@ -75,8 +75,8 @@ def run_transformation():
             user_name STRING,
             user_surname STRING,
             user_email STRING,
-            trader_ids ARRAY<STRING>,
-            trader_types ARRAY<STRING>,
+            trader_ids STRING,
+            trader_types STRING,
             orders_placed INT,
             receipts_created INT,
             products_bought INT,
@@ -97,16 +97,16 @@ def run_transformation():
     t_env.execute_sql("""
         INSERT INTO versatile_buyers
         SELECT 
-            `user-id`        AS user_id,
-            `user-name`      AS user_name,
-            `user-surname`   AS user_surname,
-            `user-email`     AS user_email,
-            ARRAY_AGG(DISTINCT trader_id)   AS trader_ids,
-            ARRAY_AGG(DISTINCT trader_type) AS trader_types,
-            CAST(COUNT(DISTINCT order_id) AS INT)  AS orders_placed,
-            CAST(COUNT(receipt_id) AS INT)         AS receipts_created,
-            CAST(SUM(p_count) AS INT)              AS products_bought,
-            SUM(t_cost)                            AS total_cost
+            `user-id`                                        AS user_id,
+            `user-name`                                      AS user_name,
+            `user-surname`                                   AS user_surname,
+            `user-email`                                     AS user_email,
+            LISTAGG(DISTINCT trader_id, ',')                 AS trader_ids,
+            LISTAGG(DISTINCT trader_type, ',')               AS trader_types,
+            CAST(COUNT(DISTINCT order_id) AS INT)            AS orders_placed,
+            CAST(COUNT(receipt_id) AS INT)                   AS receipts_created,
+            CAST(SUM(p_count) AS INT)                        AS products_bought,
+            SUM(t_cost)                                      AS total_cost
         FROM (
             SELECT 
                 tu.id AS `user-id`, tu.name AS `user-name`, tu.surname AS `user-surname`, tu.email AS `user-email`,

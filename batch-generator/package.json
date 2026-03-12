@@ -2,5 +2,8 @@
   "type": "module",
   "devDependencies": {
     "@faker-js/faker": "^10.2.0"
+  },
+  "dependencies": {
+    "faker-js": "^1.0.0"
   }
 }

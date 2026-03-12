@@ -82,11 +82,11 @@ with DAG(
         sql="""
             CREATE TABLE IF NOT EXISTS versatile_buyers (
                 user_id VARCHAR(36),
-                user_name VARCHAR(16),
-                user_surname VARCHAR(16),
+                user_name VARCHAR(36),
+                user_surname VARCHAR(36),
                 user_email VARCHAR(166),
-                trader_ids VARCHAR[],
-                trader_types VARCHAR[],
+                trader_ids TEXT,
+                trader_types TEXT,
                 orders_placed INTEGER,
                 receipts_created INTEGER,
                 products_bought INTEGER,
