@@ -85,3 +85,5 @@ go/src/github.com/milibovan/install-fabric.sh
 /kafka2/
 /kafka3/
 /superset/
+
+.secret
