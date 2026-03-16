@@ -167,12 +167,18 @@ def run_transformation():
             rc.`user-id`,
             rc.`order-id`,
             rc.products,
-            TRY_CAST(rc.`date` AS TIMESTAMP(3)) AS `date`,
+            TO_TIMESTAMP(
+                REPLACE(REPLACE(rc.`date`, 'T', ' '), 'Z', ''), 
+                'yyyy-MM-dd HH:mm:ss.SSS'
+            ) AS `date`,
             rc.`total-cost`,
             rc.calculated_cost,
             ABS(rc.`total-cost` - rc.calculated_cost) AS `cost-variance`,
             rc.status,
-            TRY_CAST(rc.`cancelled-date` AS TIMESTAMP(3)) AS `cancelled-date`,
+            TO_TIMESTAMP(
+                REPLACE(REPLACE(rc.`cancelled-date`, 'T', ' '), 'Z', ''), 
+                'yyyy-MM-dd HH:mm:ss.SSS'
+            ) AS `cancelled-date`,
             rc.`cancelled-by`,
             rc.deleted,
             rc.product_count,

@@ -32,7 +32,8 @@ const pools = {
     tradersByType: {},       // traderType -> [traderIds]
     // New: versatile buyer tracking
     versatileUserIds: null,  // Set of userIds designated as versatile buyers
-    versatileUserCoverage: {} // userId -> Set of trader types already covered
+    versatileUserCoverage: {}, // userId -> Set of trader types already covered
+    orderDates: {}
 };
 
 // Realistic product categories by trader type
@@ -225,6 +226,7 @@ const genOrder = () => {
     pools.orderUsers[id] = userId; 
     
     const orderDate = faker.date.between({ from: '2024-01-01', to: '2026-01-28' });
+    pools.orderDates[id] = orderDate;
     const status = faker.helpers.weightedArrayElement([
         { weight: 30, value: "COMPLETED" },
         { weight: 30, value: "FULFILLED" },
@@ -343,7 +345,13 @@ const genReceipt = () => {
     pools.orderReceipts[orderId].push(receiptId);
     
     // Use a recent date so the Flink query's 30-day window is satisfied
-    const receiptDate = faker.date.between({ from: '2026-02-01', to: '2026-03-01' });
+    const orderDate = pools.orderDates[orderId] || new Date('2025-01-01');
+    const minReceiptDate = new Date(orderDate.getTime() + 1 * 24 * 60 * 60 * 1000);  // +1 day minimum
+    const maxReceiptDate = new Date(orderDate.getTime() + 50 * 24 * 60 * 60 * 1000); // +50 days
+    const receiptDate = faker.date.between({ 
+        from: minReceiptDate, 
+        to: maxReceiptDate 
+    });
 
     const status = faker.helpers.weightedArrayElement([
         { weight: 85, value: "COMPLETED" },
@@ -405,7 +413,8 @@ const genReceipt = () => {
     };
     
     if (status === "CANCELLED") {
-        receipt["cancelled-date"] = faker.date.between({ from: receiptDate, to: '2026-03-01' }).toISOString();
+        const cancelledDate = new Date(receiptDate.getTime() + faker.number.int({ min: 1, max: 30 }) * 24 * 60 * 60 * 1000);
+        receipt["cancelled-date"] = cancelledDate.toISOString();
         receipt["cancelled-by"] = faker.helpers.arrayElement([userId, traderId]);
     } else {
         receipt["cancelled-date"] = "";
