@@ -202,15 +202,14 @@ const genProduct = () => {
         })),
         "quantity": faker.number.int({ min: 50, max: 1000 }),
         "trader-type": traderType,
-        "deleted": !category.expiry
+        "deleted": false
     };
     
-    if (category.expiry) {
+    const isNearExpiry = Math.random() < 0.2;
         product["expiry-date"] = faker.date.between({ 
-            from: '2026-02-01', 
-            to: '2027-12-31' 
+            from: isNearExpiry ? '2026-03-15' : '2026-04-15',
+            to:   isNearExpiry ? '2026-04-14' : '2027-12-31'
         }).toISOString();
-    }
     
     return product;
 };
@@ -222,6 +221,8 @@ const genOrder = () => {
     pools.orderIds.push(id);
     pools.userOrders[userId].push(id);
     pools.orderReceipts[id] = [];
+    pools.orderUsers = pools.orderUsers || {}; 
+    pools.orderUsers[id] = userId; 
     
     const orderDate = faker.date.between({ from: '2024-01-01', to: '2026-01-28' });
     const status = faker.helpers.weightedArrayElement([
@@ -266,7 +267,7 @@ const genOrder = () => {
                 { weight: 10, value: 4 },
                 { weight: 5, value: 5 }
             ]);
-            products.push({ "product-id": productId, "quantity": quantity });
+            products.push({ "product_id": productId, "quantity": quantity });
         }
     }
     
@@ -332,6 +333,11 @@ const genReceipt = () => {
     const orderId = (userOrdersList && userOrdersList.length > 0) 
         ? faker.helpers.arrayElement(userOrdersList) 
         : faker.helpers.arrayElement(pools.orderIds);
+
+    const orderUserId = pools.orderUsers?.[orderId];
+    if (orderUserId) userId = orderUserId;
+
+    pools.traderReceipts[traderId].push(receiptId);
     
     pools.traderReceipts[traderId].push(receiptId);
     pools.orderReceipts[orderId].push(receiptId);
@@ -374,9 +380,9 @@ const genReceipt = () => {
                 { weight: 7, value: 4 },
                 { weight: 3, value: 5 }
             ]);
-            products.push({ "product-id": productId, "quantity": quantity });
+            products.push({ "product_id": productId, "quantity": quantity });
             pools.traderProducts[traderId].push({
-                "product-id": productId,
+                "product_id": productId,
                 "quantity": faker.number.int({ min: 10, max: 500 })
             });
         }
@@ -454,7 +460,7 @@ const genRequest = () => {
         
         if (!selectedProducts.has(productId)) {
             selectedProducts.add(productId);
-            products.push({ "product-id": productId, "quantity": faker.number.int({ min: 1, max: 10 }) });
+            products.push({ "product_id": productId, "quantity": faker.number.int({ min: 1, max: 10 }) });
         }
     }
     
@@ -536,10 +542,10 @@ const updateTradersWithRelationships = () => {
                     const trader = JSON.parse(line);
                     const productMap = new Map();
                     (pools.traderProducts[trader.id] || []).forEach(p => {
-                        if (productMap.has(p['product-id'])) {
-                            productMap.get(p['product-id']).quantity += p.quantity;
+                        if (productMap.has(p['product_id'])) {
+                            productMap.get(p['product_id']).quantity += p.quantity;
                         } else {
-                            productMap.set(p['product-id'], { ...p });
+                            productMap.set(p['product_id'], { ...p });
                         }
                     });
                     trader['products-available'] = Array.from(productMap.values());
@@ -554,10 +560,10 @@ const updateTradersWithRelationships = () => {
                 const trader = JSON.parse(buffer);
                 const productMap = new Map();
                 (pools.traderProducts[trader.id] || []).forEach(p => {
-                    if (productMap.has(p['product-id'])) {
-                        productMap.get(p['product-id']).quantity += p.quantity;
+                    if (productMap.has(p['product_id'])) {
+                        productMap.get(p['product_id']).quantity += p.quantity;
                     } else {
-                        productMap.set(p['product-id'], { ...p });
+                        productMap.set(p['product_id'], { ...p });
                     }
                 });
                 trader['products-available'] = Array.from(productMap.values());

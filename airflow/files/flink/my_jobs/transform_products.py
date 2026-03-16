@@ -75,64 +75,54 @@ def run_transformation():
             p.`doc-type`,
             p.id,
             TRIM(p.name) as name,
-            CASE 
-                WHEN p.`expiry-date` IS NOT NULL AND p.`expiry-date` <> '' 
-                THEN TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''')
-                ELSE NULL
-            END as `expiry-date`,
+            COALESCE(
+                TRY_CAST(TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AS TIMESTAMP(3)),
+                TRY_CAST(TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss''Z''') AS TIMESTAMP(3))
+            ) as `expiry-date`,
             p.price,
             p.quantity,
             p.`trader-type`,
             p.deleted,
-            CASE WHEN p.`expiry-date` IS NOT NULL AND p.`expiry-date` <> '' THEN true ELSE false END as has_expiry,
             CASE 
-                WHEN p.`expiry-date` IS NOT NULL AND p.`expiry-date` <> '' 
-                THEN TIMESTAMPDIFF(DAY, 
-                        CAST(CURRENT_TIMESTAMP AS TIMESTAMP(3)), -- Added CAST here
-                        TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z'''))
-                ELSE NULL
-            END as days_until_expiry
+                WHEN COALESCE(
+                    TRY_CAST(TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AS TIMESTAMP(3)),
+                    TRY_CAST(TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss''Z''') AS TIMESTAMP(3))
+                ) IS NOT NULL THEN true 
+                ELSE false 
+            END as has_expiry,
+            CAST(TIMESTAMPDIFF(DAY,
+                CURRENT_DATE,
+                CAST(COALESCE(
+                    TRY_CAST(TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AS TIMESTAMP(3)),
+                    TRY_CAST(TO_TIMESTAMP(p.`expiry-date`, 'yyyy-MM-dd''T''HH:mm:ss''Z''') AS TIMESTAMP(3))
+                ) AS DATE)
+            ) AS INT) as days_until_expiry
         FROM (
             SELECT *,
-                   ROW_NUMBER() OVER (PARTITION BY id ORDER BY price DESC) as rn
+                ROW_NUMBER() OVER (PARTITION BY id ORDER BY price DESC) as rn
             FROM raw_products p
             WHERE 
-                -- 1. ID Validation: UUID format
                 p.id IS NOT NULL 
                 AND CHAR_LENGTH(p.id) = 36
                 AND p.id LIKE '%-%-%-%-%'
-                
-                -- 2. Price Sanity: Must be positive
                 AND p.price > 0
                 AND p.price IS NOT NULL
-                
-                -- 3. Quantity Validation: Non-negative
                 AND p.quantity >= 0
                 AND p.quantity IS NOT NULL
-                
-                -- 4. Trader Type Validation: Must be valid enum
                 AND p.`trader-type` IS NOT NULL
-                AND p.`trader-type` IN ('SUPERMARKET', 'PHARMACY', 'GROCERY', 'CARDEALER', 'GAS_STATION')
-                
-                -- 5. Referential Integrity: Check trader-type exists
+                AND p.`trader-type` IN ('SUPERMARKET', 'PHARMACY', 'GROCERY', 'CARDEALER')
                 AND EXISTS (
                     SELECT 1 FROM valid_traders vt 
                     WHERE vt.`trader-type` = p.`trader-type`
                 )
-                
-                -- 6. Name validation
                 AND p.name IS NOT NULL
                 AND TRIM(p.name) <> ''
-                
-                -- 7. Expiry Date Logic: If no expiry date, should be deleted
-                -- (Non-perishable items are marked as deleted per business rule)
                 AND (
                     (p.`expiry-date` IS NOT NULL AND p.`expiry-date` <> '' AND p.deleted = false)
-                    OR
-                    (p.`expiry-date` IS NULL OR p.`expiry-date` = '')
+                    OR (p.`expiry-date` IS NULL OR p.`expiry-date` = '')
                 )
         ) p
-        WHERE rn = 1  -- Deduplication
+        WHERE rn = 1
     """).wait()
 
     print("Products transformation completed successfully!")

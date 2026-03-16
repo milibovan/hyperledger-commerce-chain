@@ -11,6 +11,7 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
+        parallelism.default: 8
         jobmanager.archive.expiration-time: 1 hour
         historyserver.archive.clean-up: false
         jobmanager.archive.fs.dir: file:///opt/flink/completed-jobs
@@ -33,7 +34,8 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
-        taskmanager.numberOfTaskSlots: 2
+        taskmanager.numberOfTaskSlots: 4
+        parallelism.default: 8
         jobmanager.archive.expiration-time: 1 hour
         historyserver.archive.clean-up: false
         jobmanager.archive.fs.dir: file:///opt/flink/completed-jobs
@@ -43,7 +45,7 @@ services:
     depends_on:
       - jobmanager
     deploy:
-      replicas: 2
+      replicas: 4
     networks:
       - hdfs_asvsp
     volumes:

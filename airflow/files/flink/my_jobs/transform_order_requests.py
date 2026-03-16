@@ -29,7 +29,7 @@ def run_transformation():
             `user-id` STRING,
             `trader-id` STRING,
             `user-email` STRING,
-            products ARRAY<ROW<`product-id` STRING, quantity INT>>,
+            products ARRAY<ROW<`product_id` STRING, quantity INT>>,
             `created-date` STRING,
             `due-date` STRING,
             `total-cost` DOUBLE,
@@ -101,7 +101,7 @@ def run_transformation():
             `user-id` STRING,
             `trader-id` STRING,
             `user-email` STRING,        
-            products ARRAY<ROW<`product-id` STRING, quantity INT>>,
+            products ARRAY<ROW<`product_id` STRING, quantity INT>>,
             `created-date` TIMESTAMP(3),
             `due-date` TIMESTAMP(3),
             `total-cost` DOUBLE,        
@@ -139,11 +139,11 @@ def run_transformation():
             pr.deleted,
             pr.`doc-type`,
             SUM(p.price * prod.quantity) as calculated_cost,
-            COUNT(DISTINCT prod.`product-id`) as product_count,
+            COUNT(DISTINCT prod.`product_id`) as product_count,
             SUM(prod.quantity) as total_items
         FROM raw_product_requests pr
-        CROSS JOIN UNNEST(pr.products) AS prod (`product-id`, quantity)
-        LEFT JOIN valid_products p ON prod.`product-id` = p.id
+        CROSS JOIN UNNEST(pr.products) AS prod (`product_id`, quantity)
+        LEFT JOIN valid_products p ON prod.`product_id` = p.id
         GROUP BY 
             pr.id, pr.`user-id`, pr.`trader-id`, pr.`user-email`, pr.products,
             pr.`created-date`, pr.`due-date`, pr.`total-cost`, pr.status, 

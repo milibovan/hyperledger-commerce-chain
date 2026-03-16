@@ -19,7 +19,7 @@ def run_transformation():
             `trader-id` STRING,
             `user-id` STRING,
             `order-id` STRING,
-            products ARRAY<ROW<`product-id` STRING, quantity INT>>,
+            products ARRAY<ROW<`product_id` STRING, quantity INT>>,
             `date` TIMESTAMP(3),
             `total-cost` DOUBLE,
             `calculated-cost` DOUBLE,

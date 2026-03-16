@@ -7,7 +7,7 @@ def run_transformation():
     Validation Rules:
     1. User Check: Drop orders where user-id doesn't exist in Users table
     2. Status Validation: Ensure status is valid Go constant (PENDING, APPROVED, FULFILLED, CANCELLED)
-    3. Product Existence: Verify every product-id exists in Products master file
+    3. Product Existence: Verify every product_id exists in Products master file
     4. Calculation Audit: Re-calculate total-cost and verify it matches
     5. ID Validation: Valid UUID format
     6. Date Validation: Valid timestamp format
@@ -27,7 +27,7 @@ def run_transformation():
             `user-id` STRING,
             status STRING,
             `created-date` STRING,
-            products ARRAY<ROW<`product-id` STRING, quantity INT>>,
+            products ARRAY<ROW<`product_id` STRING, quantity INT>>,
             `receipts-ids` ARRAY<STRING>,
             `total-cost` DOUBLE,
             `request-id` STRING,
@@ -72,7 +72,7 @@ def run_transformation():
             `user-id` STRING,
             status STRING,
             `created-date` TIMESTAMP(3),
-            products ARRAY<ROW<`product-id` STRING, quantity INT>>,
+            products ARRAY<ROW<`product_id` STRING, quantity INT>>,
             `receipts-ids` ARRAY<STRING>,
             `total-cost` DOUBLE,
             `calculated-cost` DOUBLE,
@@ -104,11 +104,11 @@ def run_transformation():
             o.deleted,
             o.`doc-type`,
             SUM(p.price * prod.quantity) as calculated_cost,
-            COUNT(DISTINCT prod.`product-id`) as product_count,
+            COUNT(DISTINCT prod.`product_id`) as product_count,
             SUM(prod.quantity) as total_items
         FROM raw_orders o
-        CROSS JOIN UNNEST(o.products) AS prod (`product-id`, quantity)
-        LEFT JOIN valid_products p ON prod.`product-id` = p.id
+        CROSS JOIN UNNEST(o.products) AS prod (`product_id`, quantity)
+        LEFT JOIN valid_products p ON prod.`product_id` = p.id
         GROUP BY 
             o.id, o.`user-id`, o.status, o.`created-date`, o.products,
             o.`receipts-ids`, o.`total-cost`, o.`request-id`, o.deleted, o.`doc-type`
