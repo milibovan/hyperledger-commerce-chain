@@ -14,6 +14,13 @@ const TRADER_TYPES = ["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"];
 const VERSATILE_USER_COUNT = 5000; // ~10% of users guaranteed to hit HAVING >= 3 trader types
 const VERSATILE_RECEIPT_RATIO = 0.4; // 40% of receipts go to versatile users
 
+const FULFILLMENT_PROFILES = {
+    SUPERMARKET: { minLeadDays: 1,  maxLeadDays: 14  },
+    PHARMACY:    { minLeadDays: 3,  maxLeadDays: 30  },
+    GROCERY:     { minLeadDays: 1,  maxLeadDays: 7   },
+    CARDEALER:   { minLeadDays: 30, maxLeadDays: 120 },
+};
+
 const pools = {
     userIds: [],
     traderIds: [],
@@ -347,7 +354,7 @@ const genReceipt = () => {
     // Use a recent date so the Flink query's 30-day window is satisfied
     const orderDate = pools.orderDates[orderId] || new Date('2025-01-01');
     const minReceiptDate = new Date(orderDate.getTime() + 1 * 24 * 60 * 60 * 1000);  // +1 day minimum
-    const maxReceiptDate = new Date(orderDate.getTime() + 50 * 24 * 60 * 60 * 1000); // +50 days
+    const maxReceiptDate = new Date(orderDate.getTime() + 90 * 24 * 60 * 60 * 1000);
     const receiptDate = faker.date.between({ 
         from: minReceiptDate, 
         to: maxReceiptDate 
@@ -432,14 +439,13 @@ const genRequest = () => {
     pools.userRequests[userId].push(requestId);
     pools.traderRequests[traderId].push(requestId);
     
-    const createdDate = faker.date.between({ from: '2024-01-01', to: '2026-01-28' });
     const status = faker.helpers.weightedArrayElement([
         { weight: 5, value: "CREATED" },
         { weight: 10, value: "PENDING_FUNDS" },
-        { weight: 45, value: "APPROVED" },
+        { weight: 30, value: "APPROVED" },
         { weight: 5, value: "REJECTED" },
         { weight: 3, value: "EXPIRED" },
-        { weight: 30, value: "FULFILLED" },
+        { weight: 45, value: "FULFILLED" },
         { weight: 2, value: "CANCELED" }
     ]);
     
@@ -478,11 +484,34 @@ const genRequest = () => {
         min: baseCost * 0.8, max: baseCost * 1.2, fractionDigits: 2 
     }).toFixed(2));
     
+    let fulfilledOrderId = "";
+    let createdDate;
+
+    if (status === "FULFILLED") {
+        const userOwnedOrders = pools.userOrders[userId];
+        fulfilledOrderId = (userOwnedOrders && userOwnedOrders.length > 0)
+            ? faker.helpers.arrayElement(userOwnedOrders)
+            : faker.helpers.arrayElement(pools.orderIds);
+
+        const orderDate = pools.orderDates[fulfilledOrderId];
+        if (orderDate) {
+            const traderType = pools.traderTypeMap[traderId];
+            const profile = FULFILLMENT_PROFILES[traderType];
+            const minDate = new Date(orderDate.getTime() - profile.maxLeadDays * 86400000);
+            const maxDate = new Date(orderDate.getTime() - profile.minLeadDays * 86400000);
+            createdDate = faker.date.between({ from: minDate, to: maxDate });
+        } else {
+            createdDate = faker.date.between({ from: '2024-01-01', to: '2026-03-21' });
+        }
+    } else {
+        createdDate = faker.date.between({ from: '2024-01-01', to: '2026-03-28' });
+    }
+
     const dueDate = new Date(createdDate);
     dueDate.setDate(dueDate.getDate() + faker.number.int({ min: 7, max: 30 }));
-    
+
     return {
-        "doc-type": "product-request", 
+        "doc-type": "product-request",
         "id": requestId,
         "user-id": userId,
         "trader-id": traderId,
@@ -492,7 +521,7 @@ const genRequest = () => {
         "due-date": dueDate.toISOString(),
         "total-cost": totalCost,
         "status": status,
-        "order-id": status === "FULFILLED" ? faker.helpers.arrayElement(pools.orderIds) : "",
+        "order-id": fulfilledOrderId,
         "deleted": false
     };
 };

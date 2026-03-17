@@ -63,11 +63,11 @@ def submit_pyflink_job(script_name, parallelism=1, **context):
     return result.stdout
 
 with DAG(
-    dag_id='rank_traders',
+    dag_id='avg_request_fullfilment',
     start_date=datetime(2026, 1, 1),
     schedule=None,
     catchup=False,
-    tags=['flink', 'citus', 'hdfs', '06'], 
+    tags=['flink', 'citus', 'hdfs', '01'], 
 ) as dag:
     
     check_citus = SQLExecuteQueryOperator(
@@ -76,19 +76,20 @@ with DAG(
         sql="SELECT 1;",
     )
 
+    truncate_table = SQLExecuteQueryOperator(
+        task_id='truncate_citus_table',
+        conn_id='citus',
+        sql="TRUNCATE TABLE avg_request_fullfilment;",
+    )
+
     create_table = SQLExecuteQueryOperator(
         task_id='create_citus_table',
         conn_id='citus',
         sql="""
-            CREATE TABLE IF NOT EXISTS rank_traders (
-                trader_id VARCHAR(66),
-                trader_name VARCHAR(66),
+            CREATE TABLE IF NOT EXISTS avg_request_fullfilment (
+                avg_days DOUBLE PRECISION,
                 trader_type VARCHAR(66),
-                receipts_count INTEGER,
-                orders_count INTEGER,
-                total_cost DOUBLE PRECISION,
-                product_count INTEGER,
-                avg_realization_speed_days DOUBLE PRECISION
+                avg_total_cost DOUBLE PRECISION
             );
         """,
     )
@@ -100,18 +101,18 @@ with DAG(
             raise AirflowException(f"Path {path} not found.")
         return path
     
-    rank_traders = PythonOperator(
-        task_id='flink_rank_traders',
+    avg_request_fullfilment = PythonOperator(
+        task_id='flink_avg_request_fullfilment',
         python_callable=submit_pyflink_job,
-        op_kwargs={'script_name': 'rank_traders.py'}
+        op_kwargs={'script_name': 'avg_request_fullfilment.py'}
     )
     
     verify_citus_data = SQLExecuteQueryOperator(
         task_id='verify_citus_results',
         conn_id='citus',
-        sql="SELECT COUNT(*) FROM rank_traders;",
+        sql="SELECT COUNT(*) FROM avg_request_fullfilment;",
     )
     
     hdfs_input_path = check_hdfs_path("/datalake/transform/")
     
-    check_citus >> hdfs_input_path >> create_table >> rank_traders >> verify_citus_data
+    check_citus >> hdfs_input_path >> create_table >> truncate_table >> avg_request_fullfilment >> verify_citus_data

@@ -146,7 +146,7 @@ def run_transformation():
                 AND CARDINALITY(oc.products) > 0
                 AND oc.calculated_cost IS NOT NULL
                 AND oc.`total-cost` > 0
-                AND ABS(oc.`total-cost` - oc.calculated_cost) / oc.`total-cost` <= 0.05
+                -- AND ABS(oc.`total-cost` - oc.calculated_cost) / oc.`total-cost` <= 0.5
                 AND oc.deleted = false
         ) oc
         WHERE rn = 1

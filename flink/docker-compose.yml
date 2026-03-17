@@ -45,7 +45,7 @@ services:
     depends_on:
       - jobmanager
     deploy:
-      replicas: 4
+      replicas: 3
     networks:
       - hdfs_asvsp
     volumes:
