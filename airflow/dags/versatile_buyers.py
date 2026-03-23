@@ -67,7 +67,7 @@ with DAG(
     start_date=datetime(2026, 1, 1),
     schedule=None,
     catchup=False,
-    tags=['flink', 'citus', 'hdfs']
+    tags=['flink', 'citus', 'hdfs', '03']
 ) as dag:
     
     check_citus = SQLExecuteQueryOperator(
