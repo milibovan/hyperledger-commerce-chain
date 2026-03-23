@@ -345,8 +345,6 @@ const genReceipt = () => {
 
     const orderUserId = pools.orderUsers?.[orderId];
     if (orderUserId) userId = orderUserId;
-
-    pools.traderReceipts[traderId].push(receiptId);
     
     pools.traderReceipts[traderId].push(receiptId);
     pools.orderReceipts[orderId].push(receiptId);

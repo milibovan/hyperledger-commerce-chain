@@ -1,19 +1,6 @@
 from pyflink.table import EnvironmentSettings, TableEnvironment
 
 def run_transformation():
-    """
-    Receipts Transformation Pipeline
-    
-    Validation Rules:
-    1. Triple-Link Check: Verify order-id, user-id, and trader-id all exist and are logically linked
-    2. Status Consistency: Receipt should only exist for orders in COMPLETED/FULFILLED state
-    3. User Consistency: User on receipt matches user who placed the order
-    4. Product Validation: All products exist in master data
-    5. ID Validation: Valid UUID formats
-    6. Date Validation: Valid timestamps
-    7. Cost Validation: Positive total cost
-    8. Cancellation Logic: If cancelled, must have cancelled-date and cancelled-by
-    """
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
@@ -22,8 +9,6 @@ def run_transformation():
     t_env.get_config().set("table.exec.io.use-parquet-native-reader", "false")
     t_env.get_config().set("table.exec.io.use-parquet-legacy-datetime-mapping", "true")
 
-
-    # Source: Raw Receipts from JSONL
     t_env.execute_sql("""
         CREATE TABLE raw_receipts (
             `doc-type` STRING,
@@ -47,7 +32,6 @@ def run_transformation():
         )
     """)
 
-    # Load valid users
     t_env.execute_sql("""
         CREATE TABLE valid_users (
             id STRING
@@ -58,7 +42,6 @@ def run_transformation():
         )
     """)
 
-    # Load valid traders
     t_env.execute_sql("""
         CREATE TABLE valid_traders (
             id STRING
@@ -69,7 +52,6 @@ def run_transformation():
         )
     """)
 
-    # Load valid orders with their user-id and status for cross-validation
     t_env.execute_sql("""
         CREATE TABLE valid_orders (
             id STRING,
@@ -82,7 +64,6 @@ def run_transformation():
         )
     """)
 
-    # Load valid products
     t_env.execute_sql("""
         CREATE TABLE valid_products (
             id STRING,
@@ -94,7 +75,6 @@ def run_transformation():
         )
     """)
 
-    # Target: Transformed Receipts in Parquet
     t_env.execute_sql("""
         CREATE TABLE transform_receipts (
             `doc-type` STRING,
@@ -102,7 +82,6 @@ def run_transformation():
             `trader-id` STRING,
             `user-id` STRING,
             `order-id` STRING,
-            products STRING,
             `date` TIMESTAMP(3),
             `total-cost` DOUBLE,
             `calculated-cost` DOUBLE,
@@ -121,92 +100,112 @@ def run_transformation():
         )
     """)
 
-    # Create view to calculate receipt costs
     t_env.execute_sql("""
-        CREATE TEMPORARY VIEW receipt_calculations AS
-        SELECT 
-            r.id as receipt_id,
+        CREATE TABLE transform_receipt_products (
+            receipt_id STRING,
+            product_id STRING,
+            quantity INT,
+            unit_price DOUBLE
+        ) WITH (
+            'connector' = 'filesystem',
+            'path' = 'hdfs://namenode:9000/datalake/transform/receipt_products.parquet',
+            'format' = 'parquet'
+        )
+    """)
+
+    # ── Step 1: explode + validate + write product lines ──────────────────────
+    t_env.execute_sql("""
+        INSERT INTO transform_receipt_products
+        SELECT
+            r.id AS receipt_id,
+            prod.product_id,
+            prod.quantity,
+            COALESCE(p.price, 0.0) AS unit_price
+        FROM raw_receipts r
+        INNER JOIN valid_users vu   ON r.`user-id`  = vu.id
+        INNER JOIN valid_traders vt ON r.`trader-id` = vt.id
+        INNER JOIN valid_orders vo  ON r.`order-id`  = vo.id
+        CROSS JOIN UNNEST(r.products) AS prod (product_id, quantity)
+        LEFT JOIN valid_products p ON prod.product_id = p.id
+        WHERE
+            r.id IS NOT NULL
+            AND CHAR_LENGTH(r.id) = 36
+            AND r.id LIKE '%-%-%-%-%'
+            AND vo.`user-id` = r.`user-id`
+            AND vo.status IN ('COMPLETED', 'FULFILLED', 'APPROVED', 'PENDING', 'CANCELLED')
+            AND r.status IN ('COMPLETED', 'CANCELLED', 'IN_PROGRESS')
+            AND r.`total-cost` > 0
+            AND r.deleted = false
+    """).wait()
+
+    # ── Step 2: read back flat product lines ──────────────────────────────────
+    t_env.execute_sql("""
+        CREATE TABLE receipt_products_flat (
+            receipt_id STRING,
+            product_id STRING,
+            quantity INT,
+            unit_price DOUBLE
+        ) WITH (
+            'connector' = 'filesystem',
+            'path' = 'hdfs://namenode:9000/datalake/transform/receipt_products.parquet',
+            'format' = 'parquet'
+        )
+    """)
+
+    t_env.execute_sql("""
+        CREATE TEMPORARY VIEW receipt_aggregates AS
+        SELECT
+            receipt_id,
+            COUNT(DISTINCT product_id) AS product_count,
+            SUM(quantity)              AS total_items,
+            SUM(unit_price * quantity) AS calculated_cost
+        FROM receipt_products_flat
+        GROUP BY receipt_id
+    """)
+
+    # ── Step 3: write flat receipt headers ────────────────────────────────────
+    t_env.execute_sql("""
+        INSERT INTO transform_receipts
+        SELECT
+            r.`doc-type`,
+            r.id,
             r.`trader-id`,
             r.`user-id`,
             r.`order-id`,
-            agg.products_json AS products,
-            r.`date`,
-            r.`total-cost`,
-            r.status,
-            r.`cancelled-date`,
-            r.`cancelled-by`,
-            r.deleted,
-            r.`doc-type`,
-            agg.calculated_cost,
-            agg.product_count,
-            agg.total_items
-        FROM raw_receipts r
-        JOIN (
-            SELECT
-                r2.id,
-                SUM(p.price * prod.quantity) as calculated_cost,
-                COUNT(DISTINCT prod.product_id) as product_count,
-                SUM(prod.quantity) as total_items,
-                CONCAT('[', LISTAGG(
-                    CONCAT('{"product_id":"', prod.product_id, '","quantity":', CAST(prod.quantity AS STRING), '}')
-                ), ']') AS products_json
-            FROM raw_receipts r2
-            CROSS JOIN UNNEST(r2.products) AS prod (product_id, quantity)
-            LEFT JOIN valid_products p ON prod.product_id = p.id
-            GROUP BY r2.id
-        ) agg ON r.id = agg.id
-    """)
-
-    # Main Transformation with Triple-Link Validation
-    t_env.execute_sql("""
-        INSERT INTO transform_receipts
-        SELECT 
-            rc.`doc-type`,
-            rc.receipt_id,
-            rc.`trader-id`,
-            rc.`user-id`,
-            rc.`order-id`,
-            rc.products,
             TO_TIMESTAMP(
-                REPLACE(REPLACE(rc.`date`, 'T', ' '), 'Z', ''), 
+                REPLACE(REPLACE(r.`date`, 'T', ' '), 'Z', ''),
                 'yyyy-MM-dd HH:mm:ss.SSS'
             ) AS `date`,
-            rc.`total-cost`,
-            rc.calculated_cost,
-            ABS(rc.`total-cost` - rc.calculated_cost) AS `cost-variance`,
-            rc.status,
+            r.`total-cost`,
+            agg.calculated_cost                         AS `calculated-cost`,
+            ABS(r.`total-cost` - agg.calculated_cost)  AS `cost-variance`,
+            r.status,
             TO_TIMESTAMP(
-                REPLACE(REPLACE(rc.`cancelled-date`, 'T', ' '), 'Z', ''), 
+                REPLACE(REPLACE(r.`cancelled-date`, 'T', ' '), 'Z', ''),
                 'yyyy-MM-dd HH:mm:ss.SSS'
             ) AS `cancelled-date`,
-            rc.`cancelled-by`,
-            rc.deleted,
-            rc.product_count,
-            rc.total_items,
-            rc.order_status
-        FROM (
-            SELECT rc.*, vo.status as order_status,
-                ROW_NUMBER() OVER (PARTITION BY receipt_id ORDER BY `total-cost` DESC) as rn
-            FROM receipt_calculations rc
-            INNER JOIN valid_orders vo ON rc.`order-id` = vo.id
-            INNER JOIN valid_users vu ON rc.`user-id` = vu.id
-            INNER JOIN valid_traders vt ON rc.`trader-id` = vt.id
-            WHERE 
-                rc.receipt_id IS NOT NULL 
-                AND CHAR_LENGTH(rc.receipt_id) = 36
-                AND rc.receipt_id LIKE '%-%-%-%-%'
-                AND vo.`user-id` = rc.`user-id`
-                AND vo.status IN ('COMPLETED','FULFILLED','APPROVED','PENDING','CANCELLED')
-                AND rc.status IN ('COMPLETED', 'CANCELLED', 'IN_PROGRESS')
-                AND rc.calculated_cost IS NOT NULL
-                AND rc.`total-cost` > 0
-                AND rc.deleted = false
-        ) rc
-        WHERE rn = 1
+            r.`cancelled-by`,
+            r.deleted,
+            agg.product_count,
+            CAST(agg.total_items AS INT) AS total_items,
+            vo.status                   AS order_status
+        FROM raw_receipts r
+        INNER JOIN valid_users vu   ON r.`user-id`  = vu.id
+        INNER JOIN valid_traders vt ON r.`trader-id` = vt.id
+        INNER JOIN valid_orders vo  ON r.`order-id`  = vo.id
+        INNER JOIN receipt_aggregates agg ON r.id = agg.receipt_id
+        WHERE
+            r.id IS NOT NULL
+            AND CHAR_LENGTH(r.id) = 36
+            AND r.id LIKE '%-%-%-%-%'
+            AND vo.`user-id` = r.`user-id`
+            AND vo.status IN ('COMPLETED', 'FULFILLED', 'APPROVED', 'PENDING', 'CANCELLED')
+            AND r.status IN ('COMPLETED', 'CANCELLED', 'IN_PROGRESS')
+            AND r.`total-cost` > 0
+            AND r.deleted = false
     """).wait()
 
     print("✅ Receipts transformation completed successfully!")
-    print("   - Valid records written to: hdfs://namenode:9000/datalake/transform/receipts_transformed.parquet")
 
 if __name__ == '__main__':
     run_transformation()

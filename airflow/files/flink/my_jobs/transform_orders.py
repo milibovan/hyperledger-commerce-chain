@@ -1,25 +1,12 @@
 from pyflink.table import EnvironmentSettings, TableEnvironment
 
 def run_transformation():
-    """
-    Orders Transformation Pipeline (Heaviest file - 179MB)
-    
-    Validation Rules:
-    1. User Check: Drop orders where user-id doesn't exist in Users table
-    2. Status Validation: Ensure status is valid Go constant (PENDING, APPROVED, FULFILLED, CANCELLED)
-    3. Product Existence: Verify every product_id exists in Products master file
-    4. Calculation Audit: Re-calculate total-cost and verify it matches
-    5. ID Validation: Valid UUID format
-    6. Date Validation: Valid timestamp format
-    7. Products Array Validation: Non-empty, valid structure
-    """
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
     t_env.get_config().set("rest.address", "flink-jobmanager-1")
     t_env.get_config().set("rest.port", "8081")
 
-    # Source: Raw Orders from JSONL
     t_env.execute_sql("""
         CREATE TABLE raw_orders (
             `doc-type` STRING,
@@ -41,7 +28,6 @@ def run_transformation():
         )
     """)
 
-    # Load valid users for referential integrity
     t_env.execute_sql("""
         CREATE TABLE valid_users (
             id STRING
@@ -52,7 +38,6 @@ def run_transformation():
         )
     """)
 
-    # Load valid products for referential integrity and price calculation
     t_env.execute_sql("""
         CREATE TABLE valid_products (
             id STRING,
@@ -64,7 +49,6 @@ def run_transformation():
         )
     """)
 
-    # Target: Transformed Orders in Parquet
     t_env.execute_sql("""
         CREATE TABLE transform_orders (
             `doc-type` STRING,
@@ -72,7 +56,6 @@ def run_transformation():
             `user-id` STRING,
             status STRING,
             `created-date` TIMESTAMP(3),
-            products ARRAY<ROW<`product_id` STRING, quantity INT>>,
             `receipts-ids` ARRAY<STRING>,
             `total-cost` DOUBLE,
             `calculated-cost` DOUBLE,
@@ -88,72 +71,102 @@ def run_transformation():
         )
     """)
 
-    # Create temporary view to calculate costs per order
-    # This explodes the products array and joins with product prices
+    t_env.execute_sql("""
+        CREATE TABLE transform_order_products (
+            order_id STRING,
+            product_id STRING,
+            quantity INT
+        ) WITH (
+            'connector' = 'filesystem',
+            'path' = 'hdfs://namenode:9000/datalake/transform/order_products.parquet',
+            'format' = 'parquet'
+        )
+    """)
+
+    # Step 1: filter valid orders first (no aggregation yet)
+    t_env.execute_sql("""
+        CREATE TEMPORARY VIEW valid_raw_orders AS
+        SELECT o.*
+        FROM raw_orders o
+        INNER JOIN valid_users vu ON o.`user-id` = vu.id
+        WHERE
+            o.id IS NOT NULL
+            AND CHAR_LENGTH(o.id) = 36
+            AND o.id LIKE '%-%-%-%-%'
+            AND o.status IN ('PENDING', 'APPROVED', 'FULFILLED', 'CANCELLED', 'REJECTED')
+            AND CARDINALITY(o.products) > 0
+            AND o.`total-cost` > 0
+            AND o.deleted = false
+    """)
+
+    # Step 2: explode products and join prices — scalar GROUP BY only, no array column
     t_env.execute_sql("""
         CREATE TEMPORARY VIEW order_calculations AS
-        SELECT 
-            o.id as order_id,
+        SELECT
+            o.id AS order_id,
             o.`user-id`,
             o.status,
             o.`created-date`,
-            o.products,
             o.`receipts-ids`,
             o.`total-cost`,
             o.`request-id`,
             o.deleted,
             o.`doc-type`,
-            SUM(p.price * prod.quantity) as calculated_cost,
-            COUNT(DISTINCT prod.`product_id`) as product_count,
-            SUM(prod.quantity) as total_items
-        FROM raw_orders o
+            prod.`product_id`,
+            prod.quantity,
+            SUM(p.price * prod.quantity) OVER (PARTITION BY o.id) AS calculated_cost,
+            -- ✅ COUNT(DISTINCT) moved to a subquery, plain SUM used in window
+            SUM(prod.quantity) OVER (PARTITION BY o.id) AS total_items,
+            ROW_NUMBER() OVER (PARTITION BY o.id ORDER BY o.`total-cost` DESC) AS rn
+        FROM valid_raw_orders o
         CROSS JOIN UNNEST(o.products) AS prod (`product_id`, quantity)
         LEFT JOIN valid_products p ON prod.`product_id` = p.id
-        GROUP BY 
-            o.id, o.`user-id`, o.status, o.`created-date`, o.products,
-            o.`receipts-ids`, o.`total-cost`, o.`request-id`, o.deleted, o.`doc-type`
     """)
 
-    # Main Transformation with Comprehensive Validation
+    # Step 3: compute product_count separately via GROUP BY (COUNT DISTINCT is fine here)
+    t_env.execute_sql("""
+        CREATE TEMPORARY VIEW order_product_counts AS
+        SELECT
+            o.id AS order_id,
+            COUNT(DISTINCT prod.`product_id`) AS product_count
+        FROM valid_raw_orders o
+        CROSS JOIN UNNEST(o.products) AS prod (`product_id`, quantity)
+        GROUP BY o.id
+    """)
+
+    # Write flat order headers — join product_count back in
     t_env.execute_sql("""
         INSERT INTO transform_orders
-        SELECT 
+        SELECT
             oc.`doc-type`,
-            oc.order_id as id,
+            oc.order_id AS id,
             oc.`user-id`,
             oc.status,
-            TO_TIMESTAMP(oc.`created-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') as `created-date`,
-            oc.products,
+            TO_TIMESTAMP(oc.`created-date`, 'yyyy-MM-dd''T''HH:mm:ss.SSS''Z''') AS `created-date`,
             oc.`receipts-ids`,
             oc.`total-cost`,
-            oc.calculated_cost as `calculated-cost`,
-            ABS(oc.`total-cost` - oc.calculated_cost) as `cost-variance`,
+            oc.calculated_cost AS `calculated-cost`,
+            ABS(oc.`total-cost` - oc.calculated_cost) AS `cost-variance`,
             oc.`request-id`,
             oc.deleted,
-            oc.product_count,
-            oc.total_items
-        FROM (
-            SELECT oc.*, 
-                   ROW_NUMBER() OVER (PARTITION BY order_id ORDER BY `total-cost` DESC) as rn
-            FROM order_calculations oc
-            -- USE AN INNER JOIN INSTEAD OF EXISTS
-            INNER JOIN valid_users vu ON oc.`user-id` = vu.id
-            WHERE 
-                oc.order_id IS NOT NULL 
-                AND CHAR_LENGTH(oc.order_id) = 36
-                AND oc.order_id LIKE '%-%-%-%-%'
-                AND oc.status IN ('PENDING', 'APPROVED', 'FULFILLED', 'CANCELLED', 'REJECTED')
-                AND CARDINALITY(oc.products) > 0
-                AND oc.calculated_cost IS NOT NULL
-                AND oc.`total-cost` > 0
-                -- AND ABS(oc.`total-cost` - oc.calculated_cost) / oc.`total-cost` <= 0.5
-                AND oc.deleted = false
-        ) oc
-        WHERE rn = 1
+            pc.product_count,
+            CAST(oc.total_items AS INT)
+        FROM order_calculations oc
+        INNER JOIN order_product_counts pc ON oc.order_id = pc.order_id
+        WHERE oc.rn = 1
+    """).wait()
+
+    # Write exploded product lines
+    t_env.execute_sql("""
+        INSERT INTO transform_order_products
+        SELECT
+            order_id,
+            product_id,
+            quantity
+        FROM order_calculations
     """).wait()
 
     print("✅ Orders transformation completed successfully!")
-    print("   - Valid records written to: hdfs://namenode:9000/datalake/transform/orders_transformed.parquet")
 
 if __name__ == '__main__':
     run_transformation()

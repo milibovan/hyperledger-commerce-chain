@@ -11,7 +11,7 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
-        parallelism.default: 8
+        parallelism.default: 2
         jobmanager.archive.expiration-time: 1 hour
         historyserver.archive.clean-up: false
         jobmanager.archive.fs.dir: file:///opt/flink/completed-jobs
@@ -23,7 +23,7 @@ services:
     volumes:
       - ../airflow/files/flink/my_jobs:/opt/flink/usrlib
       - flink_history:/opt/flink/completed-jobs
-      
+
   taskmanager:
     build:
       context: ./
@@ -35,7 +35,11 @@ services:
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 4
-        parallelism.default: 8
+        parallelism.default: 2
+        taskmanager.memory.process.size: 2048m
+        taskmanager.memory.network.fraction: 0.15
+        taskmanager.memory.network.min: 128mb
+        taskmanager.memory.network.max: 512mb
         jobmanager.archive.expiration-time: 1 hour
         historyserver.archive.clean-up: false
         jobmanager.archive.fs.dir: file:///opt/flink/completed-jobs
