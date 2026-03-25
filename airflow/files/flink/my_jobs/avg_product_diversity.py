@@ -90,7 +90,6 @@ def run_transformation():
             FROM order_products
         ),
         eligible_orders AS (
-            -- Single filtered CTE reused by both aggregation and grand-total
             SELECT o.id, o.product_count
             FROM transform_orders o
             WHERE o.deleted = FALSE
@@ -108,8 +107,6 @@ def run_transformation():
             FROM eligible_orders o
         ),
         aggregated AS (
-            -- Fix: count distinct ORDERS per bucket (not products).
-            -- distinct_products was saturating at the pool size for every large bucket.
             SELECT
                 category,
                 COUNT(DISTINCT id) AS distinct_products
