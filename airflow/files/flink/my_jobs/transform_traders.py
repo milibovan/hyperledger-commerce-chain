@@ -1,25 +1,12 @@
 from pyflink.table import EnvironmentSettings, TableEnvironment
 
 def run_transformation():
-    """
-    Traders Transformation Pipeline
-    
-    Validation Rules:
-    1. Type Validation: trader-type matches Go enum (SUPERMARKET, PHARMACY, GROCERY, CARDEALER)
-    2. VAT Check: Validate VAT structure (VAT-XXXXXXXX format)
-    3. ID Uniqueness: Ensure unique primary key
-    4. Email Validation: Valid email format
-    5. Balance Integrity: Non-negative balance
-    6. Data Quality: Filter deleted records
-    7. Required fields validation
-    """
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
     t_env.get_config().set("rest.address", "flink-jobmanager-1")
     t_env.get_config().set("rest.port", "8081")
 
-    # Source: Raw Traders from JSONL
     t_env.execute_sql("""
         CREATE TABLE raw_traders (
             `doc-type` STRING,
@@ -28,7 +15,7 @@ def run_transformation():
             email STRING,
             `trader-type` STRING,
             vat STRING,
-            `products-available` ARRAY<ROW<`product_id` STRING, quantity INT>>,
+            `products-available` ARRAY<ROW<product_id STRING, quantity INT>>,
             `receipts-ids` ARRAY<STRING>,
             `requests-ids` ARRAY<STRING>,
             balance DOUBLE,
@@ -42,7 +29,6 @@ def run_transformation():
         )
     """)
 
-    # Target: Transformed Traders in Parquet
     t_env.execute_sql("""
         CREATE TABLE transform_traders (
             `doc-type` STRING,
@@ -51,14 +37,11 @@ def run_transformation():
             email STRING,
             `trader-type` STRING,
             vat STRING,
-            `products-available` ARRAY<ROW<`product_id` STRING, quantity INT>>,
-            `receipts-ids` ARRAY<STRING>,
-            `requests-ids` ARRAY<STRING>,
             balance DOUBLE,
             deleted BOOLEAN,
-            product_count INT,
-            receipt_count INT,
-            request_count INT
+            product_count BIGINT,
+            receipt_count BIGINT,
+            request_count BIGINT
         ) WITH (
             'connector' = 'filesystem',
             'path' = 'hdfs://namenode:9000/datalake/transform/traders_transformed.parquet',
@@ -66,7 +49,40 @@ def run_transformation():
         )
     """)
 
-    # Main Transformation with Validation
+    t_env.execute_sql("""
+        CREATE TABLE transform_trader_products (
+            trader_id STRING,
+            product_id STRING,
+            quantity INT
+        ) WITH (
+            'connector' = 'filesystem',
+            'path' = 'hdfs://namenode:9000/datalake/transform/trader_products.parquet',
+            'format' = 'parquet'
+        )
+    """)
+
+    t_env.execute_sql("""
+        CREATE TABLE transform_trader_receipts (
+            trader_id STRING,
+            receipt_id STRING
+        ) WITH (
+            'connector' = 'filesystem',
+            'path' = 'hdfs://namenode:9000/datalake/transform/trader_receipts.parquet',
+            'format' = 'parquet'
+        )
+    """)
+
+    t_env.execute_sql("""
+        CREATE TABLE transform_trader_requests (
+            trader_id STRING,
+            request_id STRING
+        ) WITH (
+            'connector' = 'filesystem',
+            'path' = 'hdfs://namenode:9000/datalake/transform/trader_requests.parquet',
+            'format' = 'parquet'
+        )
+    """)
+
     t_env.execute_sql("""
         INSERT INTO transform_traders
         SELECT 
@@ -76,9 +92,6 @@ def run_transformation():
             LOWER(TRIM(email)) as email,
             `trader-type`,
             UPPER(TRIM(vat)) as vat,
-            `products-available`,
-            `receipts-ids`,
-            `requests-ids`,
             balance,
             deleted,
             CARDINALITY(`products-available`) as product_count,
@@ -89,44 +102,50 @@ def run_transformation():
                    ROW_NUMBER() OVER (PARTITION BY id ORDER BY balance DESC) as rn
             FROM raw_traders
             WHERE 
-                -- 1. ID Validation: UUID format
-                id IS NOT NULL 
-                AND CHAR_LENGTH(id) = 36
-                AND id LIKE '%-%-%-%-%'
-                
-                -- 2. Trader Type Validation: Must be valid enum
-                AND `trader-type` IS NOT NULL
-                AND `trader-type` IN ('SUPERMARKET', 'PHARMACY', 'GROCERY', 'CARDEALER', 'GAS_STATION')
-                
-                -- 3. VAT Validation: Must follow VAT-XXXXXXXX pattern
-                AND vat IS NOT NULL
-                AND vat LIKE 'VAT-%'
-                AND CHAR_LENGTH(vat) >= 8
-                
-                -- 4. Email Validation
-                AND email IS NOT NULL
-                AND email LIKE '%@%.%'
-                AND CHAR_LENGTH(email) >= 5
-                AND email NOT LIKE '%..%'
-                AND email NOT LIKE '@%'
-                AND email NOT LIKE '%.@%'
-                
-                -- 5. Balance Integrity
-                AND balance >= 0
-                AND balance IS NOT NULL
-                
-                -- 6. Required fields not null
-                AND name IS NOT NULL
-                AND TRIM(name) <> ''
-                
-                -- 7. Data Quality: Not deleted
+                id IS NOT NULL AND CHAR_LENGTH(id) = 36 AND id LIKE '%-%-%-%-%'
+                AND `trader-type` IN ('SUPERMARKET','PHARMACY','GROCERY','CARDEALER','GAS_STATION')
+                AND vat IS NOT NULL AND vat LIKE 'VAT-%' AND CHAR_LENGTH(vat) >= 8
+                AND email IS NOT NULL AND email LIKE '%@%.%' AND CHAR_LENGTH(email) >= 5
+                AND email NOT LIKE '%..%' AND email NOT LIKE '@%' AND email NOT LIKE '%.@%'
+                AND balance >= 0 AND balance IS NOT NULL
+                AND name IS NOT NULL AND TRIM(name) <> ''
                 AND deleted = false
         )
-        WHERE rn = 1  -- Deduplication
+        WHERE rn = 1
     """).wait()
 
-    print("✅ Traders transformation completed successfully!")
-    print("   - Valid records written to: hdfs://namenode:9000/datalake/transform/traders_transformed.parquet")
+    t_env.execute_sql("""
+        INSERT INTO transform_trader_products
+        SELECT
+            r.id AS trader_id,
+            prod.product_id,
+            prod.quantity
+        FROM raw_traders r
+        CROSS JOIN UNNEST(r.`products-available`) AS prod (product_id, quantity)
+        WHERE r.deleted = false
+    """).wait()
+
+    t_env.execute_sql("""
+        INSERT INTO transform_trader_receipts
+        SELECT
+            r.id AS trader_id,
+            receipt_id
+        FROM raw_traders r
+        CROSS JOIN UNNEST(r.`receipts-ids`) AS receipt_id
+        WHERE r.deleted = false
+    """).wait()
+
+    t_env.execute_sql("""
+        INSERT INTO transform_trader_requests
+        SELECT
+            r.id AS trader_id,
+            request_id
+        FROM raw_traders r
+        CROSS JOIN UNNEST(r.`requests-ids`) AS request_id
+        WHERE r.deleted = false
+    """).wait()
+
+    print("✅ Traders normalization completed successfully!")
 
 if __name__ == '__main__':
     run_transformation()
