@@ -110,15 +110,20 @@ func (ct *CustomTime) UnmarshalJSON(b []byte) error {
 		return nil
 	}
 
-	t, err := time.Parse(time.RFC3339, s)
-	if err != nil {
-		t, err = time.Parse("2006-01-02 15:04:05", s)
-		if err != nil {
-			return err
+	formats := []string{
+		time.RFC3339,
+		"2006-01-02 15:04:05",
+		"2006-01-02 15:04",
+	}
+
+	for _, layout := range formats {
+		if t, err := time.Parse(layout, s); err == nil {
+			ct.Time = t
+			return nil
 		}
 	}
-	ct.Time = t
-	return nil
+
+	return fmt.Errorf("cannot parse %q as a date", s)
 }
 
 func (ct CustomTime) MarshalJSON() ([]byte, error) {

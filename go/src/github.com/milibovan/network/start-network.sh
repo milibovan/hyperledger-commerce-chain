@@ -54,13 +54,13 @@ function checkPrereqs() {
     errorln "Peer binary and configuration files not found.."
     errorln
     errorln "Follow the instructions in the Fabric docs to install the Fabric Binaries:"
-    errorln "https://hyperledger-fabric.readthedocs.io/en/latest/install.html"
+    errorln "https://hyperledger-fabric.readthedocs.io/en/2.5/install.html"
     exit 1
   fi
   # use the fabric peer container to see if the samples and binaries match your
   # docker images
   LOCAL_VERSION=$(peer version | sed -ne 's/^ Version: //p')
-  DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-peer:latest peer version | sed -ne 's/^ Version: //p')
+  DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-peer:2.5 peer version | sed -ne 's/^ Version: //p')
 
   infoln "LOCAL_VERSION=$LOCAL_VERSION"
   infoln "DOCKER_IMAGE_VERSION=$DOCKER_IMAGE_VERSION"
@@ -102,11 +102,11 @@ function checkPrereqs() {
       errorln "fabric-ca-client binary not found.."
       errorln
       errorln "Follow the instructions in the Fabric docs to install the Fabric Binaries:"
-      errorln "https://hyperledger-fabric.readthedocs.io/en/latest/install.html"
+      errorln "https://hyperledger-fabric.readthedocs.io/en/2.5/install.html"
       exit 1
     fi
     CA_LOCAL_VERSION=$(fabric-ca-client version | sed -ne 's/ Version: //p')
-    CA_DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-ca:latest fabric-ca-client version | sed -ne 's/ Version: //p' | head -1)
+    CA_DOCKER_IMAGE_VERSION=$(${CONTAINER_CLI} run --rm hyperledger/fabric-ca:2.5 fabric-ca-client version | sed -ne 's/ Version: //p' | head -1)
     infoln "CA_LOCAL_VERSION=$CA_LOCAL_VERSION"
     infoln "CA_DOCKER_IMAGE_VERSION=$CA_DOCKER_IMAGE_VERSION"
 

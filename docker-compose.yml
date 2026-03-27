@@ -146,12 +146,13 @@ services:
       context: ./auth-service/auth-service
       dockerfile: Dockerfile
     environment:
-      DATABASE_URL: postgres://admin:1MUAw9FvbtFpgqE9@localhost:5432/auth_db
+      DATABASE_URL: postgres://admin:1MUAw9FvbtFpgqE9@postgres:5432/auth_db
       PORT: "5050"
     ports:
       - "5050:5050"
     depends_on:
       - go-backend
+      - postgres
     networks:
       - kafka-net
 
