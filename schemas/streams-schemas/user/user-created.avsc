@@ -1,0 +1,28 @@
+{
+  "namespace": "com.hyperledger_commerce_chain.streams.users",
+  "type": "record",
+  "name": "UserCreatedEvent",
+  "doc": "This is schema for User Created Event in streaming elt process",
+  "fields": [
+    {
+      "name": "common",
+      "type": "com.hyperledger_commerce_chain.streams.StreamsEnvelope"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "surname",
+      "type": "string"
+    },
+    {
+      "name": "email",
+      "type": "string"
+    },
+    {
+      "name": "balance",
+      "type": "float"
+    }
+  ]
+}

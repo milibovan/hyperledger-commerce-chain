@@ -1,0 +1,21 @@
+{
+  "namespace": "com.hyperledger_commerce_chain.streams.products",
+  "type": "record",
+  "name": "RequestCancelledEvent",
+  "doc": "This is schema for Request Cancelled Event in streaming elt process",
+  "fields": [
+    {
+      "name": "common",
+      "type": "com.hyperledger_commerce_chain.streams.StreamsEnvelope"
+    },
+    {
+      "name": "user_id",
+      "type": "string"
+    },
+    {
+      "name": "reason",
+      "type": "string",
+      "default": ""
+    }
+  ]
+}

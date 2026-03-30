@@ -1,0 +1,22 @@
+{
+  "namespace": "com.hyperledger_commerce_chain.streams.products",
+  "type": "record",
+  "name": "OrderCompletedEvent",
+  "doc": "This is schema for Order Completed Event in streaming elt process",
+  "fields": [
+    {
+      "name": "common",
+      "type": "com.hyperledger_commerce_chain.streams.StreamsEnvelope"
+    },
+    {
+      "name": "due_date",
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ]
+    }
+  ]
+}

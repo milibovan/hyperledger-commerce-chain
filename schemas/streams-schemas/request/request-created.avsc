@@ -1,0 +1,41 @@
+{
+  "namespace": "com.hyperledger_commerce_chain.streams.products",
+  "type": "record",
+  "name": "RequestCreatedEvent",
+  "doc": "This is schema for Request Created Event in streaming elt process",
+  "fields": [
+    {
+      "name": "common",
+      "type": "com.hyperledger_commerce_chain.streams.StreamsEnvelope"
+    },
+    {
+      "name": "user_id",
+      "type": "string"
+    },
+    {
+      "name": "trader_id",
+      "type": "string"
+    },
+    {
+      "name": "product_ids",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "total_cost",
+      "type": "float"
+    },
+    {
+      "name": "due_date",
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ]
+    }
+  ]
+}

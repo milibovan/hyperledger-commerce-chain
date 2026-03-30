@@ -1,0 +1,41 @@
+{
+  "namespace": "com.hyperledger_commerce_chain.streams.products",
+  "type": "record",
+  "name": "ProductCreatedEvent",
+  "doc": "This is schema for Product Created Event in streaming elt process",
+  "fields": [
+    {
+      "name": "common",
+      "type": "com.hyperledger_commerce_chain.streams.StreamsEnvelope"
+    },
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "price",
+      "type": "float"
+    },
+    {
+      "name": "quantity",
+      "type": "integer"
+    },
+    {
+      "name": "trader_type",
+      "type": {
+        "type": "enum",
+        "name": "TraderTypes",
+        "symbols": [
+          "SUPERMARKET",
+          "PHARMACY",
+          "GROCERY",
+          "CARDEALER"
+        ]
+      }
+    },
+    {
+      "name": "trader_id",
+      "type": "string"
+    }
+  ]
+}
