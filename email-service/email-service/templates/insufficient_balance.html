@@ -1,186 +1,467 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Insufficient Balance — CHAINCODE TRADE</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="dark">
+<title>Action Required — Insufficient Balance</title>
+<!--[if mso]>
+<noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+<![endif]-->
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#04040d;font-family:'Share Tech Mono',monospace}
-
-  .wrap{max-width:620px;margin:0 auto;background:#07091a}
-
-  /* Rainbow border top */
-  .rainbow-bar{height:3px;background:linear-gradient(90deg,#00ffea,#bf00ff,#00ff6a,#00ffea);background-size:200%;animation:rb 4s linear infinite}
-  @keyframes rb{to{background-position:200%}}
-
-  /* Header */
-  .hdr{background:#04040d;padding:32px 30px 24px;text-align:center;position:relative;overflow:hidden}
-  .hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,234,0.03) 3px,rgba(0,255,234,0.03) 4px)}
-  .hdr-logo svg{width:340px;max-width:100%;height:auto}
-
-  /* Accent border */
-  .accent-bar{height:1px;background:linear-gradient(90deg,transparent,#ff6600 30%,#ff6600 70%,transparent);margin:0 30px}
-
-  /* Body */
-  .body{padding:36px 30px;color:#c8d8e8}
-
-  /* Title */
-  .title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#ff6600;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
-  .subtitle-line{height:1px;background:linear-gradient(90deg,#ff6600,transparent);margin-bottom:24px}
-
-  .intro{color:#a0b4c4;line-height:1.7;font-size:14px;margin-bottom:24px}
-
-  /* Badge */
-  .badge-wrap{text-align:center;margin:20px 0}
-  .badge{display:inline-block;border:1px solid #ff6600;background:rgba(255,102,0,0.08);color:#ff6600;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;padding:10px 28px;text-transform:uppercase;position:relative}
-  .badge::before,.badge::after{content:'';position:absolute;top:-1px;bottom:-1px;width:6px;border-top:1px solid #ff6600;border-bottom:1px solid #ff6600}
-  .badge::before{left:-8px;border-left:1px solid #ff6600}
-  .badge::after{right:-8px;border-right:1px solid #ff6600}
-
-  /* Details block */
-  .details{background:rgba(255,102,0,0.05);border-left:2px solid #ff6600;padding:20px 24px;margin:24px 0}
-  .dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,102,0,0.15);font-size:13px}
-  .dr:last-child{border-bottom:none}
-  .dl{color:#bf00ff;font-weight:bold;letter-spacing:1px}
-  .dv{color:#ff6600}
-
-  /* Balance box */
-  .bal{border:1px solid rgba(255,165,0,0.4);padding:24px;margin:24px 0;background:rgba(255,102,0,0.04);position:relative}
-  .bal::before{content:'BALANCE STATUS';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#ffa500}
-  .bal-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:14px}
-  .bal-label{color:#bf00ff}
-  .bal-val{color:#00ffea}
-  .bal-divider{height:1px;background:linear-gradient(90deg,transparent,#ff6600,transparent);margin:8px 0}
-  .shortage-val{color:#ff3333;font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;letter-spacing:1px}
-
-  .note{font-size:13px;color:#8090a0;line-height:1.7;margin:20px 0;border-left:2px solid rgba(255,255,255,0.08);padding-left:16px}
-  .note strong{color:#fff}
-
-  .cta-note{font-size:13px;color:#ffa500;line-height:1.7;margin:16px 0}
-
-  /* Button */
-  .btn-wrap{text-align:center;margin:28px 0 8px}
-  .btn{display:inline-block;background:linear-gradient(90deg,#ff6600,#ffa500);color:#000;text-decoration:none;padding:14px 48px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:3px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-
-  /* Footer */
-  .ftr{border-top:1px solid rgba(255,102,0,0.15);background:rgba(0,0,0,0.4);padding:20px 30px;text-align:center;color:#3a4a5a;font-size:11px;line-height:1.8;letter-spacing:1px}
-  .ftr-logo{color:#ff6600;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px}
+  /* Reset and base styles */
+  * { margin: 0; padding: 0; }
+  
+  /* Animation support for Apple Mail / modern webmail */
+  @keyframes rb{to{background-position:200% center}}
+  @keyframes cc-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes cc-dash{to{stroke-dashoffset:-24}}
+  @keyframes cc-flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+  
+  .cc1{animation:cc-pulse 2.4s ease-in-out infinite}
+  .cc2{animation:cc-pulse 2.4s ease-in-out infinite .8s}
+  .cc3{animation:cc-pulse 2.4s ease-in-out infinite 1.6s}
+  .ccd{animation:cc-dash 1.8s linear infinite}
+  .cct{animation:cc-flicker 6s steps(1) infinite}
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background: #04040d;
+    font-family: 'Courier New', Courier, monospace;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  img {
+    border: 0;
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  table {
+    border-collapse: collapse;
+    mso-table-lspace: 0pt;
+    mso-table-rspace: 0pt;
+    width: 100%;
+  }
+  
+  a {
+    color: #ff6600;
+    text-decoration: none;
+  }
+  
+  /* Responsive mobile styles */
+  @media only screen and (max-width: 600px) {
+    body {
+      width: 100% !important;
+    }
+    
+    table {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-hide {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      line-height: 0 !important;
+      visibility: hidden !important;
+    }
+    
+    .mobile-center {
+      text-align: center !important;
+    }
+    
+    .mobile-full-width {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-padding {
+      padding: 16px 20px !important;
+    }
+    
+    .mobile-padding-lg {
+      padding: 20px 16px !important;
+    }
+    
+    .mobile-font-sm {
+      font-size: 11px !important;
+      line-height: 1.4 !important;
+    }
+    
+    .mobile-font-xs {
+      font-size: 10px !important;
+      line-height: 1.3 !important;
+    }
+    
+    .mobile-font-lg {
+      font-size: 16px !important;
+    }
+    
+    .logo-container svg {
+      max-width: 240px !important;
+      width: 100% !important;
+      height: auto !important;
+    }
+    
+    .button-container {
+      display: block !important;
+      width: 100% !important;
+    }
+    
+    .button-container table {
+      width: 100% !important;
+    }
+    
+    .button-link {
+      display: block !important;
+      width: 100% !important;
+      box-sizing: border-box;
+      text-align: center !important;
+      padding: 14px 20px !important;
+    }
+    
+    h1, h2, h3, p {
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+    
+    .spacer {
+      height: 12px !important;
+    }
+    
+    td[width="28"] {
+      width: 28px !important;
+      min-width: 28px !important;
+      max-width: 28px !important;
+    }
+    
+    /* Better padding reduction */
+    .content-padding {
+      padding: 20px 16px !important;
+    }
+    
+    .header-padding {
+      padding: 20px 16px !important;
+    }
+    
+    /* Balance table responsive */
+    .balance-row {
+      display: block !important;
+      width: 100% !important;
+    }
+    
+    .balance-label {
+      display: inline-block !important;
+      width: 60% !important;
+    }
+    
+    .balance-value {
+      display: inline-block !important;
+      width: 35% !important;
+      text-align: right !important;
+    }
+    
+    .shortage-value {
+      font-size: 18px !important;
+    }
+  }
+  
+  /* Small phone adjustments */
+  @media only screen and (max-width: 480px) {
+    .button-link {
+      padding: 12px 16px !important;
+      font-size: 12px !important;
+    }
+    
+    .logo-container svg {
+      max-width: 200px !important;
+    }
+    
+    .shortage-value {
+      font-size: 16px !important;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #04040d !important;
+      color: #a0b4c4 !important;
+    }
+  }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <div class="rainbow-bar"></div>
+<body style="margin:0;padding:0;background:#04040d;">
 
-  <!-- HEADER / LOGO -->
-  <div class="hdr">
-    <div class="hdr-logo">
-      <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <style>
-            @keyframes pulse-r{0%,100%{opacity:1}50%{opacity:0.35}}
-            @keyframes pulse-r2{0%,100%{opacity:1}50%{opacity:0.35}}
-            @keyframes pulse-r3{0%,100%{opacity:1}50%{opacity:0.35}}
-            @keyframes dash-m{to{stroke-dashoffset:-24}}
-            @keyframes flk{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.6}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
-            .pr{animation:pulse-r 2.4s ease-in-out infinite}
-            .pr2{animation:pulse-r2 2.4s ease-in-out infinite .8s}
-            .pr3{animation:pulse-r3 2.4s ease-in-out infinite 1.6s}
-            .dm{animation:dash-m 1.8s linear infinite}
-            .mt{animation:flk 6s steps(1) infinite}
-          </style>
-          <linearGradient id="cg1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#00ffea"/>
-            <stop offset="50%" stop-color="#bf00ff"/>
-            <stop offset="100%" stop-color="#00ff6a"/>
-          </linearGradient>
-          <linearGradient id="cg2" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#00ffea"/>
-            <stop offset="100%" stop-color="#bf00ff"/>
-          </linearGradient>
-          <linearGradient id="cgv" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#00ffea"/>
-            <stop offset="100%" stop-color="#bf00ff"/>
-          </linearGradient>
-          <filter id="gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-          <filter id="gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <!-- Icon cx=80 cy=80 -->
-        <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cg1)" stroke-width="1.5" opacity="0.35" filter="url(#gs)"/>
-        <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cg2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="dm" filter="url(#gs)"/>
-        <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
-        <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-        <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-        <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
-        <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-        <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
-        <circle cx="80" cy="14"  r="2.5" fill="#00ffea" filter="url(#gs)"/>
-        <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#gs)"/>
-        <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#gs)"/>
-        <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#gs)"/>
-        <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#gs)"/>
-        <circle cx="27" cy="48"  r="2.5" fill="#00ffea" filter="url(#gs)"/>
-        <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cg1)" stroke-width="1.5" filter="url(#gs)"/>
-        <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="pr" filter="url(#gs)"/>
-        <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1"   opacity="0.4" class="pr2" filter="url(#gs)"/>
-        <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="pr3" filter="url(#gs)"/>
-        <polygon points="80,71 89,80 80,89 71,80" fill="url(#cg2)" filter="url(#gl)"/>
-        <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
-        <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
-        <!-- Text -->
-        <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
-        <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
-        <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cg1)" filter="url(#gs)" class="mt">CHAINCODE</text>
-        <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cg2)" stroke-width="1" opacity="0.4"/>
-        <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
-        <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
-        <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cgv)" filter="url(#gs)">TRADE</text>
-        <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
-      </svg>
-    </div>
-  </div>
+<!-- Preheader (hidden) -->
+<div style="display:none;font-size:1px;color:#04040d;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">Action Required — Insufficient Balance — CHAINCODE TRADE Secure Trading Network</div>
 
-  <div class="accent-bar"></div>
+<!-- Outer wrapper -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+  <tr>
+    <td align="center" style="padding:20px 10px;">
 
-  <div class="body">
-    <div class="title">Action Required</div>
-    <div class="subtitle-line"></div>
+      <!-- Inner container — 600px max -->
+      <table class="mobile-full-width" cellpadding="0" cellspacing="0" border="0" role="presentation"
+        style="max-width:600px;background:#07091a;margin:0 auto;">
 
-    <p class="intro">Your request has been successfully created, but there are insufficient funds in your account to complete the transaction.</p>
+        <!-- Rainbow bar -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+              <tr>
+                <td width="20%" style="height:3px;background:#00ffea;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#6600ff;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#bf00ff;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#6600aa;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#00ff6a;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-    <div class="badge-wrap">
-      <span class="badge">⟡ AWAITING FUNDS ⟡</span>
-    </div>
+        <!-- Header / Logo -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+              <tr>
+                <td align="center" style="padding:24px 20px;" class="header-padding">
+                  <div class="logo-container" style="max-width:100%;overflow:auto;">
+                    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" width="280" height="auto" style="max-width:100%;height:auto;display:block;margin:0 auto;" preserveAspectRatio="xMidYMid meet">
+                      <defs>
+                        <style>
+                          @keyframes p-cc{0%,100%{opacity:1}50%{opacity:.35}}
+                          @keyframes d-cc{to{stroke-dashoffset:-24}}
+                          @keyframes f-cc{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+                          .cc1{animation:p-cc 2.4s ease-in-out infinite}
+                          .cc2{animation:p-cc 2.4s ease-in-out infinite .8s}
+                          .cc3{animation:p-cc 2.4s ease-in-out infinite 1.6s}
+                          .ccd{animation:d-cc 1.8s linear infinite}
+                          .cct{animation:f-cc 6s steps(1) infinite}
+                        </style>
+                        <linearGradient id="cc-g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="50%" stop-color="#bf00ff"/>
+                          <stop offset="100%" stop-color="#00ff6a"/>
+                        </linearGradient>
+                        <linearGradient id="cc-g2" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="100%" stop-color="#bf00ff"/>
+                        </linearGradient>
+                        <linearGradient id="cc-gv" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="100%" stop-color="#bf00ff"/>
+                        </linearGradient>
+                        <filter id="cc-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        <filter id="cc-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                      </defs>
+                      <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cc-g1)" stroke-width="1.5" opacity="0.35" filter="url(#cc-gs)"/>
+                      <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cc-g2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="ccd" filter="url(#cc-gs)"/>
+                      <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+                      <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
+                      <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+                      <circle cx="80" cy="14" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+                      <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#cc-gs)"/>
+                      <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="27" cy="48" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+                      <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cc-g1)" stroke-width="1.5" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="cc1" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="cc2" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="cc3" filter="url(#cc-gs)"/>
+                      <polygon points="80,71 89,80 80,89 71,80" fill="url(#cc-g2)" filter="url(#cc-gl)"/>
+                      <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+                      <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cc-g1)" filter="url(#cc-gs)" class="cct">CHAINCODE</text>
+                      <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cc-g2)" stroke-width="1" opacity="0.4"/>
+                      <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
+                      <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
+                      <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cc-gv)" filter="url(#cc-gs)">TRADE</text>
+                      <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 20px;" class="mobile-padding">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="height:1px;background:linear-gradient(90deg,#04040d,#ff6600,#ff6600,#ff6600,#04040d);font-size:0;line-height:0;">&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-    <div class="details">
-      <div class="dr"><span class="dl">ORDER ID</span><span class="dv">{{request_id}}</span></div>
-      <div class="dr"><span class="dl">CREATED</span><span class="dv">{{request_date}}</span></div>
-      <div class="dr"><span class="dl">ITEMS</span><span class="dv">{{item_count}}</span></div>
-      <div class="dr"><span class="dl">TOTAL VALUE</span><span class="dv">{{total_amount}}</span></div>
-    </div>
+        <!-- Body -->
+        <tr>
+          <td style="padding:24px 20px;" class="content-padding">
 
-    <div class="bal">
-      <div class="bal-row"><span class="bal-label">Current Balance</span><span class="bal-val">{{current_balance}}</span></div>
-      <div class="bal-row"><span class="bal-label">Required Amount</span><span class="bal-val">{{required_amount}}</span></div>
-      <div class="bal-divider"></div>
-      <div class="bal-row"><span class="bal-label">Additional Needed</span><span class="shortage-val">{{shortage_amount}}</span></div>
-    </div>
+            <!-- Title -->
+            <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:18px;font-weight:bold;color:#ff6600;text-transform:uppercase;letter-spacing:4px;" class="mobile-font-sm">Action Required</p>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px;">
+              <tr><td style="height:1px;background:linear-gradient(90deg,#ff6600,transparent);font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
 
-    <p class="note"><strong>Important:</strong> Your request will remain on hold until sufficient funds are available. Even when the trader obtains the requested items, the request cannot proceed until your account balance meets the required amount.</p>
+            <!-- Intro -->
+            <p style="margin:0 0 20px;font-family:'Courier New',Courier,monospace;font-size:13px;color:#a0b4c4;line-height:1.7;" class="mobile-font-sm">
+              Your request has been successfully created, but there are insufficient funds in your account to complete the transaction.
+            </p>
 
-    <p class="cta-note">Please add funds to your account to activate this request and allow fulfillment to proceed.</p>
+            <!-- Badge -->
+            <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px auto;width:auto;">
+              <tr>
+                <td style="border:1px solid #ff6600;background:transparent;padding:10px 20px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#ff6600;text-transform:uppercase;text-align:center;" class="mobile-font-sm">
+                  &#9671; AWAITING FUNDS &#9671;
+                </td>
+              </tr>
+            </table>
 
-    <div class="btn-wrap">
-      <a href="{{url}}" class="btn">Add Funds Now</a>
-    </div>
-  </div>
+            <!-- Details rows -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="background:transparent;border-left:2px solid #ff6600;margin:24px 0;">
+              <tr>
+                <td style="padding:0 20px;" class="mobile-padding">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #ff660022;" class="mobile-font-sm">
+                        ORDER ID
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#ff6600;text-align:right;border-bottom:1px solid #ff660022;" class="mobile-font-sm">
+                        {{request_id}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #ff660022;" class="mobile-font-sm">
+                        CREATED
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#ff6600;text-align:right;border-bottom:1px solid #ff660022;" class="mobile-font-sm">
+                        {{request_date}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #ff660022;" class="mobile-font-sm">
+                        ITEMS
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#ff6600;text-align:right;border-bottom:1px solid #ff660022;" class="mobile-font-sm">
+                        {{item_count}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;" class="mobile-font-sm">
+                        TOTAL VALUE
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#ff6600;text-align:right;" class="mobile-font-sm">
+                        {{total_amount}}
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
 
-  <div class="ftr">
-    <div class="ftr-logo">CHAINCODE TRADE</div>
-    <div style="margin-top:8px">SECURE TRADING NETWORK</div>
-    <div style="margin-top:8px;color:#263040">This is an automated message. Please do not reply to this email.</div>
-  </div>
-</div>
+            <!-- Balance Status Box -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="border:1px solid #ff660033;margin:24px 0;">
+              <tr>
+                <td style="padding:0;">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="padding:6px 20px;background:#ff660011;border-bottom:1px solid #ff660022;" class="mobile-padding">
+                        <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#ff6600;text-transform:uppercase;" class="mobile-font-xs">BALANCE STATUS</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:16px 20px;" class="mobile-padding">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                          <tr>
+                            <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;" class="mobile-font-sm">Current Balance</td>
+                            <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;text-align:right;" class="mobile-font-sm">{{current_balance}}</td>
+                          </tr>
+                          <tr>
+                            <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;border-top:1px solid #ff660022;" class="mobile-font-sm">Required Amount</td>
+                            <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;text-align:right;border-top:1px solid #ff660022;" class="mobile-font-sm">{{required_amount}}</td>
+                          </tr>
+                          <tr>
+                            <td colspan="2" style="padding:4px 0;"><table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"><tr><td style="height:1px;background:linear-gradient(90deg,transparent,#ff6600,transparent);font-size:0;">&nbsp;</td></tr></table></td>
+                          </tr>
+                          <tr>
+                            <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;" class="mobile-font-sm">Additional Needed</td>
+                            <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:20px;color:#ff3333;font-weight:bold;text-align:right;" class="shortage-value">{{shortage_amount}}</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Important note -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px 0;border-left:2px solid #ff660055;">
+              <tr>
+                <td style="padding:12px 16px;font-family:'Courier New',Courier,monospace;font-size:12px;color:#7a8a9a;line-height:1.7;" class="mobile-font-sm">
+                  <strong style="color:#ffffff;">Important:</strong> Your request will remain on hold until sufficient funds are available. Even when the trader obtains the requested items, the request cannot proceed until your account balance meets the required amount.
+                </td>
+              </tr>
+            </table>
+
+            <!-- Action paragraph -->
+            <p style="margin:16px 0;font-family:'Courier New',Courier,monospace;font-size:13px;color:#ffa500;line-height:1.7;" class="mobile-font-sm">
+              Please add funds to your account to activate this request and allow fulfillment to proceed.
+            </p>
+
+            <!-- CTA button -->
+            <div class="button-container" style="margin:28px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                <tr>
+                  <td align="center" style="padding:0;">
+                    <a href="{{url}}" target="_blank" class="button-link"
+                      style="display:inline-block;background:linear-gradient(90deg,#ff6600,#ffa500);padding:14px 48px;font-family:'Courier New',Courier,monospace;font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#000000;text-decoration:none;border-radius:4px;mso-padding-alt:0;">
+                      ADD FUNDS NOW
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="background:#020204;border-top:1px solid #ff660022;">
+              <tr>
+                <td align="center" style="padding:20px 30px;" class="mobile-padding">
+                  <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#ff6600;" class="mobile-font-sm">CHAINCODE TRADE</p>
+                  <p style="margin:6px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;color:#3a4a5a;" class="mobile-font-xs">SECURE TRADING NETWORK</p>
+                  <p style="margin:10px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;color:#263040;" class="mobile-font-xs">This is an automated message. Please do not reply to this email.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table><!-- /inner container -->
+    </td>
+  </tr>
+</table><!-- /outer wrapper -->
+
 </body>
 </html>

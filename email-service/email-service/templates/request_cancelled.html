@@ -1,152 +1,485 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Request Cancelled — CHAINCODE TRADE</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="dark">
+<title>Request Cancelled</title>
+<!--[if mso]>
+<noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+<![endif]-->
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#04040d;font-family:'Share Tech Mono',monospace}
-  .wrap{max-width:620px;margin:0 auto;background:#07091a}
-  .rainbow-bar{height:3px;background:linear-gradient(90deg,#00ffea,#bf00ff,#00ff6a,#00ffea);background-size:200%;animation:rb 4s linear infinite}
-  @keyframes rb{to{background-position:200%}}
-  .hdr{background:#04040d;padding:32px 30px 24px;text-align:center;position:relative;overflow:hidden}
-  .hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,234,0.03) 3px,rgba(0,255,234,0.03) 4px)}
-  .accent-bar{height:1px;background:linear-gradient(90deg,transparent,#555 30%,#555 70%,transparent);margin:0 30px}
-  .body{padding:36px 30px;color:#c8d8e8}
-  .title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
-  .subtitle-line{height:1px;background:linear-gradient(90deg,#555,transparent);margin-bottom:24px}
-  .intro{color:#a0b4c4;line-height:1.7;font-size:14px;text-align:center;margin-bottom:24px}
-
-  /* X symbol */
-  .x-wrap{text-align:center;margin:8px 0 28px}
-  .x-sym{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;border:2px solid #666;color:#888;font-size:40px;position:relative;animation:fade-in 0.6s ease-out both}
-  @keyframes fade-in{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}
-  .x-sym::before{content:'';position:absolute;inset:-7px;border-radius:50%;border:1px solid rgba(100,100,100,0.15)}
-
-  /* Badge */
-  .badge-wrap{text-align:center;margin:20px 0}
-  .badge{display:inline-block;border:1px solid #666;background:rgba(100,100,100,0.07);color:#888;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;padding:10px 28px;text-transform:uppercase;position:relative}
-  .badge::before,.badge::after{content:'';position:absolute;top:-1px;bottom:-1px;width:6px;border-top:1px solid #666;border-bottom:1px solid #666}
-  .badge::before{left:-8px;border-left:1px solid #666}
-  .badge::after{right:-8px;border-right:1px solid #666}
-
-  /* Details */
-  .details{background:rgba(100,100,100,0.05);border-left:2px solid #555;padding:20px 24px;margin:24px 0}
-  .dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(100,100,100,0.12);font-size:13px}
-  .dr:last-child{border-bottom:none}
-  .dl{color:#bf00ff;font-weight:bold;letter-spacing:1px}
-  .dv{color:#888}
-
-  /* Reason box */
-  .reason{border:1px solid rgba(100,100,100,0.3);padding:20px 24px;margin:24px 0;background:rgba(255,255,255,0.02);position:relative}
-  .reason::before{content:'CANCELLATION REASON';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#666}
-  .reason p{font-size:13px;color:#c8d8e8;line-height:1.7;margin:0}
-
-  /* Refund box */
-  .refund{border:1px solid rgba(0,255,234,0.3);padding:24px;margin:24px 0;background:rgba(0,255,234,0.03);text-align:center;position:relative}
-  .refund::before{content:'REFUND STATUS';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#07091a;padding:0 12px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#00ffea;white-space:nowrap}
-  .refund-desc{font-size:13px;color:#8090a0;margin-bottom:12px}
-  .refund-amount{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;color:#00ffea;letter-spacing:2px;margin:8px 0}
-  .refund-note{font-size:12px;color:#00ffea;opacity:0.6;margin-top:8px}
-
-  .support-box{border:1px solid rgba(100,100,100,0.15);padding:16px 20px;margin:24px 0;text-align:center;background:rgba(255,255,255,0.02)}
-  .support-box p{font-size:12px;color:#5a6a7a;line-height:1.8;margin:0}
-
-  .note{font-size:13px;color:#8090a0;line-height:1.7;margin:20px 0}
-
-  .btn-wrap{text-align:center;margin:28px 0 8px}
-  .btn{display:inline-block;background:linear-gradient(90deg,#00ffea,#bf00ff);color:#000;text-decoration:none;padding:14px 48px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:3px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-
-  .ftr{border-top:1px solid rgba(100,100,100,0.15);background:rgba(0,0,0,0.4);padding:20px 30px;text-align:center;color:#3a4a5a;font-size:11px;line-height:1.8;letter-spacing:1px}
-  .ftr-logo{color:#888;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px}
+  /* Reset and base styles */
+  * { margin: 0; padding: 0; }
+  
+  /* Animation support for Apple Mail / modern webmail */
+  @keyframes rb{to{background-position:200% center}}
+  @keyframes cc-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes cc-dash{to{stroke-dashoffset:-24}}
+  @keyframes cc-flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+  
+  .cc1{animation:cc-pulse 2.4s ease-in-out infinite}
+  .cc2{animation:cc-pulse 2.4s ease-in-out infinite .8s}
+  .cc3{animation:cc-pulse 2.4s ease-in-out infinite 1.6s}
+  .ccd{animation:cc-dash 1.8s linear infinite}
+  .cct{animation:cc-flicker 6s steps(1) infinite}
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background: #04040d;
+    font-family: 'Courier New', Courier, monospace;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  img {
+    border: 0;
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  table {
+    border-collapse: collapse;
+    mso-table-lspace: 0pt;
+    mso-table-rspace: 0pt;
+    width: 100%;
+  }
+  
+  a {
+    color: #00ffea;
+    text-decoration: none;
+  }
+  
+  /* Responsive mobile styles */
+  @media only screen and (max-width: 600px) {
+    body {
+      width: 100% !important;
+    }
+    
+    table {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-hide {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      line-height: 0 !important;
+      visibility: hidden !important;
+    }
+    
+    .mobile-center {
+      text-align: center !important;
+    }
+    
+    .mobile-full-width {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-padding {
+      padding: 16px 20px !important;
+    }
+    
+    .mobile-padding-lg {
+      padding: 20px 16px !important;
+    }
+    
+    .mobile-font-sm {
+      font-size: 11px !important;
+      line-height: 1.4 !important;
+    }
+    
+    .mobile-font-xs {
+      font-size: 10px !important;
+      line-height: 1.3 !important;
+    }
+    
+    .mobile-font-lg {
+      font-size: 18px !important;
+    }
+    
+    .logo-container svg {
+      max-width: 240px !important;
+      width: 100% !important;
+      height: auto !important;
+    }
+    
+    .button-container {
+      display: block !important;
+      width: 100% !important;
+    }
+    
+    .button-container table {
+      width: 100% !important;
+    }
+    
+    .button-link {
+      display: block !important;
+      width: 100% !important;
+      box-sizing: border-box;
+      text-align: center !important;
+      padding: 14px 20px !important;
+    }
+    
+    h1, h2, h3, p {
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+    
+    .spacer {
+      height: 12px !important;
+    }
+    
+    td[width="72"] {
+      width: 72px !important;
+      min-width: 72px !important;
+      max-width: 72px !important;
+      height: 72px !important;
+      font-size: 32px !important;
+    }
+    
+    /* Better padding reduction */
+    .content-padding {
+      padding: 20px 16px !important;
+    }
+    
+    .header-padding {
+      padding: 20px 16px !important;
+    }
+    
+    /* Refund amount scaling */
+    .refund-amount {
+      font-size: 20px !important;
+    }
+  }
+  
+  /* Small phone adjustments */
+  @media only screen and (max-width: 480px) {
+    .button-link {
+      padding: 12px 16px !important;
+      font-size: 12px !important;
+    }
+    
+    .logo-container svg {
+      max-width: 200px !important;
+    }
+    
+    td[width="72"] {
+      width: 60px !important;
+      min-width: 60px !important;
+      max-width: 60px !important;
+      height: 60px !important;
+      font-size: 28px !important;
+      border-width: 1px !important;
+    }
+    
+    .refund-amount {
+      font-size: 18px !important;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #04040d !important;
+      color: #a0b4c4 !important;
+    }
+  }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <div class="rainbow-bar"></div>
-  <div class="hdr">
-    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="width:340px;max-width:100%;height:auto">
-      <defs>
-        <style>
-          @keyframes p-cn{0%,100%{opacity:1}50%{opacity:.35}}
-          @keyframes d-cn{to{stroke-dashoffset:-24}}
-          @keyframes f-cn{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.6}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
-          .cn1{animation:p-cn 2.4s ease-in-out infinite}
-          .cn2{animation:p-cn 2.4s ease-in-out infinite .8s}
-          .cn3{animation:p-cn 2.4s ease-in-out infinite 1.6s}
-          .cdm{animation:d-cn 1.8s linear infinite}
-          .ctx{animation:f-cn 6s steps(1) infinite}
-        </style>
-        <linearGradient id="cn-cg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00ffea"/><stop offset="50%" stop-color="#bf00ff"/><stop offset="100%" stop-color="#00ff6a"/></linearGradient>
-        <linearGradient id="cn-cg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/></linearGradient>
-        <linearGradient id="cn-cgv" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/></linearGradient>
-        <filter id="cn-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="cn-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      </defs>
-      <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cn-cg1)" stroke-width="1.5" opacity="0.35" filter="url(#cn-gs)"/>
-      <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cn-cg2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="cdm" filter="url(#cn-gs)"/>
-      <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
-      <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
-      <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
-      <circle cx="80" cy="14"  r="2.5" fill="#00ffea" filter="url(#cn-gs)"/>
-      <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#cn-gs)"/>
-      <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#cn-gs)"/>
-      <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#cn-gs)"/>
-      <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#cn-gs)"/>
-      <circle cx="27" cy="48"  r="2.5" fill="#00ffea" filter="url(#cn-gs)"/>
-      <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cn-cg1)" stroke-width="1.5" filter="url(#cn-gs)"/>
-      <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="cn1" filter="url(#cn-gs)"/>
-      <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="cn2" filter="url(#cn-gs)"/>
-      <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="cn3" filter="url(#cn-gs)"/>
-      <polygon points="80,71 89,80 80,89 71,80" fill="url(#cn-cg2)" filter="url(#cn-gl)"/>
-      <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
-      <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cn-cg1)" filter="url(#cn-gs)" class="ctx">CHAINCODE</text>
-      <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cn-cg2)" stroke-width="1" opacity="0.4"/>
-      <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
-      <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
-      <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cn-cgv)" filter="url(#cn-gs)">TRADE</text>
-      <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
-    </svg>
-  </div>
-  <div class="accent-bar"></div>
-  <div class="body">
-    <div class="title">Request Cancelled</div>
-    <div class="subtitle-line"></div>
-    <div class="x-wrap"><div class="x-sym">✕</div></div>
-    <p class="intro">Your request has been cancelled and will not be fulfilled.</p>
-    <div class="badge-wrap"><span class="badge">⟡ CANCELLED ⟡</span></div>
-    <div class="details">
-      <div class="dr"><span class="dl">ORDER ID</span><span class="dv">{{request_id}}</span></div>
-      <div class="dr"><span class="dl">CANCELLED</span><span class="dv">{{cancelled_date}}</span></div>
-      <div class="dr"><span class="dl">ORIGINAL AMOUNT</span><span class="dv">{{total_amount}}</span></div>
-    </div>
-    <div class="reason">
-      <p>{{cancellation_reason}}</p>
-    </div>
-    <div class="refund">
-      <p class="refund-desc">Your reserved funds have been released back to your account:</p>
-      <div class="refund-amount">{{refund_amount}}</div>
-      <p class="refund-note">Funds should appear in your balance immediately</p>
-    </div>
-    <p class="note">We apologize for any inconvenience. You're welcome to create a new request at any time.</p>
-    <div class="btn-wrap"><a href="{{url}}" class="btn">Create New Request</a></div>
-    <div class="support-box">
-      <p>If you believe this cancellation was made in error or have questions,<br>please contact our support team for assistance.</p>
-    </div>
-  </div>
-  <div class="ftr">
-    <div class="ftr-logo">CHAINCODE TRADE</div>
-    <div style="margin-top:8px">SECURE TRADING NETWORK</div>
-    <div style="margin-top:8px;color:#263040">This is an automated message. Please do not reply to this email.</div>
-  </div>
-</div>
+<body style="margin:0;padding:0;background:#04040d;">
+
+<!-- Preheader (hidden) -->
+<div style="display:none;font-size:1px;color:#04040d;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">Request Cancelled — CHAINCODE TRADE Secure Trading Network</div>
+
+<!-- Outer wrapper -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+  <tr>
+    <td align="center" style="padding:20px 10px;">
+
+      <!-- Inner container — 600px max -->
+      <table class="mobile-full-width" cellpadding="0" cellspacing="0" border="0" role="presentation"
+        style="max-width:600px;background:#07091a;margin:0 auto;">
+
+        <!-- Rainbow bar -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+              <tr>
+                <td width="20%" style="height:3px;background:#00ffea;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#6600ff;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#bf00ff;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#6600aa;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#00ff6a;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Header / Logo -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+              <tr>
+                <td align="center" style="padding:24px 20px;" class="header-padding">
+                  <div class="logo-container" style="max-width:100%;overflow:auto;">
+                    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" width="280" height="auto" style="max-width:100%;height:auto;display:block;margin:0 auto;" preserveAspectRatio="xMidYMid meet">
+                      <defs>
+                        <style>
+                          @keyframes p-cc{0%,100%{opacity:1}50%{opacity:.35}}
+                          @keyframes d-cc{to{stroke-dashoffset:-24}}
+                          @keyframes f-cc{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+                          .cc1{animation:p-cc 2.4s ease-in-out infinite}
+                          .cc2{animation:p-cc 2.4s ease-in-out infinite .8s}
+                          .cc3{animation:p-cc 2.4s ease-in-out infinite 1.6s}
+                          .ccd{animation:d-cc 1.8s linear infinite}
+                          .cct{animation:f-cc 6s steps(1) infinite}
+                        </style>
+                        <linearGradient id="cc-g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="50%" stop-color="#bf00ff"/>
+                          <stop offset="100%" stop-color="#00ff6a"/>
+                        </linearGradient>
+                        <linearGradient id="cc-g2" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="100%" stop-color="#bf00ff"/>
+                        </linearGradient>
+                        <linearGradient id="cc-gv" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="100%" stop-color="#bf00ff"/>
+                        </linearGradient>
+                        <filter id="cc-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        <filter id="cc-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                      </defs>
+                      <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cc-g1)" stroke-width="1.5" opacity="0.35" filter="url(#cc-gs)"/>
+                      <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cc-g2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="ccd" filter="url(#cc-gs)"/>
+                      <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+                      <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
+                      <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+                      <circle cx="80" cy="14" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+                      <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#cc-gs)"/>
+                      <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="27" cy="48" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+                      <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cc-g1)" stroke-width="1.5" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="cc1" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="cc2" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="cc3" filter="url(#cc-gs)"/>
+                      <polygon points="80,71 89,80 80,89 71,80" fill="url(#cc-g2)" filter="url(#cc-gl)"/>
+                      <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+                      <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cc-g1)" filter="url(#cc-gs)" class="cct">CHAINCODE</text>
+                      <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cc-g2)" stroke-width="1" opacity="0.4"/>
+                      <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
+                      <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
+                      <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cc-gv)" filter="url(#cc-gs)">TRADE</text>
+                      <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 20px;" class="mobile-padding">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="height:1px;background:linear-gradient(90deg,#04040d,#666666,#666666,#666666,#04040d);font-size:0;line-height:0;">&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:24px 20px;" class="content-padding">
+
+            <!-- Title -->
+            <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:18px;font-weight:bold;color:#666666;text-transform:uppercase;letter-spacing:4px;" class="mobile-font-sm">Request Cancelled</p>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px;">
+              <tr><td style="height:1px;background:linear-gradient(90deg,#666666,transparent);font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
+
+            <!-- X Icon -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+              <tr>
+                <td align="center" style="padding:16px 0;">
+                  <table cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td width="72" height="72" style="width:72px;height:72px;border:2px solid #666666;text-align:center;vertical-align:middle;font-family:'Courier New',Courier,monospace;font-size:36px;color:#666666;">
+                        &#10005;
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Intro -->
+            <p style="margin:0 0 20px;font-family:'Courier New',Courier,monospace;font-size:13px;color:#a0b4c4;line-height:1.7;text-align:center;" class="mobile-font-sm">
+              Your request has been cancelled and will not be fulfilled.
+            </p>
+
+            <!-- Badge -->
+            <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px auto;width:auto;">
+              <tr>
+                <td style="border:1px solid #666666;background:transparent;padding:10px 20px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#666666;text-transform:uppercase;text-align:center;" class="mobile-font-sm">
+                  &#9671; CANCELLED &#9671;
+                </td>
+              </tr>
+            </table>
+
+            <!-- Details rows -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="background:transparent;border-left:2px solid #666666;margin:24px 0;">
+              <tr>
+                <td style="padding:0 20px;" class="mobile-padding">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #66666622;" class="mobile-font-sm">
+                        ORDER ID
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#666666;text-align:right;border-bottom:1px solid #66666622;" class="mobile-font-sm">
+                        {{request_id}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #66666622;" class="mobile-font-sm">
+                        CANCELLED
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#666666;text-align:right;border-bottom:1px solid #66666622;" class="mobile-font-sm">
+                        {{cancelled_date}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;" class="mobile-font-sm">
+                        ORIGINAL AMOUNT
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#666666;text-align:right;" class="mobile-font-sm">
+                        {{total_amount}}
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Cancellation Reason -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="border:1px solid #66666633;margin:24px 0;">
+              <tr>
+                <td style="padding:0;">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="padding:6px 20px;background:#66666611;border-bottom:1px solid #66666622;" class="mobile-padding">
+                        <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#888888;text-transform:uppercase;" class="mobile-font-xs">CANCELLATION REASON</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:16px 20px;" class="mobile-padding">
+                        <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:13px;color:#c8d8e8;line-height:1.7;" class="mobile-font-sm">
+                          {{cancellation_reason}}
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Refund Status Box -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="border:1px solid #00ffea33;margin:24px 0;">
+              <tr>
+                <td style="padding:0;">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="padding:6px 20px;background:#00ffea11;border-bottom:1px solid #00ffea22;" class="mobile-padding">
+                        <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#00ffea;text-transform:uppercase;" class="mobile-font-xs">REFUND STATUS</span>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:16px 20px;" class="mobile-padding">
+                        <p style="margin:0 0 10px;font-family:'Courier New',Courier,monospace;font-size:13px;color:#8090a0;text-align:center;" class="mobile-font-sm">
+                          Your reserved funds have been released back to your account:
+                        </p>
+                        <p class="refund-amount" style="margin:8px 0;font-family:'Courier New',Courier,monospace;font-size:24px;font-weight:bold;color:#00ffea;text-align:center;letter-spacing:2px;">
+                          {{refund_amount}}
+                        </p>
+                        <p style="margin:8px 0 0;font-family:'Courier New',Courier,monospace;font-size:11px;color:#00ffea;opacity:0.6;text-align:center;" class="mobile-font-xs">
+                          Funds should appear in your balance immediately
+                        </p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Apology paragraph -->
+            <p style="margin:16px 0;font-family:'Courier New',Courier,monospace;font-size:13px;color:#8090a0;line-height:1.7;" class="mobile-font-sm">
+              We apologize for any inconvenience. You're welcome to create a new request at any time.
+            </p>
+
+            <!-- CTA button -->
+            <div class="button-container" style="margin:28px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                <tr>
+                  <td align="center" style="padding:0;">
+                    <a href="{{url}}" target="_blank" class="button-link"
+                      style="display:inline-block;background:linear-gradient(90deg,#00ffea,#bf00ff);padding:14px 48px;font-family:'Courier New',Courier,monospace;font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#000000;text-decoration:none;border-radius:4px;mso-padding-alt:0;">
+                      CREATE NEW REQUEST
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Support note -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:24px 0;border:1px solid #33333355;">
+              <tr>
+                <td style="padding:16px 20px;text-align:center;font-family:'Courier New',Courier,monospace;font-size:11px;color:#5a6a7a;line-height:1.8;" class="mobile-font-xs">
+                  If you believe this cancellation was made in error or have questions,<br>
+                  please contact our support team for assistance.
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="background:#020204;border-top:1px solid #44444422;">
+              <tr>
+                <td align="center" style="padding:20px 30px;" class="mobile-padding">
+                  <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#444444;" class="mobile-font-sm">CHAINCODE TRADE</p>
+                  <p style="margin:6px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;color:#3a4a5a;" class="mobile-font-xs">SECURE TRADING NETWORK</p>
+                  <p style="margin:10px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;color:#263040;" class="mobile-font-xs">This is an automated message. Please do not reply to this email.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table><!-- /inner container -->
+    </td>
+  </tr>
+</table><!-- /outer wrapper -->
+
 </body>
 </html>

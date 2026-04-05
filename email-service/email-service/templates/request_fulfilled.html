@@ -1,157 +1,485 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Request Fulfilled — CHAINCODE TRADE</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="dark">
+<title>Request Fulfilled</title>
+<!--[if mso]>
+<noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+<![endif]-->
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#04040d;font-family:'Share Tech Mono',monospace}
-  .wrap{max-width:620px;margin:0 auto;background:#07091a}
-  .rainbow-bar{height:3px;background:linear-gradient(90deg,#00ffea,#bf00ff,#00ff6a,#00ffea);background-size:200%;animation:rb 4s linear infinite}
-  @keyframes rb{to{background-position:200%}}
-  .hdr{background:#04040d;padding:32px 30px 24px;text-align:center;position:relative;overflow:hidden}
-  .hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,234,0.03) 3px,rgba(0,255,234,0.03) 4px)}
-  .accent-bar{height:1px;background:linear-gradient(90deg,transparent,#00ff6a 20%,#00ffea 50%,#00ff6a 80%,transparent);margin:0 30px}
-  .body{padding:36px 30px;color:#c8d8e8}
-  .title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#00ff6a;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
-  .subtitle-line{height:1px;background:linear-gradient(90deg,#00ff6a,#00ffea,transparent);margin-bottom:24px}
-  .intro{color:#a0b4c4;line-height:1.7;font-size:14px;text-align:center;margin-bottom:24px}
-
-  /* Star burst */
-  .star-wrap{text-align:center;margin:8px 0 20px}
-  .star{display:inline-flex;align-items:center;justify-content:center;width:90px;height:90px;position:relative;animation:burst-in 0.8s ease-out both}
-  @keyframes burst-in{0%{transform:scale(0) rotate(0deg);opacity:0}60%{transform:scale(1.15) rotate(200deg)}100%{transform:scale(1) rotate(360deg);opacity:1}}
-  .star-inner{font-size:68px;line-height:1;filter:drop-shadow(0 0 14px rgba(0,255,106,0.8));animation:star-glow 1.5s ease-in-out infinite}
-  @keyframes star-glow{0%,100%{filter:drop-shadow(0 0 10px rgba(0,255,106,0.7))}50%{filter:drop-shadow(0 0 22px rgba(0,255,106,1))}}
-  .star::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(0,255,106,0.2);animation:ring-pp 2s ease-in-out infinite}
-  .star::after{content:'';position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(0,255,106,0.1);animation:ring-pp 2s ease-in-out infinite .5s}
-  @keyframes ring-pp{0%,100%{opacity:1}50%{opacity:0.25}}
-
-  /* Celebration */
-  .celeb{border:1px solid rgba(0,255,234,0.3);background:linear-gradient(135deg,rgba(0,255,234,0.05),rgba(0,255,106,0.05));padding:24px;margin:24px 0;text-align:center;position:relative}
-  .celeb::before{content:'';position:absolute;inset:0;border-radius:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(0,255,106,0.02) 10px,rgba(0,255,106,0.02) 11px)}
-  .celeb-title{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#00ff6a;letter-spacing:6px;text-transform:uppercase;position:relative}
-  .celeb-sub{font-size:14px;color:#00ffea;margin-top:10px;line-height:1.6;position:relative}
-
-  /* Badge */
-  .badge-wrap{text-align:center;margin:20px 0}
-  .badge{display:inline-block;border:1px solid #00ff6a;background:rgba(0,255,106,0.07);color:#00ff6a;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;padding:10px 28px;text-transform:uppercase;position:relative;animation:fbadge 2s ease-in-out infinite}
-  @keyframes fbadge{0%,100%{box-shadow:0 0 10px rgba(0,255,106,0.25);transform:scale(1)}50%{box-shadow:0 0 28px rgba(0,255,106,0.65);transform:scale(1.02)}}
-  .badge::before,.badge::after{content:'';position:absolute;top:-1px;bottom:-1px;width:6px;border-top:1px solid #00ff6a;border-bottom:1px solid #00ff6a}
-  .badge::before{left:-8px;border-left:1px solid #00ff6a}
-  .badge::after{right:-8px;border-right:1px solid #00ff6a}
-
-  /* Details */
-  .details{background:rgba(0,255,106,0.05);border-left:2px solid #00ff6a;padding:20px 24px;margin:24px 0}
-  .dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,255,106,0.12);font-size:13px}
-  .dr:last-child{border-bottom:none}
-  .dl{color:#bf00ff;font-weight:bold;letter-spacing:1px}
-  .dv{color:#00ff6a}
-
-  .body-text{font-size:14px;color:#c8d8e8;line-height:1.7;margin:20px 0}
-  .body-cyan{font-size:13px;color:#6090a0;line-height:1.7;margin:16px 0}
-
-  /* Trader credit box */
-  .credit{border:1px solid rgba(0,255,234,0.2);padding:18px 24px;margin:24px 0;text-align:center;background:rgba(0,255,234,0.03);font-size:14px}
-  .credit p{color:#5a7a8a;margin:0;line-height:1.8}
-  .credit strong{color:#00ffea}
-  .credit span{color:#5a6a7a;font-size:12px}
-
-  .btn-wrap{text-align:center;margin:28px 0 8px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-  .btn-primary{display:inline-block;background:linear-gradient(90deg,#00ff6a,#00ffea);color:#000;text-decoration:none;padding:14px 36px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-  .btn-secondary{display:inline-block;background:linear-gradient(90deg,#00ffea,#bf00ff);color:#000;text-decoration:none;padding:14px 36px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-
-  .ftr{border-top:1px solid rgba(0,255,106,0.15);background:rgba(0,0,0,0.4);padding:20px 30px;text-align:center;color:#3a4a5a;font-size:11px;line-height:1.8;letter-spacing:1px}
-  .ftr-logo{color:#00ff6a;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px}
+  /* Reset and base styles */
+  * { margin: 0; padding: 0; }
+  
+  /* Animation support for Apple Mail / modern webmail */
+  @keyframes rb{to{background-position:200% center}}
+  @keyframes cc-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes cc-dash{to{stroke-dashoffset:-24}}
+  @keyframes cc-flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+  
+  .cc1{animation:cc-pulse 2.4s ease-in-out infinite}
+  .cc2{animation:cc-pulse 2.4s ease-in-out infinite .8s}
+  .cc3{animation:cc-pulse 2.4s ease-in-out infinite 1.6s}
+  .ccd{animation:cc-dash 1.8s linear infinite}
+  .cct{animation:cc-flicker 6s steps(1) infinite}
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background: #04040d;
+    font-family: 'Courier New', Courier, monospace;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  img {
+    border: 0;
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  table {
+    border-collapse: collapse;
+    mso-table-lspace: 0pt;
+    mso-table-rspace: 0pt;
+    width: 100%;
+  }
+  
+  a {
+    color: #00ff6a;
+    text-decoration: none;
+  }
+  
+  /* Responsive mobile styles */
+  @media only screen and (max-width: 600px) {
+    body {
+      width: 100% !important;
+    }
+    
+    table {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-hide {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      line-height: 0 !important;
+      visibility: hidden !important;
+    }
+    
+    .mobile-center {
+      text-align: center !important;
+    }
+    
+    .mobile-full-width {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-padding {
+      padding: 16px 20px !important;
+    }
+    
+    .mobile-padding-lg {
+      padding: 20px 16px !important;
+    }
+    
+    .mobile-font-sm {
+      font-size: 11px !important;
+      line-height: 1.4 !important;
+    }
+    
+    .mobile-font-xs {
+      font-size: 10px !important;
+      line-height: 1.3 !important;
+    }
+    
+    .mobile-font-lg {
+      font-size: 18px !important;
+    }
+    
+    .logo-container svg {
+      max-width: 240px !important;
+      width: 100% !important;
+      height: auto !important;
+    }
+    
+    .button-container {
+      display: block !important;
+      width: 100% !important;
+    }
+    
+    .button-container table {
+      width: 100% !important;
+    }
+    
+    .button-row {
+      display: block !important;
+      width: 100% !important;
+      margin-bottom: 8px !important;
+    }
+    
+    .button-link {
+      display: block !important;
+      width: 100% !important;
+      box-sizing: border-box;
+      text-align: center !important;
+      padding: 12px 20px !important;
+    }
+    
+    h1, h2, h3, p {
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+    
+    .spacer {
+      height: 12px !important;
+    }
+    
+    /* Better padding reduction */
+    .content-padding {
+      padding: 20px 16px !important;
+    }
+    
+    .header-padding {
+      padding: 20px 16px !important;
+    }
+    
+    /* Star emoji scaling */
+    .star-emoji {
+      font-size: 56px !important;
+    }
+    
+    /* Success box scaling */
+    .success-title {
+      font-size: 18px !important;
+      letter-spacing: 4px !important;
+    }
+  }
+  
+  /* Small phone adjustments */
+  @media only screen and (max-width: 480px) {
+    .button-link {
+      padding: 11px 16px !important;
+      font-size: 11px !important;
+    }
+    
+    .logo-container svg {
+      max-width: 200px !important;
+    }
+    
+    .star-emoji {
+      font-size: 48px !important;
+    }
+    
+    .success-title {
+      font-size: 16px !important;
+      letter-spacing: 2px !important;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #04040d !important;
+      color: #a0b4c4 !important;
+    }
+  }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <div class="rainbow-bar"></div>
-  <div class="hdr">
-    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="width:340px;max-width:100%;height:auto">
-      <defs>
-        <style>
-          @keyframes p-fl{0%,100%{opacity:1}50%{opacity:.35}}
-          @keyframes d-fl{to{stroke-dashoffset:-24}}
-          @keyframes f-fl{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.6}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
-          .fl1{animation:p-fl 2.4s ease-in-out infinite}
-          .fl2{animation:p-fl 2.4s ease-in-out infinite .8s}
-          .fl3{animation:p-fl 2.4s ease-in-out infinite 1.6s}
-          .fdm{animation:d-fl 1.8s linear infinite}
-          .ftx{animation:f-fl 6s steps(1) infinite}
-        </style>
-        <linearGradient id="fl-cg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00ffea"/><stop offset="50%" stop-color="#bf00ff"/><stop offset="100%" stop-color="#00ff6a"/></linearGradient>
-        <linearGradient id="fl-cg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/></linearGradient>
-        <linearGradient id="fl-cgv" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/></linearGradient>
-        <filter id="fl-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="fl-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      </defs>
-      <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#fl-cg1)" stroke-width="1.5" opacity="0.35" filter="url(#fl-gs)"/>
-      <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#fl-cg2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="fdm" filter="url(#fl-gs)"/>
-      <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
-      <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
-      <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
-      <circle cx="80" cy="14"  r="2.5" fill="#00ffea" filter="url(#fl-gs)"/>
-      <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#fl-gs)"/>
-      <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#fl-gs)"/>
-      <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#fl-gs)"/>
-      <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#fl-gs)"/>
-      <circle cx="27" cy="48"  r="2.5" fill="#00ffea" filter="url(#fl-gs)"/>
-      <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#fl-cg1)" stroke-width="1.5" filter="url(#fl-gs)"/>
-      <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="fl1" filter="url(#fl-gs)"/>
-      <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="fl2" filter="url(#fl-gs)"/>
-      <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="fl3" filter="url(#fl-gs)"/>
-      <polygon points="80,71 89,80 80,89 71,80" fill="url(#fl-cg2)" filter="url(#fl-gl)"/>
-      <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
-      <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#fl-cg1)" filter="url(#fl-gs)" class="ftx">CHAINCODE</text>
-      <line x1="158" y1="88" x2="500" y2="88" stroke="url(#fl-cg2)" stroke-width="1" opacity="0.4"/>
-      <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
-      <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
-      <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#fl-cgv)" filter="url(#fl-gs)">TRADE</text>
-      <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
-    </svg>
-  </div>
-  <div class="accent-bar"></div>
-  <div class="body">
-    <div class="title">Request Complete</div>
-    <div class="subtitle-line"></div>
-    <div class="star-wrap"><div class="star"><span class="star-inner">★</span></div></div>
-    <div class="celeb">
-      <div class="celeb-title">// SUCCESS //</div>
-      <div class="celeb-sub">Your request has been successfully fulfilled and completed!</div>
-    </div>
-    <div class="badge-wrap"><span class="badge">⟡ FULFILLED ⟡</span></div>
-    <div class="details">
-      <div class="dr"><span class="dl">ORDER ID</span><span class="dv">{{request_id}}</span></div>
-      <div class="dr"><span class="dl">COMPLETED</span><span class="dv">{{completed_date}}</span></div>
-      <div class="dr"><span class="dl">TRADER</span><span class="dv">{{trader_name}}</span></div>
-      <div class="dr"><span class="dl">ITEMS DELIVERED</span><span class="dv">{{item_count}}</span></div>
-      <div class="dr"><span class="dl">TOTAL VALUE</span><span class="dv">{{total_amount}}</span></div>
-    </div>
-    <p class="body-text">The trader has successfully delivered all requested items. Payment has been processed and the transaction is now complete. Your items are ready for use!</p>
-    <p class="body-cyan">We hope you enjoyed using CHAINCODE TRADE. Your feedback helps us improve our platform and trader network.</p>
-    <div class="btn-wrap">
-      <a href="{{request_url}}" class="btn-primary">View Request Details</a>
-      <a href="{{review_url}}" class="btn-secondary">Leave a Review</a>
-    </div>
-    <div class="credit">
-      <p>Thank you for trading with <strong>{{trader_name}}</strong>!<br><span>Transaction completed in {{fulfillment_time}}</span></p>
-    </div>
-  </div>
-  <div class="ftr">
-    <div class="ftr-logo">CHAINCODE TRADE</div>
-    <div style="margin-top:8px">SECURE TRADING NETWORK</div>
-    <div style="margin-top:8px;color:#263040">This is an automated message. Please do not reply to this email.</div>
-  </div>
-</div>
+<body style="margin:0;padding:0;background:#04040d;">
+
+<!-- Preheader (hidden) -->
+<div style="display:none;font-size:1px;color:#04040d;line-height:1px;max-height:0px;max-width:0px;opacity:0;overflow:hidden;">Request Fulfilled — CHAINCODE TRADE Secure Trading Network</div>
+
+<!-- Outer wrapper -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+  <tr>
+    <td align="center" style="padding:20px 10px;">
+
+      <!-- Inner container — 600px max -->
+      <table class="mobile-full-width" cellpadding="0" cellspacing="0" border="0" role="presentation"
+        style="max-width:600px;background:#07091a;margin:0 auto;">
+
+        <!-- Rainbow bar -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+              <tr>
+                <td width="20%" style="height:3px;background:#00ffea;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#6600ff;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#bf00ff;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#6600aa;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#00ff6a;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Header / Logo -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+              <tr>
+                <td align="center" style="padding:24px 20px;" class="header-padding">
+                  <div class="logo-container" style="max-width:100%;overflow:auto;">
+                    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" width="280" height="auto" style="max-width:100%;height:auto;display:block;margin:0 auto;" preserveAspectRatio="xMidYMid meet">
+                      <defs>
+                        <style>
+                          @keyframes p-cc{0%,100%{opacity:1}50%{opacity:.35}}
+                          @keyframes d-cc{to{stroke-dashoffset:-24}}
+                          @keyframes f-cc{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+                          .cc1{animation:p-cc 2.4s ease-in-out infinite}
+                          .cc2{animation:p-cc 2.4s ease-in-out infinite .8s}
+                          .cc3{animation:p-cc 2.4s ease-in-out infinite 1.6s}
+                          .ccd{animation:d-cc 1.8s linear infinite}
+                          .cct{animation:f-cc 6s steps(1) infinite}
+                        </style>
+                        <linearGradient id="cc-g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="50%" stop-color="#bf00ff"/>
+                          <stop offset="100%" stop-color="#00ff6a"/>
+                        </linearGradient>
+                        <linearGradient id="cc-g2" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="100%" stop-color="#bf00ff"/>
+                        </linearGradient>
+                        <linearGradient id="cc-gv" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stop-color="#00ffea"/>
+                          <stop offset="100%" stop-color="#bf00ff"/>
+                        </linearGradient>
+                        <filter id="cc-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        <filter id="cc-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                      </defs>
+                      <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cc-g1)" stroke-width="1.5" opacity="0.35" filter="url(#cc-gs)"/>
+                      <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cc-g2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="ccd" filter="url(#cc-gs)"/>
+                      <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+                      <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
+                      <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+                      <circle cx="80" cy="14" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+                      <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#cc-gs)"/>
+                      <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="27" cy="48" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+                      <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cc-g1)" stroke-width="1.5" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="cc1" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="cc2" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="cc3" filter="url(#cc-gs)"/>
+                      <polygon points="80,71 89,80 80,89 71,80" fill="url(#cc-g2)" filter="url(#cc-gl)"/>
+                      <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+                      <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cc-g1)" filter="url(#cc-gs)" class="cct">CHAINCODE</text>
+                      <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cc-g2)" stroke-width="1" opacity="0.4"/>
+                      <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
+                      <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
+                      <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cc-gv)" filter="url(#cc-gs)">TRADE</text>
+                      <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 20px;" class="mobile-padding">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="height:1px;background:linear-gradient(90deg,#04040d,#00ff6a,#00ff6a,#00ff6a,#04040d);font-size:0;line-height:0;">&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td style="padding:24px 20px;" class="content-padding">
+
+            <!-- Title -->
+            <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:18px;font-weight:bold;color:#00ff6a;text-transform:uppercase;letter-spacing:4px;" class="mobile-font-sm">Request Complete</p>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px;">
+              <tr><td style="height:1px;background:linear-gradient(90deg,#00ff6a,transparent);font-size:0;line-height:0;">&nbsp;</td></tr>
+            </table>
+
+            <!-- Star Emoji -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+              <tr>
+                <td align="center" style="padding:12px 0 16px;">
+                  <span class="star-emoji" style="font-size:72px;line-height:1;display:block;text-align:center;">&#11088;</span>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Celebration Box -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="margin:0 0 24px;border:1px solid #00ffea44;">
+              <tr>
+                <td style="padding:8px 0 0;background:#00ffea08;">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="height:2px;background:linear-gradient(90deg,#00ffea,#00ff6a);font-size:0;">&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td align="center" style="padding:20px;background:#00ffea08;" class="mobile-padding">
+                  <p class="success-title" style="margin:0;font-family:'Courier New',Courier,monospace;font-size:22px;font-weight:bold;color:#00ff6a;letter-spacing:6px;text-transform:uppercase;">
+                    // SUCCESS //
+                  </p>
+                  <p style="margin:10px 0 0;font-family:'Courier New',Courier,monospace;font-size:13px;color:#00ffea;line-height:1.6;" class="mobile-font-sm">
+                    Your request has been successfully fulfilled and completed!
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 0 8px;background:#00ffea08;">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="height:2px;background:linear-gradient(90deg,#00ff6a,#00ffea);font-size:0;">&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Badge -->
+            <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px auto;width:auto;">
+              <tr>
+                <td style="border:1px solid #00ff6a;background:transparent;padding:10px 20px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#00ff6a;text-transform:uppercase;text-align:center;" class="mobile-font-sm">
+                  &#9671; FULFILLED &#9671;
+                </td>
+              </tr>
+            </table>
+
+            <!-- Details rows -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="background:transparent;border-left:2px solid #00ff6a;margin:24px 0;">
+              <tr>
+                <td style="padding:0 20px;" class="mobile-padding">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">
+                        ORDER ID
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">
+                        {{request_id}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">
+                        COMPLETED
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">
+                        {{completed_date}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">
+                        TRADER
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">
+                        {{trader_name}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">
+                        ITEMS DELIVERED
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">
+                        {{item_count}}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;" class="mobile-font-sm">
+                        TOTAL VALUE
+                      </td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;" class="mobile-font-sm">
+                        {{total_amount}}
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Completion message -->
+            <p style="margin:20px 0;font-family:'Courier New',Courier,monospace;font-size:13px;color:#c8d8e8;line-height:1.7;" class="mobile-font-sm">
+              The trader has successfully delivered all requested items. Payment has been processed and the transaction is now complete. Your items are ready for use!
+            </p>
+
+            <!-- Feedback paragraph -->
+            <p style="margin:0 0 20px;font-family:'Courier New',Courier,monospace;font-size:13px;color:#6090a0;line-height:1.7;" class="mobile-font-sm">
+              We hope you enjoyed using CHAINCODE TRADE. Your feedback helps us improve our platform and trader network.
+            </p>
+
+            <!-- Two CTA Buttons -->
+            <div class="button-container" style="margin:28px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                <tr class="button-row">
+                  <td align="center" style="padding:4px;">
+                    <a href="{{request_url}}" target="_blank" class="button-link"
+                      style="display:inline-block;background:linear-gradient(90deg,#00ff6a,#00ffea);padding:13px 32px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#000000;text-decoration:none;border-radius:4px;">
+                      VIEW DETAILS
+                    </a>
+                  </td>
+                </tr>
+                <tr class="button-row">
+                  <td align="center" style="padding:4px;">
+                    <a href="{{review_url}}" target="_blank" class="button-link"
+                      style="display:inline-block;background:linear-gradient(90deg,#00ffea,#bf00ff);padding:13px 32px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#000000;text-decoration:none;border-radius:4px;">
+                      LEAVE A REVIEW
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Trader Credit -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="margin:24px 0;border:1px solid #00ffea22;">
+              <tr>
+                <td style="padding:16px 20px;text-align:center;font-family:'Courier New',Courier,monospace;font-size:13px;color:#5a7a8a;line-height:1.8;" class="mobile-padding mobile-font-sm">
+                  Thank you for trading with <strong style="color:#00ffea;">{{trader_name}}</strong>!<br>
+                  <span style="font-size:11px;color:#3a5a6a;" class="mobile-font-xs">Transaction completed in {{fulfillment_time}}</span>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation"
+              style="background:#020204;border-top:1px solid #00ff6a22;">
+              <tr>
+                <td align="center" style="padding:20px 30px;" class="mobile-padding">
+                  <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#00ff6a;" class="mobile-font-sm">CHAINCODE TRADE</p>
+                  <p style="margin:6px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;color:#3a4a5a;" class="mobile-font-xs">SECURE TRADING NETWORK</p>
+                  <p style="margin:10px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;color:#263040;" class="mobile-font-xs">This is an automated message. Please do not reply to this email.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+      </table><!-- /inner container -->
+    </td>
+  </tr>
+</table><!-- /outer wrapper -->
+
 </body>
 </html>

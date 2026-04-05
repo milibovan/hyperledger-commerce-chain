@@ -1,232 +1,583 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% if recipient_type == "TRADER" %}New Request — Action Required{% else %}Request Created{% endif %} — CHAINCODE TRADE</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="dark light">
+<title>{% if recipient_type == "TRADER" %}New Request — Action Required{% else %}Request Successfully Created{% endif %} — CHAINCODE TRADE</title>
+<!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#04040d;font-family:'Share Tech Mono',monospace}
-  .wrap{max-width:620px;margin:0 auto;background:#07091a}
-  .rainbow-bar{height:3px;background:linear-gradient(90deg,#00ffea,#bf00ff,#00ff6a,#00ffea);background-size:200%;animation:rb 4s linear infinite}
-  @keyframes rb{to{background-position:200%}}
-  .hdr{background:#04040d;padding:32px 30px 24px;text-align:center;position:relative;overflow:hidden}
-  .hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,234,0.03) 3px,rgba(0,255,234,0.03) 4px)}
-
-  {% if recipient_type == "TRADER" %}
-  --acc:#bf00ff;
-  .accent-bar{height:1px;background:linear-gradient(90deg,transparent,#bf00ff 30%,#bf00ff 70%,transparent);margin:0 30px}
-  .title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#bf00ff;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
-  .subtitle-line{height:1px;background:linear-gradient(90deg,#bf00ff,transparent);margin-bottom:24px}
-  .badge{display:inline-block;border:1px solid #bf00ff;background:rgba(191,0,255,0.07);color:#bf00ff;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;padding:10px 28px;text-transform:uppercase;position:relative;animation:mbadge 2s ease-in-out infinite}
-  @keyframes mbadge{0%,100%{box-shadow:0 0 10px rgba(191,0,255,0.25)}50%{box-shadow:0 0 22px rgba(191,0,255,0.6)}}
-  .badge::before,.badge::after{content:'';position:absolute;top:-1px;bottom:-1px;width:6px;border-top:1px solid #bf00ff;border-bottom:1px solid #bf00ff}
-  .badge::before{left:-8px;border-left:1px solid #bf00ff}
-  .badge::after{right:-8px;border-right:1px solid #bf00ff}
-  .details{background:rgba(191,0,255,0.04);border-left:2px solid #bf00ff;padding:20px 24px;margin:24px 0}
-  .dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(191,0,255,0.12);font-size:13px}
-  .dv{color:#bf00ff}
-  .items-box{border:1px solid rgba(0,255,234,0.2);padding:20px 24px;margin:24px 0;background:rgba(0,255,234,0.03);position:relative}
-  .items-box::before{content:'REQUESTED PRODUCTS';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#00ffea}
-  .item-name{color:#00ffea}
-  .item-qty{color:#bf00ff}
-  .deadline{border:1px solid rgba(255,238,0,0.4);padding:22px 24px;margin:24px 0;background:rgba(255,238,0,0.04);text-align:center;position:relative}
-  .deadline::before{content:'FULFILLMENT DEADLINE';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#07091a;padding:0 12px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#ffee00;white-space:nowrap}
-  .deadline-date{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#ffee00;letter-spacing:2px;margin:8px 0}
-  .deadline-sub{font-size:12px;color:#8a8a50}
-  .steps{border:1px solid rgba(0,255,106,0.2);padding:20px 24px;margin:24px 0;background:rgba(0,255,106,0.03);position:relative}
-  .steps::before{content:'NEXT STEPS';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#00ff6a}
-  .customer-bar{background:rgba(0,255,234,0.05);border:1px solid rgba(0,255,234,0.15);padding:12px 20px;margin:24px 0;font-size:13px;color:#a0b4c4}
-  .customer-bar strong{color:#00ffea}
-  .customer-bar span{color:#fff}
-  .tip-box{background:rgba(191,0,255,0.04);border-left:2px solid rgba(191,0,255,0.3);padding:14px 18px;margin:20px 0;font-size:13px;color:#8090a0;line-height:1.7}
-  .tip-box strong{color:#bf00ff}
-  .btn-wrap{text-align:center;margin:28px 0 8px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-  .btn-approve{display:inline-block;background:linear-gradient(90deg,#00ff6a,#00ffea);color:#000;text-decoration:none;padding:14px 36px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-  .btn-reject{display:inline-block;background:linear-gradient(90deg,#ff4400,#ff0066);color:#fff;text-decoration:none;padding:14px 36px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-  .ftr{border-top:1px solid rgba(191,0,255,0.15);background:rgba(0,0,0,0.4);padding:20px 30px;text-align:center;color:#3a4a5a;font-size:11px;line-height:1.8;letter-spacing:1px}
-  .ftr-logo{color:#bf00ff;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px}
-  {% else %}
-  .accent-bar{height:1px;background:linear-gradient(90deg,transparent,#00ffea 30%,#00ffea 70%,transparent);margin:0 30px}
-  .title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#00ffea;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
-  .subtitle-line{height:1px;background:linear-gradient(90deg,#00ffea,transparent);margin-bottom:24px}
-  .badge{display:inline-block;border:1px solid #00ffea;background:rgba(0,255,234,0.07);color:#00ffea;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;padding:10px 28px;text-transform:uppercase;position:relative;animation:cbadge 2s ease-in-out infinite}
-  @keyframes cbadge{0%,100%{box-shadow:0 0 10px rgba(0,255,234,0.25)}50%{box-shadow:0 0 22px rgba(0,255,234,0.6)}}
-  .badge::before,.badge::after{content:'';position:absolute;top:-1px;bottom:-1px;width:6px;border-top:1px solid #00ffea;border-bottom:1px solid #00ffea}
-  .badge::before{left:-8px;border-left:1px solid #00ffea}
-  .badge::after{right:-8px;border-right:1px solid #00ffea}
-  .details{background:rgba(0,255,234,0.04);border-left:2px solid #00ffea;padding:20px 24px;margin:24px 0}
-  .dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,255,234,0.12);font-size:13px}
-  .dv{color:#00ffea}
-  .items-box{border:1px solid rgba(191,0,255,0.2);padding:20px 24px;margin:24px 0;background:rgba(191,0,255,0.03);position:relative}
-  .items-box::before{content:'REQUESTED ITEMS';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#bf00ff}
-  .item-name{color:#bf00ff}
-  .item-qty{color:#00ffea}
-  .steps{border:1px solid rgba(0,255,106,0.2);padding:20px 24px;margin:24px 0;background:rgba(0,255,106,0.03);position:relative}
-  .steps::before{content:'WHAT HAPPENS NEXT';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#00ff6a}
-  .tip-box{background:rgba(0,255,234,0.04);border-left:2px solid rgba(0,255,234,0.3);padding:14px 18px;margin:20px 0;font-size:13px;color:#8090a0;line-height:1.7}
-  .tip-box strong{color:#00ffea}
-  .ref-box{border:1px solid rgba(0,255,234,0.15);padding:16px 20px;margin:24px 0;text-align:center;background:rgba(0,255,234,0.03)}
-  .ref-box p{font-size:13px;color:#5a6a7a;line-height:1.8;margin:0}
-  .ref-box strong{color:#00ffea}
-  .btn-wrap{text-align:center;margin:28px 0 8px}
-  .btn-main{display:inline-block;background:linear-gradient(90deg,#00ffea,#bf00ff);color:#000;text-decoration:none;padding:14px 48px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:3px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
-  .ftr{border-top:1px solid rgba(0,255,234,0.15);background:rgba(0,0,0,0.4);padding:20px 30px;text-align:center;color:#3a4a5a;font-size:11px;line-height:1.8;letter-spacing:1px}
-  .ftr-logo{color:#00ffea;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px}
-  {% endif %}
-
-  /* Shared */
-  .intro{color:#a0b4c4;line-height:1.7;font-size:14px;text-align:center;margin-bottom:24px}
-  .badge-wrap{text-align:center;margin:20px 0}
-  .dl{color:#bf00ff;font-weight:bold;letter-spacing:1px}
-  .dr:last-child{border-bottom:none}
-  .item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px}
-  .item:last-child{border-bottom:none}
-  .step{display:flex;align-items:flex-start;gap:14px;padding:10px 0;font-size:13px;color:#a0b4c4}
-  .step+.step{border-top:1px solid rgba(0,255,106,0.08)}
-  .step-num{color:#00ff6a;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;flex-shrink:0;width:20px}
-  .step-text{line-height:1.6}
-
-  /* Icon */
-  .icon-wrap{text-align:center;margin:8px 0 28px}
-  {% if recipient_type == "TRADER" %}
-  .icon-sym{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;border:2px solid #bf00ff;color:#bf00ff;font-size:36px;position:relative;animation:bell-ring 0.8s ease-in-out}
-  @keyframes bell-ring{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-12deg)}40%,80%{transform:rotate(12deg)}}
-  {% else %}
-  .icon-sym{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;border:2px solid #00ffea;color:#00ffea;font-size:40px;position:relative;animation:plus-pop 0.6s ease-out both}
-  @keyframes plus-pop{0%{transform:scale(0) rotate(-180deg);opacity:0}70%{transform:scale(1.1) rotate(0)}100%{transform:scale(1) rotate(0);opacity:1}}
-  {% endif %}
+  * { margin: 0; padding: 0; }
+  
+  @keyframes cc-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes cc-dash{to{stroke-dashoffset:-24}}
+  @keyframes cc-flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+  
+  .cc1{animation:cc-pulse 2.4s ease-in-out infinite}
+  .cc2{animation:cc-pulse 2.4s ease-in-out infinite .8s}
+  .cc3{animation:cc-pulse 2.4s ease-in-out infinite 1.6s}
+  .ccd{animation:cc-dash 1.8s linear infinite}
+  .cct{animation:cc-flicker 6s steps(1) infinite}
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background: #04040d;
+    font-family: 'Courier New', Courier, monospace;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  table {
+    border-collapse: collapse;
+    mso-table-lspace: 0;
+    mso-table-rspace: 0;
+    width: 100%;
+  }
+  
+  img {
+    display: block;
+    border: 0;
+    outline: none;
+    text-decoration: none;
+    -ms-interpolation-mode: nearest-neighbor;
+  }
+  
+  a {
+    color: #00ffea;
+    text-decoration: none;
+  }
+  
+  /* Responsive styles */
+  @media only screen and (max-width: 600px) {
+    table {
+      width: 100% !important;
+    }
+    
+    .mobile-hide {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      line-height: 0 !important;
+      visibility: hidden !important;
+    }
+    
+    .mobile-center {
+      text-align: center !important;
+    }
+    
+    .mobile-full-width {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-padding {
+      padding: 16px 20px !important;
+    }
+    
+    .mobile-font-sm {
+      font-size: 11px !important;
+      line-height: 1.4 !important;
+    }
+    
+    .logo-container svg {
+      max-width: 240px !important;
+      height: auto !important;
+    }
+    
+    .button-container {
+      display: block !important;
+      width: 100% !important;
+    }
+    
+    .button-container table {
+      width: 100% !important;
+    }
+    
+    .button-row {
+      display: block !important;
+      margin-bottom: 8px !important;
+    }
+    
+    .button-link {
+      display: block !important;
+      width: 100% !important;
+      box-sizing: border-box;
+      text-align: center !important;
+      padding: 14px 20px !important;
+    }
+    
+    h1, h2, h3 {
+      margin: 0 0 12px !important;
+    }
+    
+    p {
+      margin: 0 0 12px !important;
+    }
+    
+    .spacer-large {
+      height: 16px !important;
+    }
+    
+    .spacer-medium {
+      height: 12px !important;
+    }
+  }
+  
+  /* Outlook fixes */
+  mso-padding-alt: 0 0 0 0;
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #04040d !important;
+      color: #a0b4c4 !important;
+    }
+  }
+  
+  @media (prefers-color-scheme: light) {
+    body {
+      background: #f5f5f5 !important;
+      color: #333333 !important;
+    }
+    
+    .light-bg { background: #ffffff !important; }
+    .light-text { color: #333333 !important; }
+  }
 </style>
 </head>
-<body>
-<div class="wrap">
-  <div class="rainbow-bar"></div>
-  <div class="hdr">
-    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="width:340px;max-width:100%;height:auto">
-      <defs>
-        <style>
-          @keyframes p-nr{0%,100%{opacity:1}50%{opacity:.35}}
-          @keyframes d-nr{to{stroke-dashoffset:-24}}
-          @keyframes f-nr{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.6}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
-          .nr1{animation:p-nr 2.4s ease-in-out infinite}
-          .nr2{animation:p-nr 2.4s ease-in-out infinite .8s}
-          .nr3{animation:p-nr 2.4s ease-in-out infinite 1.6s}
-          .ndm{animation:d-nr 1.8s linear infinite}
-          .ntx{animation:f-nr 6s steps(1) infinite}
-        </style>
-        <linearGradient id="nr-cg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00ffea"/><stop offset="50%" stop-color="#bf00ff"/><stop offset="100%" stop-color="#00ff6a"/></linearGradient>
-        <linearGradient id="nr-cg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/></linearGradient>
-        <linearGradient id="nr-cgv" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/></linearGradient>
-        <filter id="nr-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="nr-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-      </defs>
-      <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#nr-cg1)" stroke-width="1.5" opacity="0.35" filter="url(#nr-gs)"/>
-      <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#nr-cg2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="ndm" filter="url(#nr-gs)"/>
-      <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
-      <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
-      <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
-      <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
-      <circle cx="80" cy="14"  r="2.5" fill="#00ffea" filter="url(#nr-gs)"/>
-      <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#nr-gs)"/>
-      <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#nr-gs)"/>
-      <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#nr-gs)"/>
-      <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#nr-gs)"/>
-      <circle cx="27" cy="48"  r="2.5" fill="#00ffea" filter="url(#nr-gs)"/>
-      <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#nr-cg1)" stroke-width="1.5" filter="url(#nr-gs)"/>
-      <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="nr1" filter="url(#nr-gs)"/>
-      <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="nr2" filter="url(#nr-gs)"/>
-      <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="nr3" filter="url(#nr-gs)"/>
-      <polygon points="80,71 89,80 80,89 71,80" fill="url(#nr-cg2)" filter="url(#nr-gl)"/>
-      <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
-      <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
-      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#nr-cg1)" filter="url(#nr-gs)" class="ntx">CHAINCODE</text>
-      <line x1="158" y1="88" x2="500" y2="88" stroke="url(#nr-cg2)" stroke-width="1" opacity="0.4"/>
-      <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
-      <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
-      <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#nr-cgv)" filter="url(#nr-gs)">TRADE</text>
-      <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
-    </svg>
-  </div>
-  <div class="accent-bar"></div>
-  <div class="body">
+<body style="margin:0;padding:0;background:#04040d;">
 
+<!-- Preheader -->
+<div style="display:none;font-size:1px;color:#04040d;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+  {% if recipient_type == "TRADER" %}New Request — Action Required{% else %}Request Created{% endif %} — CHAINCODE TRADE
+</div>
+
+<!-- Main container -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+<tr><td align="center" style="padding:20px 10px;">
+
+<!-- Content wrapper -->
+<table class="mobile-full-width" cellpadding="0" cellspacing="0" border="0" role="presentation" style="max-width:600px;background:#07091a;margin:0 auto;">
+
+  <!-- Rainbow bar -->
+  <tr><td style="padding:0;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+      <tr>
+        <td width="20%" style="height:3px;background:#00ffea;font-size:0;line-height:0;">&nbsp;</td>
+        <td width="20%" style="height:3px;background:#6600ff;font-size:0;line-height:0;">&nbsp;</td>
+        <td width="20%" style="height:3px;background:#bf00ff;font-size:0;line-height:0;">&nbsp;</td>
+        <td width="20%" style="height:3px;background:#6600aa;font-size:0;line-height:0;">&nbsp;</td>
+        <td width="20%" style="height:3px;background:#00ff6a;font-size:0;line-height:0;">&nbsp;</td>
+      </tr>
+    </table>
+  </td></tr>
+
+  <!-- Header -->
+  <tr><td style="padding:0;">
     {% if recipient_type == "TRADER" %}
-    <div class="title">New Request — Action Required</div>
-    <div class="subtitle-line"></div>
-    <div class="icon-wrap"><div class="icon-sym">&#128276;</div></div>
-    <p class="intro">You have received a new request that requires your attention.</p>
-    <div class="badge-wrap"><span class="badge">⟡ ACTION REQUIRED ⟡</span></div>
-    <div class="customer-bar"><strong>Customer:</strong> <span>{{ user_name }}</span></div>
-    <div class="details">
-      <div class="dr"><span class="dl">ORDER ID</span><span class="dv">{{ request_id }}</span></div>
-      <div class="dr"><span class="dl">REQUEST DATE</span><span class="dv">{{ request_date }}</span></div>
-      <div class="dr"><span class="dl">ITEMS REQUESTED</span><span class="dv">{{ item_count }}</span></div>
-      <div class="dr"><span class="dl">ORDER VALUE</span><span class="dv">{{ total_amount }}</span></div>
-    </div>
-    <div class="deadline">
-      <div class="deadline-date">{{ due_date }}</div>
-      <div class="deadline-sub">Request must be fulfilled by this date</div>
-    </div>
-    <div class="items-box">
-      {% for item in items %}
-      <div class="item"><span class="item-name">{{ item.name }}</span><span class="item-qty">× {{ item.quantity }}</span></div>
-      {% endfor %}
-    </div>
-    <div class="steps">
-      <div class="step"><span class="step-num">01</span><span class="step-text">Review the request details and product requirements.</span></div>
-      <div class="step"><span class="step-num">02</span><span class="step-text">Verify you can fulfill this request by the deadline.</span></div>
-      <div class="step"><span class="step-num">03</span><span class="step-text">Approve or reject the request in your pending requests panel.</span></div>
-      <div class="step"><span class="step-num">04</span><span class="step-text">If approved, acquire items and fulfill within the timeframe.</span></div>
-    </div>
-    <div class="tip-box"><strong>Tip:</strong> Responding quickly to requests improves your trader rating and increases customer satisfaction.</div>
-    <p style="font-size:13px;color:#8090a0;line-height:1.7;margin:20px 0">Please review this request and respond as soon as possible. The customer is waiting for your decision.</p>
-    <div class="btn-wrap">
-      <a href="{{ url }}" class="btn-approve">View &amp; Approve</a>
-      <a href="{{ url }}" class="btn-reject">View &amp; Reject</a>
-    </div>
-
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+      <tr>
+        <td align="center" style="padding:24px 20px;background:#04040d;" class="mobile-padding">
+          <div class="logo-container" style="max-width:100%;overflow:auto;">
+            <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" width="280" height="auto" style="max-width:100%;height:auto;display:block;margin:0 auto;" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <style>
+                  @keyframes p-cc{0%,100%{opacity:1}50%{opacity:.35}}
+                  @keyframes d-cc{to{stroke-dashoffset:-24}}
+                  @keyframes f-cc{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+                  .cc1{animation:p-cc 2.4s ease-in-out infinite}
+                  .cc2{animation:p-cc 2.4s ease-in-out infinite .8s}
+                  .cc3{animation:p-cc 2.4s ease-in-out infinite 1.6s}
+                  .ccd{animation:d-cc 1.8s linear infinite}
+                  .cct{animation:f-cc 6s steps(1) infinite}
+                </style>
+                <linearGradient id="cc-g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00ffea"/><stop offset="50%" stop-color="#bf00ff"/><stop offset="100%" stop-color="#00ff6a"/>
+                </linearGradient>
+                <linearGradient id="cc-g2" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/>
+                </linearGradient>
+                <linearGradient id="cc-gv" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/>
+                </linearGradient>
+                <filter id="cc-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <filter id="cc-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cc-g1)" stroke-width="1.5" opacity="0.35" filter="url(#cc-gs)"/>
+              <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cc-g2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="ccd" filter="url(#cc-gs)"/>
+              <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+              <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+              <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+              <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
+              <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+              <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+              <circle cx="80" cy="14" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+              <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+              <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+              <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#cc-gs)"/>
+              <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+              <circle cx="27" cy="48" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+              <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cc-g1)" stroke-width="1.5" filter="url(#cc-gs)"/>
+              <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="cc1" filter="url(#cc-gs)"/>
+              <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="cc2" filter="url(#cc-gs)"/>
+              <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="cc3" filter="url(#cc-gs)"/>
+              <polygon points="80,71 89,80 80,89 71,80" fill="url(#cc-g2)" filter="url(#cc-gl)"/>
+              <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+              <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+              <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
+              <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
+              <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cc-g1)" filter="url(#cc-gs)" class="cct">CHAINCODE</text>
+              <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cc-g2)" stroke-width="1" opacity="0.4"/>
+              <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
+              <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
+              <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cc-gv)" filter="url(#cc-gs)">TRADE</text>
+              <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
+            </svg>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 20px;" class="mobile-padding">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+            <tr><td style="height:1px;background:linear-gradient(90deg,#04040d,#bf00ff,#bf00ff,#04040d);font-size:0;line-height:0;">&nbsp;</td></tr>
+          </table>
+        </td>
+      </tr>
+    </table>
     {% else %}
-    <div class="title">Request Created</div>
-    <div class="subtitle-line"></div>
-    <div class="icon-wrap"><div class="icon-sym">+</div></div>
-    <p class="intro">Your request has been successfully created and is now entering the approval process.</p>
-    <div class="badge-wrap"><span class="badge">⟡ ORDER CREATED ⟡</span></div>
-    <div class="details">
-      <div class="dr"><span class="dl">ORDER ID</span><span class="dv">{{ request_id }}</span></div>
-      <div class="dr"><span class="dl">CREATED</span><span class="dv">{{ request_date }}</span></div>
-      <div class="dr"><span class="dl">STATUS</span><span class="dv" style="color:#ffee00">Awaiting Trader Approval</span></div>
-      <div class="dr"><span class="dl">ITEMS</span><span class="dv">{{ item_count }}</span></div>
-      <div class="dr"><span class="dl">TOTAL VALUE</span><span class="dv">{{ total_amount }}</span></div>
-    </div>
-    <div class="items-box">
-      {% for item in items %}
-      <div class="item"><span class="item-name">{{ item.name }}</span><span class="item-qty">× {{ item.quantity }}</span></div>
-      {% endfor %}
-    </div>
-    <div class="steps">
-      <div class="step"><span class="step-num">01</span><span class="step-text">Your request will be reviewed by available traders.</span></div>
-      <div class="step"><span class="step-num">02</span><span class="step-text">A trader will approve or reject your request — typically within 24–48 hours.</span></div>
-      <div class="step"><span class="step-num">03</span><span class="step-text">If approved, the trader will acquire the items within the agreed timeframe.</span></div>
-      <div class="step"><span class="step-num">04</span><span class="step-text">Once fulfilled, you'll receive your items and the transaction will complete.</span></div>
-    </div>
-    <div class="tip-box"><strong>Important:</strong> Your payment has been reserved and is secure. You'll be notified immediately once a trader reviews your request.</div>
-    <div class="btn-wrap"><a href="{{ url }}" class="btn-main">View Request Details</a></div>
-    <div class="ref-box">
-      <p>Request Reference: <strong>{{ request_reference }}</strong><br><span style="font-size:11px;color:#3a4a5a">Save this reference for future inquiries</span></p>
-    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+      <tr>
+        <td align="center" style="padding:24px 20px;background:#04040d;" class="mobile-padding">
+          <div class="logo-container" style="max-width:100%;overflow:auto;">
+            <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" width="280" height="auto" style="max-width:100%;height:auto;display:block;margin:0 auto;" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <style>
+                  @keyframes p-cc{0%,100%{opacity:1}50%{opacity:.35}}
+                  @keyframes d-cc{to{stroke-dashoffset:-24}}
+                  @keyframes f-cc{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+                  .cc1{animation:p-cc 2.4s ease-in-out infinite}
+                  .cc2{animation:p-cc 2.4s ease-in-out infinite .8s}
+                  .cc3{animation:p-cc 2.4s ease-in-out infinite 1.6s}
+                  .ccd{animation:d-cc 1.8s linear infinite}
+                  .cct{animation:f-cc 6s steps(1) infinite}
+                </style>
+                <linearGradient id="cc-g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#00ffea"/><stop offset="50%" stop-color="#bf00ff"/><stop offset="100%" stop-color="#00ff6a"/>
+                </linearGradient>
+                <linearGradient id="cc-g2" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/>
+                </linearGradient>
+                <linearGradient id="cc-gv" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/>
+                </linearGradient>
+                <filter id="cc-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                <filter id="cc-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              </defs>
+              <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cc-g1)" stroke-width="1.5" opacity="0.35" filter="url(#cc-gs)"/>
+              <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cc-g2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="ccd" filter="url(#cc-gs)"/>
+              <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+              <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+              <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+              <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
+              <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+              <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+              <circle cx="80" cy="14" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+              <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+              <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+              <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#cc-gs)"/>
+              <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+              <circle cx="27" cy="48" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+              <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cc-g1)" stroke-width="1.5" filter="url(#cc-gs)"/>
+              <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="cc1" filter="url(#cc-gs)"/>
+              <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="cc2" filter="url(#cc-gs)"/>
+              <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="cc3" filter="url(#cc-gs)"/>
+              <polygon points="80,71 89,80 80,89 71,80" fill="url(#cc-g2)" filter="url(#cc-gl)"/>
+              <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+              <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+              <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
+              <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
+              <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cc-g1)" filter="url(#cc-gs)" class="cct">CHAINCODE</text>
+              <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cc-g2)" stroke-width="1" opacity="0.4"/>
+              <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
+              <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
+              <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cc-gv)" filter="url(#cc-gs)">TRADE</text>
+              <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
+            </svg>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0 20px;" class="mobile-padding">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+            <tr><td style="height:1px;background:linear-gradient(90deg,#04040d,#00ffea,#00ffea,#04040d);font-size:0;line-height:0;">&nbsp;</td></tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    {% endif %}
+  </td></tr>
+
+  <!-- Body -->
+  <tr><td style="padding:24px 20px;" class="mobile-padding">
+
+    <!-- Title -->
+    {% if recipient_type == "TRADER" %}
+    <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:18px;font-weight:bold;color:#bf00ff;text-transform:uppercase;letter-spacing:4px;" class="mobile-font-sm">New Request — Action Required</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px;"><tr><td style="height:1px;background:linear-gradient(90deg,#bf00ff,transparent);font-size:0;line-height:0;">&nbsp;</td></tr></table>
+    {% else %}
+    <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:18px;font-weight:bold;color:#00ffea;text-transform:uppercase;letter-spacing:4px;" class="mobile-font-sm">Request Created</p>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px;"><tr><td style="height:1px;background:linear-gradient(90deg,#00ffea,transparent);font-size:0;line-height:0;">&nbsp;</td></tr></table>
     {% endif %}
 
-  </div>
-  <div class="ftr">
-    <div class="ftr-logo">CHAINCODE TRADE</div>
-    <div style="margin-top:8px">SECURE TRADING NETWORK</div>
-    <div style="margin-top:8px;color:#263040">This is an automated message. Please do not reply to this email.</div>
-  </div>
-</div>
+    <!-- Icon -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+      <tr><td align="center" style="padding:16px 0;">
+        <table cellpadding="0" cellspacing="0" border="0" role="presentation">
+          <tr>
+            {% if recipient_type == "TRADER" %}
+            <td width="72" height="72" style="width:72px;height:72px;border:2px solid #bf00ff;text-align:center;vertical-align:middle;font-family:'Courier New',Courier,monospace;font-size:30px;color:#bf00ff;">&#128276;</td>
+            {% else %}
+            <td width="72" height="72" style="width:72px;height:72px;border:2px solid #00ffea;text-align:center;vertical-align:middle;font-family:'Courier New',Courier,monospace;font-size:38px;color:#00ffea;">+</td>
+            {% endif %}
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+
+    <!-- Intro -->
+    {% if recipient_type == "TRADER" %}
+    <p style="margin:0 0 20px;font-family:'Courier New',Courier,monospace;font-size:13px;color:#a0b4c4;line-height:1.7;text-align:center;">You have received a new request that requires your attention.</p>
+    {% else %}
+    <p style="margin:0 0 20px;font-family:'Courier New',Courier,monospace;font-size:13px;color:#a0b4c4;line-height:1.7;text-align:center;">Your request has been successfully created and is now entering the approval process.</p>
+    {% endif %}
+
+    <!-- Badge -->
+    {% if recipient_type == "TRADER" %}
+    <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px auto;width:auto;">
+      <tr><td style="border:1px solid #bf00ff;padding:10px 20px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#bf00ff;text-transform:uppercase;text-align:center;">&#9671; ACTION REQUIRED &#9671;</td></tr>
+    </table>
+    {% else %}
+    <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px auto;width:auto;">
+      <tr><td style="border:1px solid #00ffea;padding:10px 20px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#00ffea;text-transform:uppercase;text-align:center;">&#9671; ORDER CREATED &#9671;</td></tr>
+    </table>
+    {% endif %}
+
+    <!-- Customer bar (TRADER only) -->
+    {% if recipient_type == "TRADER" %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px 0;border:1px solid #00ffea22;background:#00ffea08;">
+      <tr><td style="padding:12px 20px;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;" class="mobile-font-sm">
+        <strong>Customer:</strong>&nbsp;<span style="color:#ffffff;">{{ user_name }}</span>
+      </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- Details rows -->
+    {% if recipient_type == "TRADER" %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-left:2px solid #bf00ff;margin:24px 0;">
+      <tr><td style="padding:0 20px;" class="mobile-padding"><table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;font-weight:bold;border-bottom:1px solid #bf00ff22;" class="mobile-font-sm">ORDER ID</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;text-align:right;border-bottom:1px solid #bf00ff22;" class="mobile-font-sm">{{ request_id }}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;font-weight:bold;border-bottom:1px solid #bf00ff22;" class="mobile-font-sm">REQUEST DATE</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;text-align:right;border-bottom:1px solid #bf00ff22;" class="mobile-font-sm">{{ request_date }}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;font-weight:bold;border-bottom:1px solid #bf00ff22;" class="mobile-font-sm">ITEMS</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;text-align:right;border-bottom:1px solid #bf00ff22;" class="mobile-font-sm">{{ item_count }}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;font-weight:bold;" class="mobile-font-sm">ORDER VALUE</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;text-align:right;" class="mobile-font-sm">{{ total_amount }}</td>
+        </tr>
+      </table></td></tr>
+    </table>
+    {% else %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-left:2px solid #00ffea;margin:24px 0;">
+      <tr><td style="padding:0 20px;" class="mobile-padding"><table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;border-bottom:1px solid #00ffea22;" class="mobile-font-sm">ORDER ID</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;text-align:right;border-bottom:1px solid #00ffea22;" class="mobile-font-sm">{{ request_id }}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;border-bottom:1px solid #00ffea22;" class="mobile-font-sm">CREATED</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;text-align:right;border-bottom:1px solid #00ffea22;" class="mobile-font-sm">{{ request_date }}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;border-bottom:1px solid #00ffea22;" class="mobile-font-sm">STATUS</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#ffee00;text-align:right;border-bottom:1px solid #00ffea22;" class="mobile-font-sm">Awaiting Trader Approval</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;border-bottom:1px solid #00ffea22;" class="mobile-font-sm">ITEMS</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;text-align:right;border-bottom:1px solid #00ffea22;" class="mobile-font-sm">{{ item_count }}</td>
+        </tr>
+        <tr>
+          <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;" class="mobile-font-sm">TOTAL VALUE</td>
+          <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;text-align:right;" class="mobile-font-sm">{{ total_amount }}</td>
+        </tr>
+      </table></td></tr>
+    </table>
+    {% endif %}
+
+    <!-- Deadline (TRADER only) -->
+    {% if recipient_type == "TRADER" %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border:1px solid #ffee0044;margin:24px 0;">
+      <tr><td style="padding:6px 20px;background:#ffee000f;border-bottom:1px solid #ffee0022;" class="mobile-padding">
+        <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#ffee00;text-transform:uppercase;">FULFILLMENT DEADLINE</span>
+      </td></tr>
+      <tr><td style="padding:16px 20px;text-align:center;" class="mobile-padding">
+        <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:26px;font-weight:bold;color:#ffee00;letter-spacing:2px;" class="mobile-font-sm">{{ due_date }}</p>
+        <p style="margin:8px 0 0;font-family:'Courier New',Courier,monospace;font-size:11px;color:#8a8a50;">Request must be fulfilled by this date</p>
+      </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- Items list -->
+    {% if recipient_type == "TRADER" %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border:1px solid #00ffea33;margin:24px 0;">
+      <tr><td style="padding:6px 20px;background:#00ffea0f;border-bottom:1px solid #00ffea22;" class="mobile-padding">
+        <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#00ffea;text-transform:uppercase;">REQUESTED PRODUCTS</span>
+      </td></tr>
+      <tr><td style="padding:16px 20px;" class="mobile-padding">
+        {% for item in items %}
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+          <tr>
+            <td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;font-weight:bold;border-bottom:1px solid #ffffff08;" class="mobile-font-sm">{{ item.name }}</td>
+            <td align="right" style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;text-align:right;border-bottom:1px solid #ffffff08;" class="mobile-font-sm">&#215; {{ item.quantity }}</td>
+          </tr>
+        </table>
+        {% endfor %}
+      </td></tr>
+    </table>
+    {% else %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border:1px solid #bf00ff33;margin:24px 0;">
+      <tr><td style="padding:6px 20px;background:#bf00ff0f;border-bottom:1px solid #bf00ff22;" class="mobile-padding">
+        <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#bf00ff;text-transform:uppercase;">REQUESTED ITEMS</span>
+      </td></tr>
+      <tr><td style="padding:16px 20px;" class="mobile-padding">
+        {% for item in items %}
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+          <tr>
+            <td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;border-bottom:1px solid #ffffff08;" class="mobile-font-sm">{{ item.name }}</td>
+            <td align="right" style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ffea;text-align:right;border-bottom:1px solid #ffffff08;" class="mobile-font-sm">&#215; {{ item.quantity }}</td>
+          </tr>
+        </table>
+        {% endfor %}
+      </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- Next steps -->
+    {% if recipient_type == "TRADER" %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border:1px solid #00ff6a33;margin:24px 0;">
+      <tr><td style="padding:6px 20px;background:#00ff6a0f;border-bottom:1px solid #00ff6a22;" class="mobile-padding">
+        <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#00ff6a;text-transform:uppercase;">NEXT STEPS</span>
+      </td></tr>
+      <tr><td style="padding:16px 20px;" class="mobile-padding">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+          <tr><td width="28" valign="top" style="padding:8px 12px 8px 0;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;color:#00ff6a;" class="mobile-font-sm">01</td><td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;" class="mobile-font-sm">Review the request details and product requirements.</td></tr>
+          <tr><td width="28" valign="top" style="padding:8px 12px 8px 0;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;color:#00ff6a;border-top:1px solid #ffffff0a;" class="mobile-font-sm">02</td><td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;border-top:1px solid #ffffff0a;" class="mobile-font-sm">Verify you can fulfill this request by the deadline.</td></tr>
+          <tr><td width="28" valign="top" style="padding:8px 12px 8px 0;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;color:#00ff6a;border-top:1px solid #ffffff0a;" class="mobile-font-sm">03</td><td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;border-top:1px solid #ffffff0a;" class="mobile-font-sm">Approve or reject the request in your pending requests panel.</td></tr>
+          <tr><td width="28" valign="top" style="padding:8px 12px 8px 0;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;color:#00ff6a;border-top:1px solid #ffffff0a;" class="mobile-font-sm">04</td><td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;border-top:1px solid #ffffff0a;" class="mobile-font-sm">If approved, acquire items and fulfill within the timeframe.</td></tr>
+        </table>
+      </td></tr>
+    </table>
+    {% else %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border:1px solid #00ff6a33;margin:24px 0;">
+      <tr><td style="padding:6px 20px;background:#00ff6a0f;border-bottom:1px solid #00ff6a22;" class="mobile-padding">
+        <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#00ff6a;text-transform:uppercase;">WHAT HAPPENS NEXT</span>
+      </td></tr>
+      <tr><td style="padding:16px 20px;" class="mobile-padding">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+          <tr><td width="28" valign="top" style="padding:8px 12px 8px 0;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;color:#00ff6a;" class="mobile-font-sm">01</td><td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;" class="mobile-font-sm">Your request will be reviewed by available traders.</td></tr>
+          <tr><td width="28" valign="top" style="padding:8px 12px 8px 0;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;color:#00ff6a;border-top:1px solid #ffffff0a;" class="mobile-font-sm">02</td><td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;border-top:1px solid #ffffff0a;" class="mobile-font-sm">A trader will approve or reject your request — typically within 24–48 hours.</td></tr>
+          <tr><td width="28" valign="top" style="padding:8px 12px 8px 0;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;color:#00ff6a;border-top:1px solid #ffffff0a;" class="mobile-font-sm">03</td><td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;border-top:1px solid #ffffff0a;" class="mobile-font-sm">If approved, the trader will acquire the items within the agreed timeframe.</td></tr>
+          <tr><td width="28" valign="top" style="padding:8px 12px 8px 0;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;color:#00ff6a;border-top:1px solid #ffffff0a;" class="mobile-font-sm">04</td><td style="padding:8px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;border-top:1px solid #ffffff0a;" class="mobile-font-sm">Once fulfilled, you'll receive your items and the transaction will complete.</td></tr>
+        </table>
+      </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- Tip / Important note -->
+    {% if recipient_type == "TRADER" %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px 0;border-left:2px solid #bf00ff55;">
+      <tr><td style="padding:12px 16px;font-family:'Courier New',Courier,monospace;font-size:12px;color:#7a8a9a;line-height:1.7;" class="mobile-font-sm">
+        <strong style="color:#bf00ff;">Tip:</strong> Responding quickly to requests improves your trader rating and increases customer satisfaction.
+      </td></tr>
+    </table>
+    {% else %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px 0;border-left:2px solid #00ffea55;">
+      <tr><td style="padding:12px 16px;font-family:'Courier New',Courier,monospace;font-size:12px;color:#7a8a9a;line-height:1.7;" class="mobile-font-sm">
+        <strong style="color:#00ffea;">Important:</strong> Your payment has been reserved and is secure. You'll be notified immediately once a trader reviews your request.
+      </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- CTA button(s) -->
+    {% if recipient_type == "TRADER" %}
+    <div class="button-container" style="margin:28px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+        <tr class="button-row">
+          <td style="padding:4px;" align="center">
+            <a href="{{ url }}" target="_blank" class="button-link" style="display:inline-block;background:linear-gradient(90deg,#00ff6a,#00ffea);padding:13px 30px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#000000;text-decoration:none;border-radius:4px;">VIEW &amp; APPROVE</a>
+          </td>
+        </tr>
+        <tr class="button-row">
+          <td style="padding:4px;" align="center">
+            <a href="{{ url }}" target="_blank" class="button-link" style="display:inline-block;background:linear-gradient(90deg,#ff4400,#ff0066);padding:13px 30px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;border-radius:4px;">VIEW &amp; REJECT</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+    {% else %}
+    <div class="button-container" style="margin:28px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+        <tr>
+          <td align="center" style="padding:0;">
+            <a href="{{ url }}" target="_blank" class="button-link" style="display:inline-block;background:linear-gradient(90deg,#00ffea,#bf00ff);padding:14px 48px;font-family:'Courier New',Courier,monospace;font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#000000;text-decoration:none;border-radius:4px;width:100%;box-sizing:border-box;">VIEW REQUEST DETAILS</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Reference box (USER only) -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:24px 0;border:1px solid #00ffea22;">
+      <tr><td style="padding:16px 20px;text-align:center;font-family:'Courier New',Courier,monospace;font-size:12px;color:#5a6a7a;line-height:1.8;" class="mobile-padding mobile-font-sm">
+        Request Reference: <strong style="color:#00ffea;">{{ request_reference }}</strong><br>
+        <span style="font-size:10px;">Save this reference for future inquiries</span>
+      </td></tr>
+    </table>
+    {% endif %}
+
+  </td></tr>
+
+  <!-- Footer -->
+  <tr><td style="padding:0;">
+    {% if recipient_type == "TRADER" %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#020204;border-top:1px solid #bf00ff22;">
+      <tr><td align="center" style="padding:20px 30px;" class="mobile-padding">
+        <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#bf00ff;">CHAINCODE TRADE</p>
+        <p style="margin:6px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;color:#3a4a5a;">SECURE TRADING NETWORK</p>
+        <p style="margin:10px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;color:#263040;">This is an automated message. Please do not reply to this email.</p>
+      </tr></td>
+    </table>
+    {% else %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#020204;border-top:1px solid #00ffea22;">
+      <tr><td align="center" style="padding:20px 30px;" class="mobile-padding">
+        <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#00ffea;">CHAINCODE TRADE</p>
+        <p style="margin:6px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;color:#3a4a5a;">SECURE TRADING NETWORK</p>
+        <p style="margin:10px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;color:#263040;">This is an automated message. Please do not reply to this email.</p>
+      </tr></td>
+    </table>
+    {% endif %}
+  </td></tr>
+
+</table>
+</td></tr>
+</table>
+
 </body>
 </html>

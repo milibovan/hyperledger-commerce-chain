@@ -1,211 +1,383 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fulfillment Reminder - Day 1</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', monospace;
-            background-color: #0a0e27;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
-            border: 2px solid #00ff00;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), 0 0 40px rgba(0, 255, 255, 0.2);
-        }
-        .header {
-            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
-            padding: 2px;
-        }
-        .header-content {
-            background: #0a0e27;
-            padding: 30px;
-            text-align: center;
-        }
-        .logo {
-            width: 200px;
-            height: auto;
-            margin: 0 auto 10px;
-        }
-        .content {
-            padding: 40px 30px;
-            color: #00ffff;
-        }
-        .status-badge {
-            display: inline-block;
-            background: rgba(0, 255, 0, 0.1);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            padding: 10px 20px;
-            margin: 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        .request-details {
-            background: rgba(0, 255, 0, 0.05);
-            border-left: 4px solid #00ff00;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(0, 255, 0, 0.2);
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .label {
-            color: #ff00ff;
-            font-weight: bold;
-        }
-        .value {
-            color: #00ff00;
-        }
-        .warning-box {
-            background: rgba(255, 255, 0, 0.1);
-            border: 2px solid #ffff00;
-            padding: 20px;
-            margin: 20px 0;
-            color: #ffff00;
-        }
-        .timer {
-            text-align: center;
-            font-size: 36px;
-            color: #00ff00;
-            margin: 20px 0;
-            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-        }
-        .button {
-            display: inline-block;
-            background: linear-gradient(90deg, #00ff00 0%, #00ffff 100%);
-            color: #000;
-            text-decoration: none;
-            padding: 15px 40px;
-            margin: 20px 0;
-            text-transform: uppercase;
-            font-weight: bold;
-            border: none;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
-        }
-        .footer {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px 30px;
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-            border-top: 1px solid rgba(0, 255, 0, 0.2);
-        }
-        .cyber-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #00ff00 50%, transparent 100%);
-            margin: 20px 0;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="color-scheme" content="dark">
+<title>Fulfillment Reminder</title>
+<!--[if mso]><noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript><![endif]-->
+<style>
+  /* Reset and base styles */
+  * { margin: 0; padding: 0; }
+  
+  @keyframes cc-pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes cc-dash{to{stroke-dashoffset:-24}}
+  @keyframes cc-flicker{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+  .cc1{animation:cc-pulse 2.4s ease-in-out infinite}
+  .cc2{animation:cc-pulse 2.4s ease-in-out infinite .8s}
+  .cc3{animation:cc-pulse 2.4s ease-in-out infinite 1.6s}
+  .ccd{animation:cc-dash 1.8s linear infinite}
+  .cct{animation:cc-flicker 6s steps(1) infinite}
+  
+  body {
+    margin: 0;
+    padding: 0;
+    background: #04040d;
+    font-family: 'Courier New', Courier, monospace;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  table {
+    border-collapse: collapse;
+    mso-table-lspace: 0;
+    mso-table-rspace: 0;
+  }
+  
+  img {
+    border: 0;
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+  
+  a {
+    color: #00ff6a;
+    text-decoration: none;
+  }
+  
+  /* Responsive mobile styles */
+  @media only screen and (max-width: 600px) {
+    table {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-hide {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+      line-height: 0 !important;
+      visibility: hidden !important;
+    }
+    
+    .mobile-center {
+      text-align: center !important;
+    }
+    
+    .mobile-full-width {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    
+    .mobile-padding {
+      padding: 16px 20px !important;
+    }
+    
+    .mobile-padding-lg {
+      padding: 20px 16px !important;
+    }
+    
+    .mobile-font-sm {
+      font-size: 11px !important;
+      line-height: 1.4 !important;
+    }
+    
+    .mobile-font-xs {
+      font-size: 10px !important;
+      line-height: 1.3 !important;
+    }
+    
+    .logo-container svg {
+      max-width: 240px !important;
+      width: 100% !important;
+      height: auto !important;
+    }
+    
+    .button-container {
+      display: block !important;
+      width: 100% !important;
+    }
+    
+    .button-container table {
+      width: 100% !important;
+    }
+    
+    .button-link {
+      display: block !important;
+      width: 100% !important;
+      box-sizing: border-box;
+      text-align: center !important;
+      padding: 12px 20px !important;
+    }
+    
+    h1, h2, h3, p {
+      word-wrap: break-word !important;
+      overflow-wrap: break-word !important;
+    }
+    
+    .spacer {
+      height: 12px !important;
+    }
+    
+    /* Better padding reduction */
+    .content-padding {
+      padding: 20px 16px !important;
+    }
+    
+    .header-padding {
+      padding: 20px 16px !important;
+    }
+    
+    /* Days remaining scaling */
+    .days-remaining {
+      font-size: 28px !important;
+    }
+  }
+  
+  /* Small phone adjustments */
+  @media only screen and (max-width: 480px) {
+    .button-link {
+      padding: 11px 16px !important;
+      font-size: 12px !important;
+    }
+    
+    .logo-container svg {
+      max-width: 200px !important;
+    }
+    
+    .days-remaining {
+      font-size: 24px !important;
+    }
+  }
+  
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #04040d !important;
+      color: #a0b4c4 !important;
+    }
+  }
+</style>
 </head>
-<body>
-<div class="container">
-    <div class="header">
-        <div class="header-content">
-            <svg class="logo" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="cyberGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
-                        <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#00ff00;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="cyberGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
-                    </linearGradient>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                    </filter>
-                </defs>
-                <polygon points="60,20 100,35 100,65 60,80 20,65 20,35" fill="none" stroke="url(#cyberGrad1)" stroke-width="2" filter="url(#glow)" opacity="0.6"/>
-                <polygon points="60,30 85,40 85,60 60,70 35,60 35,40" fill="none" stroke="#00ffff" stroke-width="2" filter="url(#glow)"/>
-                <path d="M 60,30 L 60,15 M 85,40 L 100,40 M 85,60 L 100,60 M 60,70 L 60,85 M 35,60 L 20,60 M 35,40 L 20,40" stroke="#ff00ff" stroke-width="1.5" opacity="0.7"/>
-                <polygon points="60,45 70,50 60,55 50,50" fill="url(#cyberGrad2)" filter="url(#glow)"/>
-                <circle cx="60" cy="15" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <circle cx="100" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <circle cx="100" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
-                <circle cx="60" cy="85" r="2" fill="#00ff00" filter="url(#glow)"/>
-                <circle cx="20" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
-                <circle cx="20" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <text x="120" y="45" font-family="'Courier New', monospace" font-size="32" font-weight="bold" fill="url(#cyberGrad1)" filter="url(#glow)">CHAINCODE</text>
-                <text x="120" y="70" font-family="'Courier New', monospace" font-size="18" fill="#00ffff" letter-spacing="4" opacity="0.9">TRADE</text>
-                <line x1="120" y1="75" x2="280" y2="75" stroke="url(#cyberGrad2)" stroke-width="1" opacity="0.5"/>
-            </svg>
-        </div>
-    </div>
+<body style="margin:0;padding:0;background:#04040d;">
 
-    <div class="content">
-        <h1 style="color: #00ff00; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Fulfillment Reminder</h1>
+<!-- Preheader (hidden) -->
+<div style="display:none;font-size:1px;color:#04040d;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">Fulfillment Reminder — CHAINCODE TRADE</div>
 
-        <div class="cyber-line"></div>
+<!-- Outer wrapper -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+  <tr>
+    <td align="center" style="padding:20px 10px;">
 
-        <p style="color: #fff; line-height: 1.6;">
-            This is a friendly reminder that your approved request is awaiting fulfillment.
-        </p>
+      <!-- Inner container — 600px max -->
+      <table class="mobile-full-width" cellpadding="0" cellspacing="0" border="0" role="presentation" style="max-width:600px;background:#07091a;margin:0 auto;">
 
-        <div style="text-align: center;">
-            <span class="status-badge">⟡ ACTION REQUIRED ⟡</span>
-        </div>
+        <!-- Rainbow bar -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+              <tr>
+                <td width="20%" style="height:3px;background:#00ffea;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#6600ff;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#bf00ff;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#6600aa;font-size:0;line-height:0;">&nbsp;</td>
+                <td width="20%" style="height:3px;background:#00ff6a;font-size:0;line-height:0;">&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-        <div class="timer">
-            {{days_remaining}} DAYS
-        </div>
+        <!-- Header / Logo -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#04040d;">
+              <tr>
+                <td align="center" style="padding:24px 20px;" class="header-padding">
+                  <div class="logo-container" style="max-width:100%;overflow:auto;">
+                    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" width="280" height="auto" style="max-width:100%;height:auto;display:block;margin:0 auto;" preserveAspectRatio="xMidYMid meet">
+                      <defs>
+                        <style>
+                          @keyframes p-cc{0%,100%{opacity:1}50%{opacity:.35}}
+                          @keyframes d-cc{to{stroke-dashoffset:-24}}
+                          @keyframes f-cc{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+                          .cc1{animation:p-cc 2.4s ease-in-out infinite}
+                          .cc2{animation:p-cc 2.4s ease-in-out infinite .8s}
+                          .cc3{animation:p-cc 2.4s ease-in-out infinite 1.6s}
+                          .ccd{animation:d-cc 1.8s linear infinite}
+                          .cct{animation:f-cc 6s steps(1) infinite}
+                        </style>
+                        <linearGradient id="cc-g1" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stop-color="#00ffea"/><stop offset="50%" stop-color="#bf00ff"/><stop offset="100%" stop-color="#00ff6a"/>
+                        </linearGradient>
+                        <linearGradient id="cc-g2" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/>
+                        </linearGradient>
+                        <linearGradient id="cc-gv" x1="0%" y1="0%" x2="0%" y2="100%">
+                          <stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/>
+                        </linearGradient>
+                        <filter id="cc-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                        <filter id="cc-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                      </defs>
+                      <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cc-g1)" stroke-width="1.5" opacity="0.35" filter="url(#cc-gs)"/>
+                      <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cc-g2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="ccd" filter="url(#cc-gs)"/>
+                      <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+                      <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
+                      <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+                      <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+                      <circle cx="80" cy="14" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+                      <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#cc-gs)"/>
+                      <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#cc-gs)"/>
+                      <circle cx="27" cy="48" r="2.5" fill="#00ffea" filter="url(#cc-gs)"/>
+                      <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cc-g1)" stroke-width="1.5" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="cc1" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="cc2" filter="url(#cc-gs)"/>
+                      <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="cc3" filter="url(#cc-gs)"/>
+                      <polygon points="80,71 89,80 80,89 71,80" fill="url(#cc-g2)" filter="url(#cc-gl)"/>
+                      <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+                      <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
+                      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cc-g1)" filter="url(#cc-gs)" class="cct">CHAINCODE</text>
+                      <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cc-g2)" stroke-width="1" opacity="0.4"/>
+                      <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
+                      <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
+                      <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cc-gv)" filter="url(#cc-gs)">TRADE</text>
+                      <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
+                    </svg>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:0 20px;" class="mobile-padding">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr><td style="height:1px;background:linear-gradient(90deg,#04040d,#00ff6a,#00ff6a,#04040d);font-size:0;">&nbsp;</td></tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-        <div class="request-details">
-            <div class="detail-row">
-                <span class="label">ORDER ID:</span>
-                <span class="value">{{request_id}}</span>
+        <!-- Body -->
+        <tr>
+          <td style="padding:24px 20px;" class="content-padding">
+
+            <!-- Title -->
+            <p style="margin:0 0 6px;font-family:'Courier New',Courier,monospace;font-size:18px;font-weight:bold;color:#00ff6a;text-transform:uppercase;letter-spacing:4px;" class="mobile-font-sm">Fulfillment Reminder</p>
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin-bottom:20px;">
+              <tr><td style="height:1px;background:linear-gradient(90deg,#00ff6a,transparent);font-size:0;">&nbsp;</td></tr>
+            </table>
+
+            <!-- Intro -->
+            <p style="margin:0 0 20px;font-family:'Courier New',Courier,monospace;font-size:13px;color:#a0b4c4;line-height:1.7;" class="mobile-font-sm">
+              This is a friendly reminder that your approved request is awaiting fulfillment.
+            </p>
+
+            <!-- Badge -->
+            <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:20px auto;width:auto;">
+              <tr><td style="border:1px solid #00ff6a;padding:10px 20px;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#00ff6a;text-transform:uppercase;text-align:center;" class="mobile-font-sm">
+                &#9671; ACTION REQUIRED &#9671;
+              </td></tr>
+            </table>
+
+            <!-- Days Remaining Counter -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+              <tr>
+                <td align="center" style="padding:20px 0;">
+                  <p class="days-remaining" style="margin:0;font-family:'Courier New',Courier,monospace;font-size:36px;font-weight:bold;color:#00ff6a;letter-spacing:4px;">{{days_remaining}} DAYS</p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Details rows -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border-left:2px solid #00ff6a;margin:24px 0;">
+              <tr>
+                <td style="padding:0 20px;" class="mobile-padding">
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">ORDER ID</td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">{{request_id}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">APPROVED</td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">{{approval_date}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">DEADLINE</td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;border-bottom:1px solid #00ff6a22;" class="mobile-font-sm">{{deadline_date}}</td>
+                    </tr>
+                    <tr>
+                      <td style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#bf00ff;font-weight:bold;letter-spacing:1px;" class="mobile-font-sm">TOTAL VALUE</td>
+                      <td align="right" style="padding:10px 0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#00ff6a;text-align:right;" class="mobile-font-sm">{{total_amount}}</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Important Warning -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="border:1px solid #00ff6a33;margin:24px 0;">
+              <tr>
+                <td style="padding:6px 20px;background:#00ff6a0f;border-bottom:1px solid #00ff6a22;" class="mobile-padding">
+                  <span style="font-family:'Courier New',Courier,monospace;font-size:10px;font-weight:bold;letter-spacing:3px;color:#00ff6a;text-transform:uppercase;" class="mobile-font-xs">IMPORTANT</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:16px 20px;" class="mobile-padding">
+                  <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:12px;color:#a0b4c4;line-height:1.7;" class="mobile-font-sm">
+                    Please fulfill this request within the specified timeframe. Failure to complete by the deadline may result in automatic cancellation and may affect your trader rating.
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Call to action paragraph -->
+            <p style="margin:16px 0;font-family:'Courier New',Courier,monospace;font-size:13px;color:#c8d8e8;line-height:1.7;" class="mobile-font-sm">
+              Complete the request by delivering the items and marking the request as fulfilled in your trader dashboard.
+            </p>
+
+            <!-- CTA Button -->
+            <div class="button-container" style="margin:28px 0;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation">
+                <tr>
+                  <td align="center" style="padding:0;">
+                    <a href="{{url}}" target="_blank" class="button-link"
+                      style="display:inline-block;background:linear-gradient(90deg,#00ff6a,#00ffea);padding:14px 48px;font-family:'Courier New',Courier,monospace;font-size:13px;font-weight:bold;letter-spacing:3px;text-transform:uppercase;color:#000000;text-decoration:none;border-radius:4px;mso-padding-alt:0;">
+                      FULFILL REQUEST NOW
+                    </a>
+                  </td>
+                </tr>
+              </table>
             </div>
-            <div class="detail-row">
-                <span class="label">APPROVED:</span>
-                <span class="value">{{approval_date}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">DEADLINE:</span>
-                <span class="value">{{deadline_date}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">TOTAL VALUE:</span>
-                <span class="value">{{total_amount}}</span>
-            </div>
-        </div>
 
-        <div class="warning-box">
-            <strong>⚠ IMPORTANT:</strong> Please fulfill this request within the specified timeframe. Failure to complete the request by the deadline may result in automatic cancellation.
-        </div>
+          </td>
+        </tr>
 
-        <p style="color: #fff; line-height: 1.6;">
-            Complete the request by delivering the requested items and marking the request as fulfilled in your trader dashboard.
-        </p>
+        <!-- Footer -->
+        <tr>
+          <td style="padding:0;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#020204;border-top:1px solid #00ff6a22;">
+              <tr>
+                <td align="center" style="padding:20px 30px;" class="mobile-padding">
+                  <p style="margin:0;font-family:'Courier New',Courier,monospace;font-size:12px;font-weight:bold;letter-spacing:3px;color:#00ff6a;" class="mobile-font-sm">CHAINCODE TRADE</p>
+                  <p style="margin:6px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;letter-spacing:2px;color:#3a4a5a;" class="mobile-font-xs">SECURE TRADING NETWORK</p>
+                  <p style="margin:10px 0 0;font-family:'Courier New',Courier,monospace;font-size:10px;color:#263040;" class="mobile-font-xs">This is an automated message. Please do not reply to this email.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
 
-        <div style="text-align: center;">
-            <a href="{{url}}" class="button">Fulfill Request Now</a>
-        </div>
-    </div>
+      </table><!-- /inner container -->
+    </td>
+  </tr>
+</table><!-- /outer wrapper -->
 
-    <div class="footer">
-        <p>CHAINCODE TRADE • Secure Trading Network</p>
-        <p style="margin-top: 10px;">This is an automated message. Please do not reply to this email.</p>
-    </div>
-</div>
 </body>
 </html>
