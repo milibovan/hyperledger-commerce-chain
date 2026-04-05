@@ -33,8 +33,9 @@ volumes:
   fabric-ca-org3-data:
 
 networks:
-  test:
-    name: hyperledger-commerce-chain
+  hdfs_asvsp:
+    name: hdfs_asvsp
+    external: true
 
 services:
 
@@ -78,7 +79,7 @@ services:
       - 7053:7053
       - 9443:9443
     networks:
-      - test
+      - hdfs_asvsp
 
   raft1.example.com:
     container_name: raft1.example.com
@@ -120,7 +121,7 @@ services:
       - 7554:7554
       - 9777:9777
     networks:
-      - test
+      - hdfs_asvsp
 
   raft2.example.com:
     container_name: raft2.example.com
@@ -162,7 +163,7 @@ services:
       - 7058:7058
       - 7154:7154
     networks:
-      - test
+      - hdfs_asvsp
 
   peer0.org1.example.com:
     container_name: peer0.org1.example.com
@@ -196,7 +197,7 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
@@ -211,7 +212,7 @@ services:
       - 7051:7051
       - 9444:9444
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb0
 
@@ -247,7 +248,7 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
@@ -262,7 +263,7 @@ services:
       - 9051:9051
       - 9445:9445
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb1
 
@@ -298,7 +299,7 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer0rg3"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
@@ -313,7 +314,7 @@ services:
       - 8051:8051
       - 9446:9446
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb2
 
@@ -349,7 +350,7 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
@@ -364,7 +365,7 @@ services:
       - 7151:7151
       - 9447:9447
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb3
 
@@ -400,7 +401,7 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
@@ -415,7 +416,7 @@ services:
       - 9151:9151
       - 9448:9448
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb4
 
@@ -451,7 +452,7 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer1org3"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
@@ -466,7 +467,7 @@ services:
       - 8151:8151
       - 9449:9449
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb5
 
@@ -502,7 +503,7 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org1"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
@@ -517,7 +518,7 @@ services:
       - 7251:7251
       - 9450:9450
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb6
 
@@ -553,7 +554,7 @@ services:
       - CORE_METRICS_PROVIDER=prometheus
       - CHAINCODE_AS_A_SERVICE_BUILDER_CONFIG={"peername":"peer2org2"}
       - CORE_CHAINCODE_EXECUTETIMEOUT=300s
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
@@ -568,7 +569,7 @@ services:
       - 9251:9251
       - 9451:9451
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb7
 
@@ -607,7 +608,7 @@ services:
       - CORE_PEER_BCCSP_DEFAULT=SW
       - CORE_PEER_BCCSP_SW_HASH=SHA2
       - CORE_PEER_BCCSP_SW_SECURITY=256
-      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hyperledger-commerce-chain
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=hdfs_asvsp
     volumes:
       - ../config/core.yaml:/etc/hyperledger/config/core.yaml
       - ../organizations/peerOrganizations/org3.example.com/peers/peer2.org3.example.com:/etc/hyperledger/fabric
@@ -619,6 +620,6 @@ services:
       - 8251:8251
       - 9452:9452
     networks:
-      - test
+      - hdfs_asvsp
     depends_on:
       - couchdb8

@@ -7,8 +7,9 @@ volumes:
   fabric-ca-org3-data:
 
 networks:
-  test:
-    name: hyperledger-commerce-chain
+  hdfs_asvsp:
+    name: hdfs_asvsp
+    external: true
 
 services:
   ca.orderer.example.com:
@@ -25,7 +26,7 @@ services:
       - ../organizations/fabric-ca/ordererOrg:/etc/hyperledger/fabric-ca-server
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     networks:
-      - test
+      - hdfs_asvsp
 
   ca.org1.example.com:
     image: hyperledger/fabric-ca:latest
@@ -41,7 +42,7 @@ services:
       - ../organizations/fabric-ca/org1:/etc/hyperledger/fabric-ca-server
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     networks:
-      - test
+      - hdfs_asvsp
 
   ca.org2.example.com:
     image: hyperledger/fabric-ca:latest
@@ -57,7 +58,7 @@ services:
       - ../organizations/fabric-ca/org2:/etc/hyperledger/fabric-ca-server
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     networks:
-      - test
+      - hdfs_asvsp
 
   ca.org3.example.com:
     image: hyperledger/fabric-ca:latest
@@ -73,4 +74,4 @@ services:
       - ../organizations/fabric-ca/org3:/etc/hyperledger/fabric-ca-server
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     networks:
-      - test
+      - hdfs_asvsp

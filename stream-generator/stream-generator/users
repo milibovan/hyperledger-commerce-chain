@@ -1,0 +1,43 @@
+users
+    create-user 
+        -> creates orders, creates requests, cancel receipts/order/request
+-> order-ids, requests-ids
+-----------------------
+traders
+    create-trader
+        -> completes/fulfilles/approves order, approve/reject/fulfilles request
+-> products-available, receipts-ids, requests-ids
+-----------------------
+products
+    create-product
+-----------------------
+orders
+    create-order (PENDING)
+    complete-order
+    fulfill-order
+    approve-order
+    cancel-order
+-> user-id, product-ids, receipts-ids, request-id (if it is created from request)
+-----------------------
+receipts
+    create-receipt
+    cancel-receipt
+-> user-id, trader-id, order-id, product-ids
+-----------------------
+requests
+    create-request
+    pending-request ???
+    approve-request
+    reject-request
+    request-expired ???
+    fulfill-request
+    cancel-request
+-> user-id, trader-id, product-ids, order-id
+-----------------------
+-----------------------
+-----------------------
+AVRO format, different from batch
+Events -> actions that could be done
+Frequency of triggering
+Different Kafka topics based on event or entity???
+Reading one consumer per topic, or one consumer???

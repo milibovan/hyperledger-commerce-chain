@@ -1,223 +1,186 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insufficient Balance</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', monospace;
-            background-color: #0a0e27;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
-            border: 2px solid #ff6600;
-            box-shadow: 0 0 20px rgba(255, 102, 0, 0.4), 0 0 40px rgba(255, 0, 255, 0.2);
-        }
-        .header {
-            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
-            padding: 2px;
-        }
-        .header-content {
-            background: #0a0e27;
-            padding: 30px;
-            text-align: center;
-        }
-        .logo {
-            width: 200px;
-            height: auto;
-            margin: 0 auto 10px;
-        }
-        .content {
-            padding: 40px 30px;
-            color: #00ffff;
-        }
-        .status-badge {
-            display: inline-block;
-            background: rgba(255, 102, 0, 0.15);
-            border: 2px solid #ff6600;
-            color: #ff6600;
-            padding: 10px 20px;
-            margin: 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba(255, 102, 0, 0.4);
-        }
-        .request-details {
-            background: rgba(255, 102, 0, 0.08);
-            border-left: 4px solid #ff6600;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 102, 0, 0.2);
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .label {
-            color: #ff00ff;
-            font-weight: bold;
-        }
-        .value {
-            color: #ff6600;
-        }
-        .balance-box {
-            background: rgba(255, 165, 0, 0.1);
-            border: 2px solid #ffa500;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .balance-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            font-size: 18px;
-        }
-        .shortage {
-            color: #ff0000;
-            font-weight: bold;
-            font-size: 24px;
-        }
-        .button {
-            display: inline-block;
-            background: linear-gradient(90deg, #ff6600 0%, #ffa500 100%);
-            color: #000;
-            text-decoration: none;
-            padding: 15px 40px;
-            margin: 20px 0;
-            text-transform: uppercase;
-            font-weight: bold;
-            border: none;
-            box-shadow: 0 0 20px rgba(255, 102, 0, 0.5);
-        }
-        .footer {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px 30px;
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-            border-top: 1px solid rgba(255, 102, 0, 0.2);
-        }
-        .cyber-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent 0%, #ff6600 50%, transparent 100%);
-            margin: 20px 0;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Insufficient Balance — CHAINCODE TRADE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#04040d;font-family:'Share Tech Mono',monospace}
+
+  .wrap{max-width:620px;margin:0 auto;background:#07091a}
+
+  /* Rainbow border top */
+  .rainbow-bar{height:3px;background:linear-gradient(90deg,#00ffea,#bf00ff,#00ff6a,#00ffea);background-size:200%;animation:rb 4s linear infinite}
+  @keyframes rb{to{background-position:200%}}
+
+  /* Header */
+  .hdr{background:#04040d;padding:32px 30px 24px;text-align:center;position:relative;overflow:hidden}
+  .hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,234,0.03) 3px,rgba(0,255,234,0.03) 4px)}
+  .hdr-logo svg{width:340px;max-width:100%;height:auto}
+
+  /* Accent border */
+  .accent-bar{height:1px;background:linear-gradient(90deg,transparent,#ff6600 30%,#ff6600 70%,transparent);margin:0 30px}
+
+  /* Body */
+  .body{padding:36px 30px;color:#c8d8e8}
+
+  /* Title */
+  .title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#ff6600;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
+  .subtitle-line{height:1px;background:linear-gradient(90deg,#ff6600,transparent);margin-bottom:24px}
+
+  .intro{color:#a0b4c4;line-height:1.7;font-size:14px;margin-bottom:24px}
+
+  /* Badge */
+  .badge-wrap{text-align:center;margin:20px 0}
+  .badge{display:inline-block;border:1px solid #ff6600;background:rgba(255,102,0,0.08);color:#ff6600;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;padding:10px 28px;text-transform:uppercase;position:relative}
+  .badge::before,.badge::after{content:'';position:absolute;top:-1px;bottom:-1px;width:6px;border-top:1px solid #ff6600;border-bottom:1px solid #ff6600}
+  .badge::before{left:-8px;border-left:1px solid #ff6600}
+  .badge::after{right:-8px;border-right:1px solid #ff6600}
+
+  /* Details block */
+  .details{background:rgba(255,102,0,0.05);border-left:2px solid #ff6600;padding:20px 24px;margin:24px 0}
+  .dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,102,0,0.15);font-size:13px}
+  .dr:last-child{border-bottom:none}
+  .dl{color:#bf00ff;font-weight:bold;letter-spacing:1px}
+  .dv{color:#ff6600}
+
+  /* Balance box */
+  .bal{border:1px solid rgba(255,165,0,0.4);padding:24px;margin:24px 0;background:rgba(255,102,0,0.04);position:relative}
+  .bal::before{content:'BALANCE STATUS';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#ffa500}
+  .bal-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;font-size:14px}
+  .bal-label{color:#bf00ff}
+  .bal-val{color:#00ffea}
+  .bal-divider{height:1px;background:linear-gradient(90deg,transparent,#ff6600,transparent);margin:8px 0}
+  .shortage-val{color:#ff3333;font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;letter-spacing:1px}
+
+  .note{font-size:13px;color:#8090a0;line-height:1.7;margin:20px 0;border-left:2px solid rgba(255,255,255,0.08);padding-left:16px}
+  .note strong{color:#fff}
+
+  .cta-note{font-size:13px;color:#ffa500;line-height:1.7;margin:16px 0}
+
+  /* Button */
+  .btn-wrap{text-align:center;margin:28px 0 8px}
+  .btn{display:inline-block;background:linear-gradient(90deg,#ff6600,#ffa500);color:#000;text-decoration:none;padding:14px 48px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:3px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
+
+  /* Footer */
+  .ftr{border-top:1px solid rgba(255,102,0,0.15);background:rgba(0,0,0,0.4);padding:20px 30px;text-align:center;color:#3a4a5a;font-size:11px;line-height:1.8;letter-spacing:1px}
+  .ftr-logo{color:#ff6600;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px}
+</style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <div class="header-content">
-            <svg class="logo" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="cyberGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
-                        <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#00ff00;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="cyberGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
-                    </linearGradient>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                    </filter>
-                </defs>
-                <polygon points="60,20 100,35 100,65 60,80 20,65 20,35" fill="none" stroke="url(#cyberGrad1)" stroke-width="2" filter="url(#glow)" opacity="0.6"/>
-                <polygon points="60,30 85,40 85,60 60,70 35,60 35,40" fill="none" stroke="#00ffff" stroke-width="2" filter="url(#glow)"/>
-                <path d="M 60,30 L 60,15 M 85,40 L 100,40 M 85,60 L 100,60 M 60,70 L 60,85 M 35,60 L 20,60 M 35,40 L 20,40" stroke="#ff00ff" stroke-width="1.5" opacity="0.7"/>
-                <polygon points="60,45 70,50 60,55 50,50" fill="url(#cyberGrad2)" filter="url(#glow)"/>
-                <circle cx="60" cy="15" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <circle cx="100" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <circle cx="100" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
-                <circle cx="60" cy="85" r="2" fill="#00ff00" filter="url(#glow)"/>
-                <circle cx="20" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
-                <circle cx="20" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <text x="120" y="45" font-family="'Courier New', monospace" font-size="32" font-weight="bold" fill="url(#cyberGrad1)" filter="url(#glow)">CHAINCODE</text>
-                <text x="120" y="70" font-family="'Courier New', monospace" font-size="18" fill="#00ffff" letter-spacing="4" opacity="0.9">TRADE</text>
-                <line x1="120" y1="75" x2="280" y2="75" stroke="url(#cyberGrad2)" stroke-width="1" opacity="0.5"/>
-            </svg>
-        </div>
+<div class="wrap">
+  <div class="rainbow-bar"></div>
+
+  <!-- HEADER / LOGO -->
+  <div class="hdr">
+    <div class="hdr-logo">
+      <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>
+            @keyframes pulse-r{0%,100%{opacity:1}50%{opacity:0.35}}
+            @keyframes pulse-r2{0%,100%{opacity:1}50%{opacity:0.35}}
+            @keyframes pulse-r3{0%,100%{opacity:1}50%{opacity:0.35}}
+            @keyframes dash-m{to{stroke-dashoffset:-24}}
+            @keyframes flk{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.6}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+            .pr{animation:pulse-r 2.4s ease-in-out infinite}
+            .pr2{animation:pulse-r2 2.4s ease-in-out infinite .8s}
+            .pr3{animation:pulse-r3 2.4s ease-in-out infinite 1.6s}
+            .dm{animation:dash-m 1.8s linear infinite}
+            .mt{animation:flk 6s steps(1) infinite}
+          </style>
+          <linearGradient id="cg1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#00ffea"/>
+            <stop offset="50%" stop-color="#bf00ff"/>
+            <stop offset="100%" stop-color="#00ff6a"/>
+          </linearGradient>
+          <linearGradient id="cg2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#00ffea"/>
+            <stop offset="100%" stop-color="#bf00ff"/>
+          </linearGradient>
+          <linearGradient id="cgv" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#00ffea"/>
+            <stop offset="100%" stop-color="#bf00ff"/>
+          </linearGradient>
+          <filter id="gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          <filter id="gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <!-- Icon cx=80 cy=80 -->
+        <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#cg1)" stroke-width="1.5" opacity="0.35" filter="url(#gs)"/>
+        <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#cg2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="dm" filter="url(#gs)"/>
+        <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+        <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+        <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+        <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
+        <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+        <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+        <circle cx="80" cy="14"  r="2.5" fill="#00ffea" filter="url(#gs)"/>
+        <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#gs)"/>
+        <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#gs)"/>
+        <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#gs)"/>
+        <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#gs)"/>
+        <circle cx="27" cy="48"  r="2.5" fill="#00ffea" filter="url(#gs)"/>
+        <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#cg1)" stroke-width="1.5" filter="url(#gs)"/>
+        <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="pr" filter="url(#gs)"/>
+        <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1"   opacity="0.4" class="pr2" filter="url(#gs)"/>
+        <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="pr3" filter="url(#gs)"/>
+        <polygon points="80,71 89,80 80,89 71,80" fill="url(#cg2)" filter="url(#gl)"/>
+        <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+        <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+        <!-- Text -->
+        <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
+        <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
+        <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#cg1)" filter="url(#gs)" class="mt">CHAINCODE</text>
+        <line x1="158" y1="88" x2="500" y2="88" stroke="url(#cg2)" stroke-width="1" opacity="0.4"/>
+        <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
+        <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
+        <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#cgv)" filter="url(#gs)">TRADE</text>
+        <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="accent-bar"></div>
+
+  <div class="body">
+    <div class="title">Action Required</div>
+    <div class="subtitle-line"></div>
+
+    <p class="intro">Your request has been successfully created, but there are insufficient funds in your account to complete the transaction.</p>
+
+    <div class="badge-wrap">
+      <span class="badge">⟡ AWAITING FUNDS ⟡</span>
     </div>
 
-    <div class="content">
-        <h1 style="color: #ff6600; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">Request Created - Action Required</h1>
-
-        <div class="cyber-line"></div>
-
-        <p style="color: #fff; line-height: 1.6;">
-            Your request has been successfully created, but there are insufficient funds in your account to complete the transaction.
-        </p>
-
-        <div style="text-align: center;">
-            <span class="status-badge">⟡ AWAITING FUNDS ⟡</span>
-        </div>
-
-        <div class="request-details">
-            <div class="detail-row">
-                <span class="label">ORDER ID:</span>
-                <span class="value">{{request_id}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">CREATED:</span>
-                <span class="value">{{request_date}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">ITEMS:</span>
-                <span class="value">{{item_count}}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">TOTAL VALUE:</span>
-                <span class="value">{{total_amount}}</span>
-            </div>
-        </div>
-
-        <div class="balance-box">
-            <h3 style="color: #ffa500; margin-top: 0;">Balance Status</h3>
-            <div class="balance-row">
-                <span style="color: #ff00ff;">Current Balance:</span>
-                <span style="color: #00ffff;">{{current_balance}}</span>
-            </div>
-            <div class="balance-row">
-                <span style="color: #ff00ff;">Required Amount:</span>
-                <span style="color: #00ffff;">{{required_amount}}</span>
-            </div>
-            <div class="cyber-line"></div>
-            <div class="balance-row">
-                <span style="color: #ff00ff;">Additional Needed:</span>
-                <span class="shortage">{{shortage_amount}}</span>
-            </div>
-        </div>
-
-        <p style="color: #fff; line-height: 1.6;">
-            <strong>Important:</strong> Your request will remain on hold until sufficient funds are available. Even when the trader obtains the requested items, the request cannot proceed until your account balance meets the required amount.
-        </p>
-
-        <p style="color: #ffa500; line-height: 1.6;">
-            Please add funds to your account to activate this request and allow fulfillment to proceed.
-        </p>
-
-        <div style="text-align: center;">
-            <a href="{{url}}" class="button">Add Funds Now</a>
-        </div>
+    <div class="details">
+      <div class="dr"><span class="dl">ORDER ID</span><span class="dv">{{request_id}}</span></div>
+      <div class="dr"><span class="dl">CREATED</span><span class="dv">{{request_date}}</span></div>
+      <div class="dr"><span class="dl">ITEMS</span><span class="dv">{{item_count}}</span></div>
+      <div class="dr"><span class="dl">TOTAL VALUE</span><span class="dv">{{total_amount}}</span></div>
     </div>
 
-    <div class="footer">
-        <p>CHAINCODE TRADE • Secure Trading Network</p>
-        <p style="margin-top: 10px;">This is an automated message. Please do not reply to this email.</p>
+    <div class="bal">
+      <div class="bal-row"><span class="bal-label">Current Balance</span><span class="bal-val">{{current_balance}}</span></div>
+      <div class="bal-row"><span class="bal-label">Required Amount</span><span class="bal-val">{{required_amount}}</span></div>
+      <div class="bal-divider"></div>
+      <div class="bal-row"><span class="bal-label">Additional Needed</span><span class="shortage-val">{{shortage_amount}}</span></div>
     </div>
+
+    <p class="note"><strong>Important:</strong> Your request will remain on hold until sufficient funds are available. Even when the trader obtains the requested items, the request cannot proceed until your account balance meets the required amount.</p>
+
+    <p class="cta-note">Please add funds to your account to activate this request and allow fulfillment to proceed.</p>
+
+    <div class="btn-wrap">
+      <a href="{{url}}" class="btn">Add Funds Now</a>
+    </div>
+  </div>
+
+  <div class="ftr">
+    <div class="ftr-logo">CHAINCODE TRADE</div>
+    <div style="margin-top:8px">SECURE TRADING NETWORK</div>
+    <div style="margin-top:8px;color:#263040">This is an automated message. Please do not reply to this email.</div>
+  </div>
 </div>
 </body>
 </html>

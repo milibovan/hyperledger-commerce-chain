@@ -12,8 +12,9 @@ volumes:
   couchdb_data8:
 
 networks:
-  test:
-    name: hyperledger-commerce-chain
+  hdfs_asvsp:
+    name: hdfs_asvsp
+    external: true
 
 services:
   couchdb0:
@@ -27,7 +28,7 @@ services:
     volumes:
       - couchdb_data0:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp
 
   couchdb1:
     image: couchdb:latest
@@ -40,7 +41,7 @@ services:
     volumes:
       - couchdb_data1:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp
 
   couchdb2:
     image: couchdb:latest
@@ -53,7 +54,7 @@ services:
     volumes:
       - couchdb_data2:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp
 
   couchdb3:
     image: couchdb:latest
@@ -66,7 +67,7 @@ services:
     volumes:
       - couchdb_data3:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp
 
   couchdb4:
     image: couchdb:latest
@@ -79,7 +80,7 @@ services:
     volumes:
       - couchdb_data4:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp
 
   couchdb5:
     image: couchdb:latest
@@ -92,7 +93,7 @@ services:
     volumes:
       - couchdb_data5:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp
 
   couchdb6:
     image: couchdb:latest
@@ -105,7 +106,7 @@ services:
     volumes:
       - couchdb_data6:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp
 
   couchdb7:
     image: couchdb:latest
@@ -118,7 +119,7 @@ services:
     volumes:
       - couchdb_data7:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp
 
   couchdb8:
     image: couchdb:latest
@@ -131,4 +132,4 @@ services:
     volumes:
       - couchdb_data8:/opt/couchdb/data
     networks:
-      - test
+      - hdfs_asvsp

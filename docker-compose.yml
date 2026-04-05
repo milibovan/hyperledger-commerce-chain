@@ -1,10 +1,10 @@
 networks:
-  kafka-net:
+  kafka_net:
     driver: bridge
 
-  fabric_net:
+  hdfs_asvsp:
+    name: hdfs_asvsp
     external: true
-    name: hyperledger-commerce-chain
 
 services:
   kafka1:
@@ -32,7 +32,7 @@ services:
     volumes:
       - ./kafka1/data:/var/lib/kafka/data
     networks:
-      - kafka-net
+      - hdfs_asvsp
 
   kafka2:
     image: confluentinc/cp-kafka:7.8.0
@@ -59,7 +59,7 @@ services:
     volumes:
       - ./kafka2/data:/var/lib/kafka/data
     networks:
-      - kafka-net
+      - hdfs_asvsp
 
   kafka3:
     image: confluentinc/cp-kafka:7.8.0
@@ -86,7 +86,7 @@ services:
     volumes:
       - ./kafka3/data:/var/lib/kafka/data
     networks:
-      - kafka-net
+      - hdfs_asvsp
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -103,7 +103,7 @@ services:
       - kafka3
       - schema-registry
     networks:
-      - kafka-net
+      - hdfs_asvsp
 
   schema-registry:
     image: confluentinc/cp-schema-registry:7.8.0
@@ -120,7 +120,7 @@ services:
       - kafka2
       - kafka3
     networks:
-      - kafka-net
+      - hdfs_asvsp
 
   email-service:
     build:
@@ -139,7 +139,7 @@ services:
       - kafka3
       - schema-registry
     networks:
-      - kafka-net
+      - hdfs_asvsp
 
   auth-service:
     build:
@@ -154,7 +154,7 @@ services:
       - go-backend
       - postgres
     networks:
-      - kafka-net
+      - hdfs_asvsp
 
   postgres:
     image: postgres:16
@@ -169,7 +169,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - kafka-net
+      - hdfs_asvsp
 
   pgadmin:
     image: dpage/pgadmin4
@@ -214,8 +214,7 @@ services:
       - kafka3
       - schema-registry
     networks:
-      - kafka-net
-      - fabric_net
+      - hdfs_asvsp
     restart: unless-stopped
 
 volumes:

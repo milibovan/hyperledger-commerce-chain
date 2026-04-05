@@ -87,3 +87,4 @@ go/src/github.com/milibovan/install-fabric.sh
 /superset/
 
 .secret
+.lh

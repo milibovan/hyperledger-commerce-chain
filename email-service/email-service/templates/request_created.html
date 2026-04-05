@@ -1,429 +1,232 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% if recipient_type == "TRADER" %}New Request Request{% else %}Request Created{% endif %}</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Courier New', monospace;
-            background-color: #0a0e27;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: linear-gradient(135deg, #0f1129 0%, #1a1d3d 100%);
-            border: 2px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
-            box-shadow: 0 0 20px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.4), 0 0 40px rgba({% if recipient_type == "TRADER" %}0, 255, 255{% else %}255, 0, 255{% endif %}, 0.2);
-        }
-        .header {
-            background: linear-gradient(90deg, #00ffff 0%, #ff00ff 50%, #00ff00 100%);
-            padding: 2px;
-        }
-        .header-content {
-            background: #0a0e27;
-            padding: 30px;
-            text-align: center;
-        }
-        .logo {
-            width: 200px;
-            height: auto;
-            margin: 0 auto 10px;
-        }
-        .content {
-            padding: 40px 30px;
-            color: #00ffff;
-        }
-        .status-badge {
-            display: inline-block;
-            background: rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.15);
-            border: 2px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
-            color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
-            padding: 10px 20px;
-            margin: 20px 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
-            box-shadow: 0 0 15px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.5);
-            animation: statusGlow 2s infinite;
-        }
-        @keyframes statusGlow {
-            0%, 100% { box-shadow: 0 0 15px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.5); }
-            50% { box-shadow: 0 0 25px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.8); }
-        }
-        .success-icon {
-            text-align: center;
-            margin: 30px 0;
-        }
-        .icon-circle {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 60px;
-            color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
-            box-shadow: 0 0 25px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.6);
-            animation: {% if recipient_type == "TRADER" %}bellRing{% else %}plusAppear{% endif %} 0.8s ease-in-out;
-        }
-        @keyframes plusAppear {
-            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-            50% { transform: scale(1.1) rotate(0deg); }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-        @keyframes bellRing {
-            0%, 100% { transform: rotate(0deg); }
-            10%, 30%, 50%, 70%, 90% { transform: rotate(-10deg); }
-            20%, 40%, 60%, 80% { transform: rotate(10deg); }
-        }
-        .request-details {
-            background: rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.08);
-            border-left: 4px solid {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.2);
-        }
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-        .label {
-            color: {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %};
-            font-weight: bold;
-        }
-        .value {
-            color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};
-        }
-        .items-box {
-            background: rgba({% if recipient_type == "TRADER" %}0, 255, 255{% else %}255, 0, 255{% endif %}, 0.08);
-            border: 2px solid {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %};
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .item {
-            padding: 10px 0;
-            color: #fff;
-            border-bottom: 1px solid rgba({% if recipient_type == "TRADER" %}0, 255, 255{% else %}255, 0, 255{% endif %}, 0.2);
-        }
-        .item:last-child {
-            border-bottom: none;
-        }
-        .item-name {
-            color: {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %};
-            font-weight: bold;
-        }
-        {% if recipient_type == "TRADER" %}
-        .deadline-box {
-            background: rgba(255, 255, 0, 0.1);
-            border: 2px solid #ffff00;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .deadline-date {
-            color: #ffff00;
-            font-size: 24px;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        .customer-info {
-            background: rgba(0, 255, 255, 0.05);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            padding: 15px;
-            margin: 20px 0;
-        }
-        .action-box {
-            background: rgba(0, 255, 0, 0.08);
-            border: 2px solid #00ff00;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .action-item {
-            padding: 10px 0;
-            color: #fff;
-        }
-        .action-number {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: rgba(0, 255, 0, 0.2);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            text-align: center;
-            line-height: 26px;
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        .button-approve {
-            background: linear-gradient(90deg, #00ff00 0%, #00ffff 100%);
-            color: #000;
-        }
-        .button-reject {
-            background: linear-gradient(90deg, #ff6600 0%, #ff0000 100%);
-            color: #fff;
-        }
-        {% else %}
-        .next-steps-box {
-            background: rgba(0, 255, 0, 0.08);
-            border: 2px solid #00ff00;
-            padding: 20px;
-            margin: 20px 0;
-        }
-        .step {
-            padding: 10px 0;
-            color: #fff;
-        }
-        .step-number {
-            display: inline-block;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: rgba(0, 255, 0, 0.2);
-            border: 2px solid #00ff00;
-            color: #00ff00;
-            text-align: center;
-            line-height: 26px;
-            margin-right: 10px;
-            font-weight: bold;
-        }
-        {% endif %}
-        .button {
-            display: inline-block;
-            background: linear-gradient(90deg, {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %} 0%, {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %} 100%);
-        color: #000;
-        text-decoration: none;
-        padding: 15px 40px;
-        margin: 20px 5px;
-        text-transform: uppercase;
-        font-weight: bold;
-        border: none;
-        box-shadow: 0 0 20px rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.5);
-        }
-        .footer {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 20px 30px;
-            text-align: center;
-            color: #666;
-            font-size: 12px;
-            border-top: 1px solid rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.2);
-        }
-        .cyber-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent 0%, {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %} 50%, transparent 100%);
-        margin: 20px 0;
-        }
-        .info-box {
-            background: rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.05);
-            border: 1px solid rgba({% if recipient_type == "TRADER" %}255, 0, 255{% else %}0, 255, 255{% endif %}, 0.3);
-            padding: 15px;
-            margin: 20px 0;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if recipient_type == "TRADER" %}New Request — Action Required{% else %}Request Created{% endif %} — CHAINCODE TRADE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;600;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#04040d;font-family:'Share Tech Mono',monospace}
+  .wrap{max-width:620px;margin:0 auto;background:#07091a}
+  .rainbow-bar{height:3px;background:linear-gradient(90deg,#00ffea,#bf00ff,#00ff6a,#00ffea);background-size:200%;animation:rb 4s linear infinite}
+  @keyframes rb{to{background-position:200%}}
+  .hdr{background:#04040d;padding:32px 30px 24px;text-align:center;position:relative;overflow:hidden}
+  .hdr::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,255,234,0.03) 3px,rgba(0,255,234,0.03) 4px)}
+
+  {% if recipient_type == "TRADER" %}
+  --acc:#bf00ff;
+  .accent-bar{height:1px;background:linear-gradient(90deg,transparent,#bf00ff 30%,#bf00ff 70%,transparent);margin:0 30px}
+  .title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#bf00ff;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
+  .subtitle-line{height:1px;background:linear-gradient(90deg,#bf00ff,transparent);margin-bottom:24px}
+  .badge{display:inline-block;border:1px solid #bf00ff;background:rgba(191,0,255,0.07);color:#bf00ff;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;padding:10px 28px;text-transform:uppercase;position:relative;animation:mbadge 2s ease-in-out infinite}
+  @keyframes mbadge{0%,100%{box-shadow:0 0 10px rgba(191,0,255,0.25)}50%{box-shadow:0 0 22px rgba(191,0,255,0.6)}}
+  .badge::before,.badge::after{content:'';position:absolute;top:-1px;bottom:-1px;width:6px;border-top:1px solid #bf00ff;border-bottom:1px solid #bf00ff}
+  .badge::before{left:-8px;border-left:1px solid #bf00ff}
+  .badge::after{right:-8px;border-right:1px solid #bf00ff}
+  .details{background:rgba(191,0,255,0.04);border-left:2px solid #bf00ff;padding:20px 24px;margin:24px 0}
+  .dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(191,0,255,0.12);font-size:13px}
+  .dv{color:#bf00ff}
+  .items-box{border:1px solid rgba(0,255,234,0.2);padding:20px 24px;margin:24px 0;background:rgba(0,255,234,0.03);position:relative}
+  .items-box::before{content:'REQUESTED PRODUCTS';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#00ffea}
+  .item-name{color:#00ffea}
+  .item-qty{color:#bf00ff}
+  .deadline{border:1px solid rgba(255,238,0,0.4);padding:22px 24px;margin:24px 0;background:rgba(255,238,0,0.04);text-align:center;position:relative}
+  .deadline::before{content:'FULFILLMENT DEADLINE';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#07091a;padding:0 12px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#ffee00;white-space:nowrap}
+  .deadline-date{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:#ffee00;letter-spacing:2px;margin:8px 0}
+  .deadline-sub{font-size:12px;color:#8a8a50}
+  .steps{border:1px solid rgba(0,255,106,0.2);padding:20px 24px;margin:24px 0;background:rgba(0,255,106,0.03);position:relative}
+  .steps::before{content:'NEXT STEPS';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#00ff6a}
+  .customer-bar{background:rgba(0,255,234,0.05);border:1px solid rgba(0,255,234,0.15);padding:12px 20px;margin:24px 0;font-size:13px;color:#a0b4c4}
+  .customer-bar strong{color:#00ffea}
+  .customer-bar span{color:#fff}
+  .tip-box{background:rgba(191,0,255,0.04);border-left:2px solid rgba(191,0,255,0.3);padding:14px 18px;margin:20px 0;font-size:13px;color:#8090a0;line-height:1.7}
+  .tip-box strong{color:#bf00ff}
+  .btn-wrap{text-align:center;margin:28px 0 8px;display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+  .btn-approve{display:inline-block;background:linear-gradient(90deg,#00ff6a,#00ffea);color:#000;text-decoration:none;padding:14px 36px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
+  .btn-reject{display:inline-block;background:linear-gradient(90deg,#ff4400,#ff0066);color:#fff;text-decoration:none;padding:14px 36px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
+  .ftr{border-top:1px solid rgba(191,0,255,0.15);background:rgba(0,0,0,0.4);padding:20px 30px;text-align:center;color:#3a4a5a;font-size:11px;line-height:1.8;letter-spacing:1px}
+  .ftr-logo{color:#bf00ff;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px}
+  {% else %}
+  .accent-bar{height:1px;background:linear-gradient(90deg,transparent,#00ffea 30%,#00ffea 70%,transparent);margin:0 30px}
+  .title{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#00ffea;text-transform:uppercase;letter-spacing:4px;margin-bottom:6px}
+  .subtitle-line{height:1px;background:linear-gradient(90deg,#00ffea,transparent);margin-bottom:24px}
+  .badge{display:inline-block;border:1px solid #00ffea;background:rgba(0,255,234,0.07);color:#00ffea;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:3px;padding:10px 28px;text-transform:uppercase;position:relative;animation:cbadge 2s ease-in-out infinite}
+  @keyframes cbadge{0%,100%{box-shadow:0 0 10px rgba(0,255,234,0.25)}50%{box-shadow:0 0 22px rgba(0,255,234,0.6)}}
+  .badge::before,.badge::after{content:'';position:absolute;top:-1px;bottom:-1px;width:6px;border-top:1px solid #00ffea;border-bottom:1px solid #00ffea}
+  .badge::before{left:-8px;border-left:1px solid #00ffea}
+  .badge::after{right:-8px;border-right:1px solid #00ffea}
+  .details{background:rgba(0,255,234,0.04);border-left:2px solid #00ffea;padding:20px 24px;margin:24px 0}
+  .dr{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,255,234,0.12);font-size:13px}
+  .dv{color:#00ffea}
+  .items-box{border:1px solid rgba(191,0,255,0.2);padding:20px 24px;margin:24px 0;background:rgba(191,0,255,0.03);position:relative}
+  .items-box::before{content:'REQUESTED ITEMS';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#bf00ff}
+  .item-name{color:#bf00ff}
+  .item-qty{color:#00ffea}
+  .steps{border:1px solid rgba(0,255,106,0.2);padding:20px 24px;margin:24px 0;background:rgba(0,255,106,0.03);position:relative}
+  .steps::before{content:'WHAT HAPPENS NEXT';position:absolute;top:-10px;left:20px;background:#07091a;padding:0 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:#00ff6a}
+  .tip-box{background:rgba(0,255,234,0.04);border-left:2px solid rgba(0,255,234,0.3);padding:14px 18px;margin:20px 0;font-size:13px;color:#8090a0;line-height:1.7}
+  .tip-box strong{color:#00ffea}
+  .ref-box{border:1px solid rgba(0,255,234,0.15);padding:16px 20px;margin:24px 0;text-align:center;background:rgba(0,255,234,0.03)}
+  .ref-box p{font-size:13px;color:#5a6a7a;line-height:1.8;margin:0}
+  .ref-box strong{color:#00ffea}
+  .btn-wrap{text-align:center;margin:28px 0 8px}
+  .btn-main{display:inline-block;background:linear-gradient(90deg,#00ffea,#bf00ff);color:#000;text-decoration:none;padding:14px 48px;font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:3px;text-transform:uppercase;clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%)}
+  .ftr{border-top:1px solid rgba(0,255,234,0.15);background:rgba(0,0,0,0.4);padding:20px 30px;text-align:center;color:#3a4a5a;font-size:11px;line-height:1.8;letter-spacing:1px}
+  .ftr-logo{color:#00ffea;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:3px;font-size:13px}
+  {% endif %}
+
+  /* Shared */
+  .intro{color:#a0b4c4;line-height:1.7;font-size:14px;text-align:center;margin-bottom:24px}
+  .badge-wrap{text-align:center;margin:20px 0}
+  .dl{color:#bf00ff;font-weight:bold;letter-spacing:1px}
+  .dr:last-child{border-bottom:none}
+  .item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06);font-size:13px}
+  .item:last-child{border-bottom:none}
+  .step{display:flex;align-items:flex-start;gap:14px;padding:10px 0;font-size:13px;color:#a0b4c4}
+  .step+.step{border-top:1px solid rgba(0,255,106,0.08)}
+  .step-num{color:#00ff6a;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:16px;flex-shrink:0;width:20px}
+  .step-text{line-height:1.6}
+
+  /* Icon */
+  .icon-wrap{text-align:center;margin:8px 0 28px}
+  {% if recipient_type == "TRADER" %}
+  .icon-sym{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;border:2px solid #bf00ff;color:#bf00ff;font-size:36px;position:relative;animation:bell-ring 0.8s ease-in-out}
+  @keyframes bell-ring{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-12deg)}40%,80%{transform:rotate(12deg)}}
+  {% else %}
+  .icon-sym{display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;border-radius:50%;border:2px solid #00ffea;color:#00ffea;font-size:40px;position:relative;animation:plus-pop 0.6s ease-out both}
+  @keyframes plus-pop{0%{transform:scale(0) rotate(-180deg);opacity:0}70%{transform:scale(1.1) rotate(0)}100%{transform:scale(1) rotate(0);opacity:1}}
+  {% endif %}
+</style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <div class="header-content">
-            <svg class="logo" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="cyberGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
-                        <stop offset="50%" style="stop-color:#ff00ff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#00ff00;stop-opacity:1" />
-                    </linearGradient>
-                    <linearGradient id="cyberGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00ffff;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#ff00ff;stop-opacity:1" />
-                    </linearGradient>
-                    <filter id="glow">
-                        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                    </filter>
-                </defs>
-                <polygon points="60,20 100,35 100,65 60,80 20,65 20,35" fill="none" stroke="url(#cyberGrad1)" stroke-width="2" filter="url(#glow)" opacity="0.6"/>
-                <polygon points="60,30 85,40 85,60 60,70 35,60 35,40" fill="none" stroke="#00ffff" stroke-width="2" filter="url(#glow)"/>
-                <path d="M 60,30 L 60,15 M 85,40 L 100,40 M 85,60 L 100,60 M 60,70 L 60,85 M 35,60 L 20,60 M 35,40 L 20,40" stroke="#ff00ff" stroke-width="1.5" opacity="0.7"/>
-                <polygon points="60,45 70,50 60,55 50,50" fill="url(#cyberGrad2)" filter="url(#glow)"/>
-                <circle cx="60" cy="15" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <circle cx="100" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <circle cx="100" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
-                <circle cx="60" cy="85" r="2" fill="#00ff00" filter="url(#glow)"/>
-                <circle cx="20" cy="60" r="2" fill="#ff00ff" filter="url(#glow)"/>
-                <circle cx="20" cy="40" r="2" fill="#00ffff" filter="url(#glow)"/>
-                <text x="120" y="45" font-family="'Courier New', monospace" font-size="32" font-weight="bold" fill="url(#cyberGrad1)" filter="url(#glow)">NEXUS</text>
-                <text x="120" y="70" font-family="'Courier New', monospace" font-size="18" fill="#00ffff" letter-spacing="4" opacity="0.9">TRADE</text>
-                <line x1="120" y1="75" x2="280" y2="75" stroke="url(#cyberGrad2)" stroke-width="1" opacity="0.5"/>
-            </svg>
-        </div>
+<div class="wrap">
+  <div class="rainbow-bar"></div>
+  <div class="hdr">
+    <svg viewBox="0 0 520 160" xmlns="http://www.w3.org/2000/svg" style="width:340px;max-width:100%;height:auto">
+      <defs>
+        <style>
+          @keyframes p-nr{0%,100%{opacity:1}50%{opacity:.35}}
+          @keyframes d-nr{to{stroke-dashoffset:-24}}
+          @keyframes f-nr{0%,100%{opacity:1}92%{opacity:1}93%{opacity:.6}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
+          .nr1{animation:p-nr 2.4s ease-in-out infinite}
+          .nr2{animation:p-nr 2.4s ease-in-out infinite .8s}
+          .nr3{animation:p-nr 2.4s ease-in-out infinite 1.6s}
+          .ndm{animation:d-nr 1.8s linear infinite}
+          .ntx{animation:f-nr 6s steps(1) infinite}
+        </style>
+        <linearGradient id="nr-cg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00ffea"/><stop offset="50%" stop-color="#bf00ff"/><stop offset="100%" stop-color="#00ff6a"/></linearGradient>
+        <linearGradient id="nr-cg2" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/></linearGradient>
+        <linearGradient id="nr-cgv" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#00ffea"/><stop offset="100%" stop-color="#bf00ff"/></linearGradient>
+        <filter id="nr-gs"><feGaussianBlur stdDeviation="1.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="nr-gl"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <polygon points="80,22 129,50 129,108 80,136 31,108 31,50" fill="none" stroke="url(#nr-cg1)" stroke-width="1.5" opacity="0.35" filter="url(#nr-gs)"/>
+      <polygon points="80,37 117,58 117,102 80,123 43,102 43,58" fill="none" stroke="url(#nr-cg2)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.65" class="ndm" filter="url(#nr-gs)"/>
+      <line x1="80" y1="37" x2="80" y2="14" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+      <line x1="117" y1="58" x2="133" y2="48" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+      <line x1="117" y1="102" x2="133" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+      <line x1="80" y1="123" x2="80" y2="146" stroke="#00ff6a" stroke-width="1" opacity="0.5"/>
+      <line x1="43" y1="102" x2="27" y2="112" stroke="#bf00ff" stroke-width="1" opacity="0.5"/>
+      <line x1="43" y1="58" x2="27" y2="48" stroke="#00ffea" stroke-width="1" opacity="0.5"/>
+      <circle cx="80" cy="14"  r="2.5" fill="#00ffea" filter="url(#nr-gs)"/>
+      <circle cx="133" cy="48" r="2.5" fill="#bf00ff" filter="url(#nr-gs)"/>
+      <circle cx="133" cy="112" r="2.5" fill="#bf00ff" filter="url(#nr-gs)"/>
+      <circle cx="80" cy="146" r="2.5" fill="#00ff6a" filter="url(#nr-gs)"/>
+      <circle cx="27" cy="112" r="2.5" fill="#bf00ff" filter="url(#nr-gs)"/>
+      <circle cx="27" cy="48"  r="2.5" fill="#00ffea" filter="url(#nr-gs)"/>
+      <polygon points="80,56 101,68 101,92 80,104 59,92 59,68" fill="#04040d" stroke="url(#nr-cg1)" stroke-width="1.5" filter="url(#nr-gs)"/>
+      <circle cx="80" cy="80" r="14" fill="none" stroke="#00ffea" stroke-width="1.5" opacity="0.6" class="nr1" filter="url(#nr-gs)"/>
+      <circle cx="80" cy="80" r="21" fill="none" stroke="#bf00ff" stroke-width="1" opacity="0.4" class="nr2" filter="url(#nr-gs)"/>
+      <circle cx="80" cy="80" r="28" fill="none" stroke="#00ff6a" stroke-width="0.8" opacity="0.25" class="nr3" filter="url(#nr-gs)"/>
+      <polygon points="80,71 89,80 80,89 71,80" fill="url(#nr-cg2)" filter="url(#nr-gl)"/>
+      <line x1="80" y1="67" x2="80" y2="93" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+      <line x1="67" y1="80" x2="93" y2="80" stroke="#04040d" stroke-width="1.2" opacity="0.7"/>
+      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#bf00ff" opacity="0.22" transform="translate(2,1)">CHAINCODE</text>
+      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="#00ffea" opacity="0.18" transform="translate(-2,-1)">CHAINCODE</text>
+      <text x="158" y="76" font-family="'Courier New',monospace" font-size="42" font-weight="900" letter-spacing="2" fill="url(#nr-cg1)" filter="url(#nr-gs)" class="ntx">CHAINCODE</text>
+      <line x1="158" y1="88" x2="500" y2="88" stroke="url(#nr-cg2)" stroke-width="1" opacity="0.4"/>
+      <polygon points="158,84 162,88 158,92" fill="#00ffea" opacity="0.7"/>
+      <polygon points="500,84 496,88 500,92" fill="#bf00ff" opacity="0.7"/>
+      <text x="161" y="114" font-family="'Courier New',monospace" font-size="22" font-weight="400" letter-spacing="11" fill="url(#nr-cgv)" filter="url(#nr-gs)">TRADE</text>
+      <text x="161" y="132" font-family="'Courier New',monospace" font-size="9" letter-spacing="2.5" fill="#00ffea" opacity="0.4">DECENTRALIZED · ALGORITHMIC · SOVEREIGN</text>
+    </svg>
+  </div>
+  <div class="accent-bar"></div>
+  <div class="body">
+
+    {% if recipient_type == "TRADER" %}
+    <div class="title">New Request — Action Required</div>
+    <div class="subtitle-line"></div>
+    <div class="icon-wrap"><div class="icon-sym">&#128276;</div></div>
+    <p class="intro">You have received a new request that requires your attention.</p>
+    <div class="badge-wrap"><span class="badge">⟡ ACTION REQUIRED ⟡</span></div>
+    <div class="customer-bar"><strong>Customer:</strong> <span>{{ user_name }}</span></div>
+    <div class="details">
+      <div class="dr"><span class="dl">ORDER ID</span><span class="dv">{{ request_id }}</span></div>
+      <div class="dr"><span class="dl">REQUEST DATE</span><span class="dv">{{ request_date }}</span></div>
+      <div class="dr"><span class="dl">ITEMS REQUESTED</span><span class="dv">{{ item_count }}</span></div>
+      <div class="dr"><span class="dl">ORDER VALUE</span><span class="dv">{{ total_amount }}</span></div>
+    </div>
+    <div class="deadline">
+      <div class="deadline-date">{{ due_date }}</div>
+      <div class="deadline-sub">Request must be fulfilled by this date</div>
+    </div>
+    <div class="items-box">
+      {% for item in items %}
+      <div class="item"><span class="item-name">{{ item.name }}</span><span class="item-qty">× {{ item.quantity }}</span></div>
+      {% endfor %}
+    </div>
+    <div class="steps">
+      <div class="step"><span class="step-num">01</span><span class="step-text">Review the request details and product requirements.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">Verify you can fulfill this request by the deadline.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">Approve or reject the request in your pending requests panel.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">If approved, acquire items and fulfill within the timeframe.</span></div>
+    </div>
+    <div class="tip-box"><strong>Tip:</strong> Responding quickly to requests improves your trader rating and increases customer satisfaction.</div>
+    <p style="font-size:13px;color:#8090a0;line-height:1.7;margin:20px 0">Please review this request and respond as soon as possible. The customer is waiting for your decision.</p>
+    <div class="btn-wrap">
+      <a href="{{ url }}" class="btn-approve">View &amp; Approve</a>
+      <a href="{{ url }}" class="btn-reject">View &amp; Reject</a>
     </div>
 
-    <div class="content">
-        <h1 style="color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %}; margin-top: 0; text-transform: uppercase; letter-spacing: 3px;">
-        {% if recipient_type == "TRADER" %}🔔 New Request Request{% else %}Request Successfully Created!{% endif %}
-        </h1>
-
-        <div class="cyber-line"></div>
-
-        <div class="success-icon">
-            <div class="icon-circle">{% if recipient_type == "TRADER" %}🔔{% else %}✓{% endif %}</div>
-        </div>
-
-        <p style="color: #fff; line-height: 1.6; text-align: center; font-size: 16px;">
-            {% if recipient_type == "TRADER" %}
-            You have received a new request request that requires your attention.
-            {% else %}
-            Your request has been successfully created and is now entering the approval process.
-            {% endif %}
-        </p>
-
-        <div style="text-align: center;">
-            <span class="status-badge">⟡ {% if recipient_type == "TRADER" %}ACTION REQUIRED{% else %}ORDER CREATED{% endif %} ⟡</span>
-        </div>
-
-        {% if recipient_type == "TRADER" %}
-        <div class="customer-info">
-            <p style="color: #00ffff; margin: 0; font-size: 14px;">
-                <strong>Customer:</strong> <span style="color: #fff;">{{ user_name }}</span>
-            </p>
-        </div>
-        {% endif %}
-
-        <div class="request-details">
-            <div class="detail-row">
-                <span class="label">ORDER ID:</span>
-                <span class="value">{{ request_id }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">{% if recipient_type == "TRADER" %}REQUEST DATE{% else %}CREATED{% endif %}:</span>
-                <span class="value">{{ request_date }}</span>
-            </div>
-            {% if recipient_type == "USER" %}
-            <div class="detail-row">
-                <span class="label">STATUS:</span>
-                <span class="value">Awaiting Trader Approval</span>
-            </div>
-            {% endif %}
-            <div class="detail-row">
-                <span class="label">{% if recipient_type == "TRADER" %}ITEMS REQUESTED{% else %}ITEMS{% endif %}:</span>
-                <span class="value">{{ item_count }}</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">{% if recipient_type == "TRADER" %}ORDER VALUE{% else %}TOTAL VALUE{% endif %}:</span>
-                <span class="value">{{ total_amount }}</span>
-            </div>
-        </div>
-
-        {% if recipient_type == "TRADER" %}
-        <div class="deadline-box">
-            <h3 style="color: #ffff00; margin-top: 0;">⏰ Fulfillment Deadline</h3>
-            <div class="deadline-date">{{ due_date }}</div>
-            <p style="color: #fff; margin: 10px 0; font-size: 14px;">
-                Request must be fulfilled by this date
-            </p>
-        </div>
-        {% endif %}
-
-        <div class="items-box">
-            <h3 style="color: {% if recipient_type == "TRADER" %}#00ffff{% else %}#ff00ff{% endif %}; margin-top: 0;">{% if recipient_type == "TRADER" %}Requested Products{% else %}Requested Items{% endif %}</h3>
-            {% for item in items %}
-            <div class="item">
-                <span class="item-name">{{ item.name }}</span>
-                <span style="color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %};"> × {{ item.quantity }}</span>
-            </div>
-            {% endfor %}
-        </div>
-
-        {% if recipient_type == "TRADER" %}
-        <div class="action-box">
-            <h3 style="color: #00ff00; margin-top: 0;">Next Steps</h3>
-            <div class="action-item">
-                <span class="action-number">1</span>
-                <span>Review the request details and product requirements</span>
-            </div>
-            <div class="action-item">
-                <span class="action-number">2</span>
-                <span>Verify you can fulfill this request by the deadline</span>
-            </div>
-            <div class="action-item">
-                <span class="action-number">3</span>
-                <span>Approve or reject the request in your pending requests</span>
-            </div>
-            <div class="action-item">
-                <span class="action-number">4</span>
-                <span>If approved, acquire items and fulfill within timeframe</span>
-            </div>
-        </div>
-        {% else %}
-        <div class="next-steps-box">
-            <h3 style="color: #00ff00; margin-top: 0;">What Happens Next?</h3>
-            <div class="step">
-                <span class="step-number">1</span>
-                <span>Your request will be reviewed by available traders</span>
-            </div>
-            <div class="step">
-                <span class="step-number">2</span>
-                <span>A trader will approve or reject your request (typically within 24-48 hours)</span>
-            </div>
-            <div class="step">
-                <span class="step-number">3</span>
-                <span>If approved, the trader will acquire the items within the agreed timeframe</span>
-            </div>
-            <div class="step">
-                <span class="step-number">4</span>
-                <span>Once fulfilled, you'll receive your items and the transaction will be completed</span>
-            </div>
-        </div>
-        {% endif %}
-
-        <div class="info-box">
-            <p style="color: {% if recipient_type == "TRADER" %}#ff00ff{% else %}#00ffff{% endif %}; margin: 0; font-size: 14px; line-height: 1.6;">
-            {% if recipient_type == "TRADER" %}
-            <strong>💡 Tip:</strong> Responding quickly to requests improves your trader rating and increases customer satisfaction.
-            {% else %}
-            <strong>💡 Important:</strong> Your payment has been reserved and is secure. You'll be notified immediately once a trader reviews your request. You can track your request status at any time through your dashboard.
-            {% endif %}
-            </p>
-        </div>
-
-        <p style="color: #fff; line-height: 1.6;">
-            {% if recipient_type == "TRADER" %}
-            Please review this request request and respond as soon as possible. The customer is waiting for your decision.
-            {% else %}
-            Thank you for using NEXUS TRADE! We'll keep you updated on every step of your request's progress.
-            {% endif %}
-        </p>
-
-        <div style="text-align: center;">
-            {% if recipient_type == "TRADER" %}
-            <a href="{{ url }}" class="button button-approve">View & Approve</a>
-            <a href="{{ url }}" class="button button-reject">View & Reject</a>
-            {% else %}
-            <a href="{{ url }}" class="button">View Request Details</a>
-            {% endif %}
-        </div>
-
-        {% if recipient_type == "USER" %}
-        <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 255, 255, 0.2); padding: 15px; margin: 30px 0; text-align: center;">
-            <p style="color: #999; margin: 0; font-size: 13px;">
-                Request Reference: <strong style="color: #00ffff;">{{ request_reference }}</strong><br>
-                <span style="font-size: 11px;">Save this reference for future inquiries</span>
-            </p>
-        </div>
-        {% endif %}
+    {% else %}
+    <div class="title">Request Created</div>
+    <div class="subtitle-line"></div>
+    <div class="icon-wrap"><div class="icon-sym">+</div></div>
+    <p class="intro">Your request has been successfully created and is now entering the approval process.</p>
+    <div class="badge-wrap"><span class="badge">⟡ ORDER CREATED ⟡</span></div>
+    <div class="details">
+      <div class="dr"><span class="dl">ORDER ID</span><span class="dv">{{ request_id }}</span></div>
+      <div class="dr"><span class="dl">CREATED</span><span class="dv">{{ request_date }}</span></div>
+      <div class="dr"><span class="dl">STATUS</span><span class="dv" style="color:#ffee00">Awaiting Trader Approval</span></div>
+      <div class="dr"><span class="dl">ITEMS</span><span class="dv">{{ item_count }}</span></div>
+      <div class="dr"><span class="dl">TOTAL VALUE</span><span class="dv">{{ total_amount }}</span></div>
     </div>
-
-    <div class="footer">
-        <p>NEXUS TRADE • Secure Trading Network</p>
-        <p style="margin-top: 10px;">This is an automated message. Please do not reply to this email.</p>
+    <div class="items-box">
+      {% for item in items %}
+      <div class="item"><span class="item-name">{{ item.name }}</span><span class="item-qty">× {{ item.quantity }}</span></div>
+      {% endfor %}
     </div>
+    <div class="steps">
+      <div class="step"><span class="step-num">01</span><span class="step-text">Your request will be reviewed by available traders.</span></div>
+      <div class="step"><span class="step-num">02</span><span class="step-text">A trader will approve or reject your request — typically within 24–48 hours.</span></div>
+      <div class="step"><span class="step-num">03</span><span class="step-text">If approved, the trader will acquire the items within the agreed timeframe.</span></div>
+      <div class="step"><span class="step-num">04</span><span class="step-text">Once fulfilled, you'll receive your items and the transaction will complete.</span></div>
+    </div>
+    <div class="tip-box"><strong>Important:</strong> Your payment has been reserved and is secure. You'll be notified immediately once a trader reviews your request.</div>
+    <div class="btn-wrap"><a href="{{ url }}" class="btn-main">View Request Details</a></div>
+    <div class="ref-box">
+      <p>Request Reference: <strong>{{ request_reference }}</strong><br><span style="font-size:11px;color:#3a4a5a">Save this reference for future inquiries</span></p>
+    </div>
+    {% endif %}
+
+  </div>
+  <div class="ftr">
+    <div class="ftr-logo">CHAINCODE TRADE</div>
+    <div style="margin-top:8px">SECURE TRADING NETWORK</div>
+    <div style="margin-top:8px;color:#263040">This is an automated message. Please do not reply to this email.</div>
+  </div>
 </div>
 </body>
+</html>
