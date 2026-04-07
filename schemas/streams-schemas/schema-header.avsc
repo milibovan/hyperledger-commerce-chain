@@ -1,7 +1,7 @@
 {
   "namespace": "com.hyperledger_commerce_chain.streams",
   "type": "record",
-  "name": "StreamsEnvelope",
+  "name": "StreamsHeader",
   "doc": "This is schema for base of every streams event in streaming elt process",
   "fields": [
     {

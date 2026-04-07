@@ -6,7 +6,7 @@
   "fields": [
     {
       "name": "common",
-      "type": "com.hyperledger_commerce_chain.streams.StreamsEnvelope"
+      "type": "com.hyperledger_commerce_chain.streams.StreamsHeader"
     },
     {
       "name": "reason",
