@@ -3,7 +3,8 @@ import fs from "fs";
 import avsc from "avsc";
 
 const headerSchema = JSON.parse(fs.readFileSync("../../schemas/streams-schemas/schema-header.avsc", "utf8"));
-const userSchema   = JSON.parse(fs.readFileSync("../../schemas/streams-schemas/user/user-created.avsc", "utf8"));
+const userCreatedSchema   = JSON.parse(fs.readFileSync("../../schemas/streams-schemas/user/user-created.avsc", "utf8"));
+const userDeletedSchema   = JSON.parse(fs.readFileSync("../../schemas/streams-schemas/user/user-deleted.avsc", "utf8"));
 
 const EventTypes = Object.freeze({
   UserCreated: "UserCreated",
@@ -58,7 +59,7 @@ const genHeader = (event_type, entity_type) => {
     return header;
 }
 
-const genUser = () => {
+const createUser = () => {
     const header = genHeader(EventTypes.UserCreated, EntityTypes.User)
     
     const userCreatedEvent = {
@@ -75,17 +76,40 @@ const genUser = () => {
     
     return userCreatedEvent
 };
+
+const deleteUser = () => {
+    const header = genHeader(EventTypes.UserDeleted, EntityTypes.User)
+
+    const userDeletedEvent = {
+        "common": header,
+        "reason": Math.random() >= 0.5 ? faker.lorem.lines({ min: 1, max: 3 }) : ''
+    }
+
+    // pools.userIds.push(id);
+    // pools.userOrders[id] = [];
+    // pools.userRequests[id] = [];
+    
+    return userDeletedEvent
+}
+
 const registry = {};
 
 avsc.Type.forSchema(headerSchema, { registry });
-const UserCreatedEvent = avsc.Type.forSchema(userSchema, { registry });
+const UserCreatedEvent = avsc.Type.forSchema(userCreatedSchema, { registry });
+const UserDeletedEvent = avsc.Type.forSchema(userDeletedSchema, { registry });
 
-const userCreatedEvent = genUser()
+const userCreatedEvent = createUser()
+const userDeletedEvent = deleteUser()
 console.log(userCreatedEvent);
+console.log(userDeletedEvent);
 
 const buf = UserCreatedEvent.toBuffer(userCreatedEvent);
+const bufDel = UserDeletedEvent.toBuffer(userDeletedEvent);
 fs.writeFileSync("userCreatedEvent.avro", buf);
+fs.writeFileSync("UserDeletedEvent.avro", bufDel);
 
 const decoded = UserCreatedEvent.fromBuffer(buf);
+const decodedDeleted = UserDeletedEvent.fromBuffer(bufDel);
 console.log("Decoded:", decoded);
+console.log("Decoded:", decodedDeleted);
 
