@@ -2,7 +2,7 @@ use std::process::Command;
 
 fn main() {
     let output = Command::new("node")
-        .arg("generate_stream_data.mjs")
+        .arg("../generate_stream_data.mjs")
         .output()
         .expect("Failed to run Node.js");
 

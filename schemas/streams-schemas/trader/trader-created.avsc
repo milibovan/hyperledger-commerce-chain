@@ -29,6 +29,10 @@
         ]
       }
     },
+        {
+      "name": "balance",
+      "type": "float"
+    },
     {
       "name": "vat",
       "type": "string"

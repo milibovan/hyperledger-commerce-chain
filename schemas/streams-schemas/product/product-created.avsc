@@ -32,10 +32,6 @@
           "CARDEALER"
         ]
       }
-    },
-    {
-      "name": "trader_id",
-      "type": "string"
     }
   ]
 }
