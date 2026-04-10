@@ -88,3 +88,4 @@ go/src/github.com/milibovan/install-fabric.sh
 
 .secret
 .lh
+.env

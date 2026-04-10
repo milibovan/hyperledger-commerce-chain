@@ -36,7 +36,7 @@ export const writePoolsToRedis = async () => {
         host: process.env.REDIS_HOST || 'localhost', 
         port: parseInt(process.env.REDIS_PORT || '6379'),
         db: 1,
-        password: process.env.REDIS_PASSWORD
+        password: process.env.REDIS_PASSWORD || 'ppgQ;g+rg()u9vhi'
     });
     console.log("Writing pools to Redis...");
 

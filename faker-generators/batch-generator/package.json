@@ -4,6 +4,7 @@
     "@faker-js/faker": "^10.2.0"
   },
   "dependencies": {
-    "faker-js": "^1.0.0"
+    "faker-js": "^1.0.0",
+    "ioredis": "^5.10.1"
   }
 }

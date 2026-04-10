@@ -1,5 +1,5 @@
 import { COUNTS, VERSATILE_USER_COUNT } from "./constants.js";
-import { pools } from "./pools.js";
+import { pools, writePoolsToRedis } from "./pools.js";
 import { writeJSONL, initVersatileUsers } from "./utils.js";
 import {
     genUser,
@@ -37,6 +37,8 @@ const runAll = async () => {
     await updateUsersWithRelationships();
     await updateTradersWithRelationships();
     await updateOrdersWithReceipts();
+
+    await writePoolsToRedis();
 
     console.log("✅ All data generated successfully with relationships!");
 };
