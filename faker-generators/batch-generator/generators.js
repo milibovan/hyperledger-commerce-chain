@@ -278,6 +278,8 @@ export const genReceipt = () => {
         receipt["cancelled-by"]   = "";
     }
 
+    pools.receiptIds.push(receipt.id);
+
     return receipt;
 };
 
@@ -364,6 +366,8 @@ export const genRequest = () => {
 
     const dueDate = new Date(createdDate);
     dueDate.setDate(dueDate.getDate() + faker.number.int({ min: 7, max: 30 }));
+
+    pools.requestIds.push(requestId.id);
 
     return {
         "doc-type": "product-request",

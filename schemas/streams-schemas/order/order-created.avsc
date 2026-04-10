@@ -13,10 +13,18 @@
       "type": "string"
     },
     {
-      "name": "product_ids",
+      "name": "products",
       "type": {
         "type": "array",
-        "items": "string"
+        "items": {
+          "type": "record",
+          "name": "product",
+          "fields": [
+            { "name": "product_id", "type": "string" },
+            { "name": "quantity", "type": "int" },
+            { "name": "price", "type": "float" }
+          ]
+        }
       }
     },
     {
