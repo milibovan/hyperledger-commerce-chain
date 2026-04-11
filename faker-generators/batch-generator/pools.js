@@ -31,13 +31,15 @@ export const pools = {
     versatileUserCoverage: {},       // userId -> Set of trader types already covered
 };
 
-export const writePoolsToRedis = async () => {
-    const redis = new Redis({ 
+export const redis = new Redis({ 
         host: process.env.REDIS_HOST || 'localhost', 
         port: parseInt(process.env.REDIS_PORT || '6379'),
         db: 1,
-        password: process.env.REDIS_PASSWORD || 'ppgQ;g+rg()u9vhi'
+        password: process.env.REDIS_PASSWORD
     });
+
+export const writePoolsToRedis = async () => {
+
     console.log("Writing pools to Redis...");
 
     const CHUNK = 5000;

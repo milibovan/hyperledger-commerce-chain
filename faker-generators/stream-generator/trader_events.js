@@ -1,11 +1,14 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
 import { genHeader } from './event-header-generator';
 import { EntityTypes, EventTypes, TRADER_TYPES } from '../batch-generator/constants';
+import { redis } from '../batch-generator/pools';
 
 
 export const createTrader = () => {
     const header = genHeader(EventTypes.TraderCreated, EntityTypes.Trader)
     const traderType = faker.helpers.arrayElement(TRADER_TYPES);
+
+    redis.sadd("pool:traderIds", header.event_id);
 
     const traderCreatedEvent = {
         "common": header,
@@ -26,10 +29,6 @@ export const deleteTrader = () => {
         "common": header,
         "reason": Math.random() >= 0.5 ? faker.lorem.lines({ min: 1, max: 3 }) : ''
     }
-
-    // pools.userIds.push(id);
-    // pools.userOrders[id] = [];
-    // pools.userRequests[id] = [];
     
     return traderDeletedEvent
 };

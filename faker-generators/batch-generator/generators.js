@@ -4,6 +4,8 @@ import {
     FULFILLMENT_PROFILES,
     PRODUCT_CATEGORIES,
     VERSATILE_RECEIPT_RATIO,
+    numProducts,
+    quantity
 } from "./constants.js";
 import { pools } from "./pools.js";
 
@@ -112,17 +114,6 @@ export const genOrder = () => {
         { weight: 10, value: "CANCELLED"  },
     ]);
 
-    const numProducts = faker.helpers.weightedArrayElement([
-        { weight: 10, value: 1 },
-        { weight: 15, value: 2 },
-        { weight: 20, value: 3 },
-        { weight: 18, value: 4 },
-        { weight: 15, value: 5 },
-        { weight: 10, value: 6 },
-        { weight:  7, value: 7 },
-        { weight:  5, value: 8 },
-    ]);
-
     const traderType = faker.helpers.arrayElement(TRADER_TYPES);
     const availableProducts = pools.productsByTrader[traderType] ?? pools.productIds;
     const selectedProducts = new Set();
@@ -138,13 +129,6 @@ export const genOrder = () => {
 
         if (!selectedProducts.has(productId)) {
             selectedProducts.add(productId);
-            const quantity = faker.helpers.weightedArrayElement([
-                { weight: 40, value: 1 },
-                { weight: 30, value: 2 },
-                { weight: 15, value: 3 },
-                { weight: 10, value: 4 },
-                { weight:  5, value: 5 },
-            ]);
             products.push({ product_id: productId, quantity });
         }
     }

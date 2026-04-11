@@ -1,6 +1,7 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
 import { EntityTypes, EventTypes, TRADER_TYPES, PRODUCT_CATEGORIES } from '../batch-generator/constants';
 import { genHeader } from './event_header_generator';
+import { redis } from '../batch-generator/pools';
 
 export const createProduct = () => {
     const header = genHeader(EventTypes.ProductCreated, EntityTypes.Product)
@@ -8,6 +9,8 @@ export const createProduct = () => {
     const category = faker.helpers.arrayElement(PRODUCT_CATEGORIES[traderType]);
     
     const productName = `${category.name} ${faker.commerce.productAdjective()}`;
+
+    redis.sadd("pool:productIds", header.event_id)    
 
     const productCreatedEvent = {
         "common": header,
