@@ -22,6 +22,7 @@ export const createProduct = () => {
         })),
         "quantity": faker.number.int({ min: 50, max: 1000 }),
         "trader-type": traderType,
+        "expiry_date": faker.date.soon().getTime()
     }
     
     return productCreatedEvent

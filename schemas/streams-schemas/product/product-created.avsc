@@ -32,6 +32,16 @@
           "CARDEALER"
         ]
       }
+    },
+    {
+      "name": "expiry_date",
+      "type": [
+        "null",
+        {
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
+      ]
     }
   ]
 }
