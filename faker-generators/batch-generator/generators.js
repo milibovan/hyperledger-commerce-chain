@@ -5,9 +5,11 @@ import {
     PRODUCT_CATEGORIES,
     VERSATILE_RECEIPT_RATIO,
     numProducts,
-    quantity
+    quantity,
+    EntityTypes
 } from "./constants.js";
 import { pools } from "./pools.js";
+import { addEntityPerStatus } from "./utils.js";
 
 export const genUser = () => {
     const id = faker.string.uuid();
@@ -87,7 +89,7 @@ export const genProduct = () => {
     product["expiry-date"] = faker.date
         .between({
             from: isNearExpiry ? "2026-03-15" : "2026-04-15",
-            to:   isNearExpiry ? "2026-04-14" : "2027-12-31",
+            to: isNearExpiry ? "2026-04-14" : "2027-12-31",
         })
         .toISOString();
 
@@ -98,7 +100,6 @@ export const genOrder = () => {
     const id = faker.string.uuid();
     const userId = faker.helpers.arrayElement(pools.userIds);
 
-    pools.orderIds.push(id);
     pools.userOrders[userId].push(id);
     pools.orderReceipts[id] = [];
     pools.orderUsers[id] = userId;
@@ -107,12 +108,14 @@ export const genOrder = () => {
     pools.orderDates[id] = orderDate;
 
     const status = faker.helpers.weightedArrayElement([
-        { weight: 30, value: "COMPLETED"  },
-        { weight: 30, value: "FULFILLED"  },
-        { weight: 20, value: "APPROVED"   },
-        { weight: 10, value: "PENDING"    },
-        { weight: 10, value: "CANCELLED"  },
+        { weight: 30, value: "COMPLETED" },
+        { weight: 30, value: "FULFILLED" },
+        { weight: 20, value: "APPROVED" },
+        { weight: 10, value: "CREATED" },
+        { weight: 10, value: "CANCELLED" },
     ]);
+
+    addEntityPerStatus(id, EntityTypes.Order.toLowerCase(), status);
 
     const traderType = faker.helpers.arrayElement(TRADER_TYPES);
     const availableProducts = pools.productsByTrader[traderType] ?? pools.productIds;
@@ -160,7 +163,7 @@ export const genReceipt = () => {
         userId = faker.helpers.arrayElement([...pools.versatileUserIds]);
         pools.versatileUserCoverage[userId] ??= new Set();
 
-        const covered   = pools.versatileUserCoverage[userId];
+        const covered = pools.versatileUserCoverage[userId];
         const uncovered = TRADER_TYPES.filter((t) => !covered.has(t));
         const targetType = uncovered.length > 0
             ? faker.helpers.arrayElement(uncovered)
@@ -169,15 +172,21 @@ export const genReceipt = () => {
         traderId = faker.helpers.arrayElement(pools.tradersByType[targetType] ?? pools.traderIds);
         covered.add(pools.traderTypeMap[traderId]);
     } else {
-        userId   = faker.helpers.arrayElement(pools.userIds);
+        userId = faker.helpers.arrayElement(pools.userIds);
         traderId = faker.helpers.arrayElement(pools.traderIds);
     }
 
     // Align userId with the order's actual owner.
+    const validOrderIds = [
+        ...pools.completedOrderIds,
+        ...pools.fulfilledOrderIds,
+        ...pools.approvedOrderIds,
+    ];
+
     const userOrdersList = pools.userOrders[userId];
     const orderId = userOrdersList?.length > 0
         ? faker.helpers.arrayElement(userOrdersList)
-        : faker.helpers.arrayElement(pools.orderIds);
+        : faker.helpers.arrayElement(validOrderIds);
 
     const orderOwner = pools.orderUsers?.[orderId];
     if (orderOwner) userId = orderOwner;
@@ -185,24 +194,26 @@ export const genReceipt = () => {
     pools.traderReceipts[traderId].push(receiptId);
     pools.orderReceipts[orderId].push(receiptId);
 
-    const orderDate     = pools.orderDates[orderId] ?? new Date("2025-01-01");
+    const orderDate = pools.orderDates[orderId] ?? new Date("2025-01-01");
     const minReceiptDate = new Date(orderDate.getTime() + 1 * 86_400_000);
     const maxReceiptDate = new Date(orderDate.getTime() + 90 * 86_400_000);
-    const receiptDate   = faker.date.between({ from: minReceiptDate, to: maxReceiptDate });
+    const receiptDate = faker.date.between({ from: minReceiptDate, to: maxReceiptDate });
 
     const status = faker.helpers.weightedArrayElement([
-        { weight: 85, value: "COMPLETED"   },
+        { weight: 85, value: "COMPLETED" },
         { weight: 10, value: "IN_PROGRESS" },
-        { weight:  5, value: "CANCELLED"   },
+        { weight: 5, value: "CANCELLED" },
     ]);
 
+    addEntityPerStatus(receiptId, EntityTypes.Receipt.toLowerCase(), status);
+    
     const numProducts = faker.helpers.weightedArrayElement([
         { weight: 15, value: 1 },
         { weight: 25, value: 2 },
         { weight: 25, value: 3 },
         { weight: 20, value: 4 },
         { weight: 10, value: 5 },
-        { weight:  5, value: 6 },
+        { weight: 5, value: 6 },
     ]);
 
     const selectedProducts = new Set();
@@ -222,8 +233,8 @@ export const genReceipt = () => {
                 { weight: 45, value: 1 },
                 { weight: 30, value: 2 },
                 { weight: 15, value: 3 },
-                { weight:  7, value: 4 },
-                { weight:  3, value: 5 },
+                { weight: 7, value: 4 },
+                { weight: 3, value: 5 },
             ]);
             products.push({ product_id: productId, quantity });
             pools.traderProducts[traderId].push({
@@ -253,13 +264,13 @@ export const genReceipt = () => {
     if (status === "CANCELLED") {
         const cancelledDate = new Date(
             receiptDate.getTime() +
-                faker.number.int({ min: 1, max: 30 }) * 86_400_000
+            faker.number.int({ min: 1, max: 30 }) * 86_400_000
         );
         receipt["cancelled-date"] = cancelledDate.toISOString();
-        receipt["cancelled-by"]   = faker.helpers.arrayElement([userId, traderId]);
+        receipt["cancelled-by"] = faker.helpers.arrayElement([userId, traderId]);
     } else {
         receipt["cancelled-date"] = "";
-        receipt["cancelled-by"]   = "";
+        receipt["cancelled-by"] = "";
     }
 
     pools.receiptIds.push(receipt.id);
@@ -269,33 +280,35 @@ export const genReceipt = () => {
 
 export const genRequest = () => {
     const requestId = faker.string.uuid();
-    const userId    = faker.helpers.arrayElement(pools.userIds);
-    const traderId  = faker.helpers.arrayElement(pools.traderIds);
+    const userId = faker.helpers.arrayElement(pools.userIds);
+    const traderId = faker.helpers.arrayElement(pools.traderIds);
 
     pools.userRequests[userId].push(requestId);
     pools.traderRequests[traderId].push(requestId);
 
     const status = faker.helpers.weightedArrayElement([
-        { weight:  5, value: "CREATED"       },
-        { weight: 10, value: "PENDING_FUNDS"  },
-        { weight: 30, value: "APPROVED"       },
-        { weight:  5, value: "REJECTED"       },
-        { weight:  3, value: "EXPIRED"        },
-        { weight: 45, value: "FULFILLED"      },
-        { weight:  2, value: "CANCELED"       },
+        { weight: 5, value: "CREATED" },
+        { weight: 10, value: "PENDING_FUNDS" },
+        { weight: 30, value: "APPROVED" },
+        { weight: 5, value: "REJECTED" },
+        { weight: 3, value: "EXPIRED" },
+        { weight: 45, value: "FULFILLED" },
+        { weight: 2, value: "CANCELED" },
     ]);
 
+    addEntityPerStatus(requestId, EntityTypes.Request.toLowerCase(), status);
+
     const numProducts = faker.helpers.weightedArrayElement([
-        { weight:  8, value:  1 },
-        { weight: 12, value:  2 },
-        { weight: 15, value:  3 },
-        { weight: 18, value:  4 },
-        { weight: 16, value:  5 },
-        { weight: 12, value:  6 },
-        { weight:  9, value:  7 },
-        { weight:  6, value:  8 },
-        { weight:  3, value:  9 },
-        { weight:  1, value: 10 },
+        { weight: 8, value: 1 },
+        { weight: 12, value: 2 },
+        { weight: 15, value: 3 },
+        { weight: 18, value: 4 },
+        { weight: 16, value: 5 },
+        { weight: 12, value: 6 },
+        { weight: 9, value: 7 },
+        { weight: 6, value: 8 },
+        { weight: 3, value: 9 },
+        { weight: 1, value: 10 },
     ]);
 
     const selectedProducts = new Set();
@@ -318,7 +331,7 @@ export const genRequest = () => {
         }
     }
 
-    const baseCost  = products.reduce((sum, p) => sum + p.quantity * 300, 0);
+    const baseCost = products.reduce((sum, p) => sum + p.quantity * 300, 0);
     const totalCost = parseFloat(
         faker.number
             .float({ min: baseCost * 0.8, max: baseCost * 1.2, fractionDigits: 2 })
@@ -332,14 +345,14 @@ export const genRequest = () => {
         const userOwnedOrders = pools.userOrders[userId];
         fulfilledOrderId = userOwnedOrders?.length > 0
             ? faker.helpers.arrayElement(userOwnedOrders)
-            : faker.helpers.arrayElement(pools.orderIds);
+            : faker.helpers.arrayElement(pools.fulfilledOrderIds);
 
         const orderDate = pools.orderDates[fulfilledOrderId];
         if (orderDate) {
             const profile = FULFILLMENT_PROFILES[pools.traderTypeMap[traderId]];
             createdDate = faker.date.between({
                 from: new Date(orderDate.getTime() - profile.maxLeadDays * 86_400_000),
-                to:   new Date(orderDate.getTime() - profile.minLeadDays * 86_400_000),
+                to: new Date(orderDate.getTime() - profile.minLeadDays * 86_400_000),
             });
         } else {
             createdDate = faker.date.between({ from: "2024-01-01", to: "2026-03-21" });
@@ -351,7 +364,7 @@ export const genRequest = () => {
     const dueDate = new Date(createdDate);
     dueDate.setDate(dueDate.getDate() + faker.number.int({ min: 7, max: 30 }));
 
-    pools.requestIds.push(requestId.id);
+    pools.requestIds.push(requestId);
 
     return {
         "doc-type": "product-request",

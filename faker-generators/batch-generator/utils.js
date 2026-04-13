@@ -1,7 +1,7 @@
 import fs from "fs";
 import { fakerSR_RS_latin as faker } from "@faker-js/faker";
 import { VERSATILE_USER_COUNT } from "./constants.js";
-import { pools } from "./pools.js";
+import { pools, redis } from "./pools.js";
 
 /**
  * Streams `count` records produced by `generator` to a JSONL file.
@@ -32,3 +32,34 @@ export const initVersatileUsers = () => {
 export const parseSchema = (schema_name) => {
     return JSON.parse(fs.readFileSync(`../../schemas/streams-schemas/${schema_name}.avsc`, "utf8"));
 }
+
+export const moveEntityStatus = async (id, entity, fromStatus, toStatus) => {
+    const entityTransitions = VALID_TRANSITIONS[entity];
+    
+    if (!entityTransitions) {
+        throw new Error(`Invalid entity type: ${entity}. Must be one of: ${Object.keys(VALID_TRANSITIONS).join(', ')}`);
+    }
+
+    const allowedTransitions = entityTransitions[fromStatus];
+
+    if (!allowedTransitions) {
+        throw new Error(`Invalid fromStatus "${fromStatus}" for entity "${entity}". Must be one of: ${Object.keys(entityTransitions).join(', ')}`);
+    }
+
+    if (!allowedTransitions.includes(toStatus)) {
+        throw new Error(`Invalid transition for "${entity}": ${fromStatus} → ${toStatus}. Allowed: ${allowedTransitions.join(', ') || 'none (terminal status)'}`);
+    }
+
+    await redis
+        .pipeline()
+        .srem(`pool:${entity}Ids:${fromStatus}`, id)
+        .sadd(`pool:${entity}Ids:${toStatus}`, id)
+        .exec();
+};
+
+export const addEntityPerStatus = async (id, entity, status) => {
+    await redis
+        .pipeline()
+        .sadd(`pool:${entity}Ids:${status}`, id)
+        .exec();
+};

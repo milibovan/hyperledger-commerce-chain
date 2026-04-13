@@ -5,9 +5,23 @@ export const pools = {
     userIds: [],
     traderIds: [],
     productIds: [],
-    orderIds: [],
-    receiptIds: [],
-    requestIds: [],
+
+    createdOrderIds: [],
+    approvedOrderIds: [],
+    fulfilledOrderIds: [],
+    completedOrderIds: [],
+    cancelledOrderIds: [],
+
+    createdReceiptIds: [],
+    cancelledReceiptIds: [],
+
+    createdRequestIds: [],
+    pendingRequestIds: [],
+    approvedRequestIds: [],
+    rejectedRequestIds: [],
+    fulfilledRequestIds: [],
+    expiredRequestIds: [],
+    cancelledRequestIds: [],
 
     // Product lookup by trader type
     productsByTrader: {},
@@ -54,10 +68,24 @@ export const writePoolsToRedis = async () => {
 
     await writeset('pool:userIds',    pools.userIds);
     await writeset('pool:traderIds',  pools.traderIds);
-    await writeset('pool:orderIds',   pools.orderIds);
     await writeset('pool:productIds', pools.productIds);
-    await writeset('pool:receiptIds', pools.receiptIds);
-    await writeset('pool:requestIds', pools.requestIds);
+    
+    await redis.sadd('pool:orderIds:CREATED', ...createdOrderIds);
+    await redis.sadd('pool:orderIds:APPROVED', ...approvedOrderIds);
+    await redis.sadd('pool:orderIds:FULFILLED', ...fulfilledOrderIds);
+    await redis.sadd('pool:orderIds:COMPLETED', ...completedOrderIds);
+    await redis.sadd('pool:orderIds:CANCELLED', ...cancelledOrderIds);
+    
+    await redis.sadd('pool:receiptIds:CREATED', ...createdReceiptIds);
+    await redis.sadd('pool:receiptIds:CANCELLED', ...cancelledReceiptIds);
+
+    await redis.sadd('pool:requestIds:CREATED', ...createdRequestIds);
+    await redis.sadd('pool:requestIds:PENDING_FUNDS', ...pendingRequestIds);
+    await redis.sadd('pool:requestIds:APPROVED', ...approvedRequestIds);
+    await redis.sadd('pool:requestIds:REJECTED', ...rejectedRequestIds);
+    await redis.sadd('pool:requestIds:FULFILLED', ...fulfilledRequestIds);
+    await redis.sadd('pool:requestIds:EXPIRED', ...expiredRequestIds);
+    await redis.sadd('pool:requestIds:CANCELLED', ...cancelledRequestIds);
 
     console.log("✅ Pools written to Redis (db 1)");
     await redis.quit();

@@ -1,8 +1,9 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
 import { genHeader } from './event-header-generator';
-import { EntityTypes, EventTypes } from '../batch-generator/constants';
+import { EntityTypes, EventTypes, ReceiptStatus } from '../batch-generator/constants';
 import { redis } from '../batch-generator/pools';
 import { numProducts } from '../batch-generator/constants';
+import { moveEntityStatus } from '../batch-generator/utils';
 
 export const createReceipt = async () => {
     const header = genHeader(EventTypes.ReceiptCreated, EntityTypes.Receipt)
@@ -24,7 +25,7 @@ export const createReceipt = async () => {
         products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)
     );
 
-    redis.sadd("pool:receiptIds", header.event_id)
+    redis.sadd(`pool:receiptIds:${ReceiptStatus.CREATED}`, header.entity_id)
 
     const receiptCreatedEvent = {
         "common": header,
@@ -38,8 +39,12 @@ export const createReceipt = async () => {
     return receiptCreatedEvent
 };
 
-export const cancelReceipt = () => {
-    const header = genHeader(EventTypes.ReceiptCancelled, EntityTypes.Receipt)
+export const cancelReceipt = async () => {
+    const receiptId = await redis.srandmember(`pool:receiptIds:${ReceiptStatus.CREATED}`);
+
+    const header = genHeader(EventTypes.ReceiptCancelled, EntityTypes.Receipt, receiptId)
+
+    await moveEntityStatus(receiptId, EntityTypes.Receipt.toLowerCase(), ReceiptStatus.CREATED, ReceiptStatus.CANCELLED)
 
     const receiptCancelledEvent = {
         "common": header,

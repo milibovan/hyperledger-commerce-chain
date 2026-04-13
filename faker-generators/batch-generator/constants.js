@@ -142,3 +142,49 @@ export const quantity = faker.helpers.weightedArrayElement([
     { weight: 10, value: 4 },
     { weight: 5, value: 5 },
 ]);
+
+export const VALID_TRANSITIONS = {
+    order: {
+        [OrderStatus.CREATED]: [OrderStatus.APPROVED, OrderStatus.CANCELLED],
+        [OrderStatus.APPROVED]: [OrderStatus.FULFILLED, OrderStatus.CANCELLED],
+        [OrderStatus.FULFILLED]: [OrderStatus.COMPLETED],
+        [OrderStatus.COMPLETED]: [],
+        [OrderStatus.CANCELLED]: []
+    },
+    receipt: {
+        [ReceiptStatus.CREATED]: [ReceiptStatus.CANCELLED],
+        [ReceiptStatus.CANCELLED]: []
+    },
+    request: {
+        [RequestStatus.CREATED]: [RequestStatus.PENDING_FUNDS, RequestStatus.APPROVED, RequestStatus.CANCELLED],
+        [RequestStatus.PENDING_FUNDS]: [RequestStatus.APPROVED, RequestStatus.REJECTED, RequestStatus.EXPIRED, RequestStatus.CANCELLED],
+        [RequestStatus.APPROVED]: [RequestStatus.FULFILLED, RequestStatus.CANCELLED],
+        [RequestStatus.REJECTED]: [],
+        [RequestStatus.FULFILLED]: [],
+        [RequestStatus.EXPIRED]: [],
+        [RequestStatus.CANCELLED]: []
+    }
+};
+
+export const OrderStatus = Object.freeze({
+    CREATED: 'CREATED',
+    APPROVED: 'APPROVED',
+    FULFILLED: 'FULFILLED',
+    COMPLETED: 'COMPLETED',
+    CANCELLED: 'CANCELLED'
+});
+
+export const ReceiptStatus = Object.freeze({
+    CREATED: 'CREATED',
+    CANCELLED: 'CANCELLED'
+});
+
+export const RequestStatus = Object.freeze({
+    CREATED: 'CREATED',
+    PENDING_FUNDS: 'PENDING_FUNDS',
+    APPROVED: 'APPROVED',
+    REJECTED: 'REJECTED',
+    FULFILLED: 'FULFILLED',
+    EXPIRED: 'EXPIRED',
+    CANCELLED: 'CANCELLED'
+});
