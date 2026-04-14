@@ -1,7 +1,8 @@
 import fs from "fs";
 import avsc from "avsc";
-import { parseSchema } from '../batch-generator/utils';
-import { createUser, deleteUser } from './user_events';
+import { parseSchema } from '../batch-generator/utils.js';
+import { createUser, deleteUser } from './user_events.js';
+import { redis } from "../batch-generator/pools.js";
 
 const headerSchema = parseSchema("schema-header");
 const userCreatedSchema   = parseSchema("user/user-created");
@@ -13,8 +14,8 @@ avsc.Type.forSchema(headerSchema, { registry });
 const UserCreatedEvent = avsc.Type.forSchema(userCreatedSchema, { registry });
 const UserDeletedEvent = avsc.Type.forSchema(userDeletedSchema, { registry });
 
-const userCreatedEvent = createUser()
-const userDeletedEvent = deleteUser()
+const userCreatedEvent = await createUser()
+const userDeletedEvent = await deleteUser()
 console.log(userCreatedEvent);
 console.log(userDeletedEvent);
 
@@ -28,3 +29,4 @@ const decodedDeleted = UserDeletedEvent.fromBuffer(bufDel);
 console.log("Decoded:", decoded);
 console.log("Decoded:", decodedDeleted);
 
+await redis.quit()

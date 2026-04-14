@@ -30,7 +30,7 @@ export const initVersatileUsers = () => {
 };
 
 export const parseSchema = (schema_name) => {
-    return JSON.parse(fs.readFileSync(`../../schemas/streams-schemas/${schema_name}.avsc`, "utf8"));
+    return JSON.parse(fs.readFileSync(`../../../schemas/streams-schemas/${schema_name}.avsc`, "utf8"));
 }
 
 export const moveEntityStatus = async (id, entity, fromStatus, toStatus) => {

@@ -1,4 +1,5 @@
 import Redis from 'ioredis';
+import 'dotenv/config';
 
 export const pools = {
     // ID registries
@@ -88,5 +89,5 @@ export const writePoolsToRedis = async () => {
     await redis.sadd('pool:requestIds:CANCELLED', ...cancelledRequestIds);
 
     console.log("✅ Pools written to Redis (db 1)");
-    await redis.quit();
+    ;
 };

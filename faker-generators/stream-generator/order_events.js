@@ -1,7 +1,7 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
-import { genHeader } from './event-header-generator';
-import { EntityTypes, EventTypes, quantity, numProducts, OrderStatus, RequestStatus } from '../batch-generator/constants';
-import { redis, moveEntityStatus } from '../batch-generator/pools';
+import { genHeader } from './event-header-generator.js';
+import { EntityTypes, EventTypes, numProducts, OrderStatus, RequestStatus } from '../batch-generator/constants.js';
+import { redis, moveEntityStatus } from '../batch-generator/pools.js';
 
 export const createOrder = async () => {
     const header = genHeader(EventTypes.OrderCreated, EntityTypes.Order);
@@ -26,6 +26,8 @@ export const createOrder = async () => {
 
     await redis.sadd(`pool:orderIds:${OrderStatus.CREATED}`, header.entity_id);
 
+    ;
+
     return {
         common: header,
         user_id: userId,
@@ -43,6 +45,8 @@ export const approveOrder = async () => {
     const traderId = await redis.srandmember('pool:traderIds');
 
     await moveEntityStatus(orderId, 'order', OrderStatus.CREATED, OrderStatus.APPROVED);
+
+    ;
 
     return {
         common: header,
@@ -66,6 +70,8 @@ export const cancelOrder = async () => {
     const userId = await redis.srandmember('pool:userIds');
 
     await moveEntityStatus(orderId, 'order', fromStatus, OrderStatus.CANCELLED);
+    
+    ;
 
     return {
         common: header,
@@ -94,6 +100,8 @@ export const fulfillOrder = async () => {
     }));
 
     await moveEntityStatus(orderId, 'order', OrderStatus.APPROVED, OrderStatus.FULFILLED);
+    
+    ;
 
     return {
         common: header,
@@ -113,6 +121,8 @@ export const completeOrder = async () => {
     const receiptIds = await redis.srandmember(`pool:receiptIds:${ReceiptStatus.CREATED}`, receiptCount);
 
     await moveEntityStatus(orderId, 'order', OrderStatus.FULFILLED, OrderStatus.COMPLETED);
+    
+    ;
 
     return {
         common: header,

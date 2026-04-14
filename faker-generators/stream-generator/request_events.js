@@ -1,7 +1,7 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
-import { genHeader } from './event-header-generator';
-import { EntityTypes, EventTypes, quantity, numProducts, RequestStatus, OrderStatus } from '../batch-generator/constants';
-import { redis, moveEntityStatus } from '../batch-generator/pools';
+import { genHeader } from './event-header-generator.js';
+import { EntityTypes, EventTypes, numProducts, RequestStatus, OrderStatus } from '../batch-generator/constants.js';
+import { redis, moveEntityStatus } from '../batch-generator/pools.js';
 
 export const createRequest = async () => {
     const header = genHeader(EventTypes.RequestCreated, EntityTypes.Request);
@@ -24,6 +24,8 @@ export const createRequest = async () => {
     );
 
     await redis.sadd(`pool:requestIds:${RequestStatus.CREATED}`, header.entity_id);
+    
+    ;
 
     return {
         common: header,
@@ -42,6 +44,8 @@ export const pendingRequest = async () => {
     const header = genHeader(EventTypes.RequestPending, EntityTypes.Request, requestId);
 
     await moveEntityStatus(requestId, 'request', RequestStatus.CREATED, RequestStatus.PENDING_FUNDS);
+    
+    ;
 
     return {
         common: header,
@@ -65,6 +69,8 @@ export const approveRequest = async () => {
 
     await moveEntityStatus(requestId, 'request', fromStatus, RequestStatus.APPROVED);
 
+    ;
+
     return {
         common: header,
         request_id: requestId,
@@ -80,6 +86,8 @@ export const rejectRequest = async () => {
     const traderId = await redis.srandmember('pool:traderIds');
 
     await moveEntityStatus(requestId, 'request', RequestStatus.PENDING_FUNDS, RequestStatus.REJECTED);
+    
+    ;
 
     return {
         common: header,
@@ -102,6 +110,8 @@ export const fulfillRequest = async () => {
         .exec();
 
     await moveEntityStatus(requestId, 'request', RequestStatus.APPROVED, RequestStatus.FULFILLED);
+    
+    ;
 
     return {
         common: header,
@@ -118,6 +128,8 @@ export const expireRequest = async () => {
     const header = genHeader(EventTypes.RequestExpired, EntityTypes.Request, requestId);
 
     await moveEntityStatus(requestId, 'request', RequestStatus.PENDING_FUNDS, RequestStatus.EXPIRED);
+    
+    ;
 
     return {
         common: header,
@@ -147,6 +159,8 @@ export const cancelRequest = async () => {
     const userId = await redis.srandmember('pool:userIds');
 
     await moveEntityStatus(requestId, 'request', fromStatus, RequestStatus.CANCELLED);
+    
+    ;
 
     return {
         common: header,

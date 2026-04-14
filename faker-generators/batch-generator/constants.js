@@ -1,3 +1,5 @@
+import { fakerSR_RS_latin as faker } from '@faker-js/faker';
+
 export const COUNTS = {
     users: 50000,
     traders: 5000,
@@ -143,29 +145,6 @@ export const quantity = faker.helpers.weightedArrayElement([
     { weight: 5, value: 5 },
 ]);
 
-export const VALID_TRANSITIONS = {
-    order: {
-        [OrderStatus.CREATED]: [OrderStatus.APPROVED, OrderStatus.CANCELLED],
-        [OrderStatus.APPROVED]: [OrderStatus.FULFILLED, OrderStatus.CANCELLED],
-        [OrderStatus.FULFILLED]: [OrderStatus.COMPLETED],
-        [OrderStatus.COMPLETED]: [],
-        [OrderStatus.CANCELLED]: []
-    },
-    receipt: {
-        [ReceiptStatus.CREATED]: [ReceiptStatus.CANCELLED],
-        [ReceiptStatus.CANCELLED]: []
-    },
-    request: {
-        [RequestStatus.CREATED]: [RequestStatus.PENDING_FUNDS, RequestStatus.APPROVED, RequestStatus.CANCELLED],
-        [RequestStatus.PENDING_FUNDS]: [RequestStatus.APPROVED, RequestStatus.REJECTED, RequestStatus.EXPIRED, RequestStatus.CANCELLED],
-        [RequestStatus.APPROVED]: [RequestStatus.FULFILLED, RequestStatus.CANCELLED],
-        [RequestStatus.REJECTED]: [],
-        [RequestStatus.FULFILLED]: [],
-        [RequestStatus.EXPIRED]: [],
-        [RequestStatus.CANCELLED]: []
-    }
-};
-
 export const OrderStatus = Object.freeze({
     CREATED: 'CREATED',
     APPROVED: 'APPROVED',
@@ -188,3 +167,26 @@ export const RequestStatus = Object.freeze({
     EXPIRED: 'EXPIRED',
     CANCELLED: 'CANCELLED'
 });
+
+export const VALID_TRANSITIONS = {
+    order: {
+        [OrderStatus.CREATED]: [OrderStatus.APPROVED, OrderStatus.CANCELLED],
+        [OrderStatus.APPROVED]: [OrderStatus.FULFILLED, OrderStatus.CANCELLED],
+        [OrderStatus.FULFILLED]: [OrderStatus.COMPLETED],
+        [OrderStatus.COMPLETED]: [],
+        [OrderStatus.CANCELLED]: []
+    },
+    receipt: {
+        [ReceiptStatus.CREATED]: [ReceiptStatus.CANCELLED],
+        [ReceiptStatus.CANCELLED]: []
+    },
+    request: {
+        [RequestStatus.CREATED]: [RequestStatus.PENDING_FUNDS, RequestStatus.APPROVED, RequestStatus.CANCELLED],
+        [RequestStatus.PENDING_FUNDS]: [RequestStatus.APPROVED, RequestStatus.REJECTED, RequestStatus.EXPIRED, RequestStatus.CANCELLED],
+        [RequestStatus.APPROVED]: [RequestStatus.FULFILLED, RequestStatus.CANCELLED],
+        [RequestStatus.REJECTED]: [],
+        [RequestStatus.FULFILLED]: [],
+        [RequestStatus.EXPIRED]: [],
+        [RequestStatus.CANCELLED]: []
+    }
+};
