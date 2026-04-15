@@ -1,4 +1,10 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
+import { createUser, deleteUser } from '../stream-generator/user_events.js';
+import { createTrader, deleteTrader } from '../stream-generator/trader_events.js';
+import { createProduct, deleteProduct } from '../stream-generator/product_events.js';
+import { createOrder, approveOrder, fulfillOrder, completeOrder, cancelOrder } from '../stream-generator/order_events.js';
+import { createReceipt, cancelReceipt } from '../stream-generator/receipt_events.js';
+import { createRequest, pendingRequest, approveRequest, rejectRequest, fulfillRequest, expireRequest, cancelRequest } from '../stream-generator/request_events.js';
 
 export const COUNTS = {
     users: 50000,
@@ -189,4 +195,49 @@ export const VALID_TRANSITIONS = {
         [RequestStatus.EXPIRED]: [],
         [RequestStatus.CANCELLED]: []
     }
+};
+
+export const EVENT_GENERATORS = {
+    user: {
+        created: createUser,
+        deleted: deleteUser,
+    },
+    trader: {
+        created: createTrader,
+        deleted: deleteTrader,
+    },
+    product: {
+        created: createProduct,
+        deleted: deleteProduct,
+    },
+    order: {
+        created: createOrder,
+        approved: approveOrder,
+        fulfilled: fulfillOrder,
+        completed: completeOrder,
+        cancelled: cancelOrder,
+    },
+    receipt: {
+        created: createReceipt,
+        cancelled: cancelReceipt
+    },
+    request: {
+        created: createRequest,
+        pending_funds: pendingRequest,
+        approved: approveRequest,
+        rejected: rejectRequest,
+        fulfilled: fulfillRequest,
+        expired: expireRequest,
+        cancelled: cancelRequest
+    }
+};
+
+export const randomEntityAction = () => {
+    const entities = Object.keys(EVENT_GENERATORS);
+    const entity = entities[Math.floor(Math.random() * entities.length)];
+    
+    const actions = Object.keys(EVENT_GENERATORS[entity]);
+    const action = actions[Math.floor(Math.random() * actions.length)];
+    
+    return { entity, action };
 };

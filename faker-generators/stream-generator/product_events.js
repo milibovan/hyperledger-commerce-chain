@@ -1,5 +1,5 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
-import { EntityTypes, EventTypes, TRADER_TYPES, PRODUCT_CATEGORIES } from '../batch-generator/constants.js';
+import { EntityTypes, EventTypes, TRADER_TYPES, PRODUCT_CATEGORIES, quantity } from '../batch-generator/constants.js';
 import { genHeader } from './event_header_generator.js';
 import { redis } from '../batch-generator/pools.js';
 
@@ -10,7 +10,7 @@ export const createProduct = async () => {
 
     const productName = `${category.name} ${faker.commerce.productAdjective()}`;
 
-    await redis.sadd("pool:productIds", header.event_id)
+    await redis.sadd("pool:productIds", header.entity_id)
 
     const productCreatedEvent = {
         "common": header,
@@ -20,8 +20,8 @@ export const createProduct = async () => {
             max: category.priceRange[1],
             fractionDigits: 2
         })),
-        "quantity": faker.number.int({ min: 50, max: 1000 }),
-        "trader-type": traderType,
+        "quantity": quantity,
+        trader_type: traderType,
         "expiry_date": faker.date.soon().getTime()
     };
 

@@ -1,32 +1,31 @@
 import fs from "fs";
 import avsc from "avsc";
 import { parseSchema } from '../batch-generator/utils.js';
-import { createUser, deleteUser } from './user_events.js';
 import { redis } from "../batch-generator/pools.js";
+import { randomEntityAction, EVENT_GENERATORS } from '../batch-generator/constants.js';
 
 const headerSchema = parseSchema("schema-header");
-const userCreatedSchema   = parseSchema("user/user-created");
-const userDeletedSchema   = parseSchema("user/user-deleted");
+
+const { entity, action } = randomEntityAction();
+console.log(`Generating event: ${entity}-${action}`);
+
+const schemaPath = `${entity}/${entity}-${action}`;
+const schema = parseSchema(schemaPath);
 
 const registry = {};
-
 avsc.Type.forSchema(headerSchema, { registry });
-const UserCreatedEvent = avsc.Type.forSchema(userCreatedSchema, { registry });
-const UserDeletedEvent = avsc.Type.forSchema(userDeletedSchema, { registry });
+const EventType = avsc.Type.forSchema(schema, { registry });
 
-const userCreatedEvent = await createUser()
-const userDeletedEvent = await deleteUser()
-console.log(userCreatedEvent);
-console.log(userDeletedEvent);
+const generator = EVENT_GENERATORS[entity]?.[action];
+if (!generator) throw new Error(`No generator for ${entity}-${action}`);
 
-const buf = UserCreatedEvent.toBuffer(userCreatedEvent);
-const bufDel = UserDeletedEvent.toBuffer(userDeletedEvent);
-fs.writeFileSync("userCreatedEvent.avro", buf);
-fs.writeFileSync("UserDeletedEvent.avro", bufDel);
+const event = await generator();
+console.log("Event:", event);
 
-const decoded = UserCreatedEvent.fromBuffer(buf);
-const decodedDeleted = UserDeletedEvent.fromBuffer(bufDel);
+const buf = EventType.toBuffer(event);
+fs.writeFileSync(`${entity}-${action}.avro`, buf);
+
+const decoded = EventType.fromBuffer(buf);
 console.log("Decoded:", decoded);
-console.log("Decoded:", decodedDeleted);
 
-await redis.quit()
+await redis.quit();

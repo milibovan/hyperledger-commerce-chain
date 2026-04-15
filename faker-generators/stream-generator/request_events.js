@@ -1,7 +1,8 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
-import { genHeader } from './event-header-generator.js';
+import { genHeader } from './event_header_generator.js';
 import { EntityTypes, EventTypes, numProducts, RequestStatus, OrderStatus } from '../batch-generator/constants.js';
-import { redis, moveEntityStatus } from '../batch-generator/pools.js';
+import { redis } from '../batch-generator/pools.js';
+import { moveEntityStatus } from '../batch-generator/utils.js';
 
 export const createRequest = async () => {
     const header = genHeader(EventTypes.RequestCreated, EntityTypes.Request);
@@ -86,8 +87,6 @@ export const rejectRequest = async () => {
     const traderId = await redis.srandmember('pool:traderIds');
 
     await moveEntityStatus(requestId, 'request', RequestStatus.PENDING_FUNDS, RequestStatus.REJECTED);
-    
-    ;
 
     return {
         common: header,

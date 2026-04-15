@@ -1,5 +1,5 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
-import { genHeader } from './event-header-generator.js';
+import { genHeader } from './event_header_generator.js';
 import { EntityTypes, EventTypes, TRADER_TYPES } from '../batch-generator/constants.js';
 import { redis } from '../batch-generator/pools.js';
 
@@ -14,7 +14,7 @@ export const createTrader = async () => {
         "common": header,
         "name": faker.person.firstName(),
         "email": faker.internet.email(),
-        "trader-type": traderType,
+        trader_type: traderType,
         "balance": parseFloat(faker.finance.amount({ min: 500, max: 50000, dec: 2 })),
         "vat": "VAT-" + faker.string.alphanumeric(8).toUpperCase(),
     }
