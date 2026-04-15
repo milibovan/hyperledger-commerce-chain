@@ -23,9 +23,7 @@ export const createProduct = async () => {
         "quantity": faker.number.int({ min: 50, max: 1000 }),
         "trader-type": traderType,
         "expiry_date": faker.date.soon().getTime()
-    }
-
-    ;
+    };
 
     return productCreatedEvent
 };
@@ -33,13 +31,18 @@ export const createProduct = async () => {
 export const deleteProduct = async () => {
     const productId = await redis.srandmember('pool:productIds');
 
+    if (!productId) throw new Error('No active products available to delete');
+
     const header = genHeader(EventTypes.ProductDeleted, EntityTypes.Product, productId)
+
+    await redis.multi()
+        .srem('pool:productIds', productId)
+        .sadd('pool:productIds:DELETED', productId)
+        .exec();
 
     const productDeletedEvent = {
         "common": header,
-    }
-
-    ;
+    };
 
     return productDeletedEvent
 };

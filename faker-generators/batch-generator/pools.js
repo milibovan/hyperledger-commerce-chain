@@ -7,6 +7,10 @@ export const pools = {
     traderIds: [],
     productIds: [],
 
+    deletedUserIds: [],
+    deletedTraderIds: [],
+    deletedProductIds: [],
+
     createdOrderIds: [],
     approvedOrderIds: [],
     fulfilledOrderIds: [],
@@ -46,12 +50,12 @@ export const pools = {
     versatileUserCoverage: {},       // userId -> Set of trader types already covered
 };
 
-export const redis = new Redis({ 
-        host: process.env.REDIS_HOST || 'localhost', 
-        port: parseInt(process.env.REDIS_PORT || '6379'),
-        db: 1,
-        password: process.env.REDIS_PASSWORD
-    });
+export const redis = new Redis({
+    host: process.env.REDIS_HOST || 'localhost',
+    port: parseInt(process.env.REDIS_PORT || '6379'),
+    db: 1,
+    password: process.env.REDIS_PASSWORD
+});
 
 export const writePoolsToRedis = async () => {
 
@@ -67,16 +71,19 @@ export const writePoolsToRedis = async () => {
         console.log(`  wrote ${ids.length} ids to ${key}`);
     };
 
-    await writeset('pool:userIds',    pools.userIds);
-    await writeset('pool:traderIds',  pools.traderIds);
+    await writeset('pool:userIds', pools.userIds);
+    await writeset('pool:userIds:DELETED', pools.deletedUserIds);
+    await writeset('pool:traderIds', pools.traderIds);
+    await writeset('pool:traderIds:DELETED', pools.deletedTraderIds);
     await writeset('pool:productIds', pools.productIds);
-    
+    await writeset('pool:productIds:DELETED', pools.deletedProductIds);
+
     await redis.sadd('pool:orderIds:CREATED', ...createdOrderIds);
     await redis.sadd('pool:orderIds:APPROVED', ...approvedOrderIds);
     await redis.sadd('pool:orderIds:FULFILLED', ...fulfilledOrderIds);
     await redis.sadd('pool:orderIds:COMPLETED', ...completedOrderIds);
     await redis.sadd('pool:orderIds:CANCELLED', ...cancelledOrderIds);
-    
+
     await redis.sadd('pool:receiptIds:CREATED', ...createdReceiptIds);
     await redis.sadd('pool:receiptIds:CANCELLED', ...cancelledReceiptIds);
 

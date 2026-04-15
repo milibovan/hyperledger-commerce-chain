@@ -27,7 +27,14 @@ export const createTrader = async () => {
 export const deleteTrader = async () => {
     const traderId = await redis.srandmember('pool:traderIds');
 
+    if (!traderId) throw new Error('No active traders available to delete');
+
     const header = genHeader(EventTypes.TraderDeleted, EntityTypes.Trader, traderId)
+
+    await redis.multi()
+        .srem('pool:traderIds', traderId)
+        .sadd('pool:traderIds:DELETED', traderId)
+        .exec();
 
     const traderDeletedEvent = {
         "common": header,

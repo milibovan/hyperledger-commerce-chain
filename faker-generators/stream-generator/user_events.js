@@ -23,7 +23,14 @@ export const createUser = async () => {
 export const deleteUser = async () => {
     const userId = await redis.srandmember('pool:userIds');
 
+    if (!userId) throw new Error('No active users available to delete');
+
     const header = genHeader(EventTypes.UserDeleted, EntityTypes.User, userId)
+
+    await redis.multi()
+        .srem('pool:userIds', userId)
+        .sadd('pool:userIds:DELETED', userId)
+        .exec();
 
     const userDeletedEvent = {
         "common": header,
