@@ -115,7 +115,8 @@ export const genOrder = () => {
         { weight: 10, value: "CANCELLED" },
     ]);
 
-    addEntityPerStatus(id, EntityTypes.Order.toLowerCase(), status);
+    // await addEntityPerStatus(id, EntityTypes.Order.toLowerCase(), status);
+    pools[`${status.toLowerCase()}OrderIds`].push(id);
 
     const traderType = faker.helpers.arrayElement(TRADER_TYPES);
     const availableProducts = pools.productsByTrader[traderType] ?? pools.productIds;
@@ -205,8 +206,8 @@ export const genReceipt = () => {
         { weight: 5, value: "CANCELLED" },
     ]);
 
-    addEntityPerStatus(receiptId, EntityTypes.Receipt.toLowerCase(), status);
-    
+    // addEntityPerStatus(receiptId, EntityTypes.Receipt.toLowerCase(), status);
+
     const numProducts = faker.helpers.weightedArrayElement([
         { weight: 15, value: 1 },
         { weight: 25, value: 2 },
@@ -268,12 +269,16 @@ export const genReceipt = () => {
         );
         receipt["cancelled-date"] = cancelledDate.toISOString();
         receipt["cancelled-by"] = faker.helpers.arrayElement([userId, traderId]);
+
+        pools.cancelledReceiptIds.push(receipt.id);
+        // await addEntityPerStatus(receipt.id, EntityTypes.Receipt, status);
     } else {
         receipt["cancelled-date"] = "";
         receipt["cancelled-by"] = "";
+        
+        pools.createdReceiptIds.push(receipt.id);
+        // await addEntityPerStatus(receipt.id, EntityTypes.Receipt, "CREATED");
     }
-
-    pools.receiptIds.push(receipt.id);
 
     return receipt;
 };
@@ -293,10 +298,15 @@ export const genRequest = () => {
         { weight: 5, value: "REJECTED" },
         { weight: 3, value: "EXPIRED" },
         { weight: 45, value: "FULFILLED" },
-        { weight: 2, value: "CANCELED" },
+        { weight: 2, value: "CANCELLED" },
     ]);
 
-    addEntityPerStatus(requestId, EntityTypes.Request.toLowerCase(), status);
+    // await addEntityPerStatus(requestId, EntityTypes.Request.toLowerCase(), status);
+    if (status === "PENDING_FUNDS") {
+        pools.pendingRequestIds.push(requestId);
+    } else {
+        pools[`${status.toLowerCase()}RequestIds`].push(requestId);
+    }
 
     const numProducts = faker.helpers.weightedArrayElement([
         { weight: 8, value: 1 },
@@ -363,8 +373,6 @@ export const genRequest = () => {
 
     const dueDate = new Date(createdDate);
     dueDate.setDate(dueDate.getDate() + faker.number.int({ min: 7, max: 30 }));
-
-    pools.requestIds.push(requestId);
 
     return {
         "doc-type": "product-request",

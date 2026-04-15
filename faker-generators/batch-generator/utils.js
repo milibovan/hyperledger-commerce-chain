@@ -7,15 +7,36 @@ import { pools, redis } from "./pools.js";
  * Streams `count` records produced by `generator` to a JSONL file.
  */
 export const writeJSONL = (filename, count, generator) =>
-    new Promise((resolve) => {
+    new Promise((resolve, reject) => {
         const stream = fs.createWriteStream(filename);
-        for (let i = 0; i < count; i++) {
-            stream.write(JSON.stringify(generator()) + "\n");
-        }
-        stream.end(() => {
-            console.log(`Created ${filename} (${count} records)`);
-            resolve();
-        });
+
+        const writeNext = async (i) => {
+            if (i >= count) {
+                stream.end(() => {
+                    console.log(`Created ${filename} (${count} records)`);
+                    resolve();
+                });
+                return;
+            }
+
+            try {
+                const record = await generator();
+                const ok = stream.write(JSON.stringify(record) + "\n");
+
+                if (!ok) {
+                    stream.once('drain', () => writeNext(i + 1));
+                } else if (i % 1000 === 0) {
+                    setImmediate(() => writeNext(i + 1));
+                } else {
+                    writeNext(i + 1);
+                }
+            } catch (err) {
+                reject(err);
+            }
+        };
+
+        stream.on('error', reject);
+        writeNext(0);
     });
 
 /**
@@ -35,7 +56,7 @@ export const parseSchema = (schema_name) => {
 
 export const moveEntityStatus = async (id, entity, fromStatus, toStatus) => {
     const entityTransitions = VALID_TRANSITIONS[entity];
-    
+
     if (!entityTransitions) {
         throw new Error(`Invalid entity type: ${entity}. Must be one of: ${Object.keys(VALID_TRANSITIONS).join(', ')}`);
     }
