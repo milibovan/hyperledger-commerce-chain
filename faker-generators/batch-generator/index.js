@@ -8,6 +8,7 @@ import {
     genOrder,
     genReceipt,
     genRequest,
+    initVersatileUsersArray
 } from "./generators.js";
 import {
     updateUsersWithRelationships,
@@ -25,6 +26,7 @@ const runAll = async () => {
     await writeJSONL("order_requests.jsonl", COUNTS.requests,  genRequest);
 
     initVersatileUsers();
+    initVersatileUsersArray();
 
     await writeJSONL("receipts.jsonl", COUNTS.receipts, genReceipt);
 

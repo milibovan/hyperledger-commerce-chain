@@ -9,29 +9,33 @@ import { pools, redis } from "./pools.js";
 export const writeJSONL = (filename, count, generator) =>
     new Promise((resolve, reject) => {
         const stream = fs.createWriteStream(filename);
+        const start = performance.now();
+        let drainCount = 0;
 
-        const writeNext = async (i) => {
+        const writeNext = (i) => {
             if (i >= count) {
+                const elapsed = ((performance.now() - start) / 1000).toFixed(2);
                 stream.end(() => {
-                    console.log(`Created ${filename} (${count} records)`);
+                    console.log(`✅ ${filename} done — ${count} records in ${elapsed}s (drains: ${drainCount})`);
                     resolve();
                 });
                 return;
             }
 
-            try {
-                const record = await generator();
-                const ok = stream.write(JSON.stringify(record) + "\n");
+            // Log progress every 500 records
+            if (i % 1000 === 0) {
+                const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+                console.log(`  [${filename}] ${i}/${count} — ${elapsed}s elapsed`);
+            }
 
-                if (!ok) {
-                    stream.once('drain', () => writeNext(i + 1));
-                } else if (i % 1000 === 0) {
-                    setImmediate(() => writeNext(i + 1));
-                } else {
-                    writeNext(i + 1);
-                }
-            } catch (err) {
-                reject(err);
+            const ok = stream.write(JSON.stringify(generator()) + "\n");
+
+            if (!ok) {
+                drainCount++;
+                console.log(`  [${filename}] ⏸ backpressure at record ${i} (drain #${drainCount})`);
+                stream.once('drain', () => setImmediate(() => writeNext(i + 1)));
+            } else {
+                setImmediate(() => writeNext(i + 1));
             }
         };
 

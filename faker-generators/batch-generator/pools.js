@@ -78,23 +78,24 @@ export const writePoolsToRedis = async () => {
     await writeset('pool:productIds', pools.productIds);
     await writeset('pool:productIds:DELETED', pools.deletedProductIds);
 
-    await redis.sadd('pool:orderIds:CREATED', ...createdOrderIds);
-    await redis.sadd('pool:orderIds:APPROVED', ...approvedOrderIds);
-    await redis.sadd('pool:orderIds:FULFILLED', ...fulfilledOrderIds);
-    await redis.sadd('pool:orderIds:COMPLETED', ...completedOrderIds);
-    await redis.sadd('pool:orderIds:CANCELLED', ...cancelledOrderIds);
+    await writeset('pool:orderIds:CREATED', pools.createdOrderIds);
+    await writeset('pool:orderIds:APPROVED', pools.approvedOrderIds);
+    await writeset('pool:orderIds:FULFILLED', pools.fulfilledOrderIds);
+    await writeset('pool:orderIds:COMPLETED', pools.completedOrderIds);
+    await writeset('pool:orderIds:CANCELLED', pools.cancelledOrderIds);
 
-    await redis.sadd('pool:receiptIds:CREATED', ...createdReceiptIds);
-    await redis.sadd('pool:receiptIds:CANCELLED', ...cancelledReceiptIds);
+    await writeset('pool:receiptIds:CREATED', pools.createdReceiptIds);
+    await writeset('pool:receiptIds:CANCELLED', pools.cancelledReceiptIds);
 
-    await redis.sadd('pool:requestIds:CREATED', ...createdRequestIds);
-    await redis.sadd('pool:requestIds:PENDING_FUNDS', ...pendingRequestIds);
-    await redis.sadd('pool:requestIds:APPROVED', ...approvedRequestIds);
-    await redis.sadd('pool:requestIds:REJECTED', ...rejectedRequestIds);
-    await redis.sadd('pool:requestIds:FULFILLED', ...fulfilledRequestIds);
-    await redis.sadd('pool:requestIds:EXPIRED', ...expiredRequestIds);
-    await redis.sadd('pool:requestIds:CANCELLED', ...cancelledRequestIds);
+    await writeset('pool:requestIds:CREATED', pools.createdRequestIds);
+    await writeset('pool:requestIds:PENDING_FUNDS', pools.pendingRequestIds);
+    await writeset('pool:requestIds:APPROVED', pools.approvedRequestIds);
+    await writeset('pool:requestIds:REJECTED', pools.rejectedRequestIds);
+    await writeset('pool:requestIds:FULFILLED', pools.fulfilledRequestIds);
+    await writeset('pool:requestIds:EXPIRED', pools.expiredRequestIds);
+    await writeset('pool:requestIds:CANCELLED', pools.cancelledRequestIds);
 
     console.log("✅ Pools written to Redis (db 1)");
-    ;
+
+    await redis.quit();
 };

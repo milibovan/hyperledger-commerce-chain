@@ -5,11 +5,9 @@ import {
     PRODUCT_CATEGORIES,
     VERSATILE_RECEIPT_RATIO,
     numProducts,
-    quantity,
-    EntityTypes
+    quantity
 } from "./constants.js";
 import { pools } from "./pools.js";
-import { addEntityPerStatus } from "./utils.js";
 
 export const genUser = () => {
     const id = faker.string.uuid();
@@ -155,13 +153,31 @@ export const genOrder = () => {
     };
 };
 
+let cachedValidOrderIds = null;
+const getValidOrderIds = () => {
+    if (!cachedValidOrderIds) {
+        cachedValidOrderIds = [
+            ...pools.completedOrderIds,
+            ...pools.fulfilledOrderIds,
+            ...pools.approvedOrderIds,
+        ];
+    }
+    return cachedValidOrderIds;
+};
+
+let versatileUserArray = null;
+
+export const initVersatileUsersArray = () => {
+    versatileUserArray = [...pools.versatileUserIds];
+};
+
 export const genReceipt = () => {
     const receiptId = faker.string.uuid();
     let userId, traderId;
 
     // Bias versatile users toward uncovered trader types so they reach >= 3 types.
     if (pools.versatileUserIds && Math.random() < VERSATILE_RECEIPT_RATIO) {
-        userId = faker.helpers.arrayElement([...pools.versatileUserIds]);
+        userId = faker.helpers.arrayElement(versatileUserArray);
         pools.versatileUserCoverage[userId] ??= new Set();
 
         const covered = pools.versatileUserCoverage[userId];
@@ -178,11 +194,7 @@ export const genReceipt = () => {
     }
 
     // Align userId with the order's actual owner.
-    const validOrderIds = [
-        ...pools.completedOrderIds,
-        ...pools.fulfilledOrderIds,
-        ...pools.approvedOrderIds,
-    ];
+    const validOrderIds = getValidOrderIds();
 
     const userOrdersList = pools.userOrders[userId];
     const orderId = userOrdersList?.length > 0
