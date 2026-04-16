@@ -13,7 +13,7 @@
       "type": "string"
     },
     {
-      "name": "receipts_ids",
+      "name": "receipt_ids",
       "type": {
         "type": "array",
         "items": "string"

@@ -1,6 +1,6 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
 import { genHeader } from './event_header_generator.js';
-import { EntityTypes, EventTypes, numProducts, OrderStatus, RequestStatus } from '../batch-generator/constants.js';
+import { EntityTypes, EventTypes, numProducts, OrderStatus, RequestStatus, ReceiptStatus } from '../batch-generator/constants.js';
 import { redis } from '../batch-generator/pools.js';
 import { moveEntityStatus } from '../batch-generator/utils.js';
 
@@ -27,8 +27,6 @@ export const createOrder = async () => {
 
     await redis.sadd(`pool:orderIds:${OrderStatus.CREATED}`, header.entity_id);
 
-    ;
-
     return {
         common: header,
         user_id: userId,
@@ -46,8 +44,6 @@ export const approveOrder = async () => {
     const traderId = await redis.srandmember('pool:traderIds');
 
     await moveEntityStatus(orderId, 'order', OrderStatus.CREATED, OrderStatus.APPROVED);
-
-    ;
 
     return {
         common: header,
@@ -71,8 +67,6 @@ export const cancelOrder = async () => {
     const userId = await redis.srandmember('pool:userIds');
 
     await moveEntityStatus(orderId, 'order', fromStatus, OrderStatus.CANCELLED);
-    
-    ;
 
     return {
         common: header,
@@ -101,15 +95,11 @@ export const fulfillOrder = async () => {
     }));
 
     await moveEntityStatus(orderId, 'order', OrderStatus.APPROVED, OrderStatus.FULFILLED);
-    
-    ;
 
     return {
         common: header,
-        order_id: orderId,
         trader_id: traderId,
-        products,
-        reason: Math.random() >= 0.5 ? faker.lorem.lines({ min: 1, max: 3 }) : ''
+        products
     };
 };
 
@@ -117,17 +107,17 @@ export const completeOrder = async () => {
     const orderId = await redis.srandmember(`pool:orderIds:${OrderStatus.FULFILLED}`);
     if (!orderId) return null;
 
+    const userId = await redis.srandmember('pool:userIds');
+
     const header = genHeader(EventTypes.OrderCompleted, EntityTypes.Order, orderId);
     const receiptCount = faker.number.int({ min: 1, max: 6 });
     const receiptIds = await redis.srandmember(`pool:receiptIds:${ReceiptStatus.CREATED}`, receiptCount);
 
     await moveEntityStatus(orderId, 'order', OrderStatus.FULFILLED, OrderStatus.COMPLETED);
-    
-    ;
 
     return {
         common: header,
-        order_id: orderId,
+        user_id: userId,
         receipt_ids: receiptIds ?? []
     };
 };

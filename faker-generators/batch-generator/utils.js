@@ -1,6 +1,6 @@
 import fs from "fs";
 import { fakerSR_RS_latin as faker } from "@faker-js/faker";
-import { VERSATILE_USER_COUNT } from "./constants.js";
+import { VERSATILE_USER_COUNT, VALID_TRANSITIONS } from "./constants.js";
 import { pools, redis } from "./pools.js";
 
 /**

@@ -241,3 +241,31 @@ export const randomEntityAction = () => {
     
     return { entity, action };
 };
+
+// const buildAllEvents = () =>
+//     Object.entries(EVENT_GENERATORS).flatMap(([entity, actions]) =>
+//         Object.keys(actions).map(action => ({ entity, action }))
+//     );
+
+// const shuffle = (arr) => {
+//     const a = [...arr];
+//     for (let i = a.length - 1; i > 0; i--) {
+//         const j = Math.floor(Math.random() * (i + 1));
+//         [a[i], a[j]] = [a[j], a[i]];
+//     }
+//     return a;
+// };
+
+// let eventQueue = [];
+
+// export const randomEntityAction = () => {
+//     if (eventQueue.length === 0) {
+//         eventQueue = shuffle(buildAllEvents());
+//     }
+//     return eventQueue.pop();
+// };
+
+// export const getAllEvents = () =>
+//     Object.entries(EVENT_GENERATORS).flatMap(([entity, actions]) =>
+//         Object.keys(actions).map(action => ({ entity, action }))
+//     );
