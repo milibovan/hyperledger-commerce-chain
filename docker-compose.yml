@@ -156,6 +156,23 @@ services:
     networks:
       - hdfs_asvsp
 
+  stream-generator:
+    build:
+      context: ./faker-generators/stream-generator/stream-generator
+      dockerfile: Dockerfile
+    environment:
+      KAFKA_BROKERS: "kafka1:9092,kafka2:9092,kafka3:9092"
+      SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+    ports:
+      - "6666:6666"
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+      - schema-registry
+    networks:
+      - hdfs_asvsp
+
   postgres:
     image: postgres:16
     container_name: postgres_db

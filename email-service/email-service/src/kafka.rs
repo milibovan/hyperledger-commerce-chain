@@ -6,7 +6,7 @@ use std::env;
 use schema_registry_converter::async_impl::schema_registry::SrSettings;
 use schema_registry_converter::async_impl::avro::AvroDecoder;
 use crate::notification_event::NotificationEvent;
-use crate::sender::send_email; // Import your sender here
+use crate::sender::send_email;
 use apache_avro::from_value;
 
 pub(crate) async fn start_consumer() {

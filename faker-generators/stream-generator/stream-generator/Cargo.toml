@@ -4,3 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+apache-avro = "0.21.0"
+rdkafka = "0.39.0"
+schema_registry_converter = { version = "4.8.0", features = ["avro"] }
+serde = "1.0.228"
+tokio = { version = "1", features = ["full"] }
+tokio-macros = "2.7.0"
