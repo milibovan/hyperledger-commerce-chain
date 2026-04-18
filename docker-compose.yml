@@ -17,14 +17,15 @@ services:
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_BROKER_ID: 1
-      KAFKA_PROCESS_ROLES: 'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 'PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTROLLER://kafka1:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:9092'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
-      CLUSTER_ID: '98D2R1B0T4iSnoL06HXiCw'
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093,3@kafka3:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTRO\
+        LLER://kafka1:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      CLUSTER_ID: "98D2R1B0T4iSnoL06HXiCw"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
@@ -44,14 +45,14 @@ services:
     environment:
       KAFKA_NODE_ID: 2
       KAFKA_BROKER_ID: 2
-      KAFKA_PROCESS_ROLES: 'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 'PLAINTEXT://kafka2:9092,CONTROLLER://kafka2:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka2:9092'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
-      CLUSTER_ID: '98D2R1B0T4iSnoL06HXiCw'
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093,3@kafka3:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://kafka2:9092,CONTROLLER://kafka2:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka2:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      CLUSTER_ID: "98D2R1B0T4iSnoL06HXiCw"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
@@ -71,14 +72,14 @@ services:
     environment:
       KAFKA_NODE_ID: 3
       KAFKA_BROKER_ID: 3
-      KAFKA_PROCESS_ROLES: 'broker,controller'
-      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka1:9093,2@kafka2:9093,3@kafka3:9093'
-      KAFKA_LISTENERS: 'PLAINTEXT://kafka3:9092,CONTROLLER://kafka3:9093'
-      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka3:9092'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
-      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
-      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
-      CLUSTER_ID: '98D2R1B0T4iSnoL06HXiCw'
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093,3@kafka3:9093"
+      KAFKA_LISTENERS: "PLAINTEXT://kafka3:9092,CONTROLLER://kafka3:9093"
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka3:9092"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"
+      KAFKA_CONTROLLER_LISTENER_NAMES: "CONTROLLER"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      CLUSTER_ID: "98D2R1B0T4iSnoL06HXiCw"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_DEFAULT_REPLICATION_FACTOR: 3
@@ -142,6 +143,7 @@ services:
       - hdfs_asvsp
 
   auth-service:
+    container_name: auth-service
     build:
       context: ./auth-service/auth-service
       dockerfile: Dockerfile
@@ -157,12 +159,21 @@ services:
       - hdfs_asvsp
 
   stream-generator:
+    container_name: stream-generator
     build:
       context: ./faker-generators/stream-generator/stream-generator
       dockerfile: Dockerfile
     environment:
       KAFKA_BROKERS: "kafka1:9092,kafka2:9092,kafka3:9092"
       SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
+      SCHEMAS_PATH: "/app/schemas/streams-schemas"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: "ppgQ;g+rg()u9vhi"
+      SCRIPT_PATH: "/app/scripts/main.cjs"
+    volumes:
+      - ./schemas:/app/schemas:ro
+      - ./faker-generators/stream-generator/bundled:/app/scripts:ro
     ports:
       - "6666:6666"
     depends_on:
@@ -170,6 +181,7 @@ services:
       - kafka2
       - kafka3
       - schema-registry
+      - redis
     networks:
       - hdfs_asvsp
 
@@ -200,15 +212,19 @@ services:
       - postgres
 
   redis:
-   image: redis:7.4-alpine
-   restart: always
-   environment:
+    container_name: redis
+    image: redis:7.4-alpine
+    restart: always
+    environment:
       REDIS_PASSWORD: "ppgQ;g+rg()u9vhi"
-   ports:
-     - "6379:6379"
-   entrypoint: sh -c 'redis-server --save 20 1 --loglevel warning --requirepass "$$REDIS_PASSWORD"'
-   volumes:
-     - redis_data:/data
+    ports:
+      - "6379:6379"
+    entrypoint: sh -c 'redis-server --save 20 1 --loglevel warning --requirepass
+      "$$REDIS_PASSWORD"'
+    volumes:
+      - redis_data:/data
+    networks:
+      - hdfs_asvsp
 
   go-backend:
     build:
