@@ -55,7 +55,8 @@ export const initVersatileUsers = () => {
 };
 
 export const parseSchema = (schema_name) => {
-    return JSON.parse(fs.readFileSync(`../../../schemas/streams-schemas/${schema_name}.avsc`, "utf8"));
+    const base = process.env.SCHEMAS_PATH || "../../../schemas/streams-schemas";
+    return JSON.parse(fs.readFileSync(`${base}/${schema_name}.avsc`, "utf8"));
 }
 
 export const moveEntityStatus = async (id, entity, fromStatus, toStatus) => {

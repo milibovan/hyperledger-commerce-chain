@@ -5832,7 +5832,7 @@ var require_services = __commonJS({
 var require_files = __commonJS({
   "node_modules/avsc/lib/files.js"(exports2, module2) {
     "use strict";
-    var fs3 = require("fs");
+    var fs2 = require("fs");
     var path = require("path");
     function createImportHook() {
       var imports = {};
@@ -5843,7 +5843,7 @@ var require_files = __commonJS({
           return;
         }
         imports[fpath] = true;
-        fs3.readFile(fpath, { encoding: "utf8" }, cb);
+        fs2.readFile(fpath, { encoding: "utf8" }, cb);
       };
     }
     function createSyncImportHook() {
@@ -5854,7 +5854,7 @@ var require_files = __commonJS({
           cb();
         } else {
           imports[fpath] = true;
-          cb(null, fs3.readFileSync(fpath, { encoding: "utf8" }));
+          cb(null, fs2.readFileSync(fpath, { encoding: "utf8" }));
         }
       };
     }
@@ -5862,8 +5862,8 @@ var require_files = __commonJS({
       createImportHook,
       createSyncImportHook,
       // Proxy a few methods to better shim them for browserify.
-      existsSync: fs3.existsSync,
-      readFileSync: fs3.readFileSync
+      existsSync: fs2.existsSync,
+      readFileSync: fs2.readFileSync
     };
   }
 });
@@ -6498,7 +6498,7 @@ var require_lib = __commonJS({
     var types = require_types();
     var utils = require_utils();
     var buffer = require("buffer");
-    var fs3 = require("fs");
+    var fs2 = require("fs");
     var util = require("util");
     var Buffer2 = buffer.Buffer;
     function parse(any, opts) {
@@ -6510,9 +6510,9 @@ var require_lib = __commonJS({
       var decode = opts.decode === void 0 ? true : !!opts.decode;
       var size = Math.max(opts.size || 4096, 4);
       var buf = utils.newBuffer(size);
-      var fd = fs3.openSync(path, "r");
+      var fd = fs2.openSync(path, "r");
       try {
-        var pos = fs3.readSync(fd, buf, 0, size);
+        var pos = fs2.readSync(fd, buf, 0, size);
         if (pos < 4 || !containers.MAGIC_BYTES.equals(buf.slice(0, 4))) {
           return null;
         }
@@ -6530,7 +6530,7 @@ var require_lib = __commonJS({
         }
         return header;
       } finally {
-        fs3.closeSync(fd);
+        fs2.closeSync(fd);
       }
       function isValid() {
         if (tap.isValid()) {
@@ -6538,18 +6538,18 @@ var require_lib = __commonJS({
         }
         var len = 2 * tap.buf.length;
         var buf2 = utils.newBuffer(len);
-        len = fs3.readSync(fd, buf2, 0, len);
+        len = fs2.readSync(fd, buf2, 0, len);
         tap.buf = Buffer2.concat([tap.buf, buf2]);
         tap.pos = 0;
         return false;
       }
     }
     function createFileDecoder(path, opts) {
-      return fs3.createReadStream(path).pipe(new containers.streams.BlockDecoder(opts));
+      return fs2.createReadStream(path).pipe(new containers.streams.BlockDecoder(opts));
     }
     function createFileEncoder(path, schema, opts) {
       var encoder = new containers.streams.BlockEncoder(schema, opts);
-      encoder.pipe(fs3.createWriteStream(path, { defaultEncoding: "binary" }));
+      encoder.pipe(fs2.createWriteStream(path, { defaultEncoding: "binary" }));
       return encoder;
     }
     module2.exports = {
@@ -16859,7 +16859,7 @@ var require_built3 = __commonJS({
 // ../batch-generator/node_modules/dotenv/lib/main.js
 var require_main = __commonJS({
   "../batch-generator/node_modules/dotenv/lib/main.js"(exports2, module2) {
-    var fs3 = require("fs");
+    var fs2 = require("fs");
     var path = require("path");
     var os = require("os");
     var crypto = require("crypto");
@@ -16991,7 +16991,7 @@ var require_main = __commonJS({
       if (options && options.path && options.path.length > 0) {
         if (Array.isArray(options.path)) {
           for (const filepath of options.path) {
-            if (fs3.existsSync(filepath)) {
+            if (fs2.existsSync(filepath)) {
               possibleVaultPath = filepath.endsWith(".vault") ? filepath : `${filepath}.vault`;
             }
           }
@@ -17001,7 +17001,7 @@ var require_main = __commonJS({
       } else {
         possibleVaultPath = path.resolve(process.cwd(), ".env.vault");
       }
-      if (fs3.existsSync(possibleVaultPath)) {
+      if (fs2.existsSync(possibleVaultPath)) {
         return possibleVaultPath;
       }
       return null;
@@ -17054,7 +17054,7 @@ var require_main = __commonJS({
       const parsedAll = {};
       for (const path2 of optionPaths) {
         try {
-          const parsed = DotenvModule.parse(fs3.readFileSync(path2, { encoding }));
+          const parsed = DotenvModule.parse(fs2.readFileSync(path2, { encoding }));
           DotenvModule.populate(parsedAll, parsed, options);
         } catch (e5) {
           if (debug) {
@@ -17222,7 +17222,6 @@ var require_cli_options = __commonJS({
 });
 
 // generate_stream_data.mjs
-var import_fs2 = __toESM(require("fs"), 1);
 var import_avsc = __toESM(require_lib(), 1);
 
 // ../batch-generator/utils.js
@@ -21387,215 +21386,6 @@ var import_ioredis = __toESM(require_built3(), 1);
   );
 })();
 
-
-
-// ../batch-generator/constants.js
-var TRADER_TYPES = ["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"];
-var PRODUCT_CATEGORIES = {
-  SUPERMARKET: [
-    { name: "Mleko", priceRange: [100, 200], expiry: true },
-    { name: "Hleb", priceRange: [50, 120], expiry: true },
-    { name: "Jogurt", priceRange: [80, 150], expiry: true },
-    { name: "Sir", priceRange: [300, 800], expiry: true },
-    { name: "Jaja", priceRange: [200, 350], expiry: true },
-    { name: "Piletina", priceRange: [400, 900], expiry: true },
-    { name: "Paradajz", priceRange: [100, 250], expiry: true },
-    { name: "Krompir", priceRange: [50, 150], expiry: true },
-    { name: "Pasta", priceRange: [150, 300], expiry: false },
-    { name: "Pirina\u010D", priceRange: [200, 400], expiry: false },
-    { name: "Ulje", priceRange: [300, 600], expiry: false },
-    { name: "\u0160e\u0107er", priceRange: [100, 250], expiry: false },
-    { name: "Bra\u0161no", priceRange: [80, 200], expiry: false },
-    { name: "Kafa", priceRange: [400, 1200], expiry: false },
-    { name: "\u010Caj", priceRange: [150, 400], expiry: false },
-    { name: "Sok", priceRange: [100, 300], expiry: true },
-    { name: "Vino", priceRange: [500, 3e3], expiry: false },
-    { name: "Pivo", priceRange: [80, 250], expiry: true },
-    { name: "\u010Cokolada", priceRange: [100, 500], expiry: true },
-    { name: "Keks", priceRange: [150, 400], expiry: true }
-  ],
-  PHARMACY: [
-    { name: "Brufen", priceRange: [200, 500], expiry: true },
-    { name: "Aspirin", priceRange: [150, 400], expiry: true },
-    { name: "Antibiotik", priceRange: [500, 2e3], expiry: true },
-    { name: "Sirup za ka\u0161alj", priceRange: [300, 800], expiry: true },
-    { name: "Vitamini", priceRange: [400, 1500], expiry: true },
-    { name: "Kapi za nos", priceRange: [200, 600], expiry: true },
-    { name: "Zavoj", priceRange: [100, 300], expiry: false },
-    { name: "Flaster", priceRange: [80, 250], expiry: false },
-    { name: "Termometar", priceRange: [500, 1500], expiry: false },
-    { name: "Maska za lice", priceRange: [50, 200], expiry: false },
-    { name: "Dezinfekciono sredstvo", priceRange: [200, 600], expiry: false },
-    { name: "Pasta za zube", priceRange: [150, 400], expiry: false },
-    { name: "\u0160ampon", priceRange: [300, 800], expiry: false },
-    { name: "Krema za lice", priceRange: [500, 2e3], expiry: true }
-  ],
-  GROCERY: [
-    { name: "Hleb", priceRange: [50, 120], expiry: true },
-    { name: "Burek", priceRange: [100, 200], expiry: true },
-    { name: "Pita", priceRange: [150, 300], expiry: true },
-    { name: "Kifla", priceRange: [30, 80], expiry: true },
-    { name: "Kroasan", priceRange: [80, 150], expiry: true },
-    { name: "Torta", priceRange: [500, 2e3], expiry: true },
-    { name: "Kola\u010D", priceRange: [200, 600], expiry: true },
-    { name: "Sendvi\u010D", priceRange: [150, 400], expiry: true },
-    { name: "Salata", priceRange: [200, 500], expiry: true },
-    { name: "Vo\u0107e", priceRange: [100, 400], expiry: true },
-    { name: "Povr\u0107e", priceRange: [80, 300], expiry: true },
-    { name: "Sok", priceRange: [100, 250], expiry: true },
-    { name: "Voda", priceRange: [50, 150], expiry: false },
-    { name: "Cigarete", priceRange: [300, 500], expiry: false }
-  ],
-  CARDEALER: [
-    { name: "Sedi\u0161te", priceRange: [15e3, 5e4], expiry: false },
-    { name: "Volan", priceRange: [8e3, 25e3], expiry: false },
-    { name: "Retrovizor", priceRange: [3e3, 12e3], expiry: false },
-    { name: "Far", priceRange: [5e3, 2e4], expiry: false },
-    { name: "To\u010Dak", priceRange: [1e4, 4e4], expiry: false },
-    { name: "Akumulator", priceRange: [8e3, 3e4], expiry: false },
-    { name: "Filter za ulje", priceRange: [500, 2e3], expiry: false },
-    { name: "Ko\u010Dione plo\u010Dice", priceRange: [3e3, 1e4], expiry: false },
-    { name: "Diskovi", priceRange: [5e3, 15e3], expiry: false },
-    { name: "Amortizer", priceRange: [4e3, 15e3], expiry: false },
-    { name: "Motorno ulje", priceRange: [2e3, 8e3], expiry: false },
-    { name: "Antifriz", priceRange: [1e3, 3e3], expiry: false },
-    { name: "Starter", priceRange: [1e4, 3e4], expiry: false },
-    { name: "Alternator", priceRange: [15e3, 4e4], expiry: false }
-  ]
-};
-var EventTypes = Object.freeze({
-  UserCreated: "UserCreated",
-  UserDeleted: "UserDeleted",
-  TraderCreated: "TraderCreated",
-  TraderDeleted: "TraderDeleted",
-  ProductCreated: "ProductCreated",
-  ProductDeleted: "ProductDeleted",
-  OrderCreated: "OrderCreated",
-  OrderCompleted: "OrderCompleted",
-  OrderFulfilled: "OrderFulfilled",
-  OrderApproved: "OrderApproved",
-  OrderCancelled: "OrderCancelled",
-  ReceiptCreated: "ReceiptCreated",
-  ReceiptCancelled: "ReceiptCancelled",
-  RequestCreated: "RequestCreated",
-  RequestPending: "RequestPending",
-  RequestApproved: "RequestApproved",
-  RequestRejected: "RequestRejected",
-  RequestFulfilled: "RequestFulfilled",
-  RequestExpired: "RequestExpired",
-  RequestCancelled: "RequestCancelled"
-});
-var EntityTypes = Object.freeze({
-  User: "User",
-  Trader: "Trader",
-  Product: "Product",
-  Order: "Order",
-  Receipt: "Receipt",
-  Request: "Request"
-});
-var numProducts = qa2.helpers.weightedArrayElement([
-  { weight: 10, value: 1 },
-  { weight: 15, value: 2 },
-  { weight: 20, value: 3 },
-  { weight: 18, value: 4 },
-  { weight: 15, value: 5 },
-  { weight: 10, value: 6 },
-  { weight: 7, value: 7 },
-  { weight: 5, value: 8 }
-]);
-var quantity = qa2.helpers.weightedArrayElement([
-  { weight: 40, value: 1 },
-  { weight: 30, value: 2 },
-  { weight: 15, value: 3 },
-  { weight: 10, value: 4 },
-  { weight: 5, value: 5 }
-]);
-var OrderStatus = Object.freeze({
-  CREATED: "CREATED",
-  APPROVED: "APPROVED",
-  FULFILLED: "FULFILLED",
-  COMPLETED: "COMPLETED",
-  CANCELLED: "CANCELLED"
-});
-var ReceiptStatus = Object.freeze({
-  CREATED: "CREATED",
-  CANCELLED: "CANCELLED"
-});
-var RequestStatus = Object.freeze({
-  CREATED: "CREATED",
-  PENDING_FUNDS: "PENDING_FUNDS",
-  APPROVED: "APPROVED",
-  REJECTED: "REJECTED",
-  FULFILLED: "FULFILLED",
-  EXPIRED: "EXPIRED",
-  CANCELLED: "CANCELLED"
-});
-var VALID_TRANSITIONS = {
-  order: {
-    [OrderStatus.CREATED]: [OrderStatus.APPROVED, OrderStatus.CANCELLED],
-    [OrderStatus.APPROVED]: [OrderStatus.FULFILLED, OrderStatus.CANCELLED],
-    [OrderStatus.FULFILLED]: [OrderStatus.COMPLETED],
-    [OrderStatus.COMPLETED]: [],
-    [OrderStatus.CANCELLED]: []
-  },
-  receipt: {
-    [ReceiptStatus.CREATED]: [ReceiptStatus.CANCELLED],
-    [ReceiptStatus.CANCELLED]: []
-  },
-  request: {
-    [RequestStatus.CREATED]: [RequestStatus.PENDING_FUNDS, RequestStatus.APPROVED, RequestStatus.CANCELLED],
-    [RequestStatus.PENDING_FUNDS]: [RequestStatus.APPROVED, RequestStatus.REJECTED, RequestStatus.EXPIRED, RequestStatus.CANCELLED],
-    [RequestStatus.APPROVED]: [RequestStatus.FULFILLED, RequestStatus.CANCELLED],
-    [RequestStatus.REJECTED]: [],
-    [RequestStatus.FULFILLED]: [],
-    [RequestStatus.EXPIRED]: [],
-    [RequestStatus.CANCELLED]: []
-  }
-};
-const getEventGenerators = () => ({
-  user: {
-    created: createUser,
-    deleted: deleteUser
-  },
-  trader: {
-    created: createTrader,
-    deleted: deleteTrader
-  },
-  product: {
-    created: createProduct,
-    deleted: deleteProduct
-  },
-  order: {
-    created: createOrder,
-    approved: approveOrder,
-    fulfilled: fulfillOrder,
-    completed: completeOrder,
-    cancelled: cancelOrder
-  },
-  receipt: {
-    created: createReceipt,
-    cancelled: cancelReceipt
-  },
-  request: {
-    created: createRequest,
-    pending_funds: pendingRequest,
-    approved: approveRequest,
-    rejected: rejectRequest,
-    fulfilled: fulfillRequest,
-    expired: expireRequest,
-    cancelled: cancelRequest
-  }
-});
-
-const randomEntityAction = () => {
-  const generators = getEventGenerators();
-  const entities = Object.keys(generators);
-  const entity = entities[Math.floor(Math.random() * entities.length)];
-  const actions = Object.keys(generators[entity]);
-  const action = actions[Math.floor(Math.random() * actions.length)];
-  return { entity, action };
-};
-
 // ../batch-generator/pools.js
 var redis = new import_ioredis.default({
   host: process.env.REDIS_HOST || "localhost",
@@ -21908,9 +21698,214 @@ var cancelRequest = async () => {
   };
 };
 
+// ../batch-generator/constants.js
+var TRADER_TYPES = ["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"];
+var PRODUCT_CATEGORIES = {
+  SUPERMARKET: [
+    { name: "Mleko", priceRange: [100, 200], expiry: true },
+    { name: "Hleb", priceRange: [50, 120], expiry: true },
+    { name: "Jogurt", priceRange: [80, 150], expiry: true },
+    { name: "Sir", priceRange: [300, 800], expiry: true },
+    { name: "Jaja", priceRange: [200, 350], expiry: true },
+    { name: "Piletina", priceRange: [400, 900], expiry: true },
+    { name: "Paradajz", priceRange: [100, 250], expiry: true },
+    { name: "Krompir", priceRange: [50, 150], expiry: true },
+    { name: "Pasta", priceRange: [150, 300], expiry: false },
+    { name: "Pirina\u010D", priceRange: [200, 400], expiry: false },
+    { name: "Ulje", priceRange: [300, 600], expiry: false },
+    { name: "\u0160e\u0107er", priceRange: [100, 250], expiry: false },
+    { name: "Bra\u0161no", priceRange: [80, 200], expiry: false },
+    { name: "Kafa", priceRange: [400, 1200], expiry: false },
+    { name: "\u010Caj", priceRange: [150, 400], expiry: false },
+    { name: "Sok", priceRange: [100, 300], expiry: true },
+    { name: "Vino", priceRange: [500, 3e3], expiry: false },
+    { name: "Pivo", priceRange: [80, 250], expiry: true },
+    { name: "\u010Cokolada", priceRange: [100, 500], expiry: true },
+    { name: "Keks", priceRange: [150, 400], expiry: true }
+  ],
+  PHARMACY: [
+    { name: "Brufen", priceRange: [200, 500], expiry: true },
+    { name: "Aspirin", priceRange: [150, 400], expiry: true },
+    { name: "Antibiotik", priceRange: [500, 2e3], expiry: true },
+    { name: "Sirup za ka\u0161alj", priceRange: [300, 800], expiry: true },
+    { name: "Vitamini", priceRange: [400, 1500], expiry: true },
+    { name: "Kapi za nos", priceRange: [200, 600], expiry: true },
+    { name: "Zavoj", priceRange: [100, 300], expiry: false },
+    { name: "Flaster", priceRange: [80, 250], expiry: false },
+    { name: "Termometar", priceRange: [500, 1500], expiry: false },
+    { name: "Maska za lice", priceRange: [50, 200], expiry: false },
+    { name: "Dezinfekciono sredstvo", priceRange: [200, 600], expiry: false },
+    { name: "Pasta za zube", priceRange: [150, 400], expiry: false },
+    { name: "\u0160ampon", priceRange: [300, 800], expiry: false },
+    { name: "Krema za lice", priceRange: [500, 2e3], expiry: true }
+  ],
+  GROCERY: [
+    { name: "Hleb", priceRange: [50, 120], expiry: true },
+    { name: "Burek", priceRange: [100, 200], expiry: true },
+    { name: "Pita", priceRange: [150, 300], expiry: true },
+    { name: "Kifla", priceRange: [30, 80], expiry: true },
+    { name: "Kroasan", priceRange: [80, 150], expiry: true },
+    { name: "Torta", priceRange: [500, 2e3], expiry: true },
+    { name: "Kola\u010D", priceRange: [200, 600], expiry: true },
+    { name: "Sendvi\u010D", priceRange: [150, 400], expiry: true },
+    { name: "Salata", priceRange: [200, 500], expiry: true },
+    { name: "Vo\u0107e", priceRange: [100, 400], expiry: true },
+    { name: "Povr\u0107e", priceRange: [80, 300], expiry: true },
+    { name: "Sok", priceRange: [100, 250], expiry: true },
+    { name: "Voda", priceRange: [50, 150], expiry: false },
+    { name: "Cigarete", priceRange: [300, 500], expiry: false }
+  ],
+  CARDEALER: [
+    { name: "Sedi\u0161te", priceRange: [15e3, 5e4], expiry: false },
+    { name: "Volan", priceRange: [8e3, 25e3], expiry: false },
+    { name: "Retrovizor", priceRange: [3e3, 12e3], expiry: false },
+    { name: "Far", priceRange: [5e3, 2e4], expiry: false },
+    { name: "To\u010Dak", priceRange: [1e4, 4e4], expiry: false },
+    { name: "Akumulator", priceRange: [8e3, 3e4], expiry: false },
+    { name: "Filter za ulje", priceRange: [500, 2e3], expiry: false },
+    { name: "Ko\u010Dione plo\u010Dice", priceRange: [3e3, 1e4], expiry: false },
+    { name: "Diskovi", priceRange: [5e3, 15e3], expiry: false },
+    { name: "Amortizer", priceRange: [4e3, 15e3], expiry: false },
+    { name: "Motorno ulje", priceRange: [2e3, 8e3], expiry: false },
+    { name: "Antifriz", priceRange: [1e3, 3e3], expiry: false },
+    { name: "Starter", priceRange: [1e4, 3e4], expiry: false },
+    { name: "Alternator", priceRange: [15e3, 4e4], expiry: false }
+  ]
+};
+var EventTypes = Object.freeze({
+  UserCreated: "UserCreated",
+  UserDeleted: "UserDeleted",
+  TraderCreated: "TraderCreated",
+  TraderDeleted: "TraderDeleted",
+  ProductCreated: "ProductCreated",
+  ProductDeleted: "ProductDeleted",
+  OrderCreated: "OrderCreated",
+  OrderCompleted: "OrderCompleted",
+  OrderFulfilled: "OrderFulfilled",
+  OrderApproved: "OrderApproved",
+  OrderCancelled: "OrderCancelled",
+  ReceiptCreated: "ReceiptCreated",
+  ReceiptCancelled: "ReceiptCancelled",
+  RequestCreated: "RequestCreated",
+  RequestPending: "RequestPending",
+  RequestApproved: "RequestApproved",
+  RequestRejected: "RequestRejected",
+  RequestFulfilled: "RequestFulfilled",
+  RequestExpired: "RequestExpired",
+  RequestCancelled: "RequestCancelled"
+});
+var EntityTypes = Object.freeze({
+  User: "User",
+  Trader: "Trader",
+  Product: "Product",
+  Order: "Order",
+  Receipt: "Receipt",
+  Request: "Request"
+});
+var numProducts = qa2.helpers.weightedArrayElement([
+  { weight: 10, value: 1 },
+  { weight: 15, value: 2 },
+  { weight: 20, value: 3 },
+  { weight: 18, value: 4 },
+  { weight: 15, value: 5 },
+  { weight: 10, value: 6 },
+  { weight: 7, value: 7 },
+  { weight: 5, value: 8 }
+]);
+var quantity = qa2.helpers.weightedArrayElement([
+  { weight: 40, value: 1 },
+  { weight: 30, value: 2 },
+  { weight: 15, value: 3 },
+  { weight: 10, value: 4 },
+  { weight: 5, value: 5 }
+]);
+var OrderStatus = Object.freeze({
+  CREATED: "CREATED",
+  APPROVED: "APPROVED",
+  FULFILLED: "FULFILLED",
+  COMPLETED: "COMPLETED",
+  CANCELLED: "CANCELLED"
+});
+var ReceiptStatus = Object.freeze({
+  CREATED: "CREATED",
+  CANCELLED: "CANCELLED"
+});
+var RequestStatus = Object.freeze({
+  CREATED: "CREATED",
+  PENDING_FUNDS: "PENDING_FUNDS",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+  FULFILLED: "FULFILLED",
+  EXPIRED: "EXPIRED",
+  CANCELLED: "CANCELLED"
+});
+var VALID_TRANSITIONS = {
+  order: {
+    [OrderStatus.CREATED]: [OrderStatus.APPROVED, OrderStatus.CANCELLED],
+    [OrderStatus.APPROVED]: [OrderStatus.FULFILLED, OrderStatus.CANCELLED],
+    [OrderStatus.FULFILLED]: [OrderStatus.COMPLETED],
+    [OrderStatus.COMPLETED]: [],
+    [OrderStatus.CANCELLED]: []
+  },
+  receipt: {
+    [ReceiptStatus.CREATED]: [ReceiptStatus.CANCELLED],
+    [ReceiptStatus.CANCELLED]: []
+  },
+  request: {
+    [RequestStatus.CREATED]: [RequestStatus.PENDING_FUNDS, RequestStatus.APPROVED, RequestStatus.CANCELLED],
+    [RequestStatus.PENDING_FUNDS]: [RequestStatus.APPROVED, RequestStatus.REJECTED, RequestStatus.EXPIRED, RequestStatus.CANCELLED],
+    [RequestStatus.APPROVED]: [RequestStatus.FULFILLED, RequestStatus.CANCELLED],
+    [RequestStatus.REJECTED]: [],
+    [RequestStatus.FULFILLED]: [],
+    [RequestStatus.EXPIRED]: [],
+    [RequestStatus.CANCELLED]: []
+  }
+};
+var EVENT_GENERATORS = {
+  user: {
+    created: createUser,
+    deleted: deleteUser
+  },
+  trader: {
+    created: createTrader,
+    deleted: deleteTrader
+  },
+  product: {
+    created: createProduct,
+    deleted: deleteProduct
+  },
+  order: {
+    created: createOrder,
+    approved: approveOrder,
+    fulfilled: fulfillOrder,
+    completed: completeOrder,
+    cancelled: cancelOrder
+  },
+  receipt: {
+    created: createReceipt,
+    cancelled: cancelReceipt
+  },
+  request: {
+    created: createRequest,
+    pending_funds: pendingRequest,
+    approved: approveRequest,
+    rejected: rejectRequest,
+    fulfilled: fulfillRequest,
+    expired: expireRequest,
+    cancelled: cancelRequest
+  }
+};
+var randomEntityAction = () => {
+  const entities = Object.keys(EVENT_GENERATORS);
+  const entity = entities[Math.floor(Math.random() * entities.length)];
+  const actions = Object.keys(EVENT_GENERATORS[entity]);
+  const action = actions[Math.floor(Math.random() * actions.length)];
+  return { entity, action };
+};
+
 // ../batch-generator/utils.js
 var parseSchema = (schema_name) => {
-  const base = process.env.SCHEMAS_PATH || "../../schemas/streams-schemas";
+  const base = process.env.SCHEMAS_PATH || "../../../schemas/streams-schemas";
   return JSON.parse(import_fs.default.readFileSync(`${base}/${schema_name}.avsc`, "utf8"));
 };
 var moveEntityStatus = async (id, entity, fromStatus, toStatus) => {
@@ -21930,10 +21925,8 @@ var moveEntityStatus = async (id, entity, fromStatus, toStatus) => {
 
 // generate_stream_data.mjs
 async function main() {
-  const EVENT_GENERATORS = getEventGenerators();
   const headerSchema = parseSchema("schema-header");
   const { entity, action } = randomEntityAction();
-  console.log(`Generating event: ${entity}-${action}`);
   const schemaPath = `${entity}/${entity}-${action}`;
   const schema = parseSchema(schemaPath);
   const registry = {};
@@ -21942,11 +21935,15 @@ async function main() {
   const generator = EVENT_GENERATORS[entity]?.[action];
   if (!generator) throw new Error(`No generator for ${entity}-${action}`);
   const event = await generator();
-  console.log("Event:", event);
   const buf = EventType.toBuffer(event);
-  import_fs2.default.writeFileSync(`${entity}-${action}.avro`, buf);
+  const output = {
+    headerSchema: JSON.stringify(headerSchema),
+    schema: JSON.stringify(schema),
+    data: buf.toString("base64"),
+    key: event.common.entity_id
+  };
+  process.stdout.write(JSON.stringify(output) + "\n");
   const decoded = EventType.fromBuffer(buf);
-  console.log("Decoded:", decoded);
   await redis.quit();
 }
 main().catch((err) => {

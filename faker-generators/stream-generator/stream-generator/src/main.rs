@@ -25,7 +25,7 @@ async fn main() {
 
         let header_schema_str = payload["headerSchema"].as_str().unwrap();
         let schema_str = payload["schema"].as_str().unwrap();
-        let key = payload["schema"].as_str().unwrap();
+        let key = payload["key"].as_str().unwrap();
         let avro_bytes =
             base64::decode(payload["data"].as_str().unwrap()).expect("base64 decode error");
 
