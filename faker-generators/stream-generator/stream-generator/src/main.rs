@@ -1,21 +1,36 @@
 mod kafka;
-
-use std::process::Command;
+use kafka::produce_events;
 use std::env;
-use crate::kafka::produce_events;
+use std::io::{BufRead, BufReader};
+use std::process::{Command, Stdio};
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let script = env::var("SCRIPT_PATH").unwrap_or("../generate_stream_data.mjs".to_string());
 
-    let output = Command::new("node")
+    let mut output = Command::new("node")
         .arg(script)
         .envs(env::vars())
-        .output()
-        .expect("Failed to run Node.js");
+        .stdout(Stdio::piped())
+        .spawn()
+        .expect("failed to execute node");
 
-    println!("Exit status: {}", output.status);
-    println!("JS stdout: {}", String::from_utf8_lossy(&output.stdout));
-    eprintln!("JS stderr: {}", String::from_utf8_lossy(&output.stderr));
+    let stdout = output.stdout.take().unwrap();
+    let reader = BufReader::new(stdout);
 
-    produce_events();
+    for line in reader.lines() {
+        let line = line.expect("Failed to read line from terminal");
+        println!("{}", line);
+        let payload: serde_json::Value = serde_json::from_str(&line).expect("failed to parse json");
+
+        let header_schema_str = payload["headerSchema"].as_str().unwrap();
+        let schema_str = payload["schema"].as_str().unwrap();
+        let key = payload["schema"].as_str().unwrap();
+        let avro_bytes =
+            base64::decode(payload["data"].as_str().unwrap()).expect("base64 decode error");
+
+        produce_events(header_schema_str.to_string(), schema_str.to_string(), avro_bytes, key.to_string())
+            .await
+            .expect("Failed to produce events");
+    }
 }

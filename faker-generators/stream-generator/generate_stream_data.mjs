@@ -8,7 +8,7 @@ async function main() {
     const headerSchema = parseSchema("schema-header");
 
     const { entity, action } = randomEntityAction();
-    console.log(`Generating event: ${entity}-${action}`);
+    // console.log(`Generating event: ${entity}-${action}`);
 
     const schemaPath = `${entity}/${entity}-${action}`;
     const schema = parseSchema(schemaPath);
@@ -21,13 +21,23 @@ async function main() {
     if (!generator) throw new Error(`No generator for ${entity}-${action}`);
 
     const event = await generator();
-    console.log("Event:", event);
+    // console.log("Event:", event);
 
     const buf = EventType.toBuffer(event);
-    fs.writeFileSync(`${entity}-${action}.avro`, buf);
+    // fs.writeFileSync(`${entity}-${action}.avro`, buf);
+
+    const output = {
+        headerSchema: JSON.stringify(headerSchema),
+        schema: JSON.stringify(schema),
+        data: buf.toString("base64"),
+        key: event.common.entity_id
+    };
+
+    process.stdout.write(JSON.stringify(output) + "\n");
+    // console.log(JSON.stringify(output))
 
     const decoded = EventType.fromBuffer(buf);
-    console.log("Decoded:", decoded);
+    // console.log("Decoded:", decoded);
 
     await redis.quit();
 }
