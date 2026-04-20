@@ -34,10 +34,3 @@ requests
     cancel-request
 -> user-id, trader-id, product-ids, order-id
 -----------------------
------------------------
------------------------
-AVRO format, different from batch
-Events -> actions that could be done
-Frequency of triggering
-Different Kafka topics based on event or entity???
-Reading one consumer per topic, or one consumer???

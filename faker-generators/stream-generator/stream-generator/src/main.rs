@@ -1,11 +1,25 @@
 mod kafka;
 use kafka::produce_events;
+use rand::Rng;
 use std::env;
 use std::io::{BufRead, BufReader};
 use std::process::{Command, Stdio};
+use std::time::Duration;
+use tokio::time::timeout;
 
 #[tokio::main]
 async fn main() {
+    loop {
+        let value = rand::rng().random_range(500..=2000);
+
+        match timeout(Duration::from_millis(value), generate_event()).await {
+            Ok(_) => println!("Event generated!"),
+            Err(_) => println!("Failed to generate event"),
+        }
+    }
+}
+
+async fn generate_event() {
     let script = env::var("SCRIPT_PATH").unwrap_or("../generate_stream_data.mjs".to_string());
 
     let mut output = Command::new("node")
@@ -29,8 +43,13 @@ async fn main() {
         let avro_bytes =
             base64::decode(payload["data"].as_str().unwrap()).expect("base64 decode error");
 
-        produce_events(header_schema_str.to_string(), schema_str.to_string(), avro_bytes, key.to_string())
-            .await
-            .expect("Failed to produce events");
+        produce_events(
+            header_schema_str.to_string(),
+            schema_str.to_string(),
+            avro_bytes,
+            key.to_string(),
+        )
+        .await
+        .expect("Failed to produce events");
     }
 }

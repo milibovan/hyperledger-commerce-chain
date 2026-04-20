@@ -1,5 +1,5 @@
 {
-  "namespace": "com.hyperledger_commerce_chain.streams.products",
+  "namespace": "com.hyperledger_commerce_chain.streams.orders",
   "type": "record",
   "name": "OrderCompletedEvent",
   "doc": "This is schema for Order Completed Event in streaming elt process",

@@ -1695,6 +1695,7 @@ version = "0.1.0"
 dependencies = [
  "apache-avro",
  "base64",
+ "rand",
  "rdkafka",
  "reqwest",
  "schema_registry_converter",
