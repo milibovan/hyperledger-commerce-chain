@@ -4,8 +4,9 @@ services:
       context: ./
       dockerfile: Dockerfile
     hostname: jobmanager
+    container_name: jobmanager
     ports:
-      - "8081:8081"
+      - "8091:8081"
     command: jobmanager
     environment:
       - |
@@ -22,6 +23,7 @@ services:
       - hdfs_asvsp
     volumes:
       - ../airflow/files/flink/my_jobs:/opt/flink/usrlib
+      - ../airflow/files/flink/stream-scripts:/opt/flink/stream-scripts
       - flink_history:/opt/flink/completed-jobs
 
   taskmanager:

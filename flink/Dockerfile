@@ -22,6 +22,15 @@ RUN wget -P /opt/flink/lib/ https://repo.maven.apache.org/maven2/org/apache/flin
 
 RUN wget -P /opt/flink/lib/ https://jdbc.postgresql.org/download/postgresql-42.7.9.jar
 
+RUN wget -P /opt/flink/lib \
+  https://repo1.maven.org/maven2/org/apache/flink/flink-sql-connector-kafka/3.4.0-1.20/flink-sql-connector-kafka-3.4.0-1.20.jar
+
+RUN wget -P /opt/flink/lib \
+  https://repo1.maven.org/maven2/org/apache/flink/flink-sql-avro/1.20.3/flink-sql-avro-1.20.3.jar
+
+RUN wget -P /opt/flink/lib \
+  https://repo1.maven.org/maven2/org/apache/flink/flink-sql-avro-confluent-registry/1.20.3/flink-sql-avro-confluent-registry-1.20.3.jar
+
 RUN mkdir -p /opt/flink/log && chown -R flink:flink /opt/flink/log /opt/flink/lib
 
 RUN mkdir -p /opt/flink/opt && \
