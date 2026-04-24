@@ -13,32 +13,7 @@
     },
     {
       "name": "event_type",
-      "type": {
-        "type": "enum",
-        "name": "EventTypes",
-        "symbols": [
-          "UserCreated",
-          "UserDeleted",
-          "TraderCreated",
-          "TraderDeleted",
-          "ProductCreated",
-          "ProductDeleted",
-          "OrderCreated",
-          "OrderCompleted",
-          "OrderFulfilled",
-          "OrderApproved",
-          "OrderCancelled",
-          "ReceiptCreated",
-          "ReceiptCancelled",
-          "RequestCreated",
-          "RequestPending",
-          "RequestApproved",
-          "RequestRejected",
-          "RequestFulfilled",
-          "RequestExpired",
-          "RequestCancelled"
-        ]
-      },
+      "type": "string",
       "doc": "Event types"
     },
     {
@@ -50,19 +25,8 @@
     },
     {
       "name": "entity_type",
-      "type": {
-        "type": "enum",
-        "name": "EntityTypes",
-        "symbols": [
-          "User",
-          "Trader",
-          "Product",
-          "Order",
-          "Receipt",
-          "Request"
-        ]
-      },
-      "doc": "Event types"
+      "type": "string",
+      "doc": "Entity types"
     },
     {
       "name": "timestamp",
