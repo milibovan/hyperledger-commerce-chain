@@ -18,16 +18,7 @@
     },
     {
       "name": "trader_type",
-      "type": {
-        "type": "enum",
-        "name": "TraderTypes",
-        "symbols": [
-          "SUPERMARKET",
-          "PHARMACY",
-          "GROCERY",
-          "CARDEALER"
-        ]
-      }
+      "type": "string"
     },
         {
       "name": "balance",
