@@ -1,5 +1,6 @@
 SET 'execution.checkpointing.interval' = '1min';
 SET 'execution.checkpointing.mode' = 'EXACTLY_ONCE';
+SET 'pipeline.name' = 'Inserting_into_raw_zone';
 
 ---------------USER-------------------------------------
 
@@ -264,6 +265,265 @@ CREATE TABLE hdfs_receipt_cancelled (
 ----------------------------------------------------------
 ---------------RECEIPT------------------------------------
 
+---------------ORDER------------------------------------
+CREATE TABLE order_kafka_source (
+  `common` ROW <
+    event_id       STRING     NOT NULL,
+    event_type     STRING     NOT NULL,
+    entity_id      STRING     NOT NULL,
+    entity_type    STRING     NOT NULL,
+    `timestamp`    BIGINT,
+    correlation_id STRING     NOT NULL,
+    causation_id   STRING     NOT NULL
+  > NOT NULL,
+  user_id           STRING,
+  trader_id         STRING,
+  reason            STRING,
+  receipt_ids       ARRAY<STRING>,
+  products          ARRAY<ROW<product_id STRING, quantity BIGINT, price FLOAT>>,
+  total_cost        FLOAT,
+  request_id        STRING,
+
+  ts TIMESTAMP(3) METADATA FROM 'timestamp',
+  WATERMARK FOR ts AS ts - INTERVAL '5' SECOND
+) WITH (
+  'connector'                    = 'kafka',
+  'topic'                        = 'orders',
+  'properties.bootstrap.servers' = 'kafka1:9092,kafka2:9092,kafka3:9092',
+  'properties.group.id'          = 'flink-typed-consumer',
+  'scan.startup.mode'            = 'earliest-offset',
+  'value.format'                 = 'avro-confluent',
+  'value.avro-confluent.url'     = 'http://schema-registry:8081'
+);
+
+-- Sink for OrderApproved events
+CREATE TABLE hdfs_order_approved (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/orders/approved',
+  'format'           = 'avro'
+);
+
+-- Sink for OrderCancelled events
+CREATE TABLE hdfs_order_cancelled (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  reason            STRING,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/orders/cancelled',
+  'format'           = 'avro'
+);
+
+-- Sink for OrderCompleted events
+CREATE TABLE hdfs_order_completed (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  receipt_ids       ARRAY<STRING>,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/orders/completed',
+  'format'           = 'avro'
+);
+
+-- Sink for OrderCreated events
+CREATE TABLE hdfs_order_created (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  products          ARRAY<ROW<product_id STRING, quantity BIGINT, price FLOAT>>,
+  total_cost        FLOAT,
+  request_id        STRING,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/orders/created',
+  'format'           = 'avro'
+);
+
+-- Sink for OrderFulfilled events
+CREATE TABLE hdfs_order_fulfilled (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  products          ARRAY<ROW<product_id STRING, quantity BIGINT, price FLOAT>>,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/orders/fulfilled',
+  'format'           = 'avro'
+);
+----------------------------------------------------------
+---------------ORDER--------------------------------------
+
+---------------REQUEST------------------------------------
+CREATE TABLE request_kafka_source (
+  `common` ROW <
+    event_id       STRING     NOT NULL,
+    event_type     STRING     NOT NULL,
+    entity_id      STRING     NOT NULL,
+    entity_type    STRING     NOT NULL,
+    `timestamp`    BIGINT,
+    correlation_id STRING     NOT NULL,
+    causation_id   STRING     NOT NULL
+  > NOT NULL,
+  user_id           STRING,
+  trader_id         STRING,
+  order_id          STRING,
+  reason            STRING,
+  products          ARRAY<ROW<product_id STRING, quantity BIGINT, price FLOAT>>,
+  total_cost        FLOAT,
+  due_date          BIGINT,
+  request_id        STRING,
+
+  ts TIMESTAMP(3) METADATA FROM 'timestamp',
+  WATERMARK FOR ts AS ts - INTERVAL '5' SECOND
+) WITH (
+  'connector'                    = 'kafka',
+  'topic'                        = 'requests',
+  'properties.bootstrap.servers' = 'kafka1:9092,kafka2:9092,kafka3:9092',
+  'properties.group.id'          = 'flink-typed-consumer',
+  'scan.startup.mode'            = 'earliest-offset',
+  'value.format'                 = 'avro-confluent',
+  'value.avro-confluent.url'     = 'http://schema-registry:8081'
+);
+
+-- Sink for RequestApproved events
+CREATE TABLE hdfs_request_approved (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/approved',
+  'format'           = 'avro'
+);
+
+-- Sink for RequestCancelled events
+CREATE TABLE hdfs_request_cancelled (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  reason            STRING,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/cancelled',
+  'format'           = 'avro'
+);
+
+-- Sink for RequestCreated events
+CREATE TABLE hdfs_request_created (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  trader_id         STRING,
+  products          ARRAY<ROW<product_id STRING, quantity BIGINT, price FLOAT>>,
+  total_cost        FLOAT,
+  due_date          BIGINT,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/created',
+  'format'           = 'avro'
+);
+
+-- Sink for RequestExpired events
+CREATE TABLE hdfs_request_expired (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  due_date          BIGINT,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/expired',
+  'format'           = 'avro'
+);
+
+-- Sink for RequestFulfilled events
+CREATE TABLE hdfs_request_fulfilled (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  order_id          STRING,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/fulfilled',
+  'format'           = 'avro'
+);
+
+-- Sink for RequestPending events
+CREATE TABLE hdfs_request_pending (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/pending',
+  'format'           = 'avro'
+);
+
+-- Sink for RequestRejected events
+CREATE TABLE hdfs_request_rejected (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  reason            STRING,
+  kafka_ts          TIMESTAMP(3)
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/rejected',
+  'format'           = 'avro'
+);
+----------------------------------------------------------
+---------------REQUEST--------------------------------------
+
 EXECUTE STATEMENT SET
 BEGIN
 
@@ -381,5 +641,163 @@ BEGIN
     ts
   FROM receipt_kafka_source
   WHERE `common`.event_type = 'ReceiptCancelled';
+
+  ---------------ORDER-------------------------------------
+  INSERT INTO hdfs_order_approved
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  trader_id,
+  ts
+  FROM order_kafka_source
+  WHERE `common`.event_type = 'OrderApproved';
+
+  INSERT INTO hdfs_order_cancelled
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  user_id,
+  reason,
+  ts
+  FROM order_kafka_source
+  WHERE `common`.event_type = 'OrderCancelled';
+
+  INSERT INTO hdfs_order_completed
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  user_id,
+  receipt_ids,
+  ts
+  FROM order_kafka_source
+  WHERE `common`.event_type = 'OrderCompleted';
+
+  INSERT INTO hdfs_order_created
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  user_id,
+  products,
+  total_cost,
+  request_id,
+  ts
+  FROM order_kafka_source
+  WHERE `common`.event_type = 'OrderCreated';
+
+  INSERT INTO hdfs_order_fulfilled
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  trader_id,
+  products,
+  ts
+  FROM order_kafka_source
+  WHERE `common`.event_type = 'OrderFulfilled';
+
+  ---------------REQUEST-------------------------------------
+  INSERT INTO hdfs_request_approved
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  trader_id,
+  ts
+  FROM request_kafka_source
+  WHERE `common`.event_type = 'RequestApproved';
+
+  INSERT INTO hdfs_request_cancelled
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  user_id,
+  reason,
+  ts
+  FROM request_kafka_source
+  WHERE `common`.event_type = 'RequestCancelled';
+
+  INSERT INTO hdfs_request_created
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  user_id,
+  trader_id,
+  products,
+  total_cost,
+  due_date,
+  ts
+  FROM request_kafka_source
+  WHERE `common`.event_type = 'RequestCreated';
+
+  INSERT INTO hdfs_request_expired
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  due_date,
+  ts
+  FROM request_kafka_source
+  WHERE `common`.event_type = 'RequestExpired';
+
+  INSERT INTO hdfs_request_fulfilled
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  trader_id,
+  order_id,
+  ts
+  FROM request_kafka_source
+  WHERE `common`.event_type = 'RequestFulfilled';
+
+  INSERT INTO hdfs_request_pending
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  ts
+  FROM request_kafka_source
+  WHERE `common`.event_type = 'RequestPending';
+
+  INSERT INTO hdfs_request_rejected
+  SELECT
+    `common`.event_id,
+    `common`.entity_id,
+    `common`.correlation_id,
+    `common`.causation_id,
+    `common`.`timestamp`,
+  trader_id,
+  reason,
+  ts
+  FROM request_kafka_source
+  WHERE `common`.event_type = 'RequestRejected';
 
 END;
