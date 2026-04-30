@@ -38,7 +38,7 @@ CREATE TABLE user_deleted_source (
   'source.monitor-interval'      = '30s'
 );
 
-CREATE TABLE user_created_sink (
+CREATE TABLE IF NOT EXISTS user_created_sink (
   event_id       STRING,
   entity_id      STRING,
   correlation_id STRING,
@@ -47,7 +47,7 @@ CREATE TABLE user_created_sink (
   `name`         STRING,
   surname        STRING,
   email          STRING,
-  balance        DECIMAL(18, 4),
+  balance        FLOAT,
   dt             STRING  -- partition column
 ) PARTITIONED BY (dt) WITH (
   'connector'                                = 'filesystem',
@@ -60,7 +60,7 @@ CREATE TABLE user_created_sink (
   'compaction.file-size'                     = '128MB'
 );
 
-CREATE TABLE user_deleted_sink (
+CREATE TABLE IF NOT EXISTS user_deleted_sink (
   event_id       STRING,
   entity_id      STRING,
   correlation_id STRING,
@@ -162,6 +162,177 @@ CREATE TABLE trader_deleted_sink (
 ----------------------------------------------------------
 ---------------TRADER-------------------------------------
 
+CREATE TABLE IF NOT EXISTS product_created_sink (
+  event_id       STRING,
+  entity_id      STRING,
+  correlation_id STRING,
+  causation_id   STRING,
+  event_ts       BIGINT,
+  `name`         STRING,
+  price          FLOAT,
+  quantity       BIGINT,
+  trader_type    STRING,
+  expiry_date    BIGINT,
+  dt             STRING  -- partition column
+) PARTITIONED BY (dt) WITH (
+  'connector'                                = 'filesystem',
+  'path'                                     = 'hdfs://namenode:9000/datalake/transform/products/created',
+  'format'                                   = 'parquet',
+  'sink.rolling-policy.file-size'            = '128MB',
+  'sink.rolling-policy.rollover-interval'    = '30 min',
+  'sink.rolling-policy.check-interval'       = '1 min',
+  'auto-compaction'                          = 'true',
+  'compaction.file-size'                     = '128MB'
+);
+
+CREATE TABLE IF NOT EXISTS product_deleted_sink (
+  event_id       STRING,
+  entity_id      STRING,
+  correlation_id STRING,
+  causation_id   STRING,
+  event_ts       BIGINT,
+  dt             STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                                = 'filesystem',
+  'path'                                     = 'hdfs://namenode:9000/datalake/transform/products/deleted',
+  'format'                                   = 'parquet',
+  'sink.rolling-policy.file-size'            = '128MB',
+  'sink.rolling-policy.rollover-interval'    = '30 min',
+  'sink.rolling-policy.check-interval'       = '1 min',
+  'auto-compaction'                          = 'true',
+  'compaction.file-size'                     = '128MB'
+);
+
+CREATE TABLE IF NOT EXISTS product_created_source (
+  event_id       STRING,
+  entity_id      STRING,
+  correlation_id STRING,
+  causation_id   STRING,
+  event_ts       BIGINT,
+  `name`         STRING,
+  price          FLOAT,
+  quantity       BIGINT,
+  trader_type    STRING,
+  expiry_date    BIGINT,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'                    = 'filesystem',
+  'path'                         = 'hdfs://namenode:9000/datalake/raw/products/created',
+  'format'                       = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE IF NOT EXISTS product_deleted_source (
+  event_id       STRING,
+  entity_id      STRING,
+  correlation_id STRING,
+  causation_id   STRING,
+  event_ts       BIGINT,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'                    = 'filesystem',
+  'path'                         = 'hdfs://namenode:9000/datalake/raw/products/deleted',
+  'format'                       = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE IF NOT EXISTS receipt_created_source (
+  event_id       STRING,
+  entity_id      STRING,
+  correlation_id STRING,
+  causation_id   STRING,
+  event_ts       BIGINT,
+  user_id        STRING,
+  trader_id      STRING,
+  products       ARRAY<ROW<product_id STRING, quantity BIGINT, price FLOAT>>,
+  total_cost     FLOAT,
+  due_date       BIGINT,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'                    = 'filesystem',
+  'path'                         = 'hdfs://namenode:9000/datalake/raw/receipts/created',
+  'format'                       = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE IF NOT EXISTS receipt_cancelled_source (
+  event_id       STRING,
+  entity_id      STRING,
+  correlation_id STRING,
+  causation_id   STRING,
+  event_ts       BIGINT,
+  reason         STRING,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'                    = 'filesystem',
+  'path'                         = 'hdfs://namenode:9000/datalake/raw/receipts/cancelled',
+  'format'                       = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE IF NOT EXISTS receipt_created_sink (
+  event_id       STRING,
+  entity_id      STRING,
+  correlation_id STRING,
+  causation_id   STRING,
+  event_ts       BIGINT,
+  user_id        STRING,
+  trader_id      STRING,
+  total_cost     FLOAT,
+  due_date       BIGINT,
+  dt             STRING  -- partition column
+) PARTITIONED BY (dt) WITH (
+  'connector'                                = 'filesystem',
+  'path'                                     = 'hdfs://namenode:9000/datalake/transform/receipts/created',
+  'format'                                   = 'parquet',
+  'sink.rolling-policy.file-size'            = '128MB',
+  'sink.rolling-policy.rollover-interval'    = '30 min',
+  'sink.rolling-policy.check-interval'       = '1 min',
+  'auto-compaction'                          = 'true',
+  'compaction.file-size'                     = '128MB'
+);
+
+CREATE TABLE IF NOT EXISTS receipt_cancelled_sink (
+  event_id       STRING,
+  entity_id      STRING,
+  correlation_id STRING,
+  causation_id   STRING,
+  event_ts       BIGINT,
+  reason         STRING,
+  dt             STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                                = 'filesystem',
+  'path'                                     = 'hdfs://namenode:9000/datalake/transform/receipts/cancelled',
+  'format'                                   = 'parquet',
+  'sink.rolling-policy.file-size'            = '128MB',
+  'sink.rolling-policy.rollover-interval'    = '30 min',
+  'sink.rolling-policy.check-interval'       = '1 min',
+  'auto-compaction'                          = 'true',
+  'compaction.file-size'                     = '128MB'
+);
+
+-- Flattened products sink
+CREATE TABLE IF NOT EXISTS receipt_products_sink (
+  event_id   STRING,
+  product_id STRING,
+  quantity   BIGINT,
+  price      FLOAT,
+  dt         STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/receipts/products',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+
 EXECUTE STATEMENT SET
 BEGIN
   ---------------USER-------------------------------------
@@ -204,6 +375,55 @@ BEGIN
     event_ts, reason,
     DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
   FROM trader_deleted_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  ---------------PRODUCT-------------------------------------
+  INSERT INTO product_created_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, `name`, price, quantity, trader_type, expiry_date,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM product_created_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  INSERT INTO product_deleted_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM product_deleted_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  ---------------RECEIPT-------------------------------------
+  INSERT INTO receipt_created_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, user_id, trader_id, total_cost, due_date,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM receipt_created_source
+  WHERE event_id IS NOT NULL AND entity_id IS NOT NULL;
+
+  -- Exploded products insert
+  INSERT INTO receipt_products_sink
+  SELECT
+    r.event_id,
+    prod.product_id,
+    prod.quantity,
+    prod.price,
+    DATE_FORMAT(r.event_time, 'yyyy-MM-dd') AS dt
+  FROM receipt_created_source r
+  CROSS JOIN UNNEST(r.products) AS prod (product_id, quantity, price)
+  WHERE r.event_id IS NOT NULL AND r.entity_id IS NOT NULL;
+
+  INSERT INTO receipt_cancelled_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, reason,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM receipt_cancelled_source
   WHERE event_id  IS NOT NULL
     AND entity_id IS NOT NULL;
 
