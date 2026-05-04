@@ -560,6 +560,290 @@ CREATE TABLE order_fulfilled_sink (
 ----------------------------------------------------------
 ---------------ORDER--------------------------------------
 
+-- Sink for RequestApproved events
+CREATE TABLE request_approved_source (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/approved',
+  'format'           = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+-- Sink for RequestApproved events
+CREATE TABLE request_approved_sink (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  dt                STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/approved',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+
+-- Sink for RequestCancelled events
+CREATE TABLE request_cancelled_source (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  reason            STRING,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/cancelled',
+  'format'           = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE request_cancelled_sink (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  reason            STRING,
+  dt                STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/cancelled',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+
+-- Sink for RequestCreated events
+CREATE TABLE request_created_source (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  trader_id         STRING,
+  products          ARRAY<ROW<product_id STRING, quantity BIGINT, price FLOAT>>,
+  total_cost        FLOAT,
+  due_date          BIGINT,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/created',
+  'format'           = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE request_created_sink (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  user_id           STRING,
+  trader_id         STRING,
+  total_cost        FLOAT,
+  due_date          BIGINT,
+  dt                STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/created',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+
+CREATE TABLE IF NOT EXISTS request_created_products_sink (
+  event_id   STRING,
+  product_id STRING,
+  quantity   BIGINT,
+  price      FLOAT,
+  dt         STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/created/products',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+
+-- Sink for RequestExpired events
+CREATE TABLE request_expired_source (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  due_date          BIGINT,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/expired',
+  'format'           = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+
+CREATE TABLE request_expired_sink (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  due_date          BIGINT,
+  dt                STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/expired',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+
+-- Sink for RequestFulfilled events
+CREATE TABLE request_fulfilled_source (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  order_id          STRING,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/fulfilled',
+  'format'           = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE request_fulfilled_sink (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  order_id          STRING,
+  dt                STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/fulfilled',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+
+-- Sink for RequestPending events
+CREATE TABLE request_pending_source (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/pending',
+  'format'           = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE request_pending_sink (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  dt                STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/pending',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+
+-- Sink for RequestRejected events
+CREATE TABLE request_rejected_source (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  reason            STRING,
+  event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+) WITH (
+  'connector'        = 'filesystem',
+  'path'             = 'hdfs://namenode:9000/datalake/raw/requests/rejected',
+  'format'           = 'avro',
+  'source.monitor-interval'      = '30s'
+);
+
+CREATE TABLE request_rejected_sink (
+  event_id          STRING,
+  entity_id         STRING,
+  correlation_id    STRING,
+  causation_id      STRING,
+  event_ts          BIGINT,
+  trader_id         STRING,
+  reason            STRING,
+  dt                STRING
+) PARTITIONED BY (dt) WITH (
+  'connector'                             = 'filesystem',
+  'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/rejected',
+  'format'                                = 'parquet',
+  'sink.rolling-policy.file-size'         = '128MB',
+  'sink.rolling-policy.rollover-interval' = '30 min',
+  'sink.rolling-policy.check-interval'    = '1 min',
+  'auto-compaction'                       = 'true',
+  'compaction.file-size'                  = '128MB'
+);
+----------------------------------------------------------
+---------------REQUEST--------------------------------------
+
 EXECUTE STATEMENT SET
 BEGIN
   ---------------USER-------------------------------------
@@ -654,6 +938,7 @@ BEGIN
   WHERE event_id  IS NOT NULL
     AND entity_id IS NOT NULL;
 
+  ---------------ORDER-------------------------------------
   INSERT INTO order_approved_sink
   SELECT
     event_id, entity_id, correlation_id, causation_id,
@@ -720,4 +1005,79 @@ BEGIN
   FROM order_fulfilled_source r
   CROSS JOIN UNNEST(r.products) AS prod (product_id, quantity, price)
   WHERE r.event_id IS NOT NULL AND r.entity_id IS NOT NULL;
+
+  ---------------REQUEST-------------------------------------
+  INSERT INTO request_approved_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, trader_id,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM request_approved_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  INSERT INTO request_cancelled_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, user_id, reason,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM request_cancelled_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  INSERT INTO request_created_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, user_id, trader_id, total_cost, due_date,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM request_created_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  INSERT INTO request_created_products_sink
+  SELECT
+    r.event_id,
+    prod.product_id,
+    prod.quantity,
+    prod.price,
+    DATE_FORMAT(r.event_time, 'yyyy-MM-dd') AS dt
+  FROM request_created_source r
+  CROSS JOIN UNNEST(r.products) AS prod (product_id, quantity, price)
+  WHERE r.event_id IS NOT NULL AND r.entity_id IS NOT NULL;
+
+  INSERT INTO request_expired_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, due_date,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM request_expired_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  INSERT INTO request_fulfilled_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, trader_id, order_id,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM request_fulfilled_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  INSERT INTO request_pending_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, 
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM request_pending_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
+
+  INSERT INTO request_rejected_sink
+  SELECT
+    event_id, entity_id, correlation_id, causation_id,
+    event_ts, trader_id, reason,
+    DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
+  FROM request_rejected_source
+  WHERE event_id  IS NOT NULL
+    AND entity_id IS NOT NULL;
 END;
