@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS receipt_created_source (
   event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
   WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
 ) WITH (
-  'connector'                    = 'filesystem',
-  'path'                         = 'hdfs://namenode:9000/datalake/raw/receipts/created',
-  'format'                       = 'avro',
-  'source.monitor-interval'      = '30s'
+  'connector'               = 'filesystem',
+  'path'                    = 'hdfs://namenode:9000/datalake/raw/receipts/created',
+  'format'                  = 'avro',
+  'source.monitor-interval' = '30s'
 );
 
 CREATE TABLE IF NOT EXISTS receipt_cancelled_source (
@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS receipt_cancelled_source (
   event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
   WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
 ) WITH (
-  'connector'                    = 'filesystem',
-  'path'                         = 'hdfs://namenode:9000/datalake/raw/receipts/cancelled',
-  'format'                       = 'avro',
-  'source.monitor-interval'      = '30s'
+  'connector'               = 'filesystem',
+  'path'                    = 'hdfs://namenode:9000/datalake/raw/receipts/cancelled',
+  'format'                  = 'avro',
+  'source.monitor-interval' = '30s'
 );

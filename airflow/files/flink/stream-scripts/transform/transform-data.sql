@@ -1,6 +1,8 @@
 SET 'execution.checkpointing.interval' = '1min';
 SET 'execution.checkpointing.mode'     = 'EXACTLY_ONCE';
 SET 'pipeline.name'                    = 'Inserting_into_transform_zone';
+SET 'parallelism.default'              = '4';
+
 
 ---------------USER-------------------------------------
 CREATE TABLE user_created_source (
