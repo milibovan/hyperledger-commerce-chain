@@ -232,15 +232,93 @@ export const EVENT_GENERATORS = {
     }
 };
 
-export const randomEntityAction = () => {
-    const entities = Object.keys(EVENT_GENERATORS);
-    const entity = entities[Math.floor(Math.random() * entities.length)];
-    
-    const actions = Object.keys(EVENT_GENERATORS[entity]);
-    const action = actions[Math.floor(Math.random() * actions.length)];
-    
-    return { entity, action };
+const WEIGHTS_BASELINE = {
+  user:    { created: 2,  deleted: 1 },
+  trader:  { created: 1,  deleted: 1 },
+  product: { created: 2,  deleted: 1 },
+  order:   { created: 10, approved: 7, fulfilled: 6, completed: 5, cancelled: 2 },
+  receipt: { created: 6,  cancelled: 1 },
+  request: { created: 5,  pending_funds: 4, approved: 4, rejected: 2, fulfilled: 3, expired: 1, cancelled: 2 },
 };
+
+// Each mode multiplies on top of baseline weights
+const MODE_OVERRIDES = {
+  // Query 1 — demand spike: flood one product with orders/receipts
+  demand_spike: {
+    product: { created: 1, deleted: 1 },
+    order:   { created: 40, approved: 30, fulfilled: 25, completed: 20, cancelled: 2 },
+    receipt: { created: 30, cancelled: 1 },
+    request: { created: 2,  pending_funds: 1, approved: 1, rejected: 1, fulfilled: 1, expired: 1, cancelled: 1 },
+    user:    { created: 1,  deleted: 1 },
+    trader:  { created: 1,  deleted: 1 },
+  },
+  // Query 2 — fraud: same user hammering cancellations
+  fraud: {
+    order:   { created: 15, approved: 10, fulfilled: 2, completed: 2, cancelled: 40 },
+    receipt: { created: 2,  cancelled: 10 },
+    request: { created: 3,  pending_funds: 2, approved: 2, rejected: 3, fulfilled: 1, expired: 2, cancelled: 20 },
+    user:    { created: 1,  deleted: 1 },
+    trader:  { created: 1,  deleted: 1 },
+    product: { created: 1,  deleted: 1 },
+  },
+  // Query 3 — completed volume: push orders through full lifecycle
+  completed_volume: {
+    order:   { created: 15, approved: 14, fulfilled: 13, completed: 25, cancelled: 1 },
+    receipt: { created: 20, cancelled: 1 },
+    request: { created: 10, pending_funds: 9, approved: 9, rejected: 1, fulfilled: 12, expired: 1, cancelled: 1 },
+    user:    { created: 1,  deleted: 1 },
+    trader:  { created: 1,  deleted: 1 },
+    product: { created: 1,  deleted: 1 },
+  },
+  // Query 4 — congestion: lots of created/pending, few fulfilled
+  congestion: {
+    order:   { created: 40, approved: 15, fulfilled: 3, completed: 2, cancelled: 5 },
+    request: { created: 30, pending_funds: 25, approved: 5, rejected: 5, fulfilled: 2, expired: 3, cancelled: 4 },
+    receipt: { created: 5,  cancelled: 1 },
+    user:    { created: 1,  deleted: 1 },
+    trader:  { created: 1,  deleted: 1 },
+    product: { created: 1,  deleted: 1 },
+  },
+  // Query 5 — whale alert: high-value orders dominate
+  whale: {
+    order:   { created: 30, approved: 20, fulfilled: 10, completed: 8, cancelled: 2 },
+    receipt: { created: 15, cancelled: 1 },
+    request: { created: 5,  pending_funds: 4, approved: 4, rejected: 1, fulfilled: 3, expired: 1, cancelled: 1 },
+    user:    { created: 1,  deleted: 1 },
+    trader:  { created: 1,  deleted: 1 },
+    product: { created: 1,  deleted: 1 },
+  },
+};
+
+function buildWeightedPool(weights) {
+  const pool = [];
+  for (const [entity, actions] of Object.entries(weights)) {
+    for (const [action, weight] of Object.entries(actions)) {
+      for (let i = 0; i < weight; i++) {
+        pool.push({ entity, action });
+      }
+    }
+  }
+  return pool;
+}
+
+function randomEntityAction() {
+  const mode = process.env.MODE;
+  const weights = mode && MODE_OVERRIDES[mode] ? MODE_OVERRIDES[mode] : WEIGHTS_BASELINE;
+  const pool = buildWeightedPool(weights);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+// ! for totally random events
+// export const randomEntityAction = () => {
+//     const entities = Object.keys(EVENT_GENERATORS);
+//     const entity = entities[Math.floor(Math.random() * entities.length)];
+    
+//     const actions = Object.keys(EVENT_GENERATORS[entity]);
+//     const action = actions[Math.floor(Math.random() * actions.length)];
+    
+//     return { entity, action };
+// };
 
 // const buildAllEvents = () =>
 //     Object.entries(EVENT_GENERATORS).flatMap(([entity, actions]) =>
