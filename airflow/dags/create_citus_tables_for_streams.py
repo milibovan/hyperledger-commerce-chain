@@ -25,5 +25,16 @@ with DAG(
                 balance        REAL,
                 dt             TEXT
             );
+
+            CREATE TABLE IF NOT EXISTS completed_orders (
+                event_ts          BIGINT,
+                user_id           TEXT,
+                trader_id         TEXT,
+                total_cost        REAL,
+                due_date          BIGINT,
+                product_id        TEXT,
+                quantity          BIGINT,
+                price             REAL
+            );
         """,
     )
