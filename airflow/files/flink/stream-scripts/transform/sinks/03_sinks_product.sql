@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS product_created_sink (
   trader_type    STRING,
   expiry_date    BIGINT,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/products/created',
   'format'                                = 'parquet',
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS product_deleted_sink (
   causation_id   STRING,
   event_ts       BIGINT,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/products/deleted',
   'format'                                = 'parquet',

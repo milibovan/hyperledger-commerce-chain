@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS trader_created_sink (
   balance        FLOAT,
   vat            STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/traders/created',
   'format'                                = 'parquet',
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS trader_deleted_sink (
   event_ts       BIGINT,
   reason         STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/traders/deleted',
   'format'                                = 'parquet',

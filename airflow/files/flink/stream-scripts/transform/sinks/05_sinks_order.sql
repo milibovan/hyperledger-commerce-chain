@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS order_approved_sink (
   event_ts       BIGINT,
   trader_id      STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/orders/approved',
   'format'                                = 'parquet',
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS order_cancelled_sink (
   user_id        STRING,
   reason         STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/orders/cancelled',
   'format'                                = 'parquet',
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS order_completed_sink (
   user_id        STRING,
   receipt_ids    ARRAY<STRING>,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/orders/completed',
   'format'                                = 'parquet',
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS order_created_sink (
   total_cost     FLOAT,
   request_id     STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/orders/created',
   'format'                                = 'parquet',
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS order_created_products_sink (
   quantity   BIGINT,
   price      FLOAT,
   dt         STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/orders/created/products',
   'format'                                = 'parquet',
@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS order_fulfilled_sink (
   event_ts       BIGINT,
   trader_id      STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/orders/fulfilled',
   'format'                                = 'parquet',
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS order_fulfilled_products_sink (
   quantity   BIGINT,
   price      FLOAT,
   dt         STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/orders/fulfilled/products',
   'format'                                = 'parquet',

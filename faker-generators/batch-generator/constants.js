@@ -241,7 +241,6 @@ const WEIGHTS_BASELINE = {
   request: { created: 5,  pending_funds: 4, approved: 4, rejected: 2, fulfilled: 3, expired: 1, cancelled: 2 },
 };
 
-// Each mode multiplies on top of baseline weights
 const MODE_OVERRIDES = {
   // Query 1 — demand spike: flood one product with orders/receipts
   demand_spike: {
@@ -302,11 +301,17 @@ function buildWeightedPool(weights) {
   return pool;
 }
 
+const ORCHESTRATED = new Set(['order-fulfilled', 'order-completed']);
+
 function randomEntityAction() {
-  const mode = process.env.MODE;
-  const weights = mode && MODE_OVERRIDES[mode] ? MODE_OVERRIDES[mode] : WEIGHTS_BASELINE;
-  const pool = buildWeightedPool(weights);
-  return pool[Math.floor(Math.random() * pool.length)];
+    const mode = process.env.MODE;
+    const weights = mode && MODE_OVERRIDES[mode] ? MODE_OVERRIDES[mode] : WEIGHTS_BASELINE;
+    const pool = buildWeightedPool(weights);
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    return {
+        ...pick,
+        orchestrated: ORCHESTRATED.has(`${pick.entity}-${pick.action}`)
+    };
 }
 
 // ! for totally random events

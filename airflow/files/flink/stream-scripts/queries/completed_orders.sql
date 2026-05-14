@@ -1,3 +1,5 @@
+SET sql-client.execution.result-mode=TABLEAU;
+
 CREATE TABLE IF NOT EXISTS orders_completed (
   event_id          STRING,
   entity_id         STRING,
@@ -10,8 +12,8 @@ CREATE TABLE IF NOT EXISTS orders_completed (
 ) WITH (
   'connector'                          = 'filesystem',
   'path'                               = 'hdfs://namenode:9000/datalake/transform/orders/completed',
-  'format'                             = 'parquet',
-  'source.monitor-interval' = '1s'
+  'format'                             = 'parquet'
+  -- 'source.monitor-interval' = '1s'
 );
 
 CREATE TABLE IF NOT EXISTS receipt_created (
@@ -28,8 +30,8 @@ CREATE TABLE IF NOT EXISTS receipt_created (
 ) WITH (
   'connector'                                = 'filesystem',
   'path'                                     = 'hdfs://namenode:9000/datalake/transform/receipts/created',
-  'format'                                   = 'parquet',
-  'source.monitor-interval' = '1s'
+  'format'                                   = 'parquet'
+  -- 'source.monitor-interval' = '1s'
 );
 
 CREATE TABLE IF NOT EXISTS receipt_products (
@@ -41,8 +43,8 @@ CREATE TABLE IF NOT EXISTS receipt_products (
 ) WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/receipts/created/products',
-  'format'                                = 'parquet',
-  'source.monitor-interval' = '1s'
+  'format'                                = 'parquet'
+  -- 'source.monitor-interval' = '1s'
 );
 
 CREATE TABLE IF NOT EXISTS completed_orders (
@@ -65,6 +67,17 @@ CREATE TABLE IF NOT EXISTS completed_orders (
     'sink.buffer-flush.interval' = '1s',
     'sink.max-retries' = '3'
 );
+
+-- Do any receipt entity_ids actually appear in any order's receipt_ids?
+SELECT COUNT(*)
+FROM orders_completed oc, receipt_created rc
+WHERE ARRAY_CONTAINS(oc.receipt_ids, rc.entity_id);
+
+-- Spot check: what do receipt_ids actually look like?
+SELECT receipt_ids FROM orders_completed LIMIT 5;
+
+-- Spot check: what do entity_ids look like in receipt_created?
+SELECT entity_id FROM receipt_created LIMIT 5;
 
 EXECUTE STATEMENT SET
 BEGIN

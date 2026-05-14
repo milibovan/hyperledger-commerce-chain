@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS receipt_created_source (
   products       ARRAY<ROW<product_id STRING, quantity BIGINT, price FLOAT>>,
   total_cost     FLOAT,
   due_date       BIGINT,
+  kafka_ts       TIMESTAMP(3),
   event_time AS TO_TIMESTAMP(FROM_UNIXTIME(event_ts / 1000)),
   WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
 ) WITH (

@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS user_created_source (
   email          STRING,
   balance        FLOAT,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                          = 'filesystem',
   'path'                               = 'hdfs://namenode:9000/datalake/transform/users/created',
   'format'                             = 'parquet'

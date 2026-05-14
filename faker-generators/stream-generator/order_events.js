@@ -94,7 +94,25 @@ export const fulfillOrder = async () => {
         price: parseFloat(faker.number.float({ min: 100, max: 50000, fractionDigits: 2 }))
     }));
 
-    await moveEntityStatus(orderId, 'order', OrderStatus.APPROVED, OrderStatus.FULFILLED);
+    const receiptCount = faker.number.int({ min: 1, max: 6 });
+    const receiptIds = Array.from({ length: receiptCount }, () => faker.string.uuid());
+
+    const pipeline = redis.pipeline();
+
+    pipeline.sadd(`pool:orderReceiptIds:${orderId}`, ...receiptIds);
+    pipeline.expire(`pool:orderReceiptIds:${orderId}`, 3600);
+
+    receiptIds.forEach(id => {
+        pipeline.sadd(`pool:receiptIds:${ReceiptStatus.CREATED}`, id);
+    });
+
+    pipeline.smove(
+        `pool:orderIds:${OrderStatus.APPROVED}`,
+        `pool:orderIds:${OrderStatus.FULFILLED}`,
+        orderId
+    );
+
+    await pipeline.exec();
 
     return {
         common: header,
@@ -107,17 +125,24 @@ export const completeOrder = async () => {
     const orderId = await redis.srandmember(`pool:orderIds:${OrderStatus.FULFILLED}`);
     if (!orderId) return null;
 
+    const receiptIds = await redis.smembers(`pool:orderReceiptIds:${orderId}`);
+    if (!receiptIds || receiptIds.length === 0) return null;
+
     const userId = await redis.srandmember('pool:userIds');
-
     const header = genHeader(EventTypes.OrderCompleted, EntityTypes.Order, orderId);
-    const receiptCount = faker.number.int({ min: 1, max: 6 });
-    const receiptIds = await redis.srandmember(`pool:receiptIds:${ReceiptStatus.CREATED}`, receiptCount);
 
-    await moveEntityStatus(orderId, 'order', OrderStatus.FULFILLED, OrderStatus.COMPLETED);
+    const pipeline = redis.pipeline();
+    pipeline.del(`pool:orderReceiptIds:${orderId}`); // clean up
+    pipeline.smove(
+        `pool:orderIds:${OrderStatus.FULFILLED}`,
+        `pool:orderIds:${OrderStatus.COMPLETED}`,
+        orderId
+    );
+    await pipeline.exec();
 
     return {
         common: header,
         user_id: userId,
-        receipt_ids: receiptIds ?? []
+        receipt_ids: receiptIds
     };
 };

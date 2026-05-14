@@ -5,8 +5,8 @@ import { redis } from '../batch-generator/pools.js';
 import { numProducts } from '../batch-generator/constants.js';
 import { moveEntityStatus } from '../batch-generator/utils.js';
 
-export const createReceipt = async () => {
-    const header = genHeader(EventTypes.ReceiptCreated, EntityTypes.Receipt)
+export const createReceipt = async (receiptId = null) => {
+    const header = genHeader(EventTypes.ReceiptCreated, EntityTypes.Receipt, receiptId ?? undefined);
 
     const [[, userId], [, productIds], [, traderId]] = await redis
         .pipeline()
@@ -17,7 +17,7 @@ export const createReceipt = async () => {
 
     const products = productIds.map(product_id => ({
         product_id,
-        quantity: quantity,
+        quantity: faker.number.int({ min: 1, max: 5 }),
         price: parseFloat(faker.number.float({ min: 100, max: 50000, fractionDigits: 2 }))
     }));
 
@@ -25,20 +25,18 @@ export const createReceipt = async () => {
         products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)
     );
 
-    await redis.sadd(`pool:receiptIds:${ReceiptStatus.CREATED}`, header.entity_id)
-    
-    ;
-
-    const receiptCreatedEvent = {
-        "common": header,
-        "user_id": userId,
-        "trader_id": traderId,
-        "products": products,
-        "total_cost": total_cost,
-        "due_date": faker.date.soon().getTime()
+    if (!receiptId) {
+        await redis.sadd(`pool:receiptIds:${ReceiptStatus.CREATED}`, header.entity_id);
     }
 
-    return receiptCreatedEvent
+    return {
+        common: header,
+        user_id: userId,
+        trader_id: traderId,
+        products,
+        total_cost,
+        due_date: faker.date.soon().getTime()
+    };
 };
 
 export const cancelReceipt = async () => {

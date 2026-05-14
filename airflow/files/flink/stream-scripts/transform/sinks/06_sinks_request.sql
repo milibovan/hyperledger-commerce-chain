@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS request_approved_sink (
   event_ts       BIGINT,
   trader_id      STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/approved',
   'format'                                = 'parquet',
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS request_cancelled_sink (
   user_id        STRING,
   reason         STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/cancelled',
   'format'                                = 'parquet',
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS request_created_sink (
   total_cost     FLOAT,
   due_date       BIGINT,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/created',
   'format'                                = 'parquet',
@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS request_created_products_sink (
   quantity   BIGINT,
   price      FLOAT,
   dt         STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/created/products',
   'format'                                = 'parquet',
@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS request_expired_sink (
   event_ts       BIGINT,
   due_date       BIGINT,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/expired',
   'format'                                = 'parquet',
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS request_fulfilled_sink (
   trader_id      STRING,
   order_id       STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/fulfilled',
   'format'                                = 'parquet',
@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS request_pending_sink (
   causation_id   STRING,
   event_ts       BIGINT,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/pending',
   'format'                                = 'parquet',
@@ -143,7 +143,7 @@ CREATE TABLE IF NOT EXISTS request_rejected_sink (
   trader_id      STRING,
   reason         STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/requests/rejected',
   'format'                                = 'parquet',

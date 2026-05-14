@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS user_created_sink (
   email          STRING,
   balance        FLOAT,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/users/created',
   'format'                                = 'parquet',
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS user_deleted_sink (
   event_ts       BIGINT,
   reason         STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/users/deleted',
   'format'                                = 'parquet',

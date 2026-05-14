@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS receipt_created_sink (
   total_cost     FLOAT,
   due_date       BIGINT,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/receipts/created',
   'format'                                = 'parquet',
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS receipt_products_sink (
   quantity   BIGINT,
   price      FLOAT,
   dt         STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/receipts/created/products',
   'format'                                = 'parquet',
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS receipt_cancelled_sink (
   event_ts       BIGINT,
   reason         STRING,
   dt             STRING
-) PARTITIONED BY (dt) WITH (
+)  WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/receipts/cancelled',
   'format'                                = 'parquet',
