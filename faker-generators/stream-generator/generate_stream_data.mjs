@@ -24,7 +24,7 @@ function emitEvent(event, entity, action) {
 async function main() {
     const { entity, action, orchestrated } = randomEntityAction();
 
-    if (orchestrated && entity === 'order' && action === 'fulfilled') {
+    if (orchestrated && entity === 'order' && (action === 'fulfilled' || action === 'completed')) {
         const fulfilledOrder = await EVENT_GENERATORS.order.fulfilled();
         if (!fulfilledOrder) { await redis.quit(); return; }
         emitEvent(fulfilledOrder, 'order', 'fulfilled');
@@ -39,9 +39,6 @@ async function main() {
         const completedOrder = await completeOrder();
         if (!completedOrder) { await redis.quit(); return; }
         emitEvent(completedOrder, 'order', 'completed');
-
-        console.error(`[DEBUG] receiptIds for order: ${JSON.stringify(receiptIds)}`);
-        console.error(`[DEBUG] FULFILLED pool contains orderId: ${fulfilledMembers.includes(orderId)}`);
     } else {
         const schemaPath = `${entity}/${entity}-${action}`;
         const schema = parseSchema(schemaPath);

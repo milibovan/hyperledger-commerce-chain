@@ -30,7 +30,8 @@ CREATE TABLE IF NOT EXISTS receipt_created (
 ) WITH (
   'connector'                                = 'filesystem',
   'path'                                     = 'hdfs://namenode:9000/datalake/transform/receipts/created',
-  'format'                                   = 'parquet'
+  'format'                                   = 'parquet',
+  'source.path.regex-pattern' = '^(?!_)(?!.*\\.inprogress).*$'
   -- 'source.monitor-interval' = '1s'
 );
 
@@ -77,7 +78,7 @@ WHERE ARRAY_CONTAINS(oc.receipt_ids, rc.entity_id);
 SELECT receipt_ids FROM orders_completed LIMIT 5;
 
 -- Spot check: what do entity_ids look like in receipt_created?
-SELECT entity_id FROM receipt_created LIMIT 5;
+SELECT * FROM receipt_created WHERE entity_id IS NOT NULL LIMIT 20;
 
 EXECUTE STATEMENT SET
 BEGIN
@@ -98,5 +99,6 @@ BEGIN
     DATE_FORMAT(NOW(), 'yyyy-MM-dd'),
     DATE_FORMAT(NOW() - INTERVAL '1' DAY, 'yyyy-MM-dd')
   )
-  AND oc.event_ts > UNIX_TIMESTAMP() * 1000 - 86400000;
+  AND oc.event_ts > UNIX_TIMESTAMP() * 1000 - 86400000
+  AND rc.entity_id IS NOT NULL;
 END;
