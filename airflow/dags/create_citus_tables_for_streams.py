@@ -36,5 +36,14 @@ with DAG(
                 quantity          BIGINT,
                 price             REAL
             );
+
+            CREATE TABLE IF NOT EXISTS fraud_detection (
+                event_ts          BIGINT,
+                user_id           TEXT PRIMARY KEY,
+                user_name         TEXT,
+                user_surname      TEXT,
+                user_email        TEXT,
+                user_balance      REAL
+            );
         """,
     )

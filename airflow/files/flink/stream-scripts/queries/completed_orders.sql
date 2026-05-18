@@ -69,16 +69,16 @@ CREATE TABLE IF NOT EXISTS completed_orders (
     'sink.max-retries' = '3'
 );
 
--- Do any receipt entity_ids actually appear in any order's receipt_ids?
-SELECT COUNT(*)
-FROM orders_completed oc, receipt_created rc
-WHERE ARRAY_CONTAINS(oc.receipt_ids, rc.entity_id);
+-- -- Do any receipt entity_ids actually appear in any order's receipt_ids?
+-- SELECT COUNT(*)
+-- FROM orders_completed oc, receipt_created rc
+-- WHERE ARRAY_CONTAINS(oc.receipt_ids, rc.entity_id);
 
--- Spot check: what do receipt_ids actually look like?
-SELECT receipt_ids FROM orders_completed LIMIT 5;
+-- -- Spot check: what do receipt_ids actually look like?
+-- SELECT receipt_ids FROM orders_completed LIMIT 5;
 
--- Spot check: what do entity_ids look like in receipt_created?
-SELECT * FROM receipt_created WHERE entity_id IS NOT NULL LIMIT 20;
+-- -- Spot check: what do entity_ids look like in receipt_created?
+-- SELECT * FROM receipt_created WHERE entity_id IS NOT NULL LIMIT 20;
 
 EXECUTE STATEMENT SET
 BEGIN

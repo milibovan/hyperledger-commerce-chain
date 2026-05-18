@@ -4,16 +4,18 @@ import { EntityTypes, EventTypes, numProducts, OrderStatus, RequestStatus, Recei
 import { redis } from '../batch-generator/pools.js';
 import { moveEntityStatus } from '../batch-generator/utils.js';
 
-export const createOrder = async () => {
+export const createOrder = async (overrides = {}) => {
     const header = genHeader(EventTypes.OrderCreated, EntityTypes.Order);
     const includeRequest = Math.random() >= 0.5;
 
-    const [[, userId], [, productIds], [, requestIds]] = await redis
+    const [[, randomUserId], [, productIds], [, requestIds]] = await redis
         .pipeline()
         .srandmember('pool:userIds')
         .srandmember('pool:productIds', numProducts)
         .srandmember(`pool:requestIds:${RequestStatus.FULFILLED}`, includeRequest ? 1 : 0)
         .exec();
+
+    const userId = overrides.user_id ?? randomUserId;
 
     const products = productIds.map(product_id => ({
         product_id,
@@ -25,15 +27,13 @@ export const createOrder = async () => {
         products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)
     );
 
-    await redis.sadd(`pool:orderIds:${OrderStatus.CREATED}`, header.entity_id);
+    await redis
+        .pipeline()
+        .sadd(`pool:orderIds:${OrderStatus.CREATED}`, header.entity_id)
+        .sadd(`pool:userOrderIds:${userId}:${OrderStatus.CREATED}`, header.entity_id)
+        .exec();
 
-    return {
-        common: header,
-        user_id: userId,
-        products,
-        total_cost,
-        request_id: requestIds?.[0] ?? ''
-    };
+    return { common: header, user_id: userId, products, total_cost, request_id: requestIds?.[0] ?? '' };
 };
 
 export const approveOrder = async () => {
@@ -52,21 +52,44 @@ export const approveOrder = async () => {
     };
 };
 
-export const cancelOrder = async () => {
-    const [[, createdId], [, approvedId]] = await redis
-        .pipeline()
-        .srandmember(`pool:orderIds:${OrderStatus.CREATED}`)
-        .srandmember(`pool:orderIds:${OrderStatus.APPROVED}`)
-        .exec();
+export const cancelOrder = async (overrides = {}) => {
+    const targetUserId = overrides.user_id ?? null;
 
-    const orderId = createdId || approvedId;
+    let orderId, fromStatus;
+
+    if (targetUserId) {
+        const [[, createdId], [, approvedId]] = await redis
+            .pipeline()
+            .srandmember(`pool:userOrderIds:${targetUserId}:${OrderStatus.CREATED}`)
+            .srandmember(`pool:userOrderIds:${targetUserId}:${OrderStatus.APPROVED}`)
+            .exec();
+
+        orderId = createdId || approvedId;
+        fromStatus = createdId ? OrderStatus.CREATED : OrderStatus.APPROVED;
+    }
+
+    if (!orderId) {
+        const [[, createdId], [, approvedId]] = await redis
+            .pipeline()
+            .srandmember(`pool:orderIds:${OrderStatus.CREATED}`)
+            .srandmember(`pool:orderIds:${OrderStatus.APPROVED}`)
+            .exec();
+
+        orderId = createdId || approvedId;
+        fromStatus = createdId ? OrderStatus.CREATED : OrderStatus.APPROVED;
+    }
+
     if (!orderId) return null;
 
-    const fromStatus = createdId ? OrderStatus.CREATED : OrderStatus.APPROVED;
+    const userId = targetUserId ?? await redis.srandmember('pool:userIds');
     const header = genHeader(EventTypes.OrderCancelled, EntityTypes.Order, orderId);
-    const userId = await redis.srandmember('pool:userIds');
 
-    await moveEntityStatus(orderId, 'order', fromStatus, OrderStatus.CANCELLED);
+    await redis
+        .pipeline()
+        .smove(`pool:orderIds:${fromStatus}`, `pool:orderIds:${OrderStatus.CANCELLED}`, orderId)
+        .srem(`pool:userOrderIds:${userId}:${fromStatus}`, orderId)
+        .sadd(`pool:userOrderIds:${userId}:${OrderStatus.CANCELLED}`, orderId)
+        .exec();
 
     return {
         common: header,

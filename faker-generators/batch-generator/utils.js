@@ -1,6 +1,6 @@
 import fs from "fs";
 import { fakerSR_RS_latin as faker } from "@faker-js/faker";
-import { VERSATILE_USER_COUNT, VALID_TRANSITIONS } from "./constants.js";
+import { VERSATILE_USER_COUNT, VALID_TRANSITIONS, EVENT_GENERATORS } from "./constants.js";
 import { pools, redis } from "./pools.js";
 
 /**
@@ -89,3 +89,73 @@ export const addEntityPerStatus = async (id, entity, status) => {
         .sadd(`pool:${entity}Ids:${status}`, id)
         .exec();
 };
+
+export async function seedFraudUser() {
+    const user = await EVENT_GENERATORS.user.created();
+    const fraudUserId = user.common.entity_id;
+    await redis.set('fraud:target_user_id', fraudUserId);
+    emitEvent(user, 'user', 'created');
+
+    for (let i = 0; i < 5; i++) {
+        const order = await EVENT_GENERATORS.order.created({ user_id: fraudUserId });
+        if (order) emitEvent(order, 'order', 'created');
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    let cancelled = 0;
+    for (let i = 0; i < 5; i++) {
+        const order = await EVENT_GENERATORS.order.cancelled({ user_id: fraudUserId });
+        if (!order) {
+            console.warn(`cancelOrder returned null on iteration ${i}`);
+            continue;
+        }
+        emitEvent(order, 'order', 'cancelled');
+        cancelled++;
+    }
+
+    console.error(`Fraud seed complete: user=${fraudUserId}, cancelled=${cancelled}`);
+
+    await redis.del('fraud:target_user_id');
+}
+
+export async function handleEvent(entity, action, orchestrated = false) {
+    if (orchestrated && entity === 'order' && (action === 'fulfilled' || action === 'completed')) {
+        const fulfilledOrder = await EVENT_GENERATORS.order.fulfilled();
+        if (!fulfilledOrder) return;
+        emitEvent(fulfilledOrder, 'order', 'fulfilled');
+
+        const orderId = fulfilledOrder.common.entity_id;
+        const receiptIds = await redis.smembers(`pool:orderReceiptIds:${orderId}`);
+        for (const receiptId of receiptIds) {
+            const receipt = await createReceipt(receiptId);
+            emitEvent(receipt, 'receipt', 'created');
+        }
+
+        const completedOrder = await completeOrder();
+        if (!completedOrder) return;
+        emitEvent(completedOrder, 'order', 'completed');
+    } else {
+        const generator = EVENT_GENERATORS[entity]?.[action];
+        if (!generator) throw new Error(`No generator for ${entity}-${action}`);
+        const event = await generator();
+        if (event) emitEvent(event, entity, action);
+    }
+}
+
+export function emitEvent(event, entity, action) {
+    const headerSchema = parseSchema("schema-header");
+    const schema = parseSchema(`${entity}/${entity}-${action}`);
+
+    const registry = {};
+    avsc.Type.forSchema(headerSchema, { registry });
+    const EventType = avsc.Type.forSchema(schema, { registry });
+
+    const buf = EventType.toBuffer(event);
+    process.stdout.write(JSON.stringify({
+        headerSchema: JSON.stringify(headerSchema),
+        schema: JSON.stringify(schema),
+        data: buf.toString("base64"),
+        key: event.common.entity_id
+    }) + "\n");
+}
