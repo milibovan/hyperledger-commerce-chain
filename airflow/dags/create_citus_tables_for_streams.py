@@ -45,5 +45,12 @@ with DAG(
                 user_email        TEXT,
                 user_balance      REAL
             );
+
+            CREATE TABLE IF NOT EXISTS congestion_coefficient (
+                events_number             BIGINT,
+                new_orders                BIGINT,
+                finished_orders           BIGINT,
+                congestion_coefficient    REAL
+            );
         """,
     )

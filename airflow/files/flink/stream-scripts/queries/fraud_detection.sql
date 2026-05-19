@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS orders_cancelled (
   event_ts          BIGINT,
   user_id           STRING,
   reason            STRING,
-  dt                STRING
+  dt                STRING,
+  row_time AS TO_TIMESTAMP_LTZ(event_ts, 3),
+  WATERMARK FOR row_time AS row_time - INTERVAL '10' SECOND
 ) WITH (
   'connector'                          = 'filesystem',
   'path'                               = 'hdfs://namenode:9000/datalake/transform/orders/cancelled',
@@ -70,27 +72,25 @@ EXECUTE STATEMENT SET
 BEGIN
   INSERT INTO fraud_detection
   SELECT
-    MAX(oc.event_ts)          AS event_ts,
+    CAST(UNIX_TIMESTAMP(CAST(window_end AS STRING)) * 1000 AS BIGINT) AS event_ts,
     oc.user_id,
-    uc.name,
+    uc.`name`,
     uc.surname,
     uc.email,
     uc.balance
-  FROM orders_cancelled oc
+  FROM TABLE(
+    TUMBLE(TABLE orders_cancelled, DESCRIPTOR(row_time), INTERVAL '5' MINUTE)
+  ) oc
   JOIN users_created uc
     ON oc.user_id = uc.entity_id
-  WHERE oc.dt IN (
-    DATE_FORMAT(NOW(), 'yyyy-MM-dd'),
-    DATE_FORMAT(NOW() - INTERVAL '1' DAY, 'yyyy-MM-dd')
-  )
-  AND oc.event_ts > UNIX_TIMESTAMP() * 1000 - 300000
   GROUP BY
+    window_start,
+    window_end,
     oc.user_id,
-    uc.name,
+    uc.`name`,
     uc.surname,
     uc.email,
     uc.balance
   HAVING
-    COUNT(oc.event_id) > 3
-    AND MAX(oc.event_ts) - MIN(oc.event_ts) < 300000;
+    COUNT(oc.event_id) > 3;
 END;
