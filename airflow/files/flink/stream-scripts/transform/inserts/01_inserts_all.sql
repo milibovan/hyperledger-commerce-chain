@@ -62,7 +62,7 @@ BEGIN
          event_ts, user_id, trader_id, total_cost, due_date,
          DATE_FORMAT(event_time, 'yyyy-MM-dd') AS dt
   FROM receipt_created_source
-  WHERE event_id IS NOT NULL AND entity_id IS NOT NULL AND event_ts IS NOT NULL;
+  WHERE event_id IS NOT NULL AND entity_id IS NOT NULL AND event_ts IS NOT NULL AND event_ts  > 0;
 
   INSERT INTO receipt_products_sink
   SELECT r.event_id, prod.product_id, prod.quantity, prod.price,

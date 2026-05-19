@@ -102,3 +102,27 @@ BEGIN
   AND oc.event_ts > UNIX_TIMESTAMP() * 1000 - 86400000
   AND rc.entity_id IS NOT NULL;
 END;
+
+-- EXECUTE STATEMENT SET
+-- BEGIN
+--   INSERT INTO completed_orders
+--   SELECT
+--     oc.event_ts,
+--     oc.user_id,
+--     rc.trader_id,
+--     rc.total_cost,
+--     rc.due_date,
+--     rp.product_id,
+--     rp.quantity,
+--     rp.price
+--   FROM orders_completed oc
+--   JOIN receipt_created rc
+--     ON ARRAY_CONTAINS(oc.receipt_ids, rc.entity_id)
+--     AND rc.row_time BETWEEN oc.row_time - INTERVAL '24' HOUR
+--                         AND oc.row_time + INTERVAL '24' HOUR
+--   JOIN receipt_products rp
+--     ON rc.event_id = rp.event_id
+--   WHERE rc.entity_id IS NOT NULL
+--     AND oc.event_ts IS NOT NULL AND oc.event_ts > 0
+--     AND rc.event_ts IS NOT NULL AND rc.event_ts > 0; 
+-- END;
