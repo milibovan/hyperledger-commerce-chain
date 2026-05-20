@@ -52,5 +52,18 @@ with DAG(
                 finished_orders           BIGINT,
                 congestion_coefficient    REAL
             );
+
+            CREATE TABLE IF NOT EXISTS whale_orders (
+                entity_id     TEXT PRIMARY KEY,
+                user_id       TEXT,
+                user_name     TEXT,
+                user_surname  TEXT,
+                user_email    TEXT,
+                user_balance  REAL,
+                total_cost    REAL,
+                product_id    TEXT,
+                quantity      BIGINT,
+                price         REAL
+            );
         """,
     )
