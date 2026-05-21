@@ -13,6 +13,8 @@ services:
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
         parallelism.default: 2
+        pekko.ask.timeout: 60s
+        pekko.framesize: 104857600b
         jobmanager.archive.expiration-time: 1 hour
         historyserver.archive.clean-up: false
         jobmanager.archive.fs.dir: file:///opt/flink/completed-jobs
@@ -38,7 +40,7 @@ services:
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 4
         parallelism.default: 2
-        taskmanager.memory.process.size: 2048m
+        taskmanager.memory.process.size: 4096m
         taskmanager.memory.network.fraction: 0.15
         taskmanager.memory.network.min: 128mb
         taskmanager.memory.network.max: 512mb

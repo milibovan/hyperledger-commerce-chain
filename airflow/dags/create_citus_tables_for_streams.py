@@ -65,5 +65,17 @@ with DAG(
                 quantity      BIGINT,
                 price         REAL
             );
+
+            CREATE TABLE IF NOT EXISTS wanted_products (
+                sales_product_id      TEXT PRIMARY KEY,
+                sales_growts_prc      DOUBLE PRECISION,
+                sales_coeff           DOUBLE PRECISION,
+                sales_users           BIGINT,
+                demand_product_id     TEXT,
+                demand_growts_prc     DOUBLE PRECISION,
+                demand_coeff          DOUBLE PRECISION,
+                demand_users          BIGINT,
+                total_coeff           DOUBLE PRECISION
+            );
         """,
     )
