@@ -66,6 +66,7 @@ BEGIN
 
   INSERT INTO receipt_products_sink
   SELECT r.event_id, prod.product_id, prod.quantity, prod.price,
+         r.event_ts,
          DATE_FORMAT(r.event_time, 'yyyy-MM-dd') AS dt
   FROM receipt_created_source r
   CROSS JOIN UNNEST(r.products) AS prod (product_id, quantity, price)
@@ -156,6 +157,7 @@ BEGIN
 
   INSERT INTO request_created_products_sink
   SELECT r.event_id, prod.product_id, prod.quantity, prod.price,
+         r.event_ts,
          DATE_FORMAT(r.event_time, 'yyyy-MM-dd') AS dt
   FROM request_created_source r
   CROSS JOIN UNNEST(r.products) AS prod (product_id, quantity, price)

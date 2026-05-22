@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS receipt_products_sink (
   product_id STRING,
   quantity   BIGINT,
   price      FLOAT,
+  event_ts   BIGINT,
   dt         STRING
 )  WITH (
   'connector'                             = 'filesystem',
