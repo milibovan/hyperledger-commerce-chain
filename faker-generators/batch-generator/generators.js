@@ -86,8 +86,8 @@ export const genProduct = () => {
     const isNearExpiry = Math.random() < 0.2;
     product["expiry-date"] = faker.date
         .between({
-            from: isNearExpiry ? "2026-03-15" : "2026-04-15",
-            to: isNearExpiry ? "2026-04-14" : "2027-12-31",
+            from: isNearExpiry ? "2024-01-01" : "2025-01-01",
+            to: isNearExpiry ? "2024-12-31" : "2025-12-31",
         })
         .toISOString();
 
@@ -102,7 +102,7 @@ export const genOrder = () => {
     pools.orderReceipts[id] = [];
     pools.orderUsers[id] = userId;
 
-    const orderDate = faker.date.between({ from: "2024-01-01", to: "2026-01-28" });
+    const orderDate = faker.date.between({ from: "2024-01-01", to: "2025-12-31" });
     pools.orderDates[id] = orderDate;
 
     const status = faker.helpers.weightedArrayElement([
@@ -175,7 +175,6 @@ export const genReceipt = () => {
     const receiptId = faker.string.uuid();
     let userId, traderId;
 
-    // Bias versatile users toward uncovered trader types so they reach >= 3 types.
     if (pools.versatileUserIds && Math.random() < VERSATILE_RECEIPT_RATIO) {
         userId = faker.helpers.arrayElement(versatileUserArray);
         pools.versatileUserCoverage[userId] ??= new Set();
@@ -193,7 +192,6 @@ export const genReceipt = () => {
         traderId = faker.helpers.arrayElement(pools.traderIds);
     }
 
-    // Align userId with the order's actual owner.
     const validOrderIds = getValidOrderIds();
 
     const userOrdersList = pools.userOrders[userId];
@@ -217,8 +215,6 @@ export const genReceipt = () => {
         { weight: 10, value: "IN_PROGRESS" },
         { weight: 5, value: "CANCELLED" },
     ]);
-
-    // addEntityPerStatus(receiptId, EntityTypes.Receipt.toLowerCase(), status);
 
     const numProducts = faker.helpers.weightedArrayElement([
         { weight: 15, value: 1 },
@@ -283,13 +279,11 @@ export const genReceipt = () => {
         receipt["cancelled-by"] = faker.helpers.arrayElement([userId, traderId]);
 
         pools.cancelledReceiptIds.push(receipt.id);
-        // await addEntityPerStatus(receipt.id, EntityTypes.Receipt, status);
     } else {
         receipt["cancelled-date"] = "";
         receipt["cancelled-by"] = "";
         
         pools.createdReceiptIds.push(receipt.id);
-        // await addEntityPerStatus(receipt.id, EntityTypes.Receipt, "CREATED");
     }
 
     return receipt;
@@ -313,7 +307,6 @@ export const genRequest = () => {
         { weight: 2, value: "CANCELLED" },
     ]);
 
-    // await addEntityPerStatus(requestId, EntityTypes.Request.toLowerCase(), status);
     if (status === "PENDING_FUNDS") {
         pools.pendingRequestIds.push(requestId);
     } else {
