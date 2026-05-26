@@ -4,7 +4,7 @@ def run_transformation():
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
-    t_env.get_config().set("rest.address", "flink-jobmanager-1")
+    t_env.get_config().set("rest.address", "jobmanager")
     t_env.get_config().set("rest.port", "8081")
 
     t_env.execute_sql("""

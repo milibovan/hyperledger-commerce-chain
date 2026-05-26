@@ -2,11 +2,9 @@ from pyflink.table import EnvironmentSettings, TableEnvironment
 import os
 
 def run_transformation():
-    # Use BATCH mode for aggregation if processing historical data
     settings = EnvironmentSettings.new_instance().in_batch_mode().build()
     t_env = TableEnvironment.create(settings)
 
-    # Connector & JAR Configuration
     lib_dir = "/opt/flink/lib/"
     if os.path.exists(lib_dir):
         jars = [f"file://{os.path.join(lib_dir, jar)}" for jar in os.listdir(lib_dir) if jar.endswith(".jar")]
@@ -14,7 +12,6 @@ def run_transformation():
         t_env.get_config().set("pipeline.jars", jar_string)
         t_env.get_config().set("pipeline.classpaths", jar_string)
 
-    # 1. UPDATED SCHEMA: Matches product_requests_transformed.parquet (19 columns)
     t_env.execute_sql("""
         CREATE TABLE transform_product_requests (
             `doc-type` STRING,
@@ -42,7 +39,6 @@ def run_transformation():
         )
     """)
 
-    # 2. UPDATED SCHEMA: Matches products_transformed.parquet (10 columns)
     t_env.execute_sql("""
         CREATE TABLE transform_products (
             `doc-type` STRING,
@@ -62,7 +58,6 @@ def run_transformation():
         )
     """)
 
-    # 3. Target: Citus (PostgreSQL)
     t_env.execute_sql("""
         CREATE TABLE avg_price_and_quantity (
             `month` STRING,

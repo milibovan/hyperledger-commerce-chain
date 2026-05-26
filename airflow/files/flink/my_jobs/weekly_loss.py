@@ -40,6 +40,18 @@ def run_transformation():
     """)
 
     t_env.execute_sql("""
+        CREATE TABLE transform_trader_products (
+            trader_id STRING,
+            product_id STRING,
+            quantity INT
+        ) WITH (
+            'connector' = 'filesystem',
+            'path' = 'hdfs://namenode:9000/datalake/transform/trader_products.parquet',
+            'format' = 'parquet'
+        )
+    """)
+
+    t_env.execute_sql("""
         CREATE TABLE weekly_loss (
             `week` INT,
             cumulative_loss DOUBLE,
@@ -67,11 +79,14 @@ def run_transformation():
                 CAST(DATE_FORMAT(tp.`expiry-date`, 'yyyy') AS INT) AS year_val,
                 SUM(tp.price * tp.quantity) AS weekly_sum
             FROM transform_traders tt
+            JOIN transform_trader_products ttp
+                ON tt.id = ttp.trader_id
             JOIN transform_products tp
-                ON tt.`trader-type` = tp.`trader-type`
+                ON tp.id = ttp.product_id
             WHERE tt.deleted = FALSE
               AND tp.deleted = FALSE
               AND tp.`expiry-date` IS NOT NULL
+              AND tp.`expiry-date` <= CURRENT_TIMESTAMP
             GROUP BY
                 tt.id,
                 CAST(EXTRACT(WEEK FROM tp.`expiry-date`) AS INT),

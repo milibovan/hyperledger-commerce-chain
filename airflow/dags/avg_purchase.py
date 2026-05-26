@@ -10,7 +10,7 @@ from airflow.providers.apache.hdfs.hooks.webhdfs import WebHDFSHook
 from airflow.exceptions import AirflowException
 
 SCRIPT_SOURCE_DIR = "/opt/airflow/files/flink/my_jobs"
-FLINK_JOBMANAGER_HOST = "flink-jobmanager-1"
+FLINK_JOBMANAGER_HOST = "jobmanager"
 FLINK_JOBMANAGER_PORT = "8081"
 HDFS_CONN_ID = "HDFS_CONNECTION"
 
