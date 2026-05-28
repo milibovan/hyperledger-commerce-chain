@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS users_created (
   'source.monitor-interval' = '1s'
 );
 
-select * from orders_created LIMIT 20;
+-- select * from orders_created LIMIT 20;
 
 CREATE TABLE IF NOT EXISTS whale_orders (
   entity_id     STRING,
@@ -112,7 +112,7 @@ BEGIN
         FROM orders_created oc
         JOIN order_created_products ocp ON ocp.event_id = oc.event_id
         JOIN users_created uc ON uc.entity_id = oc.user_id
-        WHERE oc.total_cost > 10000
+        WHERE oc.total_cost > 100000
     )
     WHERE row_num = 1;
 END;

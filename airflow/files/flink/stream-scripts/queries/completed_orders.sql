@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS orders_completed (
 ) WITH (
   'connector'                          = 'filesystem',
   'path'                               = 'hdfs://namenode:9000/datalake/transform/orders/completed',
-  'format'                             = 'parquet'
-  -- 'source.monitor-interval' = '1s'
+  'format'                             = 'parquet',
+  'source.monitor-interval' = '1s'
 );
 
 CREATE TABLE IF NOT EXISTS receipt_created (
@@ -31,8 +31,8 @@ CREATE TABLE IF NOT EXISTS receipt_created (
   'connector'                                = 'filesystem',
   'path'                                     = 'hdfs://namenode:9000/datalake/transform/receipts/created',
   'format'                                   = 'parquet',
-  'source.path.regex-pattern' = '^(?!_)(?!.*\\.inprogress).*$'
-  -- 'source.monitor-interval' = '1s'
+  'source.path.regex-pattern' = '^(?!_)(?!.*\\.inprogress).*$',
+  'source.monitor-interval' = '1s'
 );
 
 CREATE TABLE IF NOT EXISTS receipt_products (
@@ -44,8 +44,8 @@ CREATE TABLE IF NOT EXISTS receipt_products (
 ) WITH (
   'connector'                             = 'filesystem',
   'path'                                  = 'hdfs://namenode:9000/datalake/transform/receipts/created/products',
-  'format'                                = 'parquet'
-  -- 'source.monitor-interval' = '1s'
+  'format'                                = 'parquet',
+  'source.monitor-interval' = '1s'
 );
 
 CREATE TABLE IF NOT EXISTS completed_orders (
