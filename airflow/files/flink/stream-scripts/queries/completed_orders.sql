@@ -56,7 +56,8 @@ CREATE TABLE IF NOT EXISTS completed_orders (
   due_date          BIGINT,
   product_id        STRING,
   quantity          BIGINT,
-  price             FLOAT
+  price             FLOAT,
+  PRIMARY KEY (event_ts, user_id, trader_id, product_id) NOT ENFORCED 
 ) WITH (
     'connector' = 'jdbc',
     'url' = 'jdbc:postgresql://citus_coordinator:5432/curated_zone',
@@ -84,23 +85,37 @@ EXECUTE STATEMENT SET
 BEGIN
   INSERT INTO completed_orders
   SELECT
-    oc.event_ts,
-    oc.user_id,
-    rc.trader_id,
-    rc.total_cost,
-    rc.due_date,
-    rp.product_id,
-    rp.quantity,
-    rp.price
-  FROM orders_completed oc
-  JOIN receipt_created  rc ON ARRAY_CONTAINS(oc.receipt_ids, rc.entity_id)
-  JOIN receipt_products rp ON rc.event_id = rp.event_id
-  WHERE oc.dt IN (
-    DATE_FORMAT(NOW(), 'yyyy-MM-dd'),
-    DATE_FORMAT(NOW() - INTERVAL '1' DAY, 'yyyy-MM-dd')
+    event_ts, user_id, trader_id, total_cost, due_date, product_id, quantity, price
+  FROM (
+    SELECT
+      oc.event_ts,
+      oc.user_id,
+      rc.trader_id,
+      rc.total_cost,
+      rc.due_date,
+      rp.product_id,
+      rp.quantity,
+      rp.price,
+      ROW_NUMBER() OVER (
+        PARTITION BY oc.event_ts, oc.user_id, rc.total_cost, rc.trader_id
+        ORDER BY oc.event_ts ASC
+      ) AS rn
+    FROM orders_completed oc
+    JOIN receipt_created  rc ON ARRAY_CONTAINS(oc.receipt_ids, rc.entity_id)
+    JOIN receipt_products rp ON rc.event_id = rp.event_id
+    WHERE
+      oc.event_ts > UNIX_TIMESTAMP() * 1000 - 86400000
+      AND oc.dt IN (
+        DATE_FORMAT(NOW(), 'yyyy-MM-dd'),
+        DATE_FORMAT(NOW() - INTERVAL '1' DAY, 'yyyy-MM-dd')
+      )
+      AND rc.dt IN (
+        DATE_FORMAT(NOW(), 'yyyy-MM-dd'),
+        DATE_FORMAT(NOW() - INTERVAL '1' DAY, 'yyyy-MM-dd')
+      )
+      AND rc.entity_id IS NOT NULL
   )
-  AND oc.event_ts > UNIX_TIMESTAMP() * 1000 - 86400000
-  AND rc.entity_id IS NOT NULL;
+  WHERE rn = 1;
 END;
 
 -- EXECUTE STATEMENT SET
