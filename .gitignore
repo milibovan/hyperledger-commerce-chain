@@ -90,3 +90,5 @@ go/src/github.com/milibovan/install-fabric.sh
 .lh
 .env
 *.avro
+/vault-data/
+notes.txt

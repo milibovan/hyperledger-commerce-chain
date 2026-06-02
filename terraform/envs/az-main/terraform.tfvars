@@ -1,0 +1,2 @@
+location    = "germanywestcentral"
+environment = "dev"
