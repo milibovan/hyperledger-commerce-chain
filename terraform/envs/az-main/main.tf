@@ -76,11 +76,10 @@ resource "azurerm_subnet_network_security_group_association" "compute" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "acrCommerceChainDev"
+  name                = var.acr_name
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   sku                 = "Basic"
-  admin_enabled       = false
 
   tags = merge({
     Name = "acr-${local.project_name}${local.name_suffix}"
@@ -88,7 +87,7 @@ resource "azurerm_container_registry" "acr" {
 }
 
 resource "azurerm_storage_account" "storage_acc" {
-  name                     = "storageaccdev"
+  name                     = var.storage_acc_name
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
@@ -112,9 +111,10 @@ resource "azurerm_storage_container" "transform_zone" {
 }
 
 resource "azurerm_container_app_environment" "app_env" {
-  name                = "app-env-${local.project_name}${local.name_suffix}"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  name                     = "app-env-${local.project_name}${local.name_suffix}"
+  location                 = azurerm_resource_group.main.location
+  resource_group_name      = azurerm_resource_group.main.name
+  infrastructure_subnet_id = azurerm_subnet.compute.id
 }
 
 resource "azurerm_static_web_app" "commerce-chain-frontend" {
