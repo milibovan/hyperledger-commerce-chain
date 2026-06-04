@@ -1,5 +1,13 @@
 data "azurerm_subscription" "current" {}
 
+resource "random_string" "suffix" {
+  length  = 8
+  upper   = true
+  lower   = true
+  numeric = true
+  special = false
+}
+
 resource "azurerm_resource_group" "main" {
   name     = "rg-${local.project_name}${local.name_suffix}"
   location = var.location
@@ -76,7 +84,7 @@ resource "azurerm_subnet_network_security_group_association" "compute" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = var.acr_name
+  name                = "acrdev${random_string.suffix.result}"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   sku                 = "Basic"
@@ -87,7 +95,7 @@ resource "azurerm_container_registry" "acr" {
 }
 
 resource "azurerm_storage_account" "storage_acc" {
-  name                     = var.storage_acc_name
+  name                     = "stccdev${random_string.suffix.result}"
   resource_group_name      = azurerm_resource_group.main.name
   location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"

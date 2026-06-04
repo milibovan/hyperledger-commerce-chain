@@ -50,5 +50,5 @@ provider "azurerm" {
   features {
 
   }
-  subscription_id = data.vault_kv_secret_v2.azure_secrets.data["subscription_id_master"]
+  subscription_id = data.vault_kv_secret_v2.azure_secrets.data["subscription_id_free"]
 }
