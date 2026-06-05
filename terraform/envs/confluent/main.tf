@@ -11,3 +11,7 @@ resource "confluent_flink_compute_pool" "main" {
     id = confluent_environment.development.id
   }
 }
+
+module "base" {
+  source = "../../modules/confluent-base"
+}
