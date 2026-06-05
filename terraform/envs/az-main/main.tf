@@ -61,3 +61,10 @@ module "frontend" {
   project_name = local.project_name
   tags         = local.tags
 }
+
+module "budget_alert" {
+  source          = "../../modules/budget-alert"
+  email           = var.alert_email
+  subscription_id = data.azurerm_subscription.current.id
+  amount          = 100
+}
