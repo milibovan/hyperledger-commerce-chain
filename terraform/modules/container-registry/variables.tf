@@ -18,3 +18,13 @@ variable "suffix_result" {
   description = "Suffix for the resource group name"
   type        = string
 }
+
+variable "name" {
+  description = "Resource group name"
+  type        = string
+}
+
+variable "location" {
+  description = "Resource group location"
+  type        = string
+}

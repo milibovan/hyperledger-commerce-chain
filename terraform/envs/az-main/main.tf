@@ -24,6 +24,8 @@ module "networking" {
   name_suffix                   = local.name_suffix
   project_name                  = local.project_name
   tags                          = local.tags
+  name          = azurerm_resource_group.main.name
+  location      = azurerm_resource_group.main.location
 }
 
 module "container_registry" {
@@ -32,6 +34,8 @@ module "container_registry" {
   name_suffix   = local.name_suffix
   project_name  = local.project_name
   tags          = local.tags
+  name          = azurerm_resource_group.main.name
+  location      = azurerm_resource_group.main.location
 }
 
 module "storage" {
@@ -71,8 +75,14 @@ module "budget_alert" {
 
 module "citus_db" {
   source          = "../../modules/postgres-neon"
-  organization_id = data.vault_kv_secret_v2.neon_secrets.data["org_id"]
+  organization_id = data.vault_kv_secret_v2.neon_secrets.data["ORG_ID"]
   name_suffix     = local.name_suffix
   project_name    = local.project_name
   db_name         = var.citus_db_name
+}
+
+module "redis" {
+  source       = "../../modules/redis-upstash"
+  name_suffix  = local.name_suffix
+  project_name = local.project_name
 }

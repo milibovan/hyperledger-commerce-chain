@@ -1,7 +1,7 @@
 resource "azurerm_virtual_network" "main" {
   name                = "vnet${var.name_suffix}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
+  resource_group_name = var.name
+  location            = var.location
   address_space       = var.vnet_address_space
 
   tags = merge({
@@ -11,7 +11,7 @@ resource "azurerm_virtual_network" "main" {
 
 resource "azurerm_subnet" "compute" {
   name                 = "compute-subnet${var.name_suffix}"
-  resource_group_name  = azurerm_resource_group.main.name
+  resource_group_name  = var.name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = var.compute_subnet_address_prefix
 
@@ -27,8 +27,8 @@ resource "azurerm_subnet" "compute" {
 
 resource "azurerm_network_security_group" "app" {
   name                = "app-nsg${var.name_suffix}"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
+  location            = var.location
+  resource_group_name = var.name
 
   security_rule {
     name                       = "allow-http"
