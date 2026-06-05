@@ -17,70 +17,13 @@ resource "azurerm_resource_group" "main" {
   }, local.tags)
 }
 
-resource "azurerm_virtual_network" "main" {
-  name                = "vnet${local.name_suffix}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  address_space       = var.vnet_address_space
-
-  tags = merge({
-    Name = "vnet-${local.project_name}${local.name_suffix}"
-  }, local.tags)
-}
-
-resource "azurerm_subnet" "compute" {
-  name                 = "compute-subnet${local.name_suffix}"
-  resource_group_name  = azurerm_resource_group.main.name
-  virtual_network_name = azurerm_virtual_network.main.name
-  address_prefixes     = var.compute_subnet_address_prefix
-
-  delegation {
-    name = "aca-delegation"
-
-    service_delegation {
-      name    = "Microsoft.App/environments"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
-    }
-  }
-}
-
-resource "azurerm_network_security_group" "app" {
-  name                = "app-nsg${local.name_suffix}"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-
-  security_rule {
-    name                       = "allow-http"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "80"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  security_rule {
-    name                       = "allow-https"
-    priority                   = 110
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "443"
-    source_address_prefix      = "*"
-    destination_address_prefix = "*"
-  }
-
-  tags = merge({
-    Name = "app-nsg-${local.project_name}${local.name_suffix}"
-  }, local.tags)
-}
-
-resource "azurerm_subnet_network_security_group_association" "compute" {
-  subnet_id                 = azurerm_subnet.compute.id
-  network_security_group_id = azurerm_network_security_group.app.id
+module "networking" {
+  source                        = "../../modules/networking"
+  vnet_address_space            = var.vnet_address_space
+  compute_subnet_address_prefix = var.compute_subnet_address_prefix
+  name_suffix                   = local.name_suffix
+  project_name                  = local.project_name
+  tags                          = local.tags
 }
 
 resource "azurerm_container_registry" "acr" {
@@ -122,7 +65,7 @@ resource "azurerm_container_app_environment" "app_env" {
   name                     = "app-env-${local.project_name}${local.name_suffix}"
   location                 = azurerm_resource_group.main.location
   resource_group_name      = azurerm_resource_group.main.name
-  infrastructure_subnet_id = azurerm_subnet.compute.id
+  infrastructure_subnet_id = module.networking.azurerm_subnet_id
 }
 
 resource "azurerm_static_web_app" "commerce-chain-frontend" {
@@ -131,8 +74,6 @@ resource "azurerm_static_web_app" "commerce-chain-frontend" {
   resource_group_name = azurerm_resource_group.main.name
   sku_size            = "Free"
   sku_tier            = "Free"
-
-
 
   tags = merge({
     Name = "web-app-${local.project_name}${local.name_suffix}"
