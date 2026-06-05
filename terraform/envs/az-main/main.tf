@@ -26,15 +26,12 @@ module "networking" {
   tags                          = local.tags
 }
 
-resource "azurerm_container_registry" "acr" {
-  name                = "acrdev${random_string.suffix.result}"
-  resource_group_name = azurerm_resource_group.main.name
-  location            = azurerm_resource_group.main.location
-  sku                 = "Basic"
-
-  tags = merge({
-    Name = "acr-${local.project_name}${local.name_suffix}"
-  }, local.tags)
+module "container_registry" {
+  source        = "../../modules/container-registry"
+  suffix_result = random_string.suffix.result
+  name_suffix   = local.name_suffix
+  project_name  = local.project_name
+  tags          = local.tags
 }
 
 resource "azurerm_storage_account" "storage_acc" {
