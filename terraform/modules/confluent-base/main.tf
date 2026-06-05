@@ -1,14 +1,6 @@
-resource "confluent_environment" "dev" {
-  display_name = "dev"
-
-  stream_governance {
-    package = "ESSENTIALS" 
-  }
-}
-
 data "confluent_schema_registry_cluster" "schema_registry" {
   environment {
-    id = confluent_environment.dev.id
+    id = var.env_id
   }
 
   depends_on = [
@@ -23,7 +15,7 @@ resource "confluent_kafka_cluster" "kafka_cluster" {
   region       = var.region
   basic {}
   environment {
-    id = confluent_environment.dev.id
+    id = var.env_id
   }
 }
 
@@ -47,7 +39,7 @@ resource "confluent_api_key" "schema_registry_key" {
     kind        = data.confluent_schema_registry_cluster.essentials.kind
 
     environment {
-      id = confluent_environment.dev.id
+      id = var.env_id
     }
   }
 }

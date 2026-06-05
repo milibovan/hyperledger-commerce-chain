@@ -1,4 +1,4 @@
-resource "confluent_kafka_topic" "app_topics" {
+resource "confluent_kafka_topic" "orders" {
   kafka_cluster {
     id = confluent_kafka_cluster.kafka_cluster.id
   }

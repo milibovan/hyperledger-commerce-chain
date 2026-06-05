@@ -1,5 +1,9 @@
-resource "confluent_environment" "development" {
-  display_name = "development"
+resource "confluent_environment" "dev" {
+  display_name = "dev"
+
+  stream_governance {
+    package = "ESSENTIALS"
+  }
 }
 
 resource "confluent_flink_compute_pool" "main" {
@@ -14,4 +18,15 @@ resource "confluent_flink_compute_pool" "main" {
 
 module "base" {
   source = "../../modules/confluent-base"
+  env_id = confluent_environment.dev.id
+}
+
+module "topics" {
+  source = "../../modules/confluent-topics"
+}
+
+module "schemas" {
+  source = "../../modules/confluent-schemas"
+  sr_endpoint = module.base.sr_endpoint
+  sr_id = module.base.sr_id
 }
