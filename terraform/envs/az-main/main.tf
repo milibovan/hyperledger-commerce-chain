@@ -68,3 +68,11 @@ module "budget_alert" {
   subscription_id = data.azurerm_subscription.current.id
   amount          = 100
 }
+
+module "citus_db" {
+  source          = "../../modules/postgres-neon"
+  organization_id = data.vault_kv_secret_v2.neon_secrets.data["org_id"]
+  name_suffix     = local.name_suffix
+  project_name    = local.project_name
+  db_name         = var.citus_db_name
+}

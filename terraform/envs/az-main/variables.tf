@@ -27,3 +27,9 @@ variable "alert_email" {
   type = string
   default = "josejosemou8@gmail.com"
 }
+
+variable "citus_db_name" {
+  description = "Db name for Citus (Neon)"
+  type = string
+  default = "josejosemou8@gmail.com"
+}
