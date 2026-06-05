@@ -44,18 +44,20 @@ module "storage" {
   tags          = local.tags
 }
 
-resource "azurerm_container_app_environment" "app_env" {
-  name                     = "app-env-${local.project_name}${local.name_suffix}"
-  location                 = azurerm_resource_group.main.location
-  resource_group_name      = azurerm_resource_group.main.name
-  infrastructure_subnet_id = module.networking.azurerm_subnet_id
+module "container_app_environment" {
+  source       = "../../modules/container-app-environment"
+  name         = azurerm_resource_group.main.name
+  location     = azurerm_resource_group.main.location
+  name_suffix  = local.name_suffix
+  project_name = local.project_name
+  subnet_id    = module.networking.azurerm_subnet_id
 }
 
 module "frontend" {
-  source        = "../../modules/static-web-app"
-  name          = azurerm_resource_group.main.name
-  location      = azurerm_resource_group.main.location
-  name_suffix   = local.name_suffix
-  project_name  = local.project_name
-  tags          = local.tags
+  source       = "../../modules/static-web-app"
+  name         = azurerm_resource_group.main.name
+  location     = azurerm_resource_group.main.location
+  name_suffix  = local.name_suffix
+  project_name = local.project_name
+  tags         = local.tags
 }
