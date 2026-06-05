@@ -34,28 +34,14 @@ module "container_registry" {
   tags          = local.tags
 }
 
-resource "azurerm_storage_account" "storage_acc" {
-  name                     = "stccdev${random_string.suffix.result}"
-  resource_group_name      = azurerm_resource_group.main.name
-  location                 = azurerm_resource_group.main.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-
-  tags = merge({
-    Name = "storage-acc-${local.project_name}${local.name_suffix}"
-  }, local.tags)
-}
-
-resource "azurerm_storage_container" "raw_zone" {
-  name                  = "raw-zone-sc-${local.project_name}${local.name_suffix}"
-  storage_account_name  = azurerm_storage_account.storage_acc.name
-  container_access_type = "private"
-}
-
-resource "azurerm_storage_container" "transform_zone" {
-  name                  = "transform-zone-sc-${local.project_name}${local.name_suffix}"
-  storage_account_name  = azurerm_storage_account.storage_acc.name
-  container_access_type = "private"
+module "storage" {
+  source        = "../../modules/storage"
+  name          = azurerm_resource_group.main.name
+  location      = azurerm_resource_group.main.location
+  suffix_result = random_string.suffix.result
+  name_suffix   = local.name_suffix
+  project_name  = local.project_name
+  tags          = local.tags
 }
 
 resource "azurerm_container_app_environment" "app_env" {
