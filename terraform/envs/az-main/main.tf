@@ -24,8 +24,8 @@ module "networking" {
   name_suffix                   = local.name_suffix
   project_name                  = local.project_name
   tags                          = local.tags
-  name          = azurerm_resource_group.main.name
-  location      = azurerm_resource_group.main.location
+  name                          = azurerm_resource_group.main.name
+  location                      = azurerm_resource_group.main.location
 }
 
 module "container_registry" {
@@ -85,4 +85,16 @@ module "redis" {
   source       = "../../modules/redis-upstash"
   name_suffix  = local.name_suffix
   project_name = local.project_name
+}
+
+module "container_apps" {
+  source              = "../../modules/container-app"
+  name_suffix         = local.name_suffix
+  project_name        = local.project_name
+  name                = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  resource_group_name = "rg-commerce-student"
+  cpu_allocation      = 0.5
+  memory_allocation   = "1.0Gi"
+  apps                = ["airflow", "superset"]
 }
