@@ -8,6 +8,15 @@ resource "random_string" "suffix" {
   special = false
 }
 
+resource "azurerm_resource_group" "main" {
+  name     = "rg-free-${local.project_name}${local.name_suffix}"
+  location = var.location
+
+  tags = merge({
+    Name = "rg-free-${local.project_name}${local.name_suffix}"
+  }, local.tags)
+}
+
 module "container_apps" {
   source              = "../../modules/container-app"
   name_suffix         = local.name_suffix

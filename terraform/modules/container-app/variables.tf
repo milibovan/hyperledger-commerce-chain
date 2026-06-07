@@ -37,6 +37,6 @@ variable "cpu_allocation" {
 
 variable "memory_allocation" {
   description = "Memory allocation for container"
-  type = number
-  default = 0.5
+  type = string
+  default = "0.5"
 }
