@@ -10,12 +10,26 @@ resource "azurerm_storage_account" "storage_acc" {
   }, var.tags)
 }
 
-resource "azurerm_storage_container" "raw_zone" {
-  name                  = "raw-zone-sc-${var.project_name}${var.name_suffix}"
-  container_access_type = "private"
+resource "azurerm_service_plan" "consumption" {
+  name                = "plan-consumption-${var.name_suffix}"
+  os_type             = "Linux"
+  sku_name            = "Y1"
+  resource_group_name = var.name
+  location            = var.location
 }
 
-resource "azurerm_storage_container" "transform_zone" {
-  name                  = "transform-zone-sc-${var.project_name}${var.name_suffix}"
-  container_access_type = "private"
+resource "azurerm_linux_function_app" "batch-generator" {
+  name                = "fn-faker-batch-generator-${var.project_name}${var.name_suffix}"
+  resource_group_name = var.name
+  location            = var.location
+
+  storage_account_name = azurerm_storage_account.storage_acc.name
+  storage_account_access_key = azurerm_storage_account.storage_acc.primary_access_key
+  service_plan_id = azurerm_service_plan.consumption.id
+
+  site_config {
+    application_stack {
+      node_version = "18"
+    }
+  }
 }

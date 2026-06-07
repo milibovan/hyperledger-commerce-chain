@@ -98,3 +98,13 @@ module "container_apps" {
   memory_allocation   = "1.0Gi"
   apps                = ["airflow", "superset"]
 }
+
+module "batch-generator" {
+  source        = "../../modules/batch-gen-functions"
+  name_suffix   = local.name_suffix
+  suffix_result = random_string.suffix.result
+  project_name  = local.project_name
+  name          = azurerm_resource_group.main.name
+  location      = azurerm_resource_group.main.location
+  tags          = local.tags
+}
