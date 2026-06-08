@@ -1,6 +1,6 @@
 import fs from "fs";
 import { fakerSR_RS_latin as faker } from "@faker-js/faker";
-import { VERSATILE_USER_COUNT, VALID_TRANSITIONS, EVENT_GENERATORS } from "./constants.js";
+import { VERSATILE_USER_COUNT, VALID_TRANSITIONS, EVENT_GENERATORS, quantity } from "./constants.js";
 import { pools, redis } from "./pools.js";
 
 /**
@@ -126,11 +126,15 @@ export async function handleEvent(entity, action, orchestrated = false) {
         emitEvent(fulfilledOrder, 'order', 'fulfilled');
 
         const orderId = fulfilledOrder.common.entity_id;
-        const receiptIds = await redis.smembers(`pool:orderReceiptIds:${orderId}`);
-        for (const receiptId of receiptIds) {
-            const receipt = await createReceipt(receiptId);
+        const receiptIds = [];
+        const receiptCount = 2;
+        for (let i = 0; i < receiptCount; i++) {
+            const receipt = await EVENT_GENERATORS.receipt.created(orderId); // ← create AND register ID in Redis
+            if (!receipt) continue;
             emitEvent(receipt, 'receipt', 'created');
+            receiptIds.push(receipt.common.entity_id);
         }
+        await redis.sadd(`pool:orderReceiptIds:${orderId}`, ...receiptIds);
 
         const completedOrder = await completeOrder();
         if (!completedOrder) return;

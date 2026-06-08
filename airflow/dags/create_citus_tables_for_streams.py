@@ -27,7 +27,7 @@ with DAG(
             );
 
             CREATE TABLE IF NOT EXISTS completed_orders (
-                event_ts          BIGINT,
+                event_ts          TIMESTAMP,
                 user_id           TEXT,
                 trader_id         TEXT,
                 total_cost        REAL,
