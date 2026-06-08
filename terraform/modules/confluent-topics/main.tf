@@ -1,6 +1,6 @@
 resource "confluent_kafka_topic" "orders" {
   kafka_cluster {
-    id = confluent_kafka_cluster.kafka_cluster.id
+    id = var.kafka_cluster_id
   }
 
   for_each         = var.topics

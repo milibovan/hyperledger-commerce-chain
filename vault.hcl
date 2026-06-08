@@ -1,9 +1,9 @@
 storage "file" {
-  path = "./vault-data"
+  path = "./vault-data-local"
 }
 
 listener "tcp" {
-  address     = "0.0.0.0:8200"
+  address     = "0.0.0.0:8202"
   tls_disable = true
 }
 

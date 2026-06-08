@@ -12,7 +12,7 @@ resource "confluent_flink_compute_pool" "main" {
   region       = "eastus"
   max_cfu      = 5
   environment {
-    id = confluent_environment.development.id
+    id = confluent_environment.dev.id
   }
 }
 
@@ -23,6 +23,7 @@ module "base" {
 
 module "topics" {
   source = "../../modules/confluent-topics"
+  kafka_cluster_id = module.base.kafka_cluster_id
 }
 
 module "schemas" {

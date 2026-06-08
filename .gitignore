@@ -92,3 +92,4 @@ go/src/github.com/milibovan/install-fabric.sh
 *.avro
 /vault-data/
 notes.txt
+/vault-data-local/

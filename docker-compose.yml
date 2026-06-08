@@ -215,6 +215,21 @@ services:
     depends_on:
       - postgres
 
+  vault-server:
+    image: vault:1.13.3
+    container_name: vault
+    user: "root"
+    ports:
+      - "8200:8200"
+    volumes:
+      - ./vault-docker.hcl:/vault/config/config.hcl
+      - ./vault-data:/vault/file
+    command: vault server -config=/vault/config/config.hcl
+    environment:
+      VAULT_ADDR: "http://127.0.0.1:8200"
+    cap_add:
+      - IPC_LOCK
+
   redis:
     container_name: redis
     image: redis:7.4-alpine
