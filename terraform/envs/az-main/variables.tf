@@ -19,7 +19,7 @@ variable "vnet_address_space" {
 variable "compute_subnet_address_prefix" {
   description = "Address prefix for compute subnet"
   type        = list(string)
-  default     = ["10.0.1.0/23"]
+  default     = ["10.0.0.0/23"]
 }
 
 variable "alert_email" {

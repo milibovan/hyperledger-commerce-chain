@@ -11,6 +11,7 @@ variable "project_name" {
 variable "subnet_id" {
   description = "Subnet id"
   type        = string
+  default     = null
 }
 
 variable "name" {

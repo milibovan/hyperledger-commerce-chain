@@ -93,3 +93,7 @@ go/src/github.com/milibovan/install-fabric.sh
 /vault-data/
 notes.txt
 /vault-data-local/
+tfplan
+plan
+*.tfgraph
+*_plan.json

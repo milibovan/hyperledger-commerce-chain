@@ -1,6 +1,6 @@
 resource "azurerm_static_web_app" "commerce-chain-frontend" {
   name                = "web-app-${var.project_name}${var.name_suffix}"
-  location            = var.location
+  location            = "westeurope"
   resource_group_name = var.name
   sku_size            = "Free"
   sku_tier            = "Free"

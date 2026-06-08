@@ -1,14 +1,14 @@
 resource "azurerm_container_app_environment" "apps_env" {
-  name                = "${var.project_name}-${var.name_suffix}-env"
+  name                = "${var.project_name}${var.name_suffix}-env"
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = var.name
 }
 
 resource "azurerm_container_app" "apps" {
   for_each                     = var.apps
   name                         = each.key
-  container_app_environment_id = azurerm_container_app_environment.apps_env.id
-  resource_group_name          = var.resource_group_name
+  container_app_environment_id = var.container_app_environment_id
+  resource_group_name          = var.name
   revision_mode                = "Single"
 
   template {
