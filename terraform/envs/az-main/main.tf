@@ -8,6 +8,14 @@ resource "random_string" "suffix" {
   special = false
 }
 
+resource "random_string" "suffix2" {
+  length  = 8
+  upper   = false
+  lower   = true
+  numeric = false
+  special = false
+}
+
 resource "azurerm_resource_group" "main" {
   name     = "rg-${local.project_name}${local.name_suffix}"
   location = var.location
@@ -57,16 +65,6 @@ module "container_app_env_main" {
   subnet_id    = module.networking.azurerm_subnet_id
 }
 
-module "container_app_env_poland" {
-  source       = "../../modules/container-app-environment"
-  name         = "${local.project_name}${local.name_suffix}-pl-env"
-  location     = "polandcentral"
-  name_suffix  = local.name_suffix
-  project_name = local.project_name
-  
-  subnet_id    = null 
-}
-
 module "budget_alert" {
   source          = "../../modules/budget-alert"
   email           = var.alert_email
@@ -89,37 +87,23 @@ module "redis" {
 }
 
 module "airflow" {
-  source               = "../../modules/container-app"
-  name_suffix          = local.name_suffix
-  project_name         = local.project_name
-  name                 = azurerm_resource_group.main.name
-  location             = azurerm_resource_group.main.location
-  
-  container_app_environment_id = module.container_app_env_main.env_id
-  
-  cpu_allocation       = 0.5
-  memory_allocation    = "1.0Gi"
-  apps                 = ["airflow"]
-}
+  source       = "../../modules/container-app"
+  name_suffix  = local.name_suffix
+  project_name = local.project_name
+  name         = azurerm_resource_group.main.name
+  location     = azurerm_resource_group.main.location
 
-module "superset" {
-  source               = "../../modules/container-app"
-  name_suffix          = local.name_suffix
-  project_name         = local.project_name
-  name                 = azurerm_resource_group.main.name
-  location             = "polandcentral"
-  
-  container_app_environment_id = module.container_app_env_poland.env_id
-  
-  cpu_allocation       = 0.5
-  memory_allocation    = "1.0Gi"
-  apps                 = ["superset"]
+  container_app_environment_id = module.container_app_env_main.env_id
+
+  cpu_allocation    = 0.5
+  memory_allocation = "1.0Gi"
+  apps              = ["airflow"]
 }
 
 module "batch-generator" {
   source        = "../../modules/batch-gen-functions"
   name_suffix   = local.name_suffix
-  suffix_result = random_string.suffix.result
+  suffix_result = random_string.suffix2.result
   project_name  = local.project_name
   name          = azurerm_resource_group.main.name
   location      = azurerm_resource_group.main.location

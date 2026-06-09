@@ -16,8 +16,6 @@ subscription_free=$(vault kv get -mount="kv" -field="subscription_id_free" "secr
 
 az account set --subscription "$subscription_master"
 
-echo -e "\n************** INIT **********************\n"
-terraform init
 echo -e "\n************** PLAN **********************\n"
 terraform plan -out=tfplan
 
@@ -28,8 +26,6 @@ cd ../az-free/
 
 az account set --subscription "$subscription_free"
 
-echo -e "\n************** INIT **********************\n"
-terraform init
 echo -e "\n************** PLAN **********************\n"
 terraform plan -out=tfplan
 
@@ -38,8 +34,6 @@ terraform show -json tfplan > free_plan.tfgraph
 
 cd ../confluent/
 
-echo -e "\n************** INIT **********************\n"
-terraform init
 echo -e "\n************** PLAN **********************\n"
 terraform plan -out=tfplan
 

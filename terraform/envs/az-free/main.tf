@@ -57,3 +57,17 @@ module "container_apps" {
   memory_allocation            = "0.5Gi"
   apps                         = ["go-backend", "email-service", "stream-generator"]
 }
+
+module "airflow" {
+  source       = "../../modules/container-app"
+  name_suffix  = local.name_suffix
+  project_name = local.project_name
+  name         = azurerm_resource_group.main.name
+  location     = azurerm_resource_group.main.location
+
+  container_app_environment_id = module.container_app_env_main.env_id
+
+  cpu_allocation    = 0.5
+  memory_allocation = "1.0Gi"
+  apps              = ["airflow"]
+}

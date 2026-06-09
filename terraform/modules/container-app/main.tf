@@ -1,9 +1,3 @@
-resource "azurerm_container_app_environment" "apps_env" {
-  name                = "${var.project_name}${var.name_suffix}-env"
-  location            = var.location
-  resource_group_name = var.name
-}
-
 resource "azurerm_container_app" "apps" {
   for_each                     = var.apps
   name                         = each.key

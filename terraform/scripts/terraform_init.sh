@@ -15,20 +15,18 @@ subscription_master=$(vault kv get -mount="kv" -field="subscription_id_master" "
 subscription_free=$(vault kv get -mount="kv" -field="subscription_id_free" "secrets/azure")
 
 az account set --subscription "$subscription_master"
-az provider register --namespace Microsoft.App
 
-echo -e "\n************** APPLY **********************\n"
-terraform apply -auto-approve tfplan
+echo -e "\n************** INIT **********************\n"
+terraform init
 
 cd ../az-free/
 
 az account set --subscription "$subscription_free"
-az provider register --namespace Microsoft.App
 
-echo -e "\n************** APPLY **********************\n"
-terraform apply -auto-approve tfplan
+echo -e "\n************** INIT **********************\n"
+terraform init
 
 cd ../confluent/
 
-echo -e "\n************** APPLY **********************\n"
-terraform apply -auto-approve tfplan
+echo -e "\n************** INIT **********************\n"
+terraform init
