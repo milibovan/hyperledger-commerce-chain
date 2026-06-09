@@ -67,6 +67,11 @@ resource "confluent_api_key" "kafka_cluster_key" {
       id = var.env_id
     }
   }
+
+  depends_on = [
+    confluent_role_binding.app_sa_kafka_admin,
+    confluent_role_binding.app_sa_kafka_developer_manage
+  ]
 }
 
 resource "confluent_role_binding" "app_sa_kafka_admin" {
@@ -85,4 +90,16 @@ resource "confluent_role_binding" "app_sa_sr_developer_write" {
   principal   = "User:${confluent_service_account.app_sa.id}"
   role_name   = "DeveloperWrite"
   crn_pattern = "${data.confluent_schema_registry_cluster.schema_registry.resource_name}/subject=*"
+}
+
+resource "confluent_role_binding" "app_sa_sr_developer_manage" {
+  principal   = "User:${confluent_service_account.app_sa.id}"
+  role_name   = "DeveloperManage"
+  crn_pattern = "${data.confluent_schema_registry_cluster.schema_registry.resource_name}/subject=*"
+}
+
+resource "confluent_role_binding" "app_sa_kafka_developer_manage" {
+  principal   = "User:${confluent_service_account.app_sa.id}"
+  role_name   = "DeveloperManage"
+  crn_pattern = "${confluent_kafka_cluster.kafka_cluster.rbac_crn}/kafka=*/topic=*"
 }
