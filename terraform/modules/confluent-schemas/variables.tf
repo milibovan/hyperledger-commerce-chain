@@ -13,3 +13,12 @@ variable "sr_id" {
   description = "Schema registry id"
   type        = string
 }
+
+variable "sr_api_key" {
+  description = "Api key"
+  type        = string
+}
+variable "sr_api_secret" {
+  description = "Api secret"
+  type        = string
+}
