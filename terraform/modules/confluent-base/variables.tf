@@ -26,3 +26,8 @@ variable "env_id" {
   description = "Confluent env id"
   type        = string
 }
+
+variable "resource_name" {
+  description = "Resource name"
+  type        = string
+}
