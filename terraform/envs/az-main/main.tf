@@ -86,7 +86,7 @@ module "redis" {
   project_name = local.project_name
 }
 
-module "airflow" {
+module "superset" {
   source       = "../../modules/container-app"
   name_suffix  = local.name_suffix
   project_name = local.project_name
@@ -97,7 +97,7 @@ module "airflow" {
 
   cpu_allocation    = 0.5
   memory_allocation = "1.0Gi"
-  apps              = ["airflow"]
+  apps              = ["superset"]
 }
 
 module "batch-generator" {

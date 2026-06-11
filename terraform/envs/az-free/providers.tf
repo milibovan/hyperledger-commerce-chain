@@ -18,9 +18,7 @@ terraform {
   }
 }
 
-provider "vault" {
-
-}
+provider "vault" {}
 
 data "vault_kv_secret_v2" "neon_secrets" {
   mount = "kv"
@@ -47,8 +45,6 @@ data "vault_kv_secret_v2" "azure_secrets" {
 }
 
 provider "azurerm" {
-  features {
-
-  }
+  features {  }
   subscription_id = data.vault_kv_secret_v2.azure_secrets.data["subscription_id_free"]
 }
