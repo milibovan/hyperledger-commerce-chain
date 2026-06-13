@@ -99,7 +99,7 @@ with DAG(
     avg_calc = PythonOperator(
         task_id='flink_avg_calc',
         python_callable=submit_pyflink_job,
-        op_kwargs={'script_name': 'avg_price_&_quantity.py'}
+        op_kwargs={'script_name': 'avg_price_and_quantity.py'}
     )
     
     verify_citus_data = SQLExecuteQueryOperator(
