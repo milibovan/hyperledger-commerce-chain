@@ -19,11 +19,11 @@ import {
 const runAll = async () => {
     console.log("Starting generation...");
 
-    await writeJSONL("users.jsonl",          COUNTS.users,     genUser);
-    await writeJSONL("traders.jsonl",        COUNTS.traders,   genTrader);
-    await writeJSONL("products.jsonl",       COUNTS.products,  genProduct);
-    await writeJSONL("orders.jsonl",         COUNTS.orders,    genOrder);
-    await writeJSONL("order_requests.jsonl", COUNTS.requests,  genRequest);
+    await writeJSONL("../../airflow/files/users.jsonl",          COUNTS.users,     genUser);
+    await writeJSONL("../../airflow/files/traders.jsonl",        COUNTS.traders,   genTrader);
+    await writeJSONL("../../airflow/files/products.jsonl",       COUNTS.products,  genProduct);
+    await writeJSONL("../../airflow/files/orders.jsonl",         COUNTS.orders,    genOrder);
+    await writeJSONL("../../airflow/files/order_requests.jsonl", COUNTS.requests,  genRequest);
 
     initVersatileUsers();
     initVersatileUsersArray();
