@@ -36,7 +36,7 @@ const rewriteJSONL = (filename, transform) =>
 
 export const updateUsersWithRelationships = () => {
     console.log("Updating users with order and request IDs...");
-    return rewriteJSONL("users.jsonl", (user) => ({
+    return rewriteJSONL("airflow/files/users.jsonl", (user) => ({
         ...user,
         "orders-ids":   pools.userOrders[user.id]   ?? [],
         "requests-ids": pools.userRequests[user.id]  ?? [],
@@ -45,7 +45,7 @@ export const updateUsersWithRelationships = () => {
 
 export const updateTradersWithRelationships = () => {
     console.log("Updating traders with product, receipt, and request IDs...");
-    return rewriteJSONL("traders.jsonl", (trader) => {
+    return rewriteJSONL("airflow/files/traders.jsonl", (trader) => {
         const productMap = new Map();
         for (const p of pools.traderProducts[trader.id] ?? []) {
             if (productMap.has(p.product_id)) {
@@ -65,7 +65,7 @@ export const updateTradersWithRelationships = () => {
 
 export const updateOrdersWithReceipts = () => {
     console.log("Updating orders with receipt IDs...");
-    return rewriteJSONL("orders.jsonl", (order) => ({
+    return rewriteJSONL("airflow/files/orders.jsonl", (order) => ({
         ...order,
         "receipts-ids": pools.orderReceipts[order.id] ?? [],
     }));

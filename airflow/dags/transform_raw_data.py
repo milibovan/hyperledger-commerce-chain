@@ -75,7 +75,7 @@ def submit_pyflink_job(script_name, parallelism=1, **context):
     return job_id
 
 with DAG(
-    'flink_hdfs_transformation_pipeline',
+    'transform_raw_data',
     default_args=default_args,
     description='Transform raw JSONL to Parquet using PyFlink via CLI',
     start_date=datetime(2026, 1, 1),

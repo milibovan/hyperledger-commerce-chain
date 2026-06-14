@@ -19,16 +19,16 @@ import {
 const runAll = async () => {
     console.log("Starting generation...");
 
-    await writeJSONL("../../airflow/files/users.jsonl",          COUNTS.users,     genUser);
-    await writeJSONL("../../airflow/files/traders.jsonl",        COUNTS.traders,   genTrader);
-    await writeJSONL("../../airflow/files/products.jsonl",       COUNTS.products,  genProduct);
-    await writeJSONL("../../airflow/files/orders.jsonl",         COUNTS.orders,    genOrder);
-    await writeJSONL("../../airflow/files/order_requests.jsonl", COUNTS.requests,  genRequest);
+    await writeJSONL("airflow/files/users.jsonl",          COUNTS.users,     genUser);
+    await writeJSONL("airflow/files/traders.jsonl",        COUNTS.traders,   genTrader);
+    await writeJSONL("airflow/files/products.jsonl",       COUNTS.products,  genProduct);
+    await writeJSONL("airflow/files/orders.jsonl",         COUNTS.orders,    genOrder);
+    await writeJSONL("airflow/files/order_requests.jsonl", COUNTS.requests,  genRequest);
 
     initVersatileUsers();
     initVersatileUsersArray();
 
-    await writeJSONL("receipts.jsonl", COUNTS.receipts, genReceipt);
+    await writeJSONL("airflow/files/receipts.jsonl", COUNTS.receipts, genReceipt);
 
     const coverage        = Object.values(pools.versatileUserCoverage);
     const fullyVersatile  = coverage.filter((s) => s.size >= 3).length;
