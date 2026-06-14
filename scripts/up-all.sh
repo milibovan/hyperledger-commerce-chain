@@ -5,6 +5,28 @@ echo "========================================"
 echo "  Bringing UP all services"
 echo "========================================"
 
+ 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="$SCRIPT_DIR/.env"
+ 
+if [ ! -f "$ENV_FILE" ]; then
+    echo "ERROR: .env file not found at $ENV_FILE"
+    exit 1
+fi
+ 
+REDIS_HOST=$(grep -E '^REDIS_HOST=' "$ENV_FILE" | cut -d '=' -f2-)
+REDIS_PORT=$(grep -E '^REDIS_PORT=' "$ENV_FILE" | cut -d '=' -f2-)
+REDIS_PASSWORD=$(grep -E '^REDIS_PASSWORD=' "$ENV_FILE" | cut -d '=' -f2-)
+ 
+if [ -z "$REDIS_HOST" ] || [ -z "$REDIS_PORT" ] || [ -z "$REDIS_PASSWORD" ]; then
+    echo "ERROR: One or more Redis variables (REDIS_HOST, REDIS_PORT, REDIS_PASSWORD) are missing from .env"
+    exit 1
+fi
+ 
+export REDIS_HOST REDIS_PORT REDIS_PASSWORD
+echo ">> Redis config loaded: host=$REDIS_HOST port=$REDIS_PORT"
+
+cd ..
 # ── Shared infrastructure ─────────────────────────────────────────────────────
 
 echo ""

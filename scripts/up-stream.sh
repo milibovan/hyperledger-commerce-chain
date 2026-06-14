@@ -5,6 +5,7 @@ echo "========================================"
 echo "  Bringing UP stream services"
 echo "========================================"
 
+cd ..
 # ── Shared infrastructure (stream slice) ──────────────────────────────────────
 
 echo ""

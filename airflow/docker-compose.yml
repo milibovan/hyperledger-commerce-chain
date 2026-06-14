@@ -184,8 +184,6 @@ services:
 
   airflow-worker:
     <<: *airflow-common
-    deploy:
-      replicas: 2
     command: celery worker
     healthcheck:
       # yamllint disable rule:line-length
@@ -204,8 +202,8 @@ services:
     restart: always
     depends_on:
       <<: *airflow-common-depends-on
-      airflow-apiserver:
-        condition: service_healthy
+      # airflow-apiserver:
+      #   condition: service_healthy
       airflow-init:
         condition: service_completed_successfully
 
