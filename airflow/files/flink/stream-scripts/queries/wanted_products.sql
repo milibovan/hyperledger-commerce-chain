@@ -85,7 +85,7 @@ CREATE TABLE IF NOT EXISTS request_created_products (
   'source.monitor-interval' = '1s'
 );
 
-CREATE TABLE IF NOT EXISTS sales_hop_materialized_sink (
+CREATE TABLE IF NOT EXISTS sales_hop_materialized (
   product_id    STRING,
   total_sales   BIGINT,
   total_revenue FLOAT,
@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS demand_hop_materialized (
 
 EXECUTE STATEMENT SET
 BEGIN
-  INSERT INTO sales_hop_materialized
+  INSERT INTO sales_hop_materialized 
   SELECT
     rcp.product_id,
     COUNT(*)                      AS total_sales,

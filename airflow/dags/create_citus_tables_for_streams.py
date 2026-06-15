@@ -47,10 +47,13 @@ with DAG(
             );
 
             CREATE TABLE IF NOT EXISTS congestion_coefficient (
-                events_number             BIGINT,
-                new_orders                BIGINT,
-                finished_orders           BIGINT,
-                congestion_coefficient    REAL
+                window_start           TIMESTAMPTZ NOT NULL,
+                window_end             TIMESTAMPTZ NOT NULL,
+                events_number          BIGINT      NOT NULL,
+                new_orders             BIGINT      NOT NULL,
+                finished_orders        BIGINT      NOT NULL,
+                congestion_coefficient FLOAT,
+                PRIMARY KEY (window_start, window_end)
             );
 
             CREATE TABLE IF NOT EXISTS whale_orders (
@@ -76,6 +79,23 @@ with DAG(
                 demand_coeff          DOUBLE PRECISION,
                 demand_users          BIGINT,
                 total_coeff           DOUBLE PRECISION
+            );
+
+            CREATE TABLE IF NOT EXISTS sales_hop_materialized (
+                product_id    TEXT        NOT NULL,
+                total_sales   BIGINT      NOT NULL,
+                total_revenue FLOAT       NOT NULL,
+                w_start       TIMESTAMP   NOT NULL,
+                w_end         TIMESTAMP   NOT NULL,
+                PRIMARY KEY (product_id, w_start)
+            );
+
+            CREATE TABLE IF NOT EXISTS demand_hop_materialized (
+                product_id     TEXT        NOT NULL,
+                total_requests BIGINT      NOT NULL,
+                w_start        TIMESTAMP   NOT NULL,
+                w_end          TIMESTAMP   NOT NULL,
+                PRIMARY KEY (product_id, w_start)
             );
         """,
     )

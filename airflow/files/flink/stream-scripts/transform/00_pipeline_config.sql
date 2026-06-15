@@ -16,5 +16,3 @@ SET 'restart-strategy.fixed-delay.attempts'       = '3';
 SET 'restart-strategy.fixed-delay.delay'          = '10s';
 
 SET 'pipeline.name' = 'transform-zone-ingestion';
-
-SET 'parallelism.default'              = '2';

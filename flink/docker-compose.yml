@@ -12,7 +12,7 @@ services:
       - |
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
-        parallelism.default: 2
+        parallelism.default: 1
         pekko.ask.timeout: 60s
         pekko.framesize: 104857600b
         jobmanager.archive.expiration-time: 1 hour
@@ -39,7 +39,7 @@ services:
         FLINK_PROPERTIES=
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 4
-        parallelism.default: 2
+        parallelism.default: 1
         taskmanager.memory.process.size: 4096m
         taskmanager.memory.network.fraction: 0.15
         taskmanager.memory.network.min: 128mb
