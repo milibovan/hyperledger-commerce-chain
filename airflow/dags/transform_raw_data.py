@@ -18,18 +18,16 @@ FLINK_JOBMANAGER_PORT = "6123"
 FLINK_JOBMANAGER_WEB_PORT = "8081"
 SCRIPT_SOURCE_DIR = "/opt/airflow/files/flink/my_jobs"
 
-# Default arguments
 default_args = {
     'owner': 'data-engineering',
     'depends_on_past': False,
     'email_on_failure': True,
     'email_on_retry': False,
-    'retries': 2,
-    'retry_delay': timedelta(minutes=5),
+    'retries': 3,
+    'retry_delay': timedelta(seconds=10),
 }
 
 def submit_pyflink_job(script_name, parallelism=1, **context):
-    """Submit PyFlink job using Flink CLI"""
     source_file_path = os.path.join(SCRIPT_SOURCE_DIR, script_name)
     
     if not os.path.exists(source_file_path):
@@ -64,7 +62,6 @@ def submit_pyflink_job(script_name, parallelism=1, **context):
     
     logging.info(f"Job output: {result.stdout}")
     
-    # Extract and log job ID
     job_id = None
     for line in result.stdout.split('\n'):
         if 'Job has been submitted with JobID' in line:
@@ -85,7 +82,6 @@ with DAG(
 
     @task
     def check_hdfs_path(path):
-        """Check if HDFS path exists"""
         hdfs_hook = WebHDFSHook(webhdfs_conn_id=HDFS_CONN_ID)
         if hdfs_hook.check_for_path(hdfs_path=path):
             logging.info(f"✓ Path {path} exists")
@@ -94,7 +90,6 @@ with DAG(
 
     @task
     def verify_hdfs_output(table_name):
-        """Verify transformed output exists in HDFS"""
         hdfs_hook = WebHDFSHook(webhdfs_conn_id=HDFS_CONN_ID)
         file_part = "product_requests" if table_name == "order_requests" else table_name
         path = f"/datalake/transform/{file_part}_transformed.parquet"
@@ -112,7 +107,6 @@ with DAG(
         bash_command=f"curl -f http://{FLINK_JOBMANAGER_HOST}:{FLINK_JOBMANAGER_WEB_PORT}/overview || exit 1",
     )
 
-    # Layer 1: Independent transformations
     with TaskGroup('layer_1_independent') as layer_1:
         trans_u = PythonOperator(
             task_id='transform_users',
@@ -130,7 +124,6 @@ with DAG(
         v_t = verify_hdfs_output.override(task_id='verify_traders')("traders")
         trans_t >> v_t
 
-    # Layer 2: Products (depends on layer 1)
     with TaskGroup('layer_2_products') as layer_2:
         trans_p = PythonOperator(
             task_id='transform_products',
@@ -140,7 +133,6 @@ with DAG(
         v_p = verify_hdfs_output.override(task_id='verify_products')("products")
         trans_p >> v_p
 
-    # Layer 3: Orders (depends on layer 2)
     with TaskGroup('layer_3_orders') as layer_3:
         trans_o = PythonOperator(
             task_id='transform_orders',
@@ -150,7 +142,6 @@ with DAG(
         v_o = verify_hdfs_output.override(task_id='verify_orders')("orders")
         trans_o >> v_o
 
-    # Layer 4: Complex transformations (depends on layer 3)
     with TaskGroup('layer_4_complex') as layer_4:
         trans_rec = PythonOperator(
             task_id='transform_receipts',
@@ -170,9 +161,7 @@ with DAG(
 
     @task
     def finalize_pipeline():
-        """Final cleanup and logging"""
         logging.info("✓ All PyFlink jobs submitted and outputs verified successfully!")
         return "Pipeline complete"
 
-    # Define task flow
     [hdfs_check, check_flink] >> layer_1 >> layer_2 >> layer_3 >> layer_4 >> finalize_pipeline()

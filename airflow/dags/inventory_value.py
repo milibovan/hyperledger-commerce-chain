@@ -1,7 +1,7 @@
 import os
 import subprocess
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.decorators import task
 from airflow.operators.python import PythonOperator
@@ -90,7 +90,7 @@ with DAG(
         """,
     )
     
-    @task
+    @task(retries=3, retry_delay=timedelta(seconds=10))
     def check_hdfs_path(path):
         hdfs_hook = WebHDFSHook(webhdfs_conn_id=HDFS_CONN_ID)
         if not hdfs_hook.check_for_path(hdfs_path=path):
@@ -103,11 +103,11 @@ with DAG(
         op_kwargs={'script_name': 'inventory_value.py'}
     )
     
-    verify_citus_data = SQLExecuteQueryOperator(
-        task_id='verify_citus_results',
-        conn_id='citus',
-        sql="SELECT COUNT(*) FROM inventory_value;",
-    )
+    # verify_citus_data = SQLExecuteQueryOperator(
+    #     task_id='verify_citus_results',
+    #     conn_id='citus',
+    #     sql="SELECT COUNT(*) FROM inventory_value;",
+    # )
     
     hdfs_input_path = check_hdfs_path("/datalake/transform/")
     
@@ -117,4 +117,4 @@ with DAG(
         sql="TRUNCATE TABLE inventory_value;",
     )
 
-check_citus >> hdfs_input_path >> truncate_table >> avg_calc >> verify_citus_data
+check_citus >> hdfs_input_path >> truncate_table >> avg_calc

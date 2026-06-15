@@ -29,29 +29,20 @@ def chain_dag(dag, dag_id, previous_task):
 
 
 with DAG(
-    dag_id="batch_orchestrator",
+    dag_id="query_orchestrator",
     description="Runs the full pipeline end-to-end in one trigger",
     start_date=datetime(2026, 6, 6),
     catchup=False,
     tags=["orchestrator", "pipeline"],
 ) as dag:
 
-    trigger_load = TriggerDagRunOperator(
-        task_id="trigger_load_raw_data",
-        trigger_dag_id="load_raw_data",
+    first_dag_id = QUERY_DAGS_ORDERED[0]
+    last = TriggerDagRunOperator(
+        task_id=f"trigger_{first_dag_id}",
+        trigger_dag_id=first_dag_id,
         wait_for_completion=True,
         reset_dag_run=True,
     )
 
-    trigger_transform = TriggerDagRunOperator(
-        task_id="trigger_transform_raw_data",
-        trigger_dag_id="transform_raw_data",
-        wait_for_completion=True,
-        reset_dag_run=True,
-    )
-
-    trigger_load >> trigger_transform
-
-    last = trigger_transform
-    for dag_id in QUERY_DAGS_ORDERED:
+    for dag_id in QUERY_DAGS_ORDERED[1:]:
         last = chain_dag(dag, dag_id, last)

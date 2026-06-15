@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from airflow.sdk import dag, task
 from airflow.providers.apache.hdfs.hooks.webhdfs import WebHDFSHook
 import os
@@ -15,21 +15,21 @@ import os
 def load_raw_data():
     airflow_home = os.environ.get('AIRFLOW_HOME', '/opt/airflow')
 
-    @task
+    @task(retries=3, retry_delay=timedelta(seconds=10))
     def load_data(local_path: str):
         hdfs_hook = WebHDFSHook(webhdfs_conn_id="HDFS_CONNECTION")
         filename = os.path.basename(local_path)
-        hdfs_destination = os.path.join("/datalake/raw", filename)
+        hdfs_destination = os.path.join("/datalake/raw", filename) 
         
         hdfs_hook.load_file(
-            source=local_path,
-            destination=hdfs_destination,
+            source=local_path, 
+            destination=hdfs_destination, 
             overwrite=True
         )
         return hdfs_destination
 
-    @task
-    def check_hdfs_file(path, prev_check=None):
+    @task(retries=3, retry_delay=timedelta(seconds=10))
+    def check_hdfs_file(path):
         hdfs_hook = WebHDFSHook(webhdfs_conn_id="HDFS_CONNECTION")
         if hdfs_hook.check_for_path(hdfs_path=path):
             print(f"File {path} found in HDFS.")
@@ -38,13 +38,12 @@ def load_raw_data():
 
     data_dir = os.path.join(airflow_home, "files")
     files_to_load = [
-        os.path.join(data_dir, f) for f in os.listdir(data_dir)
+        os.path.join(data_dir, f) for f in os.listdir(data_dir) 
         if f.endswith('.jsonl')
     ]
 
-    prev_check = None
     for file_path in files_to_load:
         hdfs_path = load_data(file_path)
-        prev_check = check_hdfs_file(hdfs_path, prev_check)
+        check_hdfs_file(hdfs_path)
 
 load_raw_data()

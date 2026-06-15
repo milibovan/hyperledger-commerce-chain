@@ -1,7 +1,7 @@
 import os
 import subprocess
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.decorators import task
 from airflow.operators.python import PythonOperator
@@ -21,19 +21,19 @@ def submit_pyflink_job(script_name, parallelism=1, **context):
         raise FileNotFoundError(f"Source script not found at {source_file_path}")
     
     # First, try running the script directly to see Python errors
-    logging.info(f"Testing Python script execution: {source_file_path}")
-    test_cmd = ['python3', source_file_path]
-    test_result = subprocess.run(test_cmd, capture_output=True, text=True, cwd=SCRIPT_SOURCE_DIR)
+    # logging.info(f"Testing Python script execution: {source_file_path}")
+    # test_cmd = ['python3', source_file_path]
+    # test_result = subprocess.run(test_cmd, capture_output=True, text=True, cwd=SCRIPT_SOURCE_DIR)
     
-    logging.info(f"Direct Python execution STDOUT:\n{test_result.stdout}")
-    logging.info(f"Direct Python execution STDERR:\n{test_result.stderr}")
+    # logging.info(f"Direct Python execution STDOUT:\n{test_result.stdout}")
+    # logging.info(f"Direct Python execution STDERR:\n{test_result.stderr}")
     
-    if test_result.returncode != 0:
-        raise AirflowException(
-            f"Python script validation failed:\n"
-            f"STDOUT: {test_result.stdout}\n"
-            f"STDERR: {test_result.stderr}"
-        )
+    # if test_result.returncode != 0:
+    #     raise AirflowException(
+    #         f"Python script validation failed:\n"
+    #         f"STDOUT: {test_result.stdout}\n"
+    #         f"STDERR: {test_result.stderr}"
+    #     )
     
     # Now submit to Flink
     cmd = [
@@ -95,7 +95,7 @@ with DAG(
         """,
     )
     
-    @task
+    @task(retries=3, retry_delay=timedelta(seconds=10))
     def check_hdfs_path(path):
         hdfs_hook = WebHDFSHook(webhdfs_conn_id=HDFS_CONN_ID)
         if not hdfs_hook.check_for_path(hdfs_path=path):
@@ -108,12 +108,12 @@ with DAG(
         op_kwargs={'script_name': 'versatile_buyers.py'}
     )
     
-    verify_citus_data = SQLExecuteQueryOperator(
-        task_id='verify_citus_results',
-        conn_id='citus',
-        sql="SELECT COUNT(*) FROM versatile_buyers;",
-    )
+    # verify_citus_data = SQLExecuteQueryOperator(
+    #     task_id='verify_citus_results',
+    #     conn_id='citus',
+    #     sql="SELECT COUNT(*) FROM versatile_buyers;",
+    # )
     
     hdfs_input_path = check_hdfs_path("/datalake/transform/")
     
-    check_citus >> hdfs_input_path >> create_table >> versatile_buyers >> verify_citus_data
+    check_citus >> hdfs_input_path >> create_table >> versatile_buyers

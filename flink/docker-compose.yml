@@ -52,8 +52,6 @@ services:
       - HADOOP_CLASSPATH=/opt/hadoop/etc/hadoop
     depends_on:
       - jobmanager
-    deploy:
-      replicas: 3
     networks:
       - hdfs_asvsp
     volumes:

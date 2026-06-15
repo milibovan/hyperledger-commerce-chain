@@ -22,8 +22,7 @@ export const writeJSONL = (filename, count, generator) =>
                 return;
             }
 
-            // Log progress every 500 records
-            if (i % 1000 === 0) {
+            if (i % 10000 === 0) {
                 const elapsed = ((performance.now() - start) / 1000).toFixed(2);
                 console.log(`  [${filename}] ${i}/${count} — ${elapsed}s elapsed`);
             }
@@ -32,7 +31,7 @@ export const writeJSONL = (filename, count, generator) =>
 
             if (!ok) {
                 drainCount++;
-                console.log(`  [${filename}] ⏸ backpressure at record ${i} (drain #${drainCount})`);
+                // console.log(`  [${filename}] ⏸ backpressure at record ${i} (drain #${drainCount})`);
                 stream.once('drain', () => setImmediate(() => writeNext(i + 1)));
             } else {
                 setImmediate(() => writeNext(i + 1));
@@ -129,7 +128,7 @@ export async function handleEvent(entity, action, orchestrated = false) {
         const receiptIds = [];
         const receiptCount = 2;
         for (let i = 0; i < receiptCount; i++) {
-            const receipt = await EVENT_GENERATORS.receipt.created(orderId); // ← create AND register ID in Redis
+            const receipt = await EVENT_GENERATORS.receipt.created(orderId);
             if (!receipt) continue;
             emitEvent(receipt, 'receipt', 'created');
             receiptIds.push(receipt.common.entity_id);
