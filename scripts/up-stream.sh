@@ -11,7 +11,7 @@ cd ..
 echo ""
 echo ">> [1/4] Starting shared infrastructure (HDFS, Flink, Redis)"
 docker compose -f hdfs/docker-compose.yml up -d
-docker compose -f flink/docker-compose.yml up -d --scale taskmanager=2
+docker compose -f flink/docker-compose.yml up -d --scale taskmanager=3
 docker compose up -d redis
 sleep 10
 

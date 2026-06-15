@@ -96,7 +96,6 @@ def run_transformation():
         JOIN transform_products tp ON ttp.product_id = tp.id
         WHERE tt.deleted = FALSE
         AND tp.deleted = FALSE
-        AND tp.`expiry-date` > CURRENT_TIMESTAMP
         GROUP BY 
             tt.name, tt.`trader-type`,
             CAST(EXTRACT(WEEK FROM tp.`expiry-date`) AS INT);
