@@ -97,3 +97,4 @@ tfplan
 plan
 *.tfgraph
 *_plan.json
+*.log
