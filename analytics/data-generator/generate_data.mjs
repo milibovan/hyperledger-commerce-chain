@@ -2,11 +2,11 @@ import { fakerSR_RS_latin as faker } from '@faker-js/faker';
 import fs from "fs";
 
 const COUNTS = {
-    users: 100000,
-    traders: 10000,
-    products: 70000,
-    orders: 1000000,
-    receipts: 1000000
+    users: 500000,
+    traders: 70000,
+    products: 600000,
+    orders: 2500000,
+    receipts: 2500000
 };
 
 const TRADER_TYPES = ["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"];
@@ -146,19 +146,40 @@ const computeStatusWeights = (traderType, totalCost, leadDays, numProducts) => {
     return Object.entries(weights).map(([value, weight]) => ({ value, weight }));
 };
 
-const writeJSONL = (filename, count, generator) => {
-    return new Promise((resolve) => {
+const writeJSONL = (filename, count, generator) =>
+    new Promise((resolve, reject) => {
         const stream = fs.createWriteStream(filename);
-        for (let i = 0; i < count; i++) {
-            const record = generator();
-            stream.write(JSON.stringify(record) + '\n');
-        }
-        stream.end(() => {
-            console.log(`Created ${filename} (${count} records)`);
-            resolve();
-        });
+        const start = performance.now();
+        let drainCount = 0;
+
+        const writeNext = (i) => {
+            if (i >= count) {
+                const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+                stream.end(() => {
+                    console.log(`✅ ${filename} done — ${count} records in ${elapsed}s (drains: ${drainCount})`);
+                    resolve();
+                });
+                return;
+            }
+
+            if (i % 10000 === 0) {
+                const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+                console.log(`  [${filename}] ${i}/${count} — ${elapsed}s elapsed`);
+            }
+
+            const ok = stream.write(JSON.stringify(generator()) + "\n");
+
+            if (!ok) {
+                drainCount++;
+                stream.once('drain', () => setImmediate(() => writeNext(i + 1)));
+            } else {
+                setImmediate(() => writeNext(i + 1));
+            }
+        };
+
+        stream.on('error', reject);
+        writeNext(0);
     });
-};
 
 const getDerivedDateFeatures = (date) => {
     return {
@@ -449,128 +470,68 @@ const genReceipt = () => {
     return receipt;
 };
 
-const updateUsersWithRelationships = () => {
-    console.log("Updating users with order IDs and purchase stats...");
-    const users = [];
-    const usersStream = fs.createReadStream('users.jsonl', 'utf8');
-    let buffer = '';
+const rewriteJSONL = (filename, transform) =>
+    new Promise((resolve) => {
+        const records = [];
+        const stream  = fs.createReadStream(filename, "utf8");
+        let buffer = "";
 
-    return new Promise((resolve) => {
-        usersStream.on('data', (chunk) => {
+        const processLine = (line) => {
+            if (!line.trim()) return;
+            records.push(transform(JSON.parse(line)));
+        };
+
+        stream.on("data", (chunk) => {
             buffer += chunk;
-            const lines = buffer.split('\n');
+            const lines = buffer.split("\n");
             buffer = lines.pop();
-            lines.forEach(line => {
-                if (line.trim()) {
-                    const user = JSON.parse(line);
-                    const orderIds = pools.userOrders[user.id] || [];
-                    user['orders-ids'] = orderIds;
-                    user['order-count'] = orderIds.length;
-                    users.push(user);
-                }
+            lines.forEach(processLine);
+        });
+
+        stream.on("end", () => {
+            processLine(buffer);
+            const out = fs.createWriteStream(filename);
+            records.forEach((r) => out.write(JSON.stringify(r) + "\n"));
+            out.end(() => {
+                console.log(`Updated ${filename} with relationships`);
+                resolve();
             });
         });
-        usersStream.on('end', () => {
-            if (buffer.trim()) {
-                const user = JSON.parse(buffer);
-                const orderIds = pools.userOrders[user.id] || [];
-                user['orders-ids'] = orderIds;
-                user['order-count'] = orderIds.length;
-                users.push(user);
+    });
+
+export const updateUsersWithRelationships = () => {
+    console.log("Updating users with order and request IDs...");
+    return rewriteJSONL("./users.jsonl", (user) => ({
+        ...user,
+        "orders-ids":   pools.userOrders[user.id]   ?? [],
+    }));
+};
+
+export const updateTradersWithRelationships = () => {
+    console.log("Updating traders with product, receipt IDs...");
+    return rewriteJSONL("./traders.jsonl", (trader) => {
+        const productMap = new Map();
+        for (const p of pools.traderProducts[trader.id] ?? []) {
+            if (productMap.has(p.product_id)) {
+                productMap.get(p.product_id).quantity += p.quantity;
+            } else {
+                productMap.set(p.product_id, { ...p });
             }
-            const stream = fs.createWriteStream('users.jsonl');
-            users.forEach(user => stream.write(JSON.stringify(user) + '\n'));
-            stream.end();
-            console.log(`Updated users.jsonl with relationships and order-count`);
-            resolve();
-        });
+        }
+        return {
+            ...trader,
+            "products-available": Array.from(productMap.values()),
+            "receipts-ids":       pools.traderReceipts[trader.id]  ?? [],
+        };
     });
 };
 
-const updateTradersWithRelationships = () => {
-    console.log("Updating traders with product and receipt IDs...");
-    const traders = [];
-    const tradersStream = fs.createReadStream('traders.jsonl', 'utf8');
-    let buffer = '';
-
-    return new Promise((resolve) => {
-        tradersStream.on('data', (chunk) => {
-            buffer += chunk;
-            const lines = buffer.split('\n');
-            buffer = lines.pop();
-            lines.forEach(line => {
-                if (line.trim()) {
-                    const trader = JSON.parse(line);
-                    const productMap = new Map();
-                    (pools.traderProducts[trader.id] || []).forEach(p => {
-                        if (productMap.has(p['product_id'])) {
-                            productMap.get(p['product_id']).quantity += p.quantity;
-                        } else {
-                            productMap.set(p['product_id'], { ...p });
-                        }
-                    });
-                    trader['products-available'] = Array.from(productMap.values());
-                    trader['receipts-ids'] = pools.traderReceipts[trader.id] || [];
-                    traders.push(trader);
-                }
-            });
-        });
-        tradersStream.on('end', () => {
-            if (buffer.trim()) {
-                const trader = JSON.parse(buffer);
-                const productMap = new Map();
-                (pools.traderProducts[trader.id] || []).forEach(p => {
-                    if (productMap.has(p['product_id'])) {
-                        productMap.get(p['product_id']).quantity += p.quantity;
-                    } else {
-                        productMap.set(p['product_id'], { ...p });
-                    }
-                });
-                trader['products-available'] = Array.from(productMap.values());
-                trader['receipts-ids'] = pools.traderReceipts[trader.id] || [];
-                traders.push(trader);
-            }
-            const stream = fs.createWriteStream('traders.jsonl');
-            traders.forEach(trader => stream.write(JSON.stringify(trader) + '\n'));
-            stream.end();
-            console.log(`Updated traders.jsonl with relationships`);
-            resolve();
-        });
-    });
-};
-
-const updateOrdersWithReceipts = () => {
+export const updateOrdersWithReceipts = () => {
     console.log("Updating orders with receipt IDs...");
-    const orders = [];
-    const ordersStream = fs.createReadStream('orders.jsonl', 'utf8');
-    let buffer = '';
-
-    return new Promise((resolve) => {
-        ordersStream.on('data', (chunk) => {
-            buffer += chunk;
-            const lines = buffer.split('\n');
-            buffer = lines.pop();
-            lines.forEach(line => {
-                if (line.trim()) {
-                    const order = JSON.parse(line);
-                    order['receipts-ids'] = pools.orderReceipts[order.id] || [];
-                    orders.push(order);
-                }
-            });
-        });
-        ordersStream.on('end', () => {
-            if (buffer.trim()) {
-                const order = JSON.parse(buffer);
-                order['receipts-ids'] = pools.orderReceipts[order.id] || [];
-                orders.push(order);
-            }
-            const stream = fs.createWriteStream('orders.jsonl');
-            orders.forEach(order => stream.write(JSON.stringify(order) + '\n'));
-            stream.end();
-            console.log(`Updated orders.jsonl with relationships`);
-            resolve();
-        });
-    });
+    return rewriteJSONL("./orders.jsonl", (order) => ({
+        ...order,
+        "receipts-ids": pools.orderReceipts[order.id] ?? [],
+    }));
 };
 
 const runAll = async () => {
