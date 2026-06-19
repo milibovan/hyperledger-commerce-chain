@@ -100,3 +100,4 @@ plan
 *.log
 *.jsonl
 *.parquet
+*.csv

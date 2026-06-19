@@ -1,5 +1,6 @@
 import { fakerSR_RS_latin as faker } from '@faker-js/faker';
 import fs from "fs";
+import readline from "readline";
 
 const COUNTS = {
     users: 500000,
@@ -146,6 +147,135 @@ const computeStatusWeights = (traderType, totalCost, leadDays, numProducts) => {
     return Object.entries(weights).map(([value, weight]) => ({ value, weight }));
 };
 
+// ─── CSV helpers ───────────────────────────────────────────────────────────────
+
+const escapeCSV = (val) => {
+    if (val === null || val === undefined) return "";
+    const str = typeof val === "object" ? JSON.stringify(val) : String(val);
+    // Escape samo ako sadrzi zarez, newline ili navodnik
+    if (str.includes(",") || str.includes("\n") || str.includes('"')) {
+        return '"' + str.replace(/"/g, '""') + '"';
+    }
+    return str;
+};
+
+const toCSVRow = (headers, obj) =>
+    headers.map(h => escapeCSV(obj[h])).join(",");
+
+const writeCSV = (filename, count, generator) =>
+    new Promise((resolve, reject) => {
+        const stream = fs.createWriteStream(filename);
+        const start = performance.now();
+        let drainCount = 0;
+        let headers = null;
+
+        const writeNext = (i) => {
+            if (i >= count) {
+                const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+                stream.end(() => {
+                    console.log(`✅ ${filename} done — ${count} records in ${elapsed}s (drains: ${drainCount})`);
+                    resolve();
+                });
+                return;
+            }
+
+            if (i % 10000 === 0) {
+                const elapsed = ((performance.now() - start) / 1000).toFixed(2);
+                console.log(`  [${filename}] ${i}/${count} — ${elapsed}s elapsed`);
+            }
+
+            const record = generator();
+
+            // Header samo jednom, iz prvog recorda
+            if (!headers) {
+                headers = Object.keys(record);
+                stream.write(headers.join(",") + "\n");
+            }
+
+            const ok = stream.write(toCSVRow(headers, record) + "\n");
+
+            if (!ok) {
+                drainCount++;
+                stream.once("drain", () => setImmediate(() => writeNext(i + 1)));
+            } else {
+                setImmediate(() => writeNext(i + 1));
+            }
+        };
+
+        stream.on("error", reject);
+        writeNext(0);
+    });
+
+const rewriteCSV = (filename, transform) =>
+    new Promise((resolve, reject) => {
+        const records = [];
+        let headers = null;
+
+        const rl = readline.createInterface({
+            input: fs.createReadStream(filename, "utf8"),
+            crlfDelay: Infinity
+        });
+
+        rl.on("line", (line) => {
+            if (!line.trim()) return;
+
+            if (!headers) {
+                headers = line.split(",");
+                return;
+            }
+
+            // Parsiraj CSV red nazad u objekat
+            const values = [];
+            let current = "";
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const ch = line[i];
+                if (ch === '"') {
+                    if (inQuotes && line[i + 1] === '"') {
+                        current += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (ch === "," && !inQuotes) {
+                    values.push(current);
+                    current = "";
+                } else {
+                    current += ch;
+                }
+            }
+            values.push(current);
+
+            const obj = {};
+            headers.forEach((h, idx) => {
+                const raw = values[idx] ?? "";
+                // Pokusaj JSON parse za array/object polja
+                if (raw.startsWith("[") || raw.startsWith("{")) {
+                    try { obj[h] = JSON.parse(raw); } catch { obj[h] = raw; }
+                } else if (raw === "") {
+                    obj[h] = null;
+                } else {
+                    obj[h] = raw;
+                }
+            });
+
+            records.push(transform(obj));
+        });
+
+        rl.on("close", () => {
+            const out = fs.createWriteStream(filename);
+            out.write(headers.join(",") + "\n");
+            records.forEach(r => out.write(toCSVRow(headers, r) + "\n"));
+            out.end(() => {
+                console.log(`Updated ${filename} with relationships`);
+                resolve();
+            });
+        });
+
+        rl.on("error", reject);
+    });
+
 const writeJSONL = (filename, count, generator) =>
     new Promise((resolve, reject) => {
         const stream = fs.createWriteStream(filename);
@@ -183,7 +313,7 @@ const writeJSONL = (filename, count, generator) =>
 
 const getDerivedDateFeatures = (date) => {
     return {
-        "day-of-week": date.getDay(),
+        "day_of_week": date.getDay(),
         "month": date.getMonth() + 1,
         "quarter": Math.ceil((date.getMonth() + 1) / 3)
     };
@@ -195,12 +325,12 @@ const genUser = () => {
     pools.userOrders[id] = [];
 
     return {
-        "doc-type": "user",
+        "doc_type": "user",
         "id": id,
         "name": faker.person.firstName(),
         "surname": faker.person.lastName(),
-        "email": faker.internet.email(),
-        "orders-ids": [],
+        "email": Math.random() < 0.08 ? null : faker.internet.email(),
+        "orders_ids": [],
         "deleted": false
     };
 };
@@ -224,14 +354,14 @@ const genTrader = () => {
     }
 
     return {
-        "doc-type": "trader",
+        "doc_type": "trader",
         "id": id,
         "name": faker.company.name(),
         "email": faker.internet.email(),
-        "trader-type": traderType,
-        "vat": "VAT-" + faker.string.alphanumeric(8).toUpperCase(),
-        "products-available": [],
-        "receipts-ids": [],
+        "trader_type": traderType,
+        "vat": "VAT_" + faker.string.alphanumeric(8).toUpperCase(),
+        "products_available": [],
+        "receipts_ids": [],
         "deleted": false
     };
 };
@@ -258,23 +388,25 @@ const genProduct = () => {
     pools.productsByTrader[traderType].push(id);
 
     const product = {
-        "doc-type": "product",
+        "doc_type": "product",
         "id": id,
         "name": productName,
         "price": price,
-        "quantity": faker.number.int({ min: 50, max: 1000 }),
-        "trader-type": traderType,
+        "quantity": (traderType === "CARDEALER" && Math.random() < 0.3) || Math.random() < 0.04
+            ? null
+            : faker.number.int({ min: 50, max: 1000 }),
+        "trader_type": traderType,
         "deleted": false
     };
 
     if (category.expiry) {
         const isNearExpiry = Math.random() < 0.2;
-        product["expiry-date"] = faker.date.between({
+        product["expiry_date"] = faker.date.between({
             from: isNearExpiry ? '2026-03-15' : '2026-04-15',
             to: isNearExpiry ? '2026-04-14' : '2027-12-31'
         }).toISOString();
     } else {
-        product["expiry-date"] = null;
+        product["expiry_date"] = null;
     }
 
     return product;
@@ -347,22 +479,25 @@ const genOrder = () => {
     const statusWeights = computeStatusWeights(traderType, totalCost, leadDays, products.length);
     const status = faker.helpers.weightedArrayElement(statusWeights);
 
+    const isCancelledOrPending = status === "CANCELLED" || status === "PENDING";
+    const missingFulfillment = isCancelledOrPending && Math.random() < 0.35;
+
     return {
-        "doc-type": "order",
+        "doc_type": "order",
         "id": id,
-        "user-id": userId,
-        "trader-type": traderType,
+        "user_id": userId,
+        "trader_type": traderType,
         "status": status,
-        "created-date": orderDate.toISOString(),
-        "day-of-week": dateFeatures["day-of-week"],
+        "created_date": orderDate.toISOString(),
+        "day_of_week": dateFeatures["day_of_week"],
         "month": dateFeatures["month"],
         "quarter": dateFeatures["quarter"],
-        "expected-fulfillment-date": expectedFulfillmentDate.toISOString(),
-        "lead-days": leadDays,
+        "expected_fulfillment_date": missingFulfillment ? null : expectedFulfillmentDate.toISOString(),
+        "lead_days": missingFulfillment ? null : leadDays,
         "products": products,
-        "num-products": products.length,
-        "receipts-ids": [],
-        "total-cost": totalCost,
+        "num_products": products.length,
+        "receipts_ids": [],
+        "total_cost": totalCost,
         "deleted": false
     };
 };
@@ -441,30 +576,30 @@ const genReceipt = () => {
     const dateFeatures = getDerivedDateFeatures(receiptDate);
 
     const receipt = {
-        "doc-type": "receipt",
+        "doc_type": "receipt",
         "id": receiptId,
-        "trader-id": traderId,
-        "user-id": userId,
-        "order-id": orderId,
-        "trader-type": orderTraderType,
+        "trader_id": traderId,
+        "user_id": userId,
+        "order_id": orderId,
+        "trader_type": orderTraderType,
         "products": products,
-        "num-products": products.length,
+        "num_products": products.length,
         "date": receiptDate.toISOString(),
-        "day-of-week": dateFeatures["day-of-week"],
+        "day_of_week": dateFeatures["day_of_week"],
         "month": dateFeatures["month"],
         "quarter": dateFeatures["quarter"],
-        "total-cost": totalCost,
+        "total_cost": status === "IN_PROGRESS" && Math.random() < 0.25 ? null : totalCost,
         "status": status,
         "deleted": false
     };
 
     if (status === "CANCELLED") {
         const cancelledDate = new Date(receiptDate.getTime() + faker.number.int({ min: 1, max: 30 }) * 24 * 60 * 60 * 1000);
-        receipt["cancelled-date"] = cancelledDate.toISOString();
-        receipt["cancelled-by"] = faker.helpers.arrayElement([userId, traderId]);
+        receipt["cancelled_date"] = cancelledDate.toISOString();
+        receipt["cancelled_by"] = faker.helpers.arrayElement([userId, traderId]);
     } else {
-        receipt["cancelled-date"] = null;
-        receipt["cancelled-by"] = null;
+        receipt["cancelled_date"] = null;
+        receipt["cancelled_by"] = null;
     }
 
     return receipt;
@@ -501,15 +636,15 @@ const rewriteJSONL = (filename, transform) =>
 
 export const updateUsersWithRelationships = () => {
     console.log("Updating users with order and request IDs...");
-    return rewriteJSONL("./users.jsonl", (user) => ({
+    return rewriteCSV("./users.csv", (user) => ({
         ...user,
-        "orders-ids":   pools.userOrders[user.id]   ?? [],
+        "orders_ids":   pools.userOrders[user.id]   ?? [],
     }));
 };
 
 export const updateTradersWithRelationships = () => {
     console.log("Updating traders with product, receipt IDs...");
-    return rewriteJSONL("./traders.jsonl", (trader) => {
+    return rewriteCSV("./traders.csv", (trader) => {
         const productMap = new Map();
         for (const p of pools.traderProducts[trader.id] ?? []) {
             if (productMap.has(p.product_id)) {
@@ -520,27 +655,27 @@ export const updateTradersWithRelationships = () => {
         }
         return {
             ...trader,
-            "products-available": Array.from(productMap.values()),
-            "receipts-ids":       pools.traderReceipts[trader.id]  ?? [],
+            "products_available": Array.from(productMap.values()),
+            "receipts_ids":       pools.traderReceipts[trader.id]  ?? [],
         };
     });
 };
 
 export const updateOrdersWithReceipts = () => {
     console.log("Updating orders with receipt IDs...");
-    return rewriteJSONL("./orders.jsonl", (order) => ({
+    return rewriteCSV("./orders.csv", (order) => ({
         ...order,
-        "receipts-ids": pools.orderReceipts[order.id] ?? [],
+        "receipts_ids": pools.orderReceipts[order.id] ?? [],
     }));
 };
 
 const runAll = async () => {
     console.log("Starting generation...");
-    await writeJSONL('users.jsonl', COUNTS.users, genUser);
-    await writeJSONL('traders.jsonl', COUNTS.traders, genTrader);
-    await writeJSONL('products.jsonl', COUNTS.products, genProduct);
-    await writeJSONL('orders.jsonl', COUNTS.orders, genOrder);
-    await writeJSONL('receipts.jsonl', COUNTS.receipts, genReceipt);
+    await writeCSV('users.csv', COUNTS.users, genUser);
+    await writeCSV('traders.csv', COUNTS.traders, genTrader);
+    await writeCSV('products.csv', COUNTS.products, genProduct);
+    await writeCSV('orders.csv', COUNTS.orders, genOrder);
+    await writeCSV('receipts.csv', COUNTS.receipts, genReceipt);
 
     await updateUsersWithRelationships();
     await updateTradersWithRelationships();
