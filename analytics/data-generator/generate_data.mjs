@@ -10,8 +10,6 @@ const COUNTS = {
 };
 
 const TRADER_TYPES = ["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"];
-const VERSATILE_USER_COUNT = 5000;
-const VERSATILE_RECEIPT_RATIO = 0.4;
 
 const FULFILLMENT_PROFILES = {
     SUPERMARKET: { minLeadDays: 1, maxLeadDays: 14 },
@@ -32,9 +30,10 @@ const pools = {
     orderReceipts: {},
     traderTypeMap: {},
     tradersByType: {},
-    versatileUserIds: null,
-    versatileUserCoverage: {},
-    orderDates: {}
+    orderDates: {},
+    orderTraderTypes: {},
+    productPrices: {},
+    productTraderType: {}
 };
 
 const PRODUCT_CATEGORIES = {
@@ -110,6 +109,43 @@ const PRODUCT_CATEGORIES = {
     ]
 };
 
+const computeStatusWeights = (traderType, totalCost, leadDays, numProducts) => {
+    const base = {
+        GROCERY: { COMPLETED: 50, FULFILLED: 25, APPROVED: 10, PENDING: 10, CANCELLED: 5 },
+        SUPERMARKET: { COMPLETED: 35, FULFILLED: 30, APPROVED: 15, PENDING: 12, CANCELLED: 8 },
+        PHARMACY: { COMPLETED: 30, FULFILLED: 25, APPROVED: 20, PENDING: 18, CANCELLED: 7 },
+        CARDEALER: { COMPLETED: 15, FULFILLED: 15, APPROVED: 25, PENDING: 30, CANCELLED: 15 },
+    }[traderType];
+
+    const weights = { ...base };
+
+    if (totalCost > 10000) {
+        weights.COMPLETED = Math.max(5, weights.COMPLETED - 15);
+        weights.FULFILLED = Math.max(5, weights.FULFILLED - 10);
+        weights.PENDING += 10;
+        weights.CANCELLED += 10;
+    } else if (totalCost < 500) {
+        weights.COMPLETED += 10;
+        weights.CANCELLED = Math.max(2, weights.CANCELLED - 5);
+    }
+
+    if (leadDays > 60) {
+        weights.COMPLETED = Math.max(5, weights.COMPLETED - 10);
+        weights.PENDING += 8;
+        weights.APPROVED += 5;
+    } else if (leadDays <= 3) {
+        weights.COMPLETED += 8;
+        weights.PENDING = Math.max(2, weights.PENDING - 5);
+    }
+
+    if (numProducts >= 6) {
+        weights.CANCELLED += 5;
+        weights.COMPLETED = Math.max(5, weights.COMPLETED - 3);
+    }
+
+    return Object.entries(weights).map(([value, weight]) => ({ value, weight }));
+};
+
 const writeJSONL = (filename, count, generator) => {
     return new Promise((resolve) => {
         const stream = fs.createWriteStream(filename);
@@ -124,6 +160,14 @@ const writeJSONL = (filename, count, generator) => {
     });
 };
 
+const getDerivedDateFeatures = (date) => {
+    return {
+        "day-of-week": date.getDay(),
+        "month": date.getMonth() + 1,
+        "quarter": Math.ceil((date.getMonth() + 1) / 3)
+    };
+};
+
 const genUser = () => {
     const id = faker.string.uuid();
     pools.userIds.push(id);
@@ -135,7 +179,6 @@ const genUser = () => {
         "name": faker.person.firstName(),
         "surname": faker.person.lastName(),
         "email": faker.internet.email(),
-        "balance": parseFloat(faker.finance.amount({ min: 500, max: 50000, dec: 2 })),
         "orders-ids": [],
         "deleted": false
     };
@@ -168,7 +211,6 @@ const genTrader = () => {
         "vat": "VAT-" + faker.string.alphanumeric(8).toUpperCase(),
         "products-available": [],
         "receipts-ids": [],
-        "balance": 0,
         "deleted": false
     };
 };
@@ -177,10 +219,17 @@ const genProduct = () => {
     const id = faker.string.uuid();
     const traderType = faker.helpers.arrayElement(TRADER_TYPES);
     const category = faker.helpers.arrayElement(PRODUCT_CATEGORIES[traderType]);
-
     const productName = `${category.name} ${faker.commerce.productAdjective()}`;
 
+    const price = parseFloat(faker.number.float({
+        min: category.priceRange[0],
+        max: category.priceRange[1],
+        fractionDigits: 2
+    }));
+
     pools.productIds.push(id);
+    pools.productPrices[id] = price;
+    pools.productTraderType[id] = traderType;
 
     if (!pools.productsByTrader[traderType]) {
         pools.productsByTrader[traderType] = [];
@@ -191,21 +240,21 @@ const genProduct = () => {
         "doc-type": "product",
         "id": id,
         "name": productName,
-        "price": parseFloat(faker.number.float({
-            min: category.priceRange[0],
-            max: category.priceRange[1],
-            fractionDigits: 2
-        })),
+        "price": price,
         "quantity": faker.number.int({ min: 50, max: 1000 }),
         "trader-type": traderType,
         "deleted": false
     };
 
-    const isNearExpiry = Math.random() < 0.2;
-    product["expiry-date"] = faker.date.between({
-        from: isNearExpiry ? '2026-03-15' : '2026-04-15',
-        to: isNearExpiry ? '2026-04-14' : '2027-12-31'
-    }).toISOString();
+    if (category.expiry) {
+        const isNearExpiry = Math.random() < 0.2;
+        product["expiry-date"] = faker.date.between({
+            from: isNearExpiry ? '2026-03-15' : '2026-04-15',
+            to: isNearExpiry ? '2026-04-14' : '2027-12-31'
+        }).toISOString();
+    } else {
+        product["expiry-date"] = null;
+    }
 
     return product;
 };
@@ -222,13 +271,13 @@ const genOrder = () => {
 
     const orderDate = faker.date.between({ from: '2024-01-01', to: '2026-01-28' });
     pools.orderDates[id] = orderDate;
-    const status = faker.helpers.weightedArrayElement([
-        { weight: 30, value: "COMPLETED" },
-        { weight: 30, value: "FULFILLED" },
-        { weight: 20, value: "APPROVED" },
-        { weight: 10, value: "PENDING" },
-        { weight: 10, value: "CANCELLED" }
-    ]);
+
+    const traderType = faker.helpers.arrayElement(TRADER_TYPES);
+    pools.orderTraderTypes[id] = traderType;
+
+    const profile = FULFILLMENT_PROFILES[traderType];
+    const leadDays = faker.number.int({ min: profile.minLeadDays, max: profile.maxLeadDays });
+    const expectedFulfillmentDate = new Date(orderDate.getTime() + leadDays * 24 * 60 * 60 * 1000);
 
     const numProducts = faker.helpers.weightedArrayElement([
         { weight: 10, value: 1 },
@@ -241,11 +290,10 @@ const genOrder = () => {
         { weight: 5, value: 8 }
     ]);
 
-    const traderType = faker.helpers.arrayElement(TRADER_TYPES);
     const availableProducts = pools.productsByTrader[traderType] || pools.productIds;
-
     const selectedProducts = new Set();
     const products = [];
+    let totalCost = 0;
 
     for (let i = 0; i < numProducts; i++) {
         let productId;
@@ -265,85 +313,58 @@ const genOrder = () => {
                 { weight: 5, value: 5 }
             ]);
             products.push({ "product_id": productId, "quantity": quantity });
+
+            const price = pools.productPrices[productId] || 0;
+            totalCost += price * quantity;
         }
     }
 
-    const baseCost = products.length * faker.number.float({ min: 200, max: 800, fractionDigits: 2 });
-    const totalCost = parseFloat(baseCost.toFixed(2));
+    totalCost = parseFloat(totalCost.toFixed(2));
+
+    const dateFeatures = getDerivedDateFeatures(orderDate);
+
+    const statusWeights = computeStatusWeights(traderType, totalCost, leadDays, products.length);
+    const status = faker.helpers.weightedArrayElement(statusWeights);
 
     return {
         "doc-type": "order",
         "id": id,
         "user-id": userId,
+        "trader-type": traderType,
         "status": status,
         "created-date": orderDate.toISOString(),
+        "day-of-week": dateFeatures["day-of-week"],
+        "month": dateFeatures["month"],
+        "quarter": dateFeatures["quarter"],
+        "expected-fulfillment-date": expectedFulfillmentDate.toISOString(),
+        "lead-days": leadDays,
         "products": products,
+        "num-products": products.length,
         "receipts-ids": [],
         "total-cost": totalCost,
         "deleted": false
     };
 };
 
-const initVersatileUsers = () => {
-    pools.versatileUserIds = new Set(
-        faker.helpers.arrayElements(pools.userIds, VERSATILE_USER_COUNT)
-    );
-    console.log(`Designated ${VERSATILE_USER_COUNT} versatile buyers.`);
-};
-
 const genReceipt = () => {
     const receiptId = faker.string.uuid();
 
-    let userId, traderId;
+    const orderId = faker.helpers.arrayElement(pools.orderIds);
+    const userId = pools.orderUsers?.[orderId] || faker.helpers.arrayElement(pools.userIds);
 
-    // For versatile users: bias toward uncovered trader types so they hit >= 3
-    if (pools.versatileUserIds && Math.random() < VERSATILE_RECEIPT_RATIO) {
-        userId = faker.helpers.arrayElement([...pools.versatileUserIds]);
-
-        if (!pools.versatileUserCoverage[userId]) {
-            pools.versatileUserCoverage[userId] = new Set();
-        }
-
-        const covered = pools.versatileUserCoverage[userId];
-        const uncovered = TRADER_TYPES.filter(t => !covered.has(t));
-
-        // Prioritise an uncovered type until all 4 are hit; then pick randomly
-        const targetType = uncovered.length > 0
-            ? faker.helpers.arrayElement(uncovered)
-            : faker.helpers.arrayElement(TRADER_TYPES);
-
-        const tradersOfType = pools.tradersByType[targetType] || pools.traderIds;
-        traderId = faker.helpers.arrayElement(tradersOfType);
-
-        // Mark this trader type as covered for this user
-        covered.add(pools.traderTypeMap[traderId]);
-    } else {
-        userId = faker.helpers.arrayElement(pools.userIds);
-        traderId = faker.helpers.arrayElement(pools.traderIds);
-    }
-
-    // NOW grab the user's orders, because userId actually exists!
-    const userOrdersList = pools.userOrders[userId];
-
-    // Fallback to a random order ONLY if the user somehow generated 0 orders
-    const orderId = (userOrdersList && userOrdersList.length > 0)
-        ? faker.helpers.arrayElement(userOrdersList)
-        : faker.helpers.arrayElement(pools.orderIds);
-
-    const orderUserId = pools.orderUsers?.[orderId];
-    if (orderUserId) userId = orderUserId;
+    const orderTraderType = pools.orderTraderTypes[orderId];
+    const tradersOfType = pools.tradersByType[orderTraderType] || pools.traderIds;
+    const traderId = faker.helpers.arrayElement(tradersOfType);
 
     pools.traderReceipts[traderId].push(receiptId);
     pools.orderReceipts[orderId].push(receiptId);
 
-    // Use a recent date so the Flink query's 30-day window is satisfied
     const orderDate = pools.orderDates[orderId] || new Date('2025-01-01');
-    const minReceiptDate = new Date(orderDate.getTime() + 1 * 24 * 60 * 60 * 1000);  // +1 day minimum
-    const maxReceiptDate = new Date(orderDate.getTime() + 90 * 24 * 60 * 60 * 1000);
-    const receiptDate = faker.date.between({
-        from: minReceiptDate,
-        to: maxReceiptDate
-    });
+
+    const profile = FULFILLMENT_PROFILES[orderTraderType];
+    const minReceiptDate = new Date(orderDate.getTime() + profile.minLeadDays * 24 * 60 * 60 * 1000);
+    const maxReceiptDate = new Date(orderDate.getTime() + profile.maxLeadDays * 24 * 60 * 60 * 1000);
+    const receiptDate = faker.date.between({ from: minReceiptDate, to: maxReceiptDate });
 
     const status = faker.helpers.weightedArrayElement([
         { weight: 85, value: "COMPLETED" },
@@ -360,14 +381,16 @@ const genReceipt = () => {
         { weight: 5, value: 6 }
     ]);
 
+    const availableProducts = pools.productsByTrader[orderTraderType] || pools.productIds;
     const selectedProducts = new Set();
     const products = [];
+    let totalCost = 0;
 
     for (let i = 0; i < numProducts; i++) {
         let productId;
         let attempts = 0;
         do {
-            productId = faker.helpers.arrayElement(pools.productIds);
+            productId = faker.helpers.arrayElement(availableProducts);
             attempts++;
         } while (selectedProducts.has(productId) && attempts < 10);
 
@@ -381,6 +404,10 @@ const genReceipt = () => {
                 { weight: 3, value: 5 }
             ]);
             products.push({ "product_id": productId, "quantity": quantity });
+
+            const price = pools.productPrices[productId] || 0;
+            totalCost += price * quantity;
+
             pools.traderProducts[traderId].push({
                 "product_id": productId,
                 "quantity": faker.number.int({ min: 10, max: 500 })
@@ -388,8 +415,9 @@ const genReceipt = () => {
         }
     }
 
-    const baseCost = products.length * faker.number.float({ min: 150, max: 700, fractionDigits: 2 });
-    const totalCost = parseFloat(baseCost.toFixed(2));
+    totalCost = parseFloat(totalCost.toFixed(2));
+
+    const dateFeatures = getDerivedDateFeatures(receiptDate);
 
     const receipt = {
         "doc-type": "receipt",
@@ -397,8 +425,13 @@ const genReceipt = () => {
         "trader-id": traderId,
         "user-id": userId,
         "order-id": orderId,
+        "trader-type": orderTraderType,
         "products": products,
+        "num-products": products.length,
         "date": receiptDate.toISOString(),
+        "day-of-week": dateFeatures["day-of-week"],
+        "month": dateFeatures["month"],
+        "quarter": dateFeatures["quarter"],
         "total-cost": totalCost,
         "status": status,
         "deleted": false
@@ -409,15 +442,15 @@ const genReceipt = () => {
         receipt["cancelled-date"] = cancelledDate.toISOString();
         receipt["cancelled-by"] = faker.helpers.arrayElement([userId, traderId]);
     } else {
-        receipt["cancelled-date"] = "";
-        receipt["cancelled-by"] = "";
+        receipt["cancelled-date"] = null;
+        receipt["cancelled-by"] = null;
     }
 
     return receipt;
 };
 
 const updateUsersWithRelationships = () => {
-    console.log("Updating users with order IDs...");
+    console.log("Updating users with order IDs and purchase stats...");
     const users = [];
     const usersStream = fs.createReadStream('users.jsonl', 'utf8');
     let buffer = '';
@@ -430,7 +463,9 @@ const updateUsersWithRelationships = () => {
             lines.forEach(line => {
                 if (line.trim()) {
                     const user = JSON.parse(line);
-                    user['orders-ids'] = pools.userOrders[user.id] || [];
+                    const orderIds = pools.userOrders[user.id] || [];
+                    user['orders-ids'] = orderIds;
+                    user['order-count'] = orderIds.length;
                     users.push(user);
                 }
             });
@@ -438,13 +473,15 @@ const updateUsersWithRelationships = () => {
         usersStream.on('end', () => {
             if (buffer.trim()) {
                 const user = JSON.parse(buffer);
-                user['orders-ids'] = pools.userOrders[user.id] || [];
+                const orderIds = pools.userOrders[user.id] || [];
+                user['orders-ids'] = orderIds;
+                user['order-count'] = orderIds.length;
                 users.push(user);
             }
             const stream = fs.createWriteStream('users.jsonl');
             users.forEach(user => stream.write(JSON.stringify(user) + '\n'));
             stream.end();
-            console.log(`Updated users.jsonl with relationships`);
+            console.log(`Updated users.jsonl with relationships and order-count`);
             resolve();
         });
     });
@@ -542,14 +579,7 @@ const runAll = async () => {
     await writeJSONL('traders.jsonl', COUNTS.traders, genTrader);
     await writeJSONL('products.jsonl', COUNTS.products, genProduct);
     await writeJSONL('orders.jsonl', COUNTS.orders, genOrder);
-
-    initVersatileUsers();
-
     await writeJSONL('receipts.jsonl', COUNTS.receipts, genReceipt);
-
-    const coverage = Object.values(pools.versatileUserCoverage);
-    const fullyVersatile = coverage.filter(s => s.size >= 3).length;
-    console.log(`Versatile users with >= 3 trader types covered: ${fullyVersatile} / ${VERSATILE_USER_COUNT}`);
 
     await updateUsersWithRelationships();
     await updateTradersWithRelationships();
