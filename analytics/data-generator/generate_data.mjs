@@ -2,11 +2,11 @@ import { fakerSR_RS_latin as faker } from '@faker-js/faker';
 import fs from "fs";
 
 const COUNTS = {
-    users: 50000,
-    traders: 5000,
-    products: 20000,
-    orders: 500000,
-    receipts: 500000
+    users: 80000,
+    traders: 8000,
+    products: 50000,
+    orders: 800000,
+    receipts: 800000
 };
 
 const TRADER_TYPES = ["SUPERMARKET", "PHARMACY", "GROCERY", "CARDEALER"];

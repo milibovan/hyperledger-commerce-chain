@@ -98,3 +98,4 @@ plan
 *.tfgraph
 *_plan.json
 *.log
+*.jsonl
