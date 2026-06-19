@@ -99,3 +99,4 @@ plan
 *_plan.json
 *.log
 *.jsonl
+*.parquet
