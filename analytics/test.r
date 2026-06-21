@@ -568,6 +568,18 @@ trader_window <- user_window %>%
   ) %>%
   ungroup()
 
+# receipts_by_order <- receipts_cleaned %>%
+#   group_by(order_id) %>%
+#   summarise(
+#     receipt_count = n(),
+#     receipt_total_cost = sum(total_cost, na.rm = TRUE),
+#     receipt_avg_cost = mean(total_cost, na.rm = TRUE),
+#     receipt_cancelled_count = sum(ifelse(status == "CANCELLED", 1, 0)),
+#     receipt_completed_count = sum(ifelse(status == "COMPLETED", 1, 0)),
+#     has_receipt = 1L
+#   ) %>%
+#   ungroup()
+
 orders_features <- trader_window %>%
   mutate(
     user_order_count = ifelse(is.na(user_order_count), 0, user_order_count),
@@ -622,5 +634,44 @@ for (s in statuses) {
 
 train <- sdf_bind_rows(train_list)
 test <- sdf_bind_rows(test_list)
+
+metrics <- c("f1", "accuracy", "weightedPrecision", "weightedRecall")
+evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = "f1")
+
+lr <- ml_logistic_regression(sc, features_col = "features", label_col = "label")
+
+lr_grid <- list(
+  logistic_regression = list(
+    reg_param = c(0.01, 0.1, 0.5),
+    elastic_net_param = c(0.0, 0.5, 1.0)
+  )
+)
+
+lr_cv <- ml_cross_validator(
+  sc,
+  estimator = lr,
+  estimator_param_maps = lr_grid,
+  evaluator = evaluator,
+  num_folds = 3
+)
+
+lr_cv_model <- ml_fit(lr_cv, train)
+
+lr_results <- ml_validation_metrics(lr_cv_model)
+print("LR Performances per scenario:")
+print(lr_results)
+
+best_model <- lr_cv_model$best_model
+
+test_pred <- ml_transform(best_model, test)
+
+test_metrics <- lapply(metrics, function(m) {
+  ev <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = m)
+  ml_evaluate(ev, test_pred)
+})
+names(test_metrics) <- metrics
+
+print("Test metrics:")
+print(test_metrics)
 
 # spark_disconnect(sc)
