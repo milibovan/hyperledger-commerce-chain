@@ -205,7 +205,18 @@ analyze_boolean <- function(spark_df, col_name) {
     collect()
 
   counts_df$Pct <- round(100 * counts_df$Frequency / total_rows, 2)
+
   colnames(counts_df)[1] <- "Value"
+
+  p <- ggplot(counts_df, aes(x = factor(Value), y = Pct, fill = factor(Value))) +
+    geom_col() +
+    geom_text(aes(label = paste0(Pct, "%")), vjust = -0.3) +
+    labs(title = paste("orders_cleaned -", col[[1]]),
+         x = col[[1]], y = "Percentage (%)") +
+    theme_minimal() +
+    theme(legend.position = "none")
+
+  print(p)
 
   print(counts_df)
 
@@ -244,38 +255,183 @@ analyze_string <- function(spark_df, col_name, top_n = 5, is_id_like = FALSE) {
 
     print(dup_examples)
   }
-  p <- ggplot(top_n_df, aes(x = reorder(Value, Frequency), y = Pct_Of_Total)) +
-    geom_col(fill = "steelblue") +
-    geom_text(aes(label = paste0(Pct_Of_Total, "%")), hjust = -0.1) +
-    coord_flip() +
-    labs(title = paste("Top", top_n, "-", col_name),
-         x = col_name, y = "Procenat (%)") +
-    theme_minimal()
+  should_plot <- !is_id_like && sum(top_n_df$Pct_Of_Total) >= 1
 
-  print(p)
+  if (should_plot) {
+    p <- ggplot(top_n_df, aes(x = reorder(Value, Frequency), y = Pct_Of_Total)) +
+      geom_col(fill = "steelblue") +
+      geom_text(aes(label = paste0(Pct_Of_Total, "%")), hjust = -0.1) +
+      coord_flip() +
+      labs(title = paste("Top", top_n, "-", col_name),
+           x = col_name, y = "Percentage (%)") +
+      theme_minimal()
+
+    print(p)
+  }
 
   invisible(list(cardinality = cardinality, top_n = top_n_df))
 }
 
-cols <- sdf_schema(users_cleaned)
-for (col in cols) {
-  cat("Name: ", col[[1]], "\t", "Type: ", col[[2]], "\n")
-  if (col[[2]] == "BooleanType") {
-    plot_df <- analyze_boolean(users_cleaned, col[[1]])
+# analyze_numeric <- function(spark_df, col_name) {
+#   minimum <- spark_df %>%
+#     summarise(min_value = min(!!sym(col_name), na.rm = TRUE)) %>%
+#     collect()
+#
+#   maximum <- spark_df %>%
+#     summarise(max_value = max(!!sym(col_name), na.rm = TRUE)) %>%
+#     collect()
+#
+#   median <- spark_df %>%
+#     summarise(mean_value = mean(!!sym(col_name), na.rm = TRUE)) %>%
+#     collect()
+#
+#   average <- spark_df %>%
+#     summarise(avg_value = average(!!sym(col_name), na.rm = TRUE)) %>%
+#     collect()
+#
+#   quantile <- spark_df %>%
+#     summarise(qua_value = quantile(!!sym(col_name), na.rm = TRUE)) %>%
+#     collect()
+#
+#   print(minimum, maximum, median, average, quantile)
+# }
 
-    p <- ggplot(plot_df, aes(x = factor(Value), y = Pct, fill = factor(Value))) +
-      geom_col() +
-      geom_text(aes(label = paste0(Pct, "%")), vjust = -0.3) +
-      labs(title = paste("users_cleaned -", col[[1]]),
-           x = col[[1]], y = "Procenat (%)") +
-      theme_minimal() +
-      theme(legend.position = "none")
+analyze_numeric <- function(spark_df, col_name) {
+  stats <- spark_df %>%
+    summarise(
+      Min = min(!!sym(col_name)),
+      Max = max(!!sym(col_name)),
+      Prosek = mean(!!sym(col_name)),
+      Std_Dev = sd(!!sym(col_name)),
 
-    print(p)
-  } else if (col[[2]] == "StringType") {
-    is_id <- grepl("id", col[[1]], ignore.case = TRUE)
-    analyze_string(users_cleaned, col[[1]], top_n = 5, is_id_like = is_id)
+      Median = percentile_approx(!!sym(col_name), 0.5),
+
+      Quantile_25 = percentile_approx(!!sym(col_name), 0.25),
+      Quantile_75 = percentile_approx(!!sym(col_name), 0.75)
+    ) %>%
+    collect()
+
+  data <- data.frame(
+    Metrika = colnames(stats),
+    Vrednost = as.numeric(stats[1,])
+  )
+
+  if (is.finite(stats$Min[1]) &&
+    is.finite(stats$Max[1]) &&
+    stats$Max[1] > stats$Min[1]) {
+    n_bins <- 30
+    splits <- seq(stats$Min[1], stats$Max[1], length.out = n_bins + 1)
+    splits[1] <- -Inf
+    splits[length(splits)] <- Inf
+
+    binned <- spark_df %>%
+      filter(!is.na(!!sym(col_name))) %>%
+      ft_bucketizer(input_col = col_name, output_col = "bucket", splits = splits) %>%
+      group_by(bucket) %>%
+      summarise(count = n()) %>%
+      collect() %>%
+      arrange(bucket)
+
+    binned$bin_center <- (splits[binned$bucket + 1] + splits[binned$bucket + 2]) / 2
+    binned$bin_center[binned$bucket == 0] <- stats$Min[1]
+    binned$bin_center[binned$bucket == n_bins - 1] <- stats$Max[1]
+
+    p_hist <- ggplot(binned, aes(x = bin_center, y = count)) +
+      geom_col(fill = "steelblue", width = (stats$Max[1] - stats$Min[1]) / n_bins * 0.9) +
+      labs(title = paste("Distribucija -", col_name),
+           x = col_name, y = "Broj zapisa") +
+      theme_minimal()
+
+    print(p_hist)
+  }
+
+  box_df <- data.frame(
+    x = col_name,
+    ymin = stats$Min[1],
+    lower = stats$Quantile_25[1],
+    middle = stats$Median[1],
+    upper = stats$Quantile_75[1],
+    ymax = stats$Max[1]
+  )
+
+  p_box <- ggplot(box_df, aes(x = x)) +
+    geom_boxplot(aes(ymin = ymin, lower = lower, middle = middle, upper = upper, ymax = ymax),
+                 stat = "identity", fill = "lightblue") +
+    labs(title = paste("Boxplot -", col_name), x = "", y = col_name) +
+    theme_minimal()
+
+  print(p_box)
+
+  print(data)
+}
+
+analyze_timestamp <- function(spark_df, col_name) {
+  stats <- spark_df %>%
+    summarise(
+      Min = min(!!sym(col_name), na.rm = TRUE),
+      Max = max(!!sym(col_name), na.rm = TRUE)
+    ) %>%
+    collect()
+
+  min_date <- stats$Min[1]
+  max_date <- stats$Max[1]
+  day_span <- as.numeric(difftime(max_date, min_date, units = "days"))
+
+  data <- data.frame(
+    Metrics = c("Min", "Max", "Span (days)"),
+    Value = c(as.character(min_date), as.character(max_date), round(day_span, 1))
+  )
+
+  monthly <- spark_df %>%
+    filter(!is.na(!!sym(col_name))) %>%
+    mutate(year_month = date_format(!!sym(col_name), "yyyy-MM")) %>%
+    group_by(year_month) %>%
+    summarise(count = n()) %>%
+    arrange(year_month) %>%
+    collect()
+
+  p <- ggplot(monthly, aes(x = year_month, y = count, group = 1)) +
+    geom_line(color = "steelblue") +
+    geom_point(color = "steelblue") +
+    labs(title = paste("Broj zapisa po mesecu -", col_name),
+         x = "Godina-Mesec", y = "Broj zapisa") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+  print(p)
+
+  print(data)
+
+  invisible(list(min = min_date, max = max_date, range_days = day_span))
+}
+
+analyze_and_visualize <- function(data) {
+  cols <- sdf_schema(data)
+  for (col in cols) {
+    cat("Name: ", col[[1]], "\t", "Type: ", col[[2]], "\n")
+    if (col[[2]] == "BooleanType") {
+      plot_df <- analyze_boolean(data, col[[1]])
+    } else if (col[[2]] == "StringType") {
+      is_id <- grepl("id", col[[1]], ignore.case = TRUE)
+      analyze_string(data, col[[1]], top_n = 5, is_id_like = is_id)
+    } else if (col[[2]] == "DoubleType" ||
+      col[[2]] == "IntegerType" ||
+      col[[2]] == "LongType") {
+      analyze_numeric(data, col[[1]])
+    } else if (col[[2]] == "TimestampType") {
+      analyze_timestamp(data, col[[1]])
+    }
   }
 }
+
+analyze_and_visualize(users_cleaned)
+analyze_and_visualize(traders_cleaned)
+analyze_and_visualize(products_cleaned)
+
+analyze_and_visualize(orders_cleaned)
+analyze_and_visualize(receipts_cleaned)
+analyze_and_visualize(order_products_cleaned)
+analyze_and_visualize(receipt_products_cleaned)
+analyze_and_visualize(trader_products_cleaned)
 
 # spark_disconnect(sc)
