@@ -82,4 +82,92 @@ trader_products <- load_and_inspect(sc, "trader_products", paste0(path, "/trader
 #        x = "Entity.Column", y = "% NA") +
 #   theme_minimal()
 
+# Cleaning data
+clean_data <- function(spark_df, df_name) {
+  na_table <- spark_df %>%
+    summarise(across(everything(), ~ sum(as.integer(is.na(.))))) %>%
+    collect()
+
+  total_rows <- sdf_nrow(spark_df)
+  if (total_rows == 0) return(spark_df)
+
+  na_summary <- data.frame(
+    Column = colnames(na_table),
+    No_NA = as.numeric(na_table[1, ]),
+    Pct_Missing = round(100 * as.numeric(na_table[1, ]) / total_rows, 2)
+  )
+
+  cols_to_drop <- na_summary %>% filter(Pct_Missing > 0 & Pct_Missing < 15) %>% pull(Column)
+  cols_to_fill <- na_summary %>% filter(Pct_Missing >= 15) %>% pull(Column)
+
+  cleaned_df <- spark_df
+
+  if (length(cols_to_drop) > 0) {
+    for (col in cols_to_drop) {
+      cleaned_df <- cleaned_df %>% filter(!is.na(!!sym(col)))
+    }
+  }
+
+  col_types <- sdf_schema(cleaned_df)
+
+  if (length(cols_to_fill) > 0) {
+    for (col in cols_to_fill) {
+      col_type <- col_types[[col]]$type
+
+      if (col %in% c("cancelled_date", "cancelled_by")) {
+        cleaned_df <- cleaned_df %>%
+          mutate(!!sym(col) := ifelse(is.na(!!sym(col)), "Not Cancelled", as.character(!!sym(col))))
+      } else if (col == "expiry_date") {
+        cleaned_df <- cleaned_df %>%
+          mutate(!!sym(col) := ifelse(is.na(!!sym(col)), "No Expiry Date", as.character(!!sym(col))))
+      } else if (col_type %in% c("DoubleType", "IntegerType", "LongType", "FloatType")) {
+        med_val <- cleaned_df %>% summarise(m = percentile_approx(!!sym(col), 0.5, na.rm = TRUE)) %>% pull(m)
+        cleaned_df <- cleaned_df %>%
+          mutate(!!sym(col) := ifelse(is.na(!!sym(col)), med_val, !!sym(col)))
+      } else if (col_type %in% c("TimestampType", "DateType")) {
+        cleaned_df <- cleaned_df
+      } else {
+        cleaned_df <- cleaned_df %>%
+          mutate(!!sym(col) := ifelse(is.na(!!sym(col)), "Unknown", !!sym(col)))
+      }
+    }
+  }
+
+  return(cleaned_df)
+}
+
+users_cleaned    <- clean_data(users, "users")
+traders_cleaned  <- clean_data(traders, "traders")
+products_cleaned <- clean_data(products, "products")
+
+orders_cleaned <- clean_data(orders, "orders") %>%
+  inner_join(users_cleaned %>% select(id), by = c("user_id" = "id"))
+
+receipts_cleaned <- clean_data(receipts, "receipts") %>%
+  inner_join(orders_cleaned %>% select(id), by = c("order_id" = "id")) %>%
+  inner_join(traders_cleaned %>% select(id), by = c("trader_id" = "id")) %>%
+  inner_join(users_cleaned %>% select(id), by = c("user_id" = "id"))
+
+order_products_cleaned <- clean_data(order_products, "order_products") %>%
+  inner_join(orders_cleaned %>% select(id), by = c("order_id" = "id")) %>%
+  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id"))
+
+receipt_products_cleaned <- clean_data(receipt_products, "receipt_products") %>%
+  inner_join(receipts_cleaned %>% select(id), by = c("receipt_id" = "id")) %>%
+  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id"))
+
+trader_products_cleaned <- clean_data(trader_products, "trader_products") %>%
+  inner_join(traders_cleaned %>% select(id), by = c("trader_id" = "id")) %>%
+  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id"))
+
+
+# CLEANING SUMMARY
+# for (nm in c("users", "traders", "products", "orders", "receipts",
+#              "order_products", "receipt_products", "trader_products")) {
+#   orig <- get(nm)
+#   cleaned <- get(paste0(nm, "_cleaned"))
+#   cat(sprintf("%-20s %10d -> %10d rows (%.2f%% retained)\n",
+#               nm, sdf_nrow(orig), sdf_nrow(cleaned),
+#               100 * sdf_nrow(cleaned) / sdf_nrow(orig)))
+# }
 # spark_disconnect(sc)
