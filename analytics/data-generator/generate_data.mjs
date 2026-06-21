@@ -349,7 +349,7 @@ const genUser = () => {
         "name": faker.person.firstName(),
         "surname": faker.person.lastName(),
         "email": Math.random() < 0.08 ? null : faker.internet.email(),
-        "deleted": false
+        "deleted": Math.random() < 0.05 ? true : false
     };
 
     return applyRandomMissing(user, ["name", "surname"]);
@@ -380,7 +380,7 @@ const genTrader = () => {
         "email": faker.internet.email(),
         "trader_type": traderType,
         "vat": "VAT_" + faker.string.alphanumeric(8).toUpperCase(),
-        "deleted": false
+        "deleted": Math.random() < 0.05 ? true : false
     };
 
     return applyRandomMissing(trader, ["name", "email", "vat"]);
@@ -416,7 +416,7 @@ const genProduct = () => {
             ? null
             : faker.number.int({ min: 50, max: 1000 }),
         "trader_type": traderType,
-        "deleted": false
+        "deleted": Math.random() < 0.05 ? true : false
     };
 
     if (category.expiry) {
@@ -524,7 +524,7 @@ const genOrder = () => {
         "lead_days": missingFulfillment ? null : leadDays,
         "num_products": selectedProducts.size,
         "total_cost": totalCost,
-        "deleted": false
+        "deleted": Math.random() < 0.05 ? true : false
     };
 
     return applyRandomMissing(order, ["total_cost", "num_products"]);
@@ -624,7 +624,7 @@ const genReceipt = () => {
         "quarter": dateFeatures["quarter"],
         "total_cost": status === "IN_PROGRESS" && Math.random() < 0.25 ? null : totalCost,
         "status": status,
-        "deleted": false
+        "deleted": Math.random() < 0.05 ? true : false
     };
 
     if (status === "CANCELLED") {
