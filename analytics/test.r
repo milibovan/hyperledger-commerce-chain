@@ -195,37 +195,86 @@ trader_products_cleaned <- clean_data(trader_products, "trader_products") %>%
 # show_columns(receipt_products_cleaned)
 # show_columns(trader_products_cleaned)
 
-# Data visualization and visualization
-analyze_boolean <- function(data) {
-  percentages <- prop.table(table(data)) * 100
-  percentages
+# Data analysis and visualization
+analyze_boolean <- function(spark_df, col_name) {
+  total_rows <- sdf_nrow(spark_df)
+
+  counts_df <- spark_df %>%
+    group_by(!!sym(col_name)) %>%
+    summarise(Frequency = n()) %>%
+    collect()
+
+  counts_df$Pct <- round(100 * counts_df$Frequency / total_rows, 2)
+  colnames(counts_df)[1] <- "Value"
+
+  print(counts_df)
+
+  counts_df
+}
+
+analyze_string <- function(spark_df, col_name, top_n = 5, is_id_like = FALSE) {
+  total_rows <- sdf_nrow(spark_df)
+
+  cardinality <- spark_df %>%
+    summarise(n_distinct = n_distinct(!!sym(col_name))) %>%
+    pull(n_distinct)
+
+  top_n_df <- spark_df %>%
+    group_by(!!sym(col_name)) %>%
+    summarise(Frequency = n()) %>%
+    arrange(desc(Frequency)) %>%
+    head(top_n) %>%
+    collect()
+
+  top_n_df$Pct_Of_Total <- round(100 * top_n_df$Frequency / total_rows, 2)
+  colnames(top_n_df)[1] <- "Value"
+
+  print(top_n_df)
+
+  if (is_id_like) {
+    duplicates <- total_rows - cardinality
+
+    dup_examples <- spark_df %>%
+      group_by(!!sym(col_name)) %>%
+      summarise(Count = n()) %>%
+      filter(Count > 1) %>%
+      arrange(desc(Count)) %>%
+      head(5) %>%
+      collect()
+
+    print(dup_examples)
+  }
+  p <- ggplot(top_n_df, aes(x = reorder(Value, Frequency), y = Pct_Of_Total)) +
+    geom_col(fill = "steelblue") +
+    geom_text(aes(label = paste0(Pct_Of_Total, "%")), hjust = -0.1) +
+    coord_flip() +
+    labs(title = paste("Top", top_n, "-", col_name),
+         x = col_name, y = "Procenat (%)") +
+    theme_minimal()
+
+  print(p)
+
+  invisible(list(cardinality = cardinality, top_n = top_n_df))
 }
 
 cols <- sdf_schema(users_cleaned)
 for (col in cols) {
   cat("Name: ", col[[1]], "\t", "Type: ", col[[2]], "\n")
   if (col[[2]] == "BooleanType") {
-    col_data <- users_cleaned %>%
-      select(!!sym(col[[1]])) %>%
-      collect() %>%
-      pull(1)
-    percentages <- analyze_boolean(col_data)
-    print(percentages)
+    plot_df <- analyze_boolean(users_cleaned, col[[1]])
 
-    plot_df <- data.frame(
-      Value = names(percentages),
-      Pct = as.numeric(percentages)
-    )
-
-    p <- ggplot(plot_df, aes(x = Value, y = Pct, fill = Value)) +
+    p <- ggplot(plot_df, aes(x = factor(Value), y = Pct, fill = factor(Value))) +
       geom_col() +
-      geom_text(aes(label = paste0(round(Pct, 2), "%")), vjust = -0.3) +
+      geom_text(aes(label = paste0(Pct, "%")), vjust = -0.3) +
       labs(title = paste("users_cleaned -", col[[1]]),
            x = col[[1]], y = "Procenat (%)") +
       theme_minimal() +
       theme(legend.position = "none")
 
     print(p)
+  } else if (col[[2]] == "StringType") {
+    is_id <- grepl("id", col[[1]], ignore.case = TRUE)
+    analyze_string(users_cleaned, col[[1]], top_n = 5, is_id_like = is_id)
   }
 }
 
