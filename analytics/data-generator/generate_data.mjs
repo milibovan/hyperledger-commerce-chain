@@ -34,7 +34,9 @@ const pools = {
     orderDates: {},
     orderTraderTypes: {},
     productPrices: {},
-    productTraderType: {}
+    productTraderType: {},
+    orderProductRows: [],
+    receiptProductRows: []
 };
 
 const PRODUCT_CATEGORIES = {
@@ -110,6 +112,30 @@ const PRODUCT_CATEGORIES = {
     ]
 };
 
+const maybeMissing = (value, chance = 0.01) =>
+    Math.random() < chance ? null : value;
+
+const applyRandomMissing = (record, fields, chance = 0.01) => {
+    for (const key of fields) {
+        if (record[key] !== null && record[key] !== undefined) {
+            record[key] = maybeMissing(record[key], chance);
+        }
+    }
+    return record;
+};
+
+const writeBridgeCSV = (filename, rows, headers) =>
+    new Promise((resolve, reject) => {
+        const stream = fs.createWriteStream(filename);
+        stream.write(headers.join(",") + "\n");
+        for (const row of rows) {
+            stream.write(toCSVRow(headers, row) + "\n");
+        }
+        stream.end(() => {
+            resolve();
+        });
+    });
+
 const computeStatusWeights = (traderType, totalCost, leadDays, numProducts) => {
     const base = {
         GROCERY: { COMPLETED: 50, FULFILLED: 25, APPROVED: 10, PENDING: 10, CANCELLED: 5 },
@@ -147,12 +173,9 @@ const computeStatusWeights = (traderType, totalCost, leadDays, numProducts) => {
     return Object.entries(weights).map(([value, weight]) => ({ value, weight }));
 };
 
-// ─── CSV helpers ───────────────────────────────────────────────────────────────
-
 const escapeCSV = (val) => {
     if (val === null || val === undefined) return "";
     const str = typeof val === "object" ? JSON.stringify(val) : String(val);
-    // Escape samo ako sadrzi zarez, newline ili navodnik
     if (str.includes(",") || str.includes("\n") || str.includes('"')) {
         return '"' + str.replace(/"/g, '""') + '"';
     }
@@ -173,7 +196,6 @@ const writeCSV = (filename, count, generator) =>
             if (i >= count) {
                 const elapsed = ((performance.now() - start) / 1000).toFixed(2);
                 stream.end(() => {
-                    console.log(`✅ ${filename} done — ${count} records in ${elapsed}s (drains: ${drainCount})`);
                     resolve();
                 });
                 return;
@@ -186,7 +208,6 @@ const writeCSV = (filename, count, generator) =>
 
             const record = generator();
 
-            // Header samo jednom, iz prvog recorda
             if (!headers) {
                 headers = Object.keys(record);
                 stream.write(headers.join(",") + "\n");
@@ -224,7 +245,6 @@ const rewriteCSV = (filename, transform) =>
                 return;
             }
 
-            // Parsiraj CSV red nazad u objekat
             const values = [];
             let current = "";
             let inQuotes = false;
@@ -250,7 +270,6 @@ const rewriteCSV = (filename, transform) =>
             const obj = {};
             headers.forEach((h, idx) => {
                 const raw = values[idx] ?? "";
-                // Pokusaj JSON parse za array/object polja
                 if (raw.startsWith("[") || raw.startsWith("{")) {
                     try { obj[h] = JSON.parse(raw); } catch { obj[h] = raw; }
                 } else if (raw === "") {
@@ -330,9 +349,10 @@ const genUser = () => {
         "name": faker.person.firstName(),
         "surname": faker.person.lastName(),
         "email": Math.random() < 0.08 ? null : faker.internet.email(),
-        "orders_ids": [],
         "deleted": false
     };
+
+    return applyRandomMissing(user, ["name", "surname"]);
 };
 
 const genTrader = () => {
@@ -353,17 +373,17 @@ const genTrader = () => {
         pools.productsByTrader[traderType] = [];
     }
 
-    return {
+    const trader = {
         "doc_type": "trader",
         "id": id,
         "name": faker.company.name(),
         "email": faker.internet.email(),
         "trader_type": traderType,
         "vat": "VAT_" + faker.string.alphanumeric(8).toUpperCase(),
-        "products_available": [],
-        "receipts_ids": [],
         "deleted": false
     };
+
+    return applyRandomMissing(trader, ["name", "email", "vat"]);
 };
 
 const genProduct = () => {
@@ -409,7 +429,7 @@ const genProduct = () => {
         product["expiry_date"] = null;
     }
 
-    return product;
+    return applyRandomMissing(product, ["name", "price"]);
 };
 
 const genOrder = () => {
@@ -445,8 +465,8 @@ const genOrder = () => {
 
     const availableProducts = pools.productsByTrader[traderType] || pools.productIds;
     const selectedProducts = new Set();
-    const products = [];
     let totalCost = 0;
+    let lineNo = 0;
 
     for (let i = 0; i < numProducts; i++) {
         let productId;
@@ -465,10 +485,18 @@ const genOrder = () => {
                 { weight: 10, value: 4 },
                 { weight: 5, value: 5 }
             ]);
-            products.push({ "product_id": productId, "quantity": quantity });
 
             const price = pools.productPrices[productId] || 0;
             totalCost += price * quantity;
+
+            // Bridge zapis umesto ugnježdenog niza
+            lineNo++;
+            pools.orderProductRows.push(applyRandomMissing({
+                "order_id": id,
+                "line_no": lineNo,
+                "product_id": productId,
+                "quantity": quantity
+            }, ["quantity"]));
         }
     }
 
@@ -476,13 +504,13 @@ const genOrder = () => {
 
     const dateFeatures = getDerivedDateFeatures(orderDate);
 
-    const statusWeights = computeStatusWeights(traderType, totalCost, leadDays, products.length);
+    const statusWeights = computeStatusWeights(traderType, totalCost, leadDays, selectedProducts.size);
     const status = faker.helpers.weightedArrayElement(statusWeights);
 
     const isCancelledOrPending = status === "CANCELLED" || status === "PENDING";
     const missingFulfillment = isCancelledOrPending && Math.random() < 0.35;
 
-    return {
+    const order = {
         "doc_type": "order",
         "id": id,
         "user_id": userId,
@@ -494,12 +522,12 @@ const genOrder = () => {
         "quarter": dateFeatures["quarter"],
         "expected_fulfillment_date": missingFulfillment ? null : expectedFulfillmentDate.toISOString(),
         "lead_days": missingFulfillment ? null : leadDays,
-        "products": products,
-        "num_products": products.length,
-        "receipts_ids": [],
+        "num_products": selectedProducts.size,
         "total_cost": totalCost,
         "deleted": false
     };
+
+    return applyRandomMissing(order, ["total_cost", "num_products"]);
 };
 
 const genReceipt = () => {
@@ -539,8 +567,8 @@ const genReceipt = () => {
 
     const availableProducts = pools.productsByTrader[orderTraderType] || pools.productIds;
     const selectedProducts = new Set();
-    const products = [];
     let totalCost = 0;
+    let lineNo = 0;
 
     for (let i = 0; i < numProducts; i++) {
         let productId;
@@ -559,10 +587,17 @@ const genReceipt = () => {
                 { weight: 7, value: 4 },
                 { weight: 3, value: 5 }
             ]);
-            products.push({ "product_id": productId, "quantity": quantity });
 
             const price = pools.productPrices[productId] || 0;
             totalCost += price * quantity;
+
+            lineNo++;
+            pools.receiptProductRows.push(applyRandomMissing({
+                "receipt_id": receiptId,
+                "line_no": lineNo,
+                "product_id": productId,
+                "quantity": quantity
+            }, ["quantity"]));
 
             pools.traderProducts[traderId].push({
                 "product_id": productId,
@@ -582,8 +617,7 @@ const genReceipt = () => {
         "user_id": userId,
         "order_id": orderId,
         "trader_type": orderTraderType,
-        "products": products,
-        "num_products": products.length,
+        "num_products": selectedProducts.size,
         "date": receiptDate.toISOString(),
         "day_of_week": dateFeatures["day_of_week"],
         "month": dateFeatures["month"],
@@ -602,7 +636,7 @@ const genReceipt = () => {
         receipt["cancelled_by"] = null;
     }
 
-    return receipt;
+    return applyRandomMissing(receipt, ["num_products"]);
 };
 
 const rewriteJSONL = (filename, transform) =>
@@ -634,39 +668,27 @@ const rewriteJSONL = (filename, transform) =>
         });
     });
 
-export const updateUsersWithRelationships = () => {
-    console.log("Updating users with order and request IDs...");
-    return rewriteCSV("./users.csv", (user) => ({
-        ...user,
-        "orders_ids":   pools.userOrders[user.id]   ?? [],
-    }));
-};
-
-export const updateTradersWithRelationships = () => {
-    console.log("Updating traders with product, receipt IDs...");
-    return rewriteCSV("./traders.csv", (trader) => {
+export const writeTraderProductsCSV = () => {
+    console.log("Writing trader_products.csv (deduped catalog)...");
+    const rows = [];
+    for (const [traderId, items] of Object.entries(pools.traderProducts)) {
         const productMap = new Map();
-        for (const p of pools.traderProducts[trader.id] ?? []) {
+        for (const p of items) {
             if (productMap.has(p.product_id)) {
                 productMap.get(p.product_id).quantity += p.quantity;
             } else {
                 productMap.set(p.product_id, { ...p });
             }
         }
-        return {
-            ...trader,
-            "products_available": Array.from(productMap.values()),
-            "receipts_ids":       pools.traderReceipts[trader.id]  ?? [],
-        };
-    });
-};
-
-export const updateOrdersWithReceipts = () => {
-    console.log("Updating orders with receipt IDs...");
-    return rewriteCSV("./orders.csv", (order) => ({
-        ...order,
-        "receipts_ids": pools.orderReceipts[order.id] ?? [],
-    }));
+        for (const p of productMap.values()) {
+            rows.push(applyRandomMissing({
+                "trader_id": traderId,
+                "product_id": p.product_id,
+                "available_quantity": p.quantity
+            }, ["available_quantity"]));
+        }
+    }
+    return writeBridgeCSV("./trader_products.csv", rows, ["trader_id", "product_id", "available_quantity"]);
 };
 
 const runAll = async () => {
@@ -677,9 +699,9 @@ const runAll = async () => {
     await writeCSV('orders.csv', COUNTS.orders, genOrder);
     await writeCSV('receipts.csv', COUNTS.receipts, genReceipt);
 
-    await updateUsersWithRelationships();
-    await updateTradersWithRelationships();
-    await updateOrdersWithReceipts();
+    await writeBridgeCSV('order_products.csv', pools.orderProductRows, ["order_id", "line_no", "product_id", "quantity"]);
+    await writeBridgeCSV('receipt_products.csv', pools.receiptProductRows, ["receipt_id", "line_no", "product_id", "quantity"]);
+    await writeTraderProductsCSV();
     console.log("✅ All data generated successfully with relationships!");
 };
 
