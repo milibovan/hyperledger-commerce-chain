@@ -2,7 +2,8 @@
 # install.packages("DBI")
 # install.packages("dplyr")
 # install.packages("ggplot2")
-# install.packages("dbplot")
+install.packages("dbplot")
+install.packages("scales")
 
 path <- "file:///C:/Users/MiliBovan/Desktop/master/hyperledger-commerce-chain/analytics/data-generator"
 
@@ -10,7 +11,8 @@ library(sparklyr)
 library(DBI)
 library(dplyr)
 library(ggplot2)
-# library(dbplot)
+library(dbplot)
+library(scales)
 
 spark_install(version = "3.3")
 
@@ -433,5 +435,116 @@ analyze_and_visualize(receipts_cleaned)
 analyze_and_visualize(order_products_cleaned)
 analyze_and_visualize(receipt_products_cleaned)
 analyze_and_visualize(trader_products_cleaned)
+
+analyze_trader_lead_days <- function(spark_df) {
+  summary_data <- spark_df %>%
+    filter(!is.na(trader_type) & !is.na(lead_days)) %>%
+    group_by(trader_type) %>%
+    summarise(mean_lead_days = mean(lead_days, na.rm = TRUE)) %>%
+    collect()
+
+  print(summary_data)
+
+  ggplot(summary_data, aes(x = trader_type, y = mean_lead_days, fill = trader_type)) +
+    geom_bar(stat = "identity", show.legend = FALSE) +
+    theme_minimal() +
+    labs(
+      title = "Average Lead Days by Trader Type",
+      x = "Trader Type",
+      y = "Mean Lead Days"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+analyze_status_total_cost <- function(spark_df) {
+  summary_data <- spark_df %>%
+    filter(!is.na(status) & !is.na(total_cost)) %>%
+    group_by(status) %>%
+    summarise(mean_total_cost = mean(total_cost, na.rm = TRUE)) %>%
+    collect()
+
+  print(summary_data)
+
+  ggplot(summary_data, aes(x = status, y = mean_total_cost, fill = status)) +
+    geom_bar(stat = "identity", show.legend = FALSE) +
+    theme_minimal() +
+    labs(
+      title = "Average Total Cost by Order Status",
+      x = "Order Status",
+      y = "Mean Total Cost"
+    )
+}
+
+analyze_trader_status_distribution <- function(spark_df) {
+  summary_data <- spark_df %>%
+    filter(!is.na(trader_type) & !is.na(status)) %>%
+    group_by(trader_type, status) %>%
+    count() %>%
+    collect()
+
+  print(summary_data)
+
+  ggplot(summary_data, aes(x = trader_type, y = n, fill = status)) +
+    geom_bar(stat = "identity", position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    theme_minimal() +
+    labs(
+      title = "Order Status Distribution by Trader Type",
+      x = "Trader Type",
+      y = "Percentage Share",
+      fill = "Order Status"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+analyze_num_products_status <- function(spark_df) {
+  summary_data <- spark_df %>%
+    filter(!is.na(num_products) & !is.na(status)) %>%
+    group_by(num_products, status) %>%
+    count() %>%
+    collect()
+
+  print(summary_data)
+
+  ggplot(summary_data, aes(x = factor(num_products), y = n, fill = status)) +
+    geom_bar(stat = "identity", position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    theme_minimal() +
+    labs(
+      title = "Order Status Breakdown by Number of Products",
+      x = "Number of Products in Order",
+      y = "Percentage Share",
+      fill = "Order Status"
+    )
+}
+
+analyze_trader_total_cost <- function(spark_df) {
+  summary_data <- spark_df %>%
+    filter(!is.na(trader_type) & !is.na(total_cost)) %>%
+    group_by(trader_type) %>%
+    summarise(
+      mean_total_cost = mean(total_cost, na.rm = TRUE),
+      median_total_cost = percentile_approx(total_cost, 0.5)
+    ) %>%
+    collect()
+
+  print(summary_data)
+
+  ggplot(summary_data, aes(x = trader_type, y = mean_total_cost, fill = trader_type)) +
+    geom_bar(stat = "identity", show.legend = FALSE) +
+    theme_minimal() +
+    labs(
+      title = "Average Total Cost by Trader Type",
+      x = "Trader Type",
+      y = "Mean Total Cost"
+    ) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+analyze_trader_lead_days(orders_cleaned)
+analyze_status_total_cost(orders_cleaned)
+analyze_trader_status_distribution(orders_cleaned)
+analyze_num_products_status(orders_cleaned)
+analyze_trader_total_cost(orders_cleaned)
 
 # spark_disconnect(sc)
