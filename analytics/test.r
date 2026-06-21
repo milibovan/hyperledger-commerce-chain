@@ -547,4 +547,80 @@ analyze_trader_status_distribution(orders_cleaned)
 analyze_num_products_status(orders_cleaned)
 analyze_trader_total_cost(orders_cleaned)
 
+# Classification
+user_window <- orders_cleaned %>%
+  arrange(user_id, created_date) %>%
+  group_by(user_id) %>%
+  mutate(
+    user_order_count = row_number() - 1,
+    user_avg_cost = (cumsum(total_cost) - total_cost) / pmax(row_number() - 1, 1),
+    user_cancelled_count = cumsum(ifelse(status == "CANCELLED", 1, 0)) -
+      ifelse(status == "CANCELLED", 1, 0)
+  ) %>%
+  ungroup()
+
+trader_window <- user_window %>%
+  arrange(trader_type, created_date) %>%
+  group_by(trader_type) %>%
+  mutate(
+    trader_order_count = row_number() - 1,
+    trader_avg_cost = (cumsum(total_cost) - total_cost) / pmax(row_number() - 1, 1)
+  ) %>%
+  ungroup()
+
+orders_features <- trader_window %>%
+  mutate(
+    user_order_count = ifelse(is.na(user_order_count), 0, user_order_count),
+    user_avg_cost = ifelse(is.na(user_avg_cost), 0, user_avg_cost),
+    user_cancelled_count = ifelse(is.na(user_cancelled_count), 0, user_cancelled_count),
+    trader_order_count = ifelse(is.na(trader_order_count), 0, trader_order_count),
+    trader_avg_cost = ifelse(is.na(trader_avg_cost), 0, trader_avg_cost)
+  )
+
+model_data <- orders_features %>%
+  ft_string_indexer(input_col = "trader_type", output_col = "trader_type_idx") %>%
+  ft_one_hot_encoder(input_col = "trader_type_idx", output_col = "trader_type_oh") %>%
+  ft_string_indexer(input_col = "day_of_week", output_col = "day_of_week_idx") %>%
+  ft_one_hot_encoder(input_col = "day_of_week_idx", output_col = "day_of_week_oh") %>%
+  ft_string_indexer(input_col = "status", output_col = "label")
+
+model_data <- model_data %>%
+  ft_vector_assembler(
+    input_cols = c("total_cost", "num_products", "lead_days",
+                   "user_order_count", "user_avg_cost", "user_cancelled_count",
+                   "trader_order_count", "trader_avg_cost"),
+    output_col = "numeric_features"
+  ) %>%
+  ft_standard_scaler(
+    input_col = "numeric_features",
+    output_col = "numeric_features_scaled"
+  )
+
+feature_cols <- c(
+  "trader_type_oh", "day_of_week_oh",
+  "numeric_features_scaled"
+)
+
+model_data <- model_data %>%
+  ft_vector_assembler(input_cols = feature_cols, output_col = "features")
+
+class_balance <- model_data %>% count(status) %>% collect()
+print(class_balance)
+
+set.seed(42)
+train_list <- list()
+test_list <- list()
+
+statuses <- model_data %>% distinct(status) %>% pull(status)
+
+for (s in statuses) {
+  subset <- model_data %>% filter(status == s)
+  sp <- sdf_random_split(subset, train = 0.8, test = 0.2, seed = 42)
+  train_list[[s]] <- sp$train
+  test_list[[s]] <- sp$test
+}
+
+train <- sdf_bind_rows(train_list)
+test <- sdf_bind_rows(test_list)
+
 # spark_disconnect(sc)
