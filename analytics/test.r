@@ -4,7 +4,8 @@
 # install.packages("ggplot2")
 # install.packages("dbplot")
 # install.packages("scales")
-install.packages("sparkxgb")
+# install.packages("sparkxgb")
+# install.packages("xgboost")
 
 path <- "file:///C:/Users/MiliBovan/Desktop/master/hyperledger-commerce-chain/analytics/data-generator"
 
@@ -571,7 +572,7 @@ analyze_trader_total_cost(orders_cleaned)
 
 # Classification
 user_window <- orders_cleaned %>%
-  sdf_repartition(partitions = 8) %>%
+  sdf_repartition(partitions = 4) %>%
   arrange(user_id, created_date) %>%
   group_by(user_id) %>%
   mutate(
@@ -584,7 +585,7 @@ user_window <- orders_cleaned %>%
   sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 trader_window <- user_window %>%
-  sdf_repartition(partitions = 8) %>%
+  sdf_repartition(partitions = 4) %>%
   arrange(trader_type, created_date) %>%
   group_by(trader_type) %>%
   mutate(
@@ -672,6 +673,9 @@ train <- sdf_bind_rows(train_list) %>%
 test <- sdf_bind_rows(test_list) %>%
   sdf_persist(storage.level = "MEMORY_AND_DISK")
 
+train <- sdf_repartition(train, partitions = 1)
+test  <- sdf_repartition(test,  partitions = 1)
+
 feature_cols <- c(
   "trader_type_oh", "day_of_week_oh",
   "numeric_features_scaled"
@@ -729,68 +733,145 @@ evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", met
 # print(test_metrics_lr)
 
 # random forest
+# si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
+# ohe_trader <- ft_one_hot_encoder(sc, input_col = "trader_type_idx", output_col = "trader_type_oh")
+# si_dow <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
+# ohe_dow <- ft_one_hot_encoder(sc, input_col = "day_of_week_idx", output_col = "day_of_week_oh")
+# si_label <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+# va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
+# scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
+# va_final <- ft_vector_assembler(sc, input_cols = feature_cols, output_col = "features")
+# rf <- ml_random_forest_classifier(
+#   sc,
+#   features_col = "features",
+#   label_col = "label",
+#   num_trees = 20,
+#   max_depth = 5,
+#   seed = 123
+# )
+#
+# rf_pipeline <- ml_pipeline(
+#   si_trader, ohe_trader,
+#   si_dow, ohe_dow,
+#   si_label,
+#   va_numeric, scaler,
+#   va_final,
+#   rf
+# )
+#
+# rf_grid <- list(
+#   random_forest = list(
+#     num_trees = c(10, 20, 50),
+#     max_depth = c(3, 5, 10)
+#   )
+# )
+#
+# rf_cv <- ml_cross_validator(
+#   sc,
+#   estimator = rf_pipeline,
+#   estimator_param_maps = rf_grid,
+#   evaluator = evaluator,
+#   num_folds = 3
+# )
+#
+# rf_cv_model <- ml_fit(rf_cv, train)
+#
+# rf_results <- tryCatch({
+#   ml_validation_metrics(rf_cv_model)
+# }, error = function(e) {
+#   rf_cv_model$avg_metrics_df
+# })
+# print("RF Performances per scenario:")
+# print(rf_results)
+#
+# test_pred_rf <- ml_transform(rf_cv_model$best_model, test)
+#
+# test_metrics_rf <- lapply(metrics, function(m) {
+#   ev <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = m)
+#   ml_evaluate(ev, test_pred_rf)
+# })
+# names(test_metrics_rf) <- metrics
+#
+# print("RF Test metrics:")
+# print(test_metrics_rf)
+
+# xgboost_classifier
 si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
-ohe_trader <- ft_one_hot_encoder(sc, input_col = "trader_type_idx", output_col = "trader_type_oh")
-si_dow <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
-ohe_dow <- ft_one_hot_encoder(sc, input_col = "day_of_week_idx", output_col = "day_of_week_oh")
-si_label <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+si_dow    <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
+si_label  <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+
 va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
-scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
-va_final <- ft_vector_assembler(sc, input_cols = feature_cols, output_col = "features")
-rf <- ml_random_forest_classifier(
-  sc,
-  features_col = "features",
-  label_col = "label",
-  num_trees = 20,
-  max_depth = 5,
-  seed = 123
-)
+scaler     <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
 
-rf_pipeline <- ml_pipeline(
-  si_trader, ohe_trader,
-  si_dow, ohe_dow,
-  si_label,
-  va_numeric, scaler,
-  va_final,
-  rf
-)
+feature_cols <- c("trader_type_idx", "day_of_week_idx", "numeric_features_scaled")
 
-rf_grid <- list(
-  random_forest = list(
-    num_trees = c(10, 20, 50),
-    max_depth = c(3, 5, 10)
+va_final <- ft_vector_assembler(sc, input_cols = feature_cols, output_col = "features")  # ← nedostajalo
+
+library(xgboost)
+
+prep_pipeline <- ml_pipeline(
+  si_trader, si_dow, si_label,
+  va_numeric, scaler, va_final
+)
+prep_model <- ml_fit(prep_pipeline, train)
+
+train_transformed <- collect(ml_transform(prep_model, train))
+test_transformed  <- collect(ml_transform(prep_model, test))
+
+extract_matrix <- function(df) {
+  matrix(
+    unlist(lapply(df$features, as.numeric)),
+    nrow = nrow(df),
+    byrow = TRUE
   )
-)
+}
 
-rf_cv <- ml_cross_validator(
-  sc,
-  estimator = rf_pipeline,
-  estimator_param_maps = rf_grid,
-  evaluator = evaluator,
-  num_folds = 3
-)
+train_matrix <- xgb.DMatrix(data = extract_matrix(train_transformed), label = train_transformed$label)
+test_matrix  <- xgb.DMatrix(data = extract_matrix(test_transformed),  label = test_transformed$label)
 
-rf_cv_model <- ml_fit(rf_cv, train)
+grid <- expand.grid(num_round = c(10, 20, 50), max_depth = c(3, 5, 10))
 
-rf_results <- tryCatch({
-  ml_validation_metrics(rf_cv_model)
-}, error = function(e) {
-  message("ml_validation_metrics nije uspio, vadim metrike manualno...")
-  rf_cv_model$avg_metrics_df
+grid_results <- apply(grid, 1, function(row) {
+  params <- list(
+    objective = "multi:softmax",
+    num_class = num_classes,
+    max_depth = as.integer(row["max_depth"]),
+    eta       = 0.3,
+    seed      = 123
+  )
+  cv <- xgb.cv(
+    params  = params,
+    data    = train_matrix,
+    nrounds = as.integer(row["num_round"]),
+    nfold   = 3,
+    metrics = "merror",
+    verbose = FALSE
+  )
+  list(num_round = row["num_round"], max_depth = row["max_depth"], merror = min(cv$evaluation_log$test_merror_mean))
 })
-print("RF Performances per scenario:")
-print(rf_results)
 
-test_pred_rf <- ml_transform(rf_cv_model$best_model, test)
+print("XGB CV rezultati:")
+print(do.call(rbind, lapply(grid_results, as.data.frame)))
 
-test_metrics_rf <- lapply(metrics, function(m) {
-  ev <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = m)
-  ml_evaluate(ev, test_pred_rf)
-})
-names(test_metrics_rf) <- metrics
+best <- grid_results[[which.min(sapply(grid_results, function(x) x$merror))]]
+best_params <- list(
+  objective = "multi:softmax",
+  num_class = num_classes,
+  max_depth = as.integer(best$max_depth),
+  eta       = 0.3,
+  seed      = 123
+)
+xgb_best_model <- xgb.train(params = best_params, data = train_matrix, nrounds = as.integer(best$num_round))
 
-print("RF Test metrics:")
-print(test_metrics_rf)
+preds      <- predict(xgb_best_model, test_matrix)
+true_labels <- test_transformed$label
 
+accuracy  <- mean(preds == true_labels)
+confusion <- table(Predicted = preds, Actual = true_labels)
+
+print("XGB Test metrics:")
+print(paste("Accuracy:", round(accuracy, 4)))
+print("Confusion matrix:")
+print(confusion)
 
 # spark_disconnect(sc)
