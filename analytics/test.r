@@ -674,7 +674,7 @@ test <- sdf_bind_rows(test_list) %>%
   sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 train <- sdf_repartition(train, partitions = 1)
-test  <- sdf_repartition(test,  partitions = 1)
+test <- sdf_repartition(test, partitions = 1)
 
 feature_cols <- c(
   "trader_type_oh", "day_of_week_oh",
@@ -796,82 +796,259 @@ evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", met
 # print(test_metrics_rf)
 
 # xgboost_classifier
-si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
-si_dow    <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
-si_label  <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+# si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
+# si_dow <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
+# si_label <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+#
+# va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
+# scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
+#
+# feature_cols <- c("trader_type_idx", "day_of_week_idx", "numeric_features_scaled")
+#
+# va_final <- ft_vector_assembler(sc, input_cols = feature_cols, output_col = "features")  # ← nedostajalo
+#
+# library(xgboost)
+#
+# prep_pipeline <- ml_pipeline(
+#   si_trader, si_dow, si_label,
+#   va_numeric, scaler, va_final
+# )
+# prep_model <- ml_fit(prep_pipeline, train)
+#
+# train_transformed <- collect(ml_transform(prep_model, train))
+# test_transformed <- collect(ml_transform(prep_model, test))
+#
+# extract_matrix <- function(df) {
+#   matrix(
+#     unlist(lapply(df$features, as.numeric)),
+#     nrow = nrow(df),
+#     byrow = TRUE
+#   )
+# }
+#
+# train_matrix <- xgb.DMatrix(data = extract_matrix(train_transformed), label = train_transformed$label)
+# test_matrix <- xgb.DMatrix(data = extract_matrix(test_transformed), label = test_transformed$label)
+#
+# grid <- expand.grid(num_round = c(10, 20, 50), max_depth = c(3, 5, 10))
+#
+# grid_results <- apply(grid, 1, function(row) {
+#   params <- list(
+#     objective = "multi:softmax",
+#     num_class = num_classes,
+#     max_depth = as.integer(row["max_depth"]),
+#     eta = 0.3,
+#     seed = 123
+#   )
+#   cv <- xgb.cv(
+#     params = params,
+#     data = train_matrix,
+#     nrounds = as.integer(row["num_round"]),
+#     nfold = 3,
+#     metrics = "merror",
+#     verbose = FALSE
+#   )
+#   list(num_round = row["num_round"], max_depth = row["max_depth"], merror = min(cv$evaluation_log$test_merror_mean))
+# })
+#
+# print("XGB CV rezultati:")
+# print(do.call(rbind, lapply(grid_results, as.data.frame)))
+#
+# best <- grid_results[[which.min(sapply(grid_results, function(x) x$merror))]]
+# best_params <- list(
+#   objective = "multi:softmax",
+#   num_class = num_classes,
+#   max_depth = as.integer(best$max_depth),
+#   eta = 0.3,
+#   seed = 123
+# )
+# xgb_best_model <- xgb.train(params = best_params, data = train_matrix, nrounds = as.integer(best$num_round))
+#
+# preds <- predict(xgb_best_model, test_matrix)
+# true_labels <- test_transformed$label
+#
+# accuracy <- mean(preds == true_labels)
+# confusion <- table(Predicted = preds, Actual = true_labels)
+#
+# print("XGB Test metrics:")
+# print(paste("Accuracy:", round(accuracy, 4)))
+# print("Confusion matrix:")
+# print(confusion)
 
-va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
-scaler     <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
+# clusterization
+cluster_data <- model_data %>%
+  ft_vector_assembler(
+    input_cols = c("total_cost", "user_order_count", "user_cancelled_count"),
+    output_col = "cluster_features"
+  ) %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
-feature_cols <- c("trader_type_idx", "day_of_week_idx", "numeric_features_scaled")
+cluster_evaluator <- ml_clustering_evaluator(sc, metric_name = "silhouette")
 
-va_final <- ft_vector_assembler(sc, input_cols = feature_cols, output_col = "features")  # ← nedostajalo
+print("=== K-MEANS CLUSTERING ===")
 
-library(xgboost)
+kmeans_s1 <- ml_kmeans(cluster_data, features_col = "cluster_features", k = 3, seed = 42)
+predictions_kmeans_s1 <- ml_predict(kmeans_s1, cluster_data)
+silhouette_kmeans_s1 <- ml_evaluate(kmeans_s1, cluster_data)$silhouette()
 
-prep_pipeline <- ml_pipeline(
-  si_trader, si_dow, si_label,
-  va_numeric, scaler, va_final
-)
-prep_model <- ml_fit(prep_pipeline, train)
+kmeans_s2 <- ml_kmeans(cluster_data, features_col = "cluster_features", k = 5, seed = 42)
+predictions_kmeans_s2 <- ml_predict(kmeans_s2, cluster_data)
+silhouette_kmeans_s2 <- ml_evaluate(kmeans_s2, cluster_data)$silhouette()
 
-train_transformed <- collect(ml_transform(prep_model, train))
-test_transformed  <- collect(ml_transform(prep_model, test))
+print(paste("K-Means Silhouette - Scenario 1 (k=3):", round(silhouette_kmeans_s1, 4)))
+print(paste("K-Means Silhouette - Scenario 2 (k=5):", round(silhouette_kmeans_s2, 4)))
 
-extract_matrix <- function(df) {
-  matrix(
-    unlist(lapply(df$features, as.numeric)),
-    nrow = nrow(df),
-    byrow = TRUE
-  )
-}
+print("--- Cluster Centers - Scenario 1 (k=3) ---")
+print(kmeans_s1$centers)
 
-train_matrix <- xgb.DMatrix(data = extract_matrix(train_transformed), label = train_transformed$label)
-test_matrix  <- xgb.DMatrix(data = extract_matrix(test_transformed),  label = test_transformed$label)
+print("--- Cluster Centers - Scenario 2 (k=5) ---")
+print(kmeans_s2$centers)
 
-grid <- expand.grid(num_round = c(10, 20, 50), max_depth = c(3, 5, 10))
+print("--- Cluster Sizes - Scenario 1 (k=3) ---")
+print(kmeans_s1$summary$cluster_sizes())
 
-grid_results <- apply(grid, 1, function(row) {
-  params <- list(
-    objective = "multi:softmax",
-    num_class = num_classes,
-    max_depth = as.integer(row["max_depth"]),
-    eta       = 0.3,
-    seed      = 123
-  )
-  cv <- xgb.cv(
-    params  = params,
-    data    = train_matrix,
-    nrounds = as.integer(row["num_round"]),
-    nfold   = 3,
-    metrics = "merror",
-    verbose = FALSE
-  )
-  list(num_round = row["num_round"], max_depth = row["max_depth"], merror = min(cv$evaluation_log$test_merror_mean))
-})
+print("--- Cluster Sizes - Scenario 2 (k=5) ---")
+print(kmeans_s2$summary$cluster_sizes())
 
-print("XGB CV rezultati:")
-print(do.call(rbind, lapply(grid_results, as.data.frame)))
+cluster_structure_s1 <- predictions_kmeans_s1 %>%
+  group_by(prediction) %>%
+  summarise(
+    mean_total_cost = mean(total_cost, na.rm = TRUE),
+    mean_order_count = mean(user_order_count, na.rm = TRUE),
+    mean_cancelled_count = mean(user_cancelled_count, na.rm = TRUE),
+    mean_avg_cost = mean(user_avg_cost, na.rm = TRUE),
+    record_count = n()
+  ) %>%
+  arrange(prediction) %>%
+  collect()
 
-best <- grid_results[[which.min(sapply(grid_results, function(x) x$merror))]]
-best_params <- list(
-  objective = "multi:softmax",
-  num_class = num_classes,
-  max_depth = as.integer(best$max_depth),
-  eta       = 0.3,
-  seed      = 123
-)
-xgb_best_model <- xgb.train(params = best_params, data = train_matrix, nrounds = as.integer(best$num_round))
+print("--- Cluster Structure - Scenario 1 (k=3) ---")
+print(cluster_structure_s1)
 
-preds      <- predict(xgb_best_model, test_matrix)
-true_labels <- test_transformed$label
+cluster_structure_s2 <- predictions_kmeans_s2 %>%
+  group_by(prediction) %>%
+  summarise(
+    mean_total_cost = mean(total_cost, na.rm = TRUE),
+    mean_order_count = mean(user_order_count, na.rm = TRUE),
+    mean_cancelled_count = mean(user_cancelled_count, na.rm = TRUE),
+    mean_avg_cost = mean(user_avg_cost, na.rm = TRUE),
+    record_count = n()
+  ) %>%
+  arrange(prediction) %>%
+  collect()
 
-accuracy  <- mean(preds == true_labels)
-confusion <- table(Predicted = preds, Actual = true_labels)
+print("--- Cluster Structure - Scenario 2 (k=5) ---")
+print(cluster_structure_s2)
 
-print("XGB Test metrics:")
-print(paste("Accuracy:", round(accuracy, 4)))
-print("Confusion matrix:")
-print(confusion)
+print("=== DBSCAN CLUSTERING ===")
+select(total_cost, user_order_count, user_cancelled_count, user_avg_cost, trader_type) %>%
+  sdf_sample(fraction = 0.05, replacement = FALSE, seed = 42) %>%
+  collect()
+
+library(dbscan)
+
+scaled_data <- scale(local_data_dbscan[, c("total_cost", "user_order_count",
+                                           "user_cancelled_count", "user_avg_cost")])
+
+dbscan_s1 <- dbscan(scaled_data, eps = 0.5, minPts = 5)
+local_data_dbscan$cluster_s1 <- as.factor(dbscan_s1$cluster)
+
+print("--- DBSCAN Scenario 1 (eps=0.5, minPts=5) ---")
+print(table(dbscan_s1$cluster))
+print(paste("Number of clusters (excl. noise):",
+            length(unique(dbscan_s1$cluster[dbscan_s1$cluster != 0]))))
+print(paste("Noise points (cluster=0):",
+            sum(dbscan_s1$cluster == 0)))
+
+dbscan_s2 <- dbscan(scaled_data, eps = 1.0, minPts = 10)
+local_data_dbscan$cluster_s2 <- as.factor(dbscan_s2$cluster)
+
+print("--- DBSCAN Scenario 2 (eps=1.0, minPts=10) ---")
+print(table(dbscan_s2$cluster))
+print(paste("Number of clusters (excl. noise):",
+            length(unique(dbscan_s2$cluster[dbscan_s2$cluster != 0]))))
+print(paste("Noise points (cluster=0):",
+            sum(dbscan_s2$cluster == 0)))
+
+dbscan_structure_s1 <- local_data_dbscan %>%
+  group_by(cluster_s1) %>%
+  summarise(
+    mean_total_cost = mean(total_cost, na.rm = TRUE),
+    mean_order_count = mean(user_order_count, na.rm = TRUE),
+    mean_cancelled_count = mean(user_cancelled_count, na.rm = TRUE),
+    mean_avg_cost = mean(user_avg_cost, na.rm = TRUE),
+    record_count = n()
+  ) %>%
+  arrange(cluster_s1)
+
+print("--- DBSCAN Cluster Structure - Scenario 1 ---")
+print(dbscan_structure_s1)
+
+dbscan_structure_s2 <- local_data_dbscan %>%
+  group_by(cluster_s2) %>%
+  summarise(
+    mean_total_cost = mean(total_cost, na.rm = TRUE),
+    mean_order_count = mean(user_order_count, na.rm = TRUE),
+    mean_cancelled_count = mean(user_cancelled_count, na.rm = TRUE),
+    mean_avg_cost = mean(user_avg_cost, na.rm = TRUE),
+    record_count = n()
+  ) %>%
+  arrange(cluster_s2)
+
+print("--- DBSCAN Cluster Structure - Scenario 2 ---")
+print(dbscan_structure_s2)
+
+local_kmeans_s1 <- predictions_kmeans_s1 %>%
+  sdf_sample(fraction = 0.05, replacement = FALSE, seed = 42) %>%
+  collect()
+local_kmeans_s1$prediction <- as.factor(local_kmeans_s1$prediction)
+
+local_kmeans_s2 <- predictions_kmeans_s2 %>%
+  sdf_sample(fraction = 0.05, replacement = FALSE, seed = 42) %>%
+  collect()
+local_kmeans_s2$prediction <- as.factor(local_kmeans_s2$prediction)
+
+p1 <- ggplot(local_kmeans_s1, aes(x = total_cost, y = user_order_count, color = prediction)) +
+  geom_point(alpha = 0.5, size = 1) +
+  labs(
+    title = "K-Means (k=3): Total Cost vs Order Count",
+    x = "Total Cost",
+    y = "User Order Count",
+    color = "Cluster"
+  ) +
+  theme_minimal()
+print(p1)
+
+p2 <- ggplot(local_kmeans_s2, aes(x = total_cost, y = user_cancelled_count, color = prediction)) +
+  geom_point(alpha = 0.5, size = 1) +
+  labs(
+    title = "K-Means (k=5): Total Cost vs Cancelled Count",
+    x = "Total Cost",
+    y = "User Cancelled Count",
+    color = "Cluster"
+  ) +
+  theme_minimal()
+print(p2)
+
+p3 <- ggplot(local_data_dbscan, aes(x = total_cost, y = user_order_count, color = cluster_s1)) +
+  geom_point(alpha = 0.5, size = 1) +
+  labs(
+    title = "DBSCAN (eps=0.5, minPts=5): Total Cost vs Order Count",
+    x = "Total Cost",
+    y = "User Order Count",
+    color = "Cluster (0 = noise)"
+  ) +
+  theme_minimal()
+print(p3)
+
+p4 <- ggplot(local_data_dbscan, aes(x = total_cost, y = user_cancelled_count, color = cluster_s2)) +
+  geom_point(alpha = 0.5, size = 1) +
+  labs(
+    title = "DBSCAN (eps=1.0, minPts=10): Total Cost vs Cancelled Count",
+    x = "Total Cost",
+    y = "User Cancelled Count",
+    color = "Cluster (0 = noise)"
+  ) +
+  theme_minimal()
+print(p4)
 
 # spark_disconnect(sc)
