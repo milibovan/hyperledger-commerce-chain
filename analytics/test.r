@@ -4,6 +4,7 @@
 # install.packages("ggplot2")
 # install.packages("dbplot")
 # install.packages("scales")
+install.packages("sparkxgb")
 
 path <- "file:///C:/Users/MiliBovan/Desktop/master/hyperledger-commerce-chain/analytics/data-generator"
 
@@ -13,6 +14,7 @@ library(dplyr)
 library(ggplot2)
 library(dbplot)
 library(scales)
+library(sparkxgb)
 
 spark_install(version = "3.3")
 
@@ -159,7 +161,7 @@ clean_data <- function(spark_df, df_name) {
   sdf_persist(cleaned_df, storage.level = "MEMORY_AND_DISK")
 }
 
-users_cleaned   <- clean_data(users, "users")
+users_cleaned <- clean_data(users, "users")
 traders_cleaned <- clean_data(traders, "traders")
 products_cleaned <- clean_data(products, "products")
 
@@ -647,56 +649,148 @@ set.seed(42)
 train_list <- list()
 test_list <- list()
 
-statuses <- model_data %>% distinct(status) %>% pull(status)
+class_balance <- orders_features %>% count(status) %>% collect()
+print(class_balance)
+
+statuses <- orders_features %>%
+  distinct(status) %>%
+  collect() %>%
+  pull(status)
+
+train_list <- list()
+test_list <- list()
 
 for (s in statuses) {
-  subset <- model_data %>% filter(status == s)
+  subset <- orders_features %>% filter(status == s)
   sp <- sdf_random_split(subset, train = 0.8, test = 0.2, seed = 42)
   train_list[[s]] <- sp$train
   test_list[[s]] <- sp$test
 }
 
-train <- sdf_bind_rows(train_list)
-test <- sdf_bind_rows(test_list)
+train <- sdf_bind_rows(train_list) %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
+test <- sdf_bind_rows(test_list) %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
+
+feature_cols <- c(
+  "trader_type_oh", "day_of_week_oh",
+  "numeric_features_scaled"
+)
+
+numeric_cols <- c("total_cost", "num_products", "lead_days",
+                  "user_order_count", "user_avg_cost", "user_cancelled_count",
+                  "trader_order_count", "trader_avg_cost")
 
 metrics <- c("f1", "accuracy", "weightedPrecision", "weightedRecall")
 evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = "f1")
 
 # logistic_regression
-lr <- ml_logistic_regression(sc, features_col = "features", label_col = "label")
+# lr_pipeline <- ml_pipeline(sc) %>%
+#   ft_string_indexer(input_col = "trader_type", output_col = "trader_type_idx") %>%
+#   ft_one_hot_encoder(input_col = "trader_type_idx", output_col = "trader_type_oh") %>%
+#   ft_string_indexer(input_col = "day_of_week", output_col = "day_of_week_idx") %>%
+#   ft_one_hot_encoder(input_col = "day_of_week_idx", output_col = "day_of_week_oh") %>%
+#   ft_string_indexer(input_col = "status", output_col = "label") %>%
+#   ft_vector_assembler(input_cols = numeric_cols, output_col = "numeric_features") %>%
+#   ft_standard_scaler(input_col = "numeric_features", output_col = "numeric_features_scaled") %>%
+#   ft_vector_assembler(input_cols = feature_cols, output_col = "features") %>%
+#   ml_logistic_regression(features_col = "features", label_col = "label")
+#
+# lr_grid <- list(
+#   logistic_regression = list(
+#     reg_param = c(0.01, 0.1, 0.5),
+#     elastic_net_param = c(0.0, 0.5, 1.0)
+#   )
+# )
+#
+# lr_cv <- ml_cross_validator(
+#   sc,
+#   estimator = lr_pipeline,
+#   estimator_param_maps = lr_grid,
+#   evaluator = evaluator,
+#   num_folds = 3
+# )
+#
+# lr_cv_model <- ml_fit(lr_cv, train)
+#
+# lr_results <- ml_validation_metrics(lr_cv_model)
+# print("LR Performances per scenario:")
+# print(lr_results)
+#
+# test_pred_lr <- ml_transform(lr_cv_model$best_model, test)
+#
+# test_metrics_lr <- lapply(metrics, function(m) {
+#   ev <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = m)
+#   ml_evaluate(ev, test_pred_lr)
+# })
+# names(test_metrics_lr) <- metrics
+#
+# print("LR Test metrics:")
+# print(test_metrics_lr)
 
-lr_grid <- list(
-  logistic_regression = list(
-    reg_param = c(0.01, 0.1, 0.5),
-    elastic_net_param = c(0.0, 0.5, 1.0)
+# random forest
+si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
+ohe_trader <- ft_one_hot_encoder(sc, input_col = "trader_type_idx", output_col = "trader_type_oh")
+si_dow <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
+ohe_dow <- ft_one_hot_encoder(sc, input_col = "day_of_week_idx", output_col = "day_of_week_oh")
+si_label <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
+scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
+va_final <- ft_vector_assembler(sc, input_cols = feature_cols, output_col = "features")
+rf <- ml_random_forest_classifier(
+  sc,
+  features_col = "features",
+  label_col = "label",
+  num_trees = 20,
+  max_depth = 5,
+  seed = 123
+)
+
+rf_pipeline <- ml_pipeline(
+  si_trader, ohe_trader,
+  si_dow, ohe_dow,
+  si_label,
+  va_numeric, scaler,
+  va_final,
+  rf
+)
+
+rf_grid <- list(
+  random_forest = list(
+    num_trees = c(10, 20, 50),
+    max_depth = c(3, 5, 10)
   )
 )
 
-lr_cv <- ml_cross_validator(
+rf_cv <- ml_cross_validator(
   sc,
-  estimator = lr,
-  estimator_param_maps = lr_grid,
+  estimator = rf_pipeline,
+  estimator_param_maps = rf_grid,
   evaluator = evaluator,
   num_folds = 3
 )
 
-lr_cv_model <- ml_fit(lr_cv, train)
+rf_cv_model <- ml_fit(rf_cv, train)
 
-lr_results <- ml_validation_metrics(lr_cv_model)
-print("LR Performances per scenario:")
-print(lr_results)
-
-best_model <- lr_cv_model$best_model
-
-test_pred <- ml_transform(best_model, test)
-
-test_metrics <- lapply(metrics, function(m) {
-  ev <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = m)
-  ml_evaluate(ev, test_pred)
+rf_results <- tryCatch({
+  ml_validation_metrics(rf_cv_model)
+}, error = function(e) {
+  message("ml_validation_metrics nije uspio, vadim metrike manualno...")
+  rf_cv_model$avg_metrics_df
 })
-names(test_metrics) <- metrics
+print("RF Performances per scenario:")
+print(rf_results)
 
-print("Test metrics:")
-print(test_metrics)
+test_pred_rf <- ml_transform(rf_cv_model$best_model, test)
+
+test_metrics_rf <- lapply(metrics, function(m) {
+  ev <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = m)
+  ml_evaluate(ev, test_pred_rf)
+})
+names(test_metrics_rf) <- metrics
+
+print("RF Test metrics:")
+print(test_metrics_rf)
+
 
 # spark_disconnect(sc)
