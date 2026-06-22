@@ -2,8 +2,8 @@
 # install.packages("DBI")
 # install.packages("dplyr")
 # install.packages("ggplot2")
-install.packages("dbplot")
-install.packages("scales")
+# install.packages("dbplot")
+# install.packages("scales")
 
 path <- "file:///C:/Users/MiliBovan/Desktop/master/hyperledger-commerce-chain/analytics/data-generator"
 
@@ -16,7 +16,24 @@ library(scales)
 
 spark_install(version = "3.3")
 
-sc <- spark_connect(master = "local", version = "3.3")
+config <- spark_config()
+
+config$spark.driver.memory <- "8g"
+config$spark.executor.memory <- "8g"
+
+config$spark.memory.fraction <- "0.8"
+
+Sys.setenv(HADOOP_HOME = "C:/Hadoop")
+
+sc <- spark_connect(master = "local", version = "3.3", config = config)
+
+spark_session(sc) %>%
+  invoke("conf") %>%
+  invoke("set", "spark.sql.shuffle.partitions", "8")
+
+spark_session(sc) %>%
+  invoke("sparkContext") %>%
+  invoke("setCheckpointDir", "/tmp/spark_checkpoints")
 
 show_missing_values <- function(spark_df) {
   na_table <- spark_df %>%
@@ -107,6 +124,7 @@ clean_data <- function(spark_df, df_name) {
     pull(Column)
 
   cleaned_df <- spark_df
+  col_types <- sdf_schema(cleaned_df)
 
   if (length(cols_to_drop) > 0) {
     for (col in cols_to_drop) {
@@ -114,12 +132,9 @@ clean_data <- function(spark_df, df_name) {
     }
   }
 
-  col_types <- sdf_schema(cleaned_df)
-
   if (length(cols_to_fill) > 0) {
     for (col in cols_to_fill) {
       col_type <- col_types[[col]]$type
-
       if (col %in% c("cancelled_date", "cancelled_by")) {
         cleaned_df <- cleaned_df %>%
           mutate(!!sym(col) := ifelse(is.na(!!sym(col)), "Not Cancelled", as.character(!!sym(col))))
@@ -141,33 +156,37 @@ clean_data <- function(spark_df, df_name) {
     }
   }
 
-  return(cleaned_df)
+  sdf_persist(cleaned_df, storage.level = "MEMORY_AND_DISK")
 }
 
-users_cleaned <- clean_data(users, "users")
+users_cleaned   <- clean_data(users, "users")
 traders_cleaned <- clean_data(traders, "traders")
 products_cleaned <- clean_data(products, "products")
 
 orders_cleaned <- clean_data(orders, "orders") %>%
-  inner_join(users_cleaned %>% select(id), by = c("user_id" = "id"))
+  inner_join(users_cleaned %>% select(id), by = c("user_id" = "id")) %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 receipts_cleaned <- clean_data(receipts, "receipts") %>%
   inner_join(orders_cleaned %>% select(id), by = c("order_id" = "id")) %>%
   inner_join(traders_cleaned %>% select(id), by = c("trader_id" = "id")) %>%
-  inner_join(users_cleaned %>% select(id), by = c("user_id" = "id"))
+  inner_join(users_cleaned %>% select(id), by = c("user_id" = "id")) %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 order_products_cleaned <- clean_data(order_products, "order_products") %>%
   inner_join(orders_cleaned %>% select(id), by = c("order_id" = "id")) %>%
-  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id"))
+  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id")) %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 receipt_products_cleaned <- clean_data(receipt_products, "receipt_products") %>%
   inner_join(receipts_cleaned %>% select(id), by = c("receipt_id" = "id")) %>%
-  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id"))
+  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id")) %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 trader_products_cleaned <- clean_data(trader_products, "trader_products") %>%
   inner_join(traders_cleaned %>% select(id), by = c("trader_id" = "id")) %>%
-  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id"))
-
+  inner_join(products_cleaned %>% select(id), by = c("product_id" = "id")) %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 # CLEANING SUMMARY
 # for (nm in c("users", "traders", "products", "orders", "receipts",
@@ -213,8 +232,9 @@ analyze_boolean <- function(spark_df, col_name) {
   p <- ggplot(counts_df, aes(x = factor(Value), y = Pct, fill = factor(Value))) +
     geom_col() +
     geom_text(aes(label = paste0(Pct, "%")), vjust = -0.3) +
-    labs(title = paste("orders_cleaned -", col[[1]]),
-         x = col[[1]], y = "Percentage (%)") +
+    labs(title = paste("orders_cleaned -", col_name),
+         x = col_name,
+         y = "Percentage (%)") +
     theme_minimal() +
     theme(legend.position = "none")
 
@@ -303,7 +323,7 @@ analyze_numeric <- function(spark_df, col_name) {
     summarise(
       Min = min(!!sym(col_name)),
       Max = max(!!sym(col_name)),
-      Prosek = mean(!!sym(col_name)),
+      Average = mean(!!sym(col_name)),
       Std_Dev = sd(!!sym(col_name)),
 
       Median = percentile_approx(!!sym(col_name), 0.5),
@@ -314,8 +334,8 @@ analyze_numeric <- function(spark_df, col_name) {
     collect()
 
   data <- data.frame(
-    Metrika = colnames(stats),
-    Vrednost = as.numeric(stats[1,])
+    Metrics = colnames(stats),
+    Value = as.numeric(stats[1,])
   )
 
   if (is.finite(stats$Min[1]) &&
@@ -426,15 +446,15 @@ analyze_and_visualize <- function(data) {
   }
 }
 
-analyze_and_visualize(users_cleaned)
-analyze_and_visualize(traders_cleaned)
-analyze_and_visualize(products_cleaned)
-
-analyze_and_visualize(orders_cleaned)
-analyze_and_visualize(receipts_cleaned)
-analyze_and_visualize(order_products_cleaned)
-analyze_and_visualize(receipt_products_cleaned)
-analyze_and_visualize(trader_products_cleaned)
+# analyze_and_visualize(users_cleaned)
+# analyze_and_visualize(traders_cleaned)
+# analyze_and_visualize(products_cleaned)
+#
+# analyze_and_visualize(orders_cleaned)
+# analyze_and_visualize(receipts_cleaned)
+# analyze_and_visualize(order_products_cleaned)
+# analyze_and_visualize(receipt_products_cleaned)
+# analyze_and_visualize(trader_products_cleaned)
 
 analyze_trader_lead_days <- function(spark_df) {
   summary_data <- spark_df %>%
@@ -549,6 +569,7 @@ analyze_trader_total_cost(orders_cleaned)
 
 # Classification
 user_window <- orders_cleaned %>%
+  sdf_repartition(partitions = 8) %>%
   arrange(user_id, created_date) %>%
   group_by(user_id) %>%
   mutate(
@@ -557,16 +578,19 @@ user_window <- orders_cleaned %>%
     user_cancelled_count = cumsum(ifelse(status == "CANCELLED", 1, 0)) -
       ifelse(status == "CANCELLED", 1, 0)
   ) %>%
-  ungroup()
+  ungroup() %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 trader_window <- user_window %>%
+  sdf_repartition(partitions = 8) %>%
   arrange(trader_type, created_date) %>%
   group_by(trader_type) %>%
   mutate(
     trader_order_count = row_number() - 1,
     trader_avg_cost = (cumsum(total_cost) - total_cost) / pmax(row_number() - 1, 1)
   ) %>%
-  ungroup()
+  ungroup() %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 # receipts_by_order <- receipts_cleaned %>%
 #   group_by(order_id) %>%
@@ -638,6 +662,7 @@ test <- sdf_bind_rows(test_list)
 metrics <- c("f1", "accuracy", "weightedPrecision", "weightedRecall")
 evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = "f1")
 
+# logistic_regression
 lr <- ml_logistic_regression(sc, features_col = "features", label_col = "label")
 
 lr_grid <- list(
