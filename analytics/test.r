@@ -6,6 +6,8 @@
 # install.packages("scales")
 # install.packages("sparkxgb")
 # install.packages("xgboost")
+# install.packages("rmarkdown")
+# install.packages("dbscan")
 
 path <- "file:///C:/Users/MiliBovan/Desktop/master/hyperledger-commerce-chain/analytics/data-generator"
 
@@ -17,22 +19,22 @@ library(dbplot)
 library(scales)
 library(sparkxgb)
 
-spark_install(version = "3.3")
-
 config <- spark_config()
 
-config$spark.driver.memory <- "8g"
-config$spark.executor.memory <- "8g"
+config$spark.driver.memory <- "10g"
+config$spark.executor.memory <- "10g"
+config$spark.driver.extraJavaOptions <- "-Xms4g -Xmx10g -XX:+UseG1GC -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED"
+config$spark.executor.cores <- 16
 
-config$spark.memory.fraction <- "0.8"
+config$spark.memory.fraction <- "0.6"
 
 Sys.setenv(HADOOP_HOME = "C:/Hadoop")
 
-sc <- spark_connect(master = "local", version = "3.3", config = config)
+sc <- spark_connect(master = "local[*]", version = "3.3", config = config)
 
 spark_session(sc) %>%
   invoke("conf") %>%
-  invoke("set", "spark.sql.shuffle.partitions", "8")
+  invoke("set", "spark.sql.shuffle.partitions", "32")
 
 spark_session(sc) %>%
   invoke("sparkContext") %>%
@@ -79,30 +81,30 @@ receipt_products <- load_and_inspect(sc, "receipt_products", paste0(path, "/rece
 trader_products <- load_and_inspect(sc, "trader_products", paste0(path, "/trader_products.csv"))
 
 # Plot missing values
-# all_entities <- list(
-#   users = users, traders = traders, products = products,
-#   orders = orders, receipts = receipts,
-#   order_products = order_products,
-#   receipt_products = receipt_products,
-#   trader_products = trader_products
-# )
-#
-# missing_summary <- bind_rows(lapply(names(all_entities), function(nm) {
-#   df <- show_missing_values(all_entities[[nm]])
-#   df$Entity <- nm
-#   df$Pct_Missing <- round(100 * df$No_NA / sdf_nrow(all_entities[[nm]]), 2)
-#   df
-# }))
-#
-# missing_summary <- missing_summary %>% filter(No_NA > 0)
-#
-# ggplot(missing_summary, aes(x = reorder(paste(Entity, Column, sep = "."), Pct_Missing),
-#                              y = Pct_Missing, fill = Entity)) +
-#   geom_col() +
-#   coord_flip() +
-#   labs(title = "Percentage of missing columns",
-#        x = "Entity.Column", y = "% NA") +
-#   theme_minimal()
+all_entities <- list(
+  users = users, traders = traders, products = products,
+  orders = orders, receipts = receipts,
+  order_products = order_products,
+  receipt_products = receipt_products,
+  trader_products = trader_products
+)
+
+missing_summary <- bind_rows(lapply(names(all_entities), function(nm) {
+  df <- show_missing_values(all_entities[[nm]])
+  df$Entity <- nm
+  df$Pct_Missing <- round(100 * df$No_NA / sdf_nrow(all_entities[[nm]]), 2)
+  df
+}))
+
+missing_summary <- missing_summary %>% filter(No_NA > 0)
+
+ggplot(missing_summary, aes(x = reorder(paste(Entity, Column, sep = "."), Pct_Missing),
+                            y = Pct_Missing, fill = Entity)) +
+  geom_col() +
+  coord_flip() +
+  labs(title = "Percentage of missing columns",
+       x = "Entity.Column", y = "% NA") +
+  theme_minimal()
 
 # Cleaning data
 clean_data <- function(spark_df, df_name) {
@@ -191,7 +193,7 @@ trader_products_cleaned <- clean_data(trader_products, "trader_products") %>%
   inner_join(products_cleaned %>% select(id), by = c("product_id" = "id")) %>%
   sdf_persist(storage.level = "MEMORY_AND_DISK")
 
-# CLEANING SUMMARY
+# Cleaning summary
 # for (nm in c("users", "traders", "products", "orders", "receipts",
 #              "order_products", "receipt_products", "trader_products")) {
 #   orig <- get(nm)
@@ -220,83 +222,83 @@ trader_products_cleaned <- clean_data(trader_products, "trader_products") %>%
 # show_columns(trader_products_cleaned)
 
 # Data analysis and visualization
-analyze_boolean <- function(spark_df, col_name) {
-  total_rows <- sdf_nrow(spark_df)
-
-  counts_df <- spark_df %>%
-    group_by(!!sym(col_name)) %>%
-    summarise(Frequency = n()) %>%
-    collect()
-
-  counts_df$Pct <- round(100 * counts_df$Frequency / total_rows, 2)
-
-  colnames(counts_df)[1] <- "Value"
-
-  p <- ggplot(counts_df, aes(x = factor(Value), y = Pct, fill = factor(Value))) +
-    geom_col() +
-    geom_text(aes(label = paste0(Pct, "%")), vjust = -0.3) +
-    labs(title = paste("orders_cleaned -", col_name),
-         x = col_name,
-         y = "Percentage (%)") +
-    theme_minimal() +
-    theme(legend.position = "none")
-
-  print(p)
-
-  print(counts_df)
-
-  counts_df
-}
-
-analyze_string <- function(spark_df, col_name, top_n = 5, is_id_like = FALSE) {
-  total_rows <- sdf_nrow(spark_df)
-
-  cardinality <- spark_df %>%
-    summarise(n_distinct = n_distinct(!!sym(col_name))) %>%
-    pull(n_distinct)
-
-  top_n_df <- spark_df %>%
-    group_by(!!sym(col_name)) %>%
-    summarise(Frequency = n()) %>%
-    arrange(desc(Frequency)) %>%
-    head(top_n) %>%
-    collect()
-
-  top_n_df$Pct_Of_Total <- round(100 * top_n_df$Frequency / total_rows, 2)
-  colnames(top_n_df)[1] <- "Value"
-
-  print(top_n_df)
-
-  if (is_id_like) {
-    duplicates <- total_rows - cardinality
-
-    dup_examples <- spark_df %>%
-      group_by(!!sym(col_name)) %>%
-      summarise(Count = n()) %>%
-      filter(Count > 1) %>%
-      arrange(desc(Count)) %>%
-      head(5) %>%
-      collect()
-
-    print(dup_examples)
-  }
-  should_plot <- !is_id_like && sum(top_n_df$Pct_Of_Total) >= 1
-
-  if (should_plot) {
-    p <- ggplot(top_n_df, aes(x = reorder(Value, Frequency), y = Pct_Of_Total)) +
-      geom_col(fill = "steelblue") +
-      geom_text(aes(label = paste0(Pct_Of_Total, "%")), hjust = -0.1) +
-      coord_flip() +
-      labs(title = paste("Top", top_n, "-", col_name),
-           x = col_name, y = "Percentage (%)") +
-      theme_minimal()
-
-    print(p)
-  }
-
-  invisible(list(cardinality = cardinality, top_n = top_n_df))
-}
-
+# analyze_boolean <- function(spark_df, col_name) {
+#   total_rows <- sdf_nrow(spark_df)
+#
+#   counts_df <- spark_df %>%
+#     group_by(!!sym(col_name)) %>%
+#     summarise(Frequency = n()) %>%
+#     collect()
+#
+#   counts_df$Pct <- round(100 * counts_df$Frequency / total_rows, 2)
+#
+#   colnames(counts_df)[1] <- "Value"
+#
+#   p <- ggplot(counts_df, aes(x = factor(Value), y = Pct, fill = factor(Value))) +
+#     geom_col() +
+#     geom_text(aes(label = paste0(Pct, "%")), vjust = -0.3) +
+#     labs(title = paste("orders_cleaned -", col_name),
+#          x = col_name,
+#          y = "Percentage (%)") +
+#     theme_minimal() +
+#     theme(legend.position = "none")
+#
+#   print(p)
+#
+#   print(counts_df)
+#
+#   counts_df
+# }
+#
+# analyze_string <- function(spark_df, col_name, top_n = 5, is_id_like = FALSE) {
+#   total_rows <- sdf_nrow(spark_df)
+#
+#   cardinality <- spark_df %>%
+#     summarise(n_distinct = n_distinct(!!sym(col_name))) %>%
+#     pull(n_distinct)
+#
+#   top_n_df <- spark_df %>%
+#     group_by(!!sym(col_name)) %>%
+#     summarise(Frequency = n()) %>%
+#     arrange(desc(Frequency)) %>%
+#     head(top_n) %>%
+#     collect()
+#
+#   top_n_df$Pct_Of_Total <- round(100 * top_n_df$Frequency / total_rows, 2)
+#   colnames(top_n_df)[1] <- "Value"
+#
+#   print(top_n_df)
+#
+#   if (is_id_like) {
+#     duplicates <- total_rows - cardinality
+#
+#     dup_examples <- spark_df %>%
+#       group_by(!!sym(col_name)) %>%
+#       summarise(Count = n()) %>%
+#       filter(Count > 1) %>%
+#       arrange(desc(Count)) %>%
+#       head(5) %>%
+#       collect()
+#
+#     print(dup_examples)
+#   }
+#   should_plot <- !is_id_like && sum(top_n_df$Pct_Of_Total) >= 1
+#
+#   if (should_plot) {
+#     p <- ggplot(top_n_df, aes(x = reorder(Value, Frequency), y = Pct_Of_Total)) +
+#       geom_col(fill = "steelblue") +
+#       geom_text(aes(label = paste0(Pct_Of_Total, "%")), hjust = -0.1) +
+#       coord_flip() +
+#       labs(title = paste("Top", top_n, "-", col_name),
+#            x = col_name, y = "Percentage (%)") +
+#       theme_minimal()
+#
+#     print(p)
+#   }
+#
+#   invisible(list(cardinality = cardinality, top_n = top_n_df))
+# }
+#
 # analyze_numeric <- function(spark_df, col_name) {
 #   minimum <- spark_df %>%
 #     summarise(min_value = min(!!sym(col_name), na.rm = TRUE)) %>%
@@ -320,135 +322,135 @@ analyze_string <- function(spark_df, col_name, top_n = 5, is_id_like = FALSE) {
 #
 #   print(minimum, maximum, median, average, quantile)
 # }
-
-analyze_numeric <- function(spark_df, col_name) {
-  stats <- spark_df %>%
-    summarise(
-      Min = min(!!sym(col_name)),
-      Max = max(!!sym(col_name)),
-      Average = mean(!!sym(col_name)),
-      Std_Dev = sd(!!sym(col_name)),
-
-      Median = percentile_approx(!!sym(col_name), 0.5),
-
-      Quantile_25 = percentile_approx(!!sym(col_name), 0.25),
-      Quantile_75 = percentile_approx(!!sym(col_name), 0.75)
-    ) %>%
-    collect()
-
-  data <- data.frame(
-    Metrics = colnames(stats),
-    Value = as.numeric(stats[1,])
-  )
-
-  if (is.finite(stats$Min[1]) &&
-    is.finite(stats$Max[1]) &&
-    stats$Max[1] > stats$Min[1]) {
-    n_bins <- 30
-    splits <- seq(stats$Min[1], stats$Max[1], length.out = n_bins + 1)
-    splits[1] <- -Inf
-    splits[length(splits)] <- Inf
-
-    binned <- spark_df %>%
-      filter(!is.na(!!sym(col_name))) %>%
-      ft_bucketizer(input_col = col_name, output_col = "bucket", splits = splits) %>%
-      group_by(bucket) %>%
-      summarise(count = n()) %>%
-      collect() %>%
-      arrange(bucket)
-
-    binned$bin_center <- (splits[binned$bucket + 1] + splits[binned$bucket + 2]) / 2
-    binned$bin_center[binned$bucket == 0] <- stats$Min[1]
-    binned$bin_center[binned$bucket == n_bins - 1] <- stats$Max[1]
-
-    p_hist <- ggplot(binned, aes(x = bin_center, y = count)) +
-      geom_col(fill = "steelblue", width = (stats$Max[1] - stats$Min[1]) / n_bins * 0.9) +
-      labs(title = paste("Distribucija -", col_name),
-           x = col_name, y = "Broj zapisa") +
-      theme_minimal()
-
-    print(p_hist)
-  }
-
-  box_df <- data.frame(
-    x = col_name,
-    ymin = stats$Min[1],
-    lower = stats$Quantile_25[1],
-    middle = stats$Median[1],
-    upper = stats$Quantile_75[1],
-    ymax = stats$Max[1]
-  )
-
-  p_box <- ggplot(box_df, aes(x = x)) +
-    geom_boxplot(aes(ymin = ymin, lower = lower, middle = middle, upper = upper, ymax = ymax),
-                 stat = "identity", fill = "lightblue") +
-    labs(title = paste("Boxplot -", col_name), x = "", y = col_name) +
-    theme_minimal()
-
-  print(p_box)
-
-  print(data)
-}
-
-analyze_timestamp <- function(spark_df, col_name) {
-  stats <- spark_df %>%
-    summarise(
-      Min = min(!!sym(col_name), na.rm = TRUE),
-      Max = max(!!sym(col_name), na.rm = TRUE)
-    ) %>%
-    collect()
-
-  min_date <- stats$Min[1]
-  max_date <- stats$Max[1]
-  day_span <- as.numeric(difftime(max_date, min_date, units = "days"))
-
-  data <- data.frame(
-    Metrics = c("Min", "Max", "Span (days)"),
-    Value = c(as.character(min_date), as.character(max_date), round(day_span, 1))
-  )
-
-  monthly <- spark_df %>%
-    filter(!is.na(!!sym(col_name))) %>%
-    mutate(year_month = date_format(!!sym(col_name), "yyyy-MM")) %>%
-    group_by(year_month) %>%
-    summarise(count = n()) %>%
-    arrange(year_month) %>%
-    collect()
-
-  p <- ggplot(monthly, aes(x = year_month, y = count, group = 1)) +
-    geom_line(color = "steelblue") +
-    geom_point(color = "steelblue") +
-    labs(title = paste("Broj zapisa po mesecu -", col_name),
-         x = "Godina-Mesec", y = "Broj zapisa") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1))
-
-  print(p)
-
-  print(data)
-
-  invisible(list(min = min_date, max = max_date, range_days = day_span))
-}
-
-analyze_and_visualize <- function(data) {
-  cols <- sdf_schema(data)
-  for (col in cols) {
-    cat("Name: ", col[[1]], "\t", "Type: ", col[[2]], "\n")
-    if (col[[2]] == "BooleanType") {
-      plot_df <- analyze_boolean(data, col[[1]])
-    } else if (col[[2]] == "StringType") {
-      is_id <- grepl("id", col[[1]], ignore.case = TRUE)
-      analyze_string(data, col[[1]], top_n = 5, is_id_like = is_id)
-    } else if (col[[2]] == "DoubleType" ||
-      col[[2]] == "IntegerType" ||
-      col[[2]] == "LongType") {
-      analyze_numeric(data, col[[1]])
-    } else if (col[[2]] == "TimestampType") {
-      analyze_timestamp(data, col[[1]])
-    }
-  }
-}
-
+#
+# analyze_numeric <- function(spark_df, col_name) {
+#   stats <- spark_df %>%
+#     summarise(
+#       Min = min(!!sym(col_name)),
+#       Max = max(!!sym(col_name)),
+#       Average = mean(!!sym(col_name)),
+#       Std_Dev = sd(!!sym(col_name)),
+#
+#       Median = percentile_approx(!!sym(col_name), 0.5),
+#
+#       Quantile_25 = percentile_approx(!!sym(col_name), 0.25),
+#       Quantile_75 = percentile_approx(!!sym(col_name), 0.75)
+#     ) %>%
+#     collect()
+#
+#   data <- data.frame(
+#     Metrics = colnames(stats),
+#     Value = as.numeric(stats[1,])
+#   )
+#
+#   if (is.finite(stats$Min[1]) &&
+#     is.finite(stats$Max[1]) &&
+#     stats$Max[1] > stats$Min[1]) {
+#     n_bins <- 30
+#     splits <- seq(stats$Min[1], stats$Max[1], length.out = n_bins + 1)
+#     splits[1] <- -Inf
+#     splits[length(splits)] <- Inf
+#
+#     binned <- spark_df %>%
+#       filter(!is.na(!!sym(col_name))) %>%
+#       ft_bucketizer(input_col = col_name, output_col = "bucket", splits = splits) %>%
+#       group_by(bucket) %>%
+#       summarise(count = n()) %>%
+#       collect() %>%
+#       arrange(bucket)
+#
+#     binned$bin_center <- (splits[binned$bucket + 1] + splits[binned$bucket + 2]) / 2
+#     binned$bin_center[binned$bucket == 0] <- stats$Min[1]
+#     binned$bin_center[binned$bucket == n_bins - 1] <- stats$Max[1]
+#
+#     p_hist <- ggplot(binned, aes(x = bin_center, y = count)) +
+#       geom_col(fill = "steelblue", width = (stats$Max[1] - stats$Min[1]) / n_bins * 0.9) +
+#       labs(title = paste("Distribucija -", col_name),
+#            x = col_name, y = "Broj zapisa") +
+#       theme_minimal()
+#
+#     print(p_hist)
+#   }
+#
+#   box_df <- data.frame(
+#     x = col_name,
+#     ymin = stats$Min[1],
+#     lower = stats$Quantile_25[1],
+#     middle = stats$Median[1],
+#     upper = stats$Quantile_75[1],
+#     ymax = stats$Max[1]
+#   )
+#
+#   p_box <- ggplot(box_df, aes(x = x)) +
+#     geom_boxplot(aes(ymin = ymin, lower = lower, middle = middle, upper = upper, ymax = ymax),
+#                  stat = "identity", fill = "lightblue") +
+#     labs(title = paste("Boxplot -", col_name), x = "", y = col_name) +
+#     theme_minimal()
+#
+#   print(p_box)
+#
+#   print(data)
+# }
+#
+# analyze_timestamp <- function(spark_df, col_name) {
+#   stats <- spark_df %>%
+#     summarise(
+#       Min = min(!!sym(col_name), na.rm = TRUE),
+#       Max = max(!!sym(col_name), na.rm = TRUE)
+#     ) %>%
+#     collect()
+#
+#   min_date <- stats$Min[1]
+#   max_date <- stats$Max[1]
+#   day_span <- as.numeric(difftime(max_date, min_date, units = "days"))
+#
+#   data <- data.frame(
+#     Metrics = c("Min", "Max", "Span (days)"),
+#     Value = c(as.character(min_date), as.character(max_date), round(day_span, 1))
+#   )
+#
+#   monthly <- spark_df %>%
+#     filter(!is.na(!!sym(col_name))) %>%
+#     mutate(year_month = date_format(!!sym(col_name), "yyyy-MM")) %>%
+#     group_by(year_month) %>%
+#     summarise(count = n()) %>%
+#     arrange(year_month) %>%
+#     collect()
+#
+#   p <- ggplot(monthly, aes(x = year_month, y = count, group = 1)) +
+#     geom_line(color = "steelblue") +
+#     geom_point(color = "steelblue") +
+#     labs(title = paste("Broj zapisa po mesecu -", col_name),
+#          x = "Godina-Mesec", y = "Broj zapisa") +
+#     theme_minimal() +
+#     theme(axis.text.x = element_text(angle = 90, hjust = 1))
+#
+#   print(p)
+#
+#   print(data)
+#
+#   invisible(list(min = min_date, max = max_date, range_days = day_span))
+# }
+#
+# analyze_and_visualize <- function(data) {
+#   cols <- sdf_schema(data)
+#   for (col in cols) {
+#     cat("Name: ", col[[1]], "\t", "Type: ", col[[2]], "\n")
+#     if (col[[2]] == "BooleanType") {
+#       plot_df <- analyze_boolean(data, col[[1]])
+#     } else if (col[[2]] == "StringType") {
+#       is_id <- grepl("id", col[[1]], ignore.case = TRUE)
+#       analyze_string(data, col[[1]], top_n = 5, is_id_like = is_id)
+#     } else if (col[[2]] == "DoubleType" ||
+#       col[[2]] == "IntegerType" ||
+#       col[[2]] == "LongType") {
+#       analyze_numeric(data, col[[1]])
+#     } else if (col[[2]] == "TimestampType") {
+#       analyze_timestamp(data, col[[1]])
+#     }
+#   }
+# }
+#
 # analyze_and_visualize(users_cleaned)
 # analyze_and_visualize(traders_cleaned)
 # analyze_and_visualize(products_cleaned)
@@ -458,121 +460,121 @@ analyze_and_visualize <- function(data) {
 # analyze_and_visualize(order_products_cleaned)
 # analyze_and_visualize(receipt_products_cleaned)
 # analyze_and_visualize(trader_products_cleaned)
-
-analyze_trader_lead_days <- function(spark_df) {
-  summary_data <- spark_df %>%
-    filter(!is.na(trader_type) & !is.na(lead_days)) %>%
-    group_by(trader_type) %>%
-    summarise(mean_lead_days = mean(lead_days, na.rm = TRUE)) %>%
-    collect()
-
-  print(summary_data)
-
-  ggplot(summary_data, aes(x = trader_type, y = mean_lead_days, fill = trader_type)) +
-    geom_bar(stat = "identity", show.legend = FALSE) +
-    theme_minimal() +
-    labs(
-      title = "Average Lead Days by Trader Type",
-      x = "Trader Type",
-      y = "Mean Lead Days"
-    ) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-analyze_status_total_cost <- function(spark_df) {
-  summary_data <- spark_df %>%
-    filter(!is.na(status) & !is.na(total_cost)) %>%
-    group_by(status) %>%
-    summarise(mean_total_cost = mean(total_cost, na.rm = TRUE)) %>%
-    collect()
-
-  print(summary_data)
-
-  ggplot(summary_data, aes(x = status, y = mean_total_cost, fill = status)) +
-    geom_bar(stat = "identity", show.legend = FALSE) +
-    theme_minimal() +
-    labs(
-      title = "Average Total Cost by Order Status",
-      x = "Order Status",
-      y = "Mean Total Cost"
-    )
-}
-
-analyze_trader_status_distribution <- function(spark_df) {
-  summary_data <- spark_df %>%
-    filter(!is.na(trader_type) & !is.na(status)) %>%
-    group_by(trader_type, status) %>%
-    count() %>%
-    collect()
-
-  print(summary_data)
-
-  ggplot(summary_data, aes(x = trader_type, y = n, fill = status)) +
-    geom_bar(stat = "identity", position = "fill") +
-    scale_y_continuous(labels = scales::percent) +
-    theme_minimal() +
-    labs(
-      title = "Order Status Distribution by Trader Type",
-      x = "Trader Type",
-      y = "Percentage Share",
-      fill = "Order Status"
-    ) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-analyze_num_products_status <- function(spark_df) {
-  summary_data <- spark_df %>%
-    filter(!is.na(num_products) & !is.na(status)) %>%
-    group_by(num_products, status) %>%
-    count() %>%
-    collect()
-
-  print(summary_data)
-
-  ggplot(summary_data, aes(x = factor(num_products), y = n, fill = status)) +
-    geom_bar(stat = "identity", position = "fill") +
-    scale_y_continuous(labels = scales::percent) +
-    theme_minimal() +
-    labs(
-      title = "Order Status Breakdown by Number of Products",
-      x = "Number of Products in Order",
-      y = "Percentage Share",
-      fill = "Order Status"
-    )
-}
-
-analyze_trader_total_cost <- function(spark_df) {
-  summary_data <- spark_df %>%
-    filter(!is.na(trader_type) & !is.na(total_cost)) %>%
-    group_by(trader_type) %>%
-    summarise(
-      mean_total_cost = mean(total_cost, na.rm = TRUE),
-      median_total_cost = percentile_approx(total_cost, 0.5)
-    ) %>%
-    collect()
-
-  print(summary_data)
-
-  ggplot(summary_data, aes(x = trader_type, y = mean_total_cost, fill = trader_type)) +
-    geom_bar(stat = "identity", show.legend = FALSE) +
-    theme_minimal() +
-    labs(
-      title = "Average Total Cost by Trader Type",
-      x = "Trader Type",
-      y = "Mean Total Cost"
-    ) +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-analyze_trader_lead_days(orders_cleaned)
-analyze_status_total_cost(orders_cleaned)
-analyze_trader_status_distribution(orders_cleaned)
-analyze_num_products_status(orders_cleaned)
-analyze_trader_total_cost(orders_cleaned)
+#
+# analyze_trader_lead_days <- function(spark_df) {
+#   summary_data <- spark_df %>%
+#     filter(!is.na(trader_type) & !is.na(lead_days)) %>%
+#     group_by(trader_type) %>%
+#     summarise(mean_lead_days = mean(lead_days, na.rm = TRUE)) %>%
+#     collect()
+#
+#   print(summary_data)
+#
+#   ggplot(summary_data, aes(x = trader_type, y = mean_lead_days, fill = trader_type)) +
+#     geom_bar(stat = "identity", show.legend = FALSE) +
+#     theme_minimal() +
+#     labs(
+#       title = "Average Lead Days by Trader Type",
+#       x = "Trader Type",
+#       y = "Mean Lead Days"
+#     ) +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# }
+#
+# analyze_status_total_cost <- function(spark_df) {
+#   summary_data <- spark_df %>%
+#     filter(!is.na(status) & !is.na(total_cost)) %>%
+#     group_by(status) %>%
+#     summarise(mean_total_cost = mean(total_cost, na.rm = TRUE)) %>%
+#     collect()
+#
+#   print(summary_data)
+#
+#   ggplot(summary_data, aes(x = status, y = mean_total_cost, fill = status)) +
+#     geom_bar(stat = "identity", show.legend = FALSE) +
+#     theme_minimal() +
+#     labs(
+#       title = "Average Total Cost by Order Status",
+#       x = "Order Status",
+#       y = "Mean Total Cost"
+#     )
+# }
+#
+# analyze_trader_status_distribution <- function(spark_df) {
+#   summary_data <- spark_df %>%
+#     filter(!is.na(trader_type) & !is.na(status)) %>%
+#     group_by(trader_type, status) %>%
+#     count() %>%
+#     collect()
+#
+#   print(summary_data)
+#
+#   ggplot(summary_data, aes(x = trader_type, y = n, fill = status)) +
+#     geom_bar(stat = "identity", position = "fill") +
+#     scale_y_continuous(labels = scales::percent) +
+#     theme_minimal() +
+#     labs(
+#       title = "Order Status Distribution by Trader Type",
+#       x = "Trader Type",
+#       y = "Percentage Share",
+#       fill = "Order Status"
+#     ) +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# }
+#
+# analyze_num_products_status <- function(spark_df) {
+#   summary_data <- spark_df %>%
+#     filter(!is.na(num_products) & !is.na(status)) %>%
+#     group_by(num_products, status) %>%
+#     count() %>%
+#     collect()
+#
+#   print(summary_data)
+#
+#   ggplot(summary_data, aes(x = factor(num_products), y = n, fill = status)) +
+#     geom_bar(stat = "identity", position = "fill") +
+#     scale_y_continuous(labels = scales::percent) +
+#     theme_minimal() +
+#     labs(
+#       title = "Order Status Breakdown by Number of Products",
+#       x = "Number of Products in Order",
+#       y = "Percentage Share",
+#       fill = "Order Status"
+#     )
+# }
+#
+# analyze_trader_total_cost <- function(spark_df) {
+#   summary_data <- spark_df %>%
+#     filter(!is.na(trader_type) & !is.na(total_cost)) %>%
+#     group_by(trader_type) %>%
+#     summarise(
+#       mean_total_cost = mean(total_cost, na.rm = TRUE),
+#       median_total_cost = percentile_approx(total_cost, 0.5)
+#     ) %>%
+#     collect()
+#
+#   print(summary_data)
+#
+#   ggplot(summary_data, aes(x = trader_type, y = mean_total_cost, fill = trader_type)) +
+#     geom_bar(stat = "identity", show.legend = FALSE) +
+#     theme_minimal() +
+#     labs(
+#       title = "Average Total Cost by Trader Type",
+#       x = "Trader Type",
+#       y = "Mean Total Cost"
+#     ) +
+#     theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# }
+#
+# analyze_trader_lead_days(orders_cleaned)
+# analyze_status_total_cost(orders_cleaned)
+# analyze_trader_status_distribution(orders_cleaned)
+# analyze_num_products_status(orders_cleaned)
+# analyze_trader_total_cost(orders_cleaned)
 
 # Classification
 user_window <- orders_cleaned %>%
-  sdf_repartition(partitions = 4) %>%
+  sdf_repartition(partitions = 32) %>%
   arrange(user_id, created_date) %>%
   group_by(user_id) %>%
   mutate(
@@ -585,7 +587,7 @@ user_window <- orders_cleaned %>%
   sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 trader_window <- user_window %>%
-  sdf_repartition(partitions = 4) %>%
+  sdf_repartition(partitions = 32) %>%
   arrange(trader_type, created_date) %>%
   group_by(trader_type) %>%
   mutate(
@@ -643,6 +645,8 @@ feature_cols <- c(
 model_data <- model_data %>%
   ft_vector_assembler(input_cols = feature_cols, output_col = "features")
 
+model_data <- model_data %>% sdf_persist(storage.level = "MEMORY_AND_DISK")
+
 class_balance <- model_data %>% count(status) %>% collect()
 print(class_balance)
 
@@ -669,8 +673,11 @@ for (s in statuses) {
 }
 
 train <- sdf_bind_rows(train_list) %>%
+  sdf_repartition(partitions = 32) %>%
   sdf_persist(storage.level = "MEMORY_AND_DISK")
+
 test <- sdf_bind_rows(test_list) %>%
+  sdf_repartition(partitions = 32) %>%
   sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 train <- sdf_repartition(train, partitions = 1)
@@ -688,7 +695,7 @@ numeric_cols <- c("total_cost", "num_products", "lead_days",
 metrics <- c("f1", "accuracy", "weightedPrecision", "weightedRecall")
 evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = "f1")
 
-# logistic_regression
+# # logistic_regression
 # lr_pipeline <- ml_pipeline(sc) %>%
 #   ft_string_indexer(input_col = "trader_type", output_col = "trader_type_idx") %>%
 #   ft_one_hot_encoder(input_col = "trader_type_idx", output_col = "trader_type_oh") %>%
@@ -731,38 +738,29 @@ evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", met
 #
 # print("LR Test metrics:")
 # print(test_metrics_lr)
-
-# random forest
-# si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
-# ohe_trader <- ft_one_hot_encoder(sc, input_col = "trader_type_idx", output_col = "trader_type_oh")
-# si_dow <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
-# ohe_dow <- ft_one_hot_encoder(sc, input_col = "day_of_week_idx", output_col = "day_of_week_oh")
-# si_label <- ft_string_indexer(sc, input_col = "status", output_col = "label")
-# va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
-# scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
-# va_final <- ft_vector_assembler(sc, input_cols = feature_cols, output_col = "features")
-# rf <- ml_random_forest_classifier(
-#   sc,
-#   features_col = "features",
-#   label_col = "label",
-#   num_trees = 20,
-#   max_depth = 5,
-#   seed = 123
-# )
 #
-# rf_pipeline <- ml_pipeline(
-#   si_trader, ohe_trader,
-#   si_dow, ohe_dow,
-#   si_label,
-#   va_numeric, scaler,
-#   va_final,
-#   rf
-# )
+# # random forest
+# rf_pipeline <- ml_pipeline(sc) %>%
+#   ft_string_indexer(input_col = "trader_type", output_col = "trader_type_idx") %>%
+#   ft_one_hot_encoder(input_col = "trader_type_idx", output_col = "trader_type_oh") %>%
+#   ft_string_indexer(input_col = "day_of_week", output_col = "day_of_week_idx") %>%
+#   ft_one_hot_encoder(input_col = "day_of_week_idx", output_col = "day_of_week_oh") %>%
+#   ft_string_indexer(input_col = "status", output_col = "label") %>%
+#   ft_vector_assembler(input_cols = numeric_cols, output_col = "numeric_features") %>%
+#   ft_standard_scaler(input_col = "numeric_features", output_col = "numeric_features_scaled") %>%
+#   ft_vector_assembler(input_cols = feature_cols, output_col = "features") %>%
+#   ml_random_forest_classifier(
+#     features_col = "features",
+#     label_col = "label",
+#     num_trees = 20,
+#     max_depth = 5,
+#     seed = 123
+#   )
 #
 # rf_grid <- list(
-#   random_forest = list(
-#     num_trees = c(10, 20, 50),
-#     max_depth = c(3, 5, 10)
+#   random_forest_classifier = list(
+#     num_trees = c(10L, 20L),
+#     max_depth = c(3L, 5L)
 #   )
 # )
 #
@@ -795,84 +793,41 @@ evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", met
 # print("RF Test metrics:")
 # print(test_metrics_rf)
 
-# xgboost_classifier
-# si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
-# si_dow <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
-# si_label <- ft_string_indexer(sc, input_col = "status", output_col = "label")
-#
-# va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
-# scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
-#
-# feature_cols <- c("trader_type_idx", "day_of_week_idx", "numeric_features_scaled")
-#
-# va_final <- ft_vector_assembler(sc, input_cols = feature_cols, output_col = "features")  # ← nedostajalo
-#
-# library(xgboost)
-#
-# prep_pipeline <- ml_pipeline(
-#   si_trader, si_dow, si_label,
-#   va_numeric, scaler, va_final
-# )
-# prep_model <- ml_fit(prep_pipeline, train)
-#
-# train_transformed <- collect(ml_transform(prep_model, train))
-# test_transformed <- collect(ml_transform(prep_model, test))
-#
-# extract_matrix <- function(df) {
-#   matrix(
-#     unlist(lapply(df$features, as.numeric)),
-#     nrow = nrow(df),
-#     byrow = TRUE
-#   )
-# }
-#
-# train_matrix <- xgb.DMatrix(data = extract_matrix(train_transformed), label = train_transformed$label)
-# test_matrix <- xgb.DMatrix(data = extract_matrix(test_transformed), label = test_transformed$label)
-#
-# grid <- expand.grid(num_round = c(10, 20, 50), max_depth = c(3, 5, 10))
-#
-# grid_results <- apply(grid, 1, function(row) {
-#   params <- list(
-#     objective = "multi:softmax",
-#     num_class = num_classes,
-#     max_depth = as.integer(row["max_depth"]),
-#     eta = 0.3,
-#     seed = 123
-#   )
-#   cv <- xgb.cv(
-#     params = params,
-#     data = train_matrix,
-#     nrounds = as.integer(row["num_round"]),
-#     nfold = 3,
-#     metrics = "merror",
-#     verbose = FALSE
-#   )
-#   list(num_round = row["num_round"], max_depth = row["max_depth"], merror = min(cv$evaluation_log$test_merror_mean))
-# })
-#
-# print("XGB CV rezultati:")
-# print(do.call(rbind, lapply(grid_results, as.data.frame)))
-#
-# best <- grid_results[[which.min(sapply(grid_results, function(x) x$merror))]]
-# best_params <- list(
-#   objective = "multi:softmax",
-#   num_class = num_classes,
-#   max_depth = as.integer(best$max_depth),
-#   eta = 0.3,
-#   seed = 123
-# )
-# xgb_best_model <- xgb.train(params = best_params, data = train_matrix, nrounds = as.integer(best$num_round))
-#
-# preds <- predict(xgb_best_model, test_matrix)
-# true_labels <- test_transformed$label
-#
-# accuracy <- mean(preds == true_labels)
-# confusion <- table(Predicted = preds, Actual = true_labels)
-#
-# print("XGB Test metrics:")
-# print(paste("Accuracy:", round(accuracy, 4)))
-# print("Confusion matrix:")
-# print(confusion)
+# mlp_classifier
+si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
+si_dow <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
+si_label <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+
+va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
+scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
+
+xgb_feature_cols <- c("trader_type_idx", "day_of_week_idx", "numeric_features_scaled")
+
+va_final <- ft_vector_assembler(sc, input_cols = xgb_feature_cols, output_col = "features")
+
+n_features <- length(c("trader_type_idx", "day_of_week_idx", numeric_cols))
+num_classes <- train %>%
+  distinct(status) %>%
+  count() %>%
+  pull(n)
+
+mlp <- ml_multilayer_perceptron_classifier(sc,
+                                           features_col = "features",
+                                           label_col = "label",
+                                           layers = c(n_features, 64, 32, num_classes),
+                                           max_iter = 100,
+                                           seed = 123
+)
+
+pipeline_mlp <- ml_pipeline(si_trader, si_dow, si_label, va_numeric, scaler, va_final, mlp)
+model_mlp <- ml_fit(pipeline_mlp, train)
+preds_mlp <- ml_transform(model_mlp, test)
+
+accuracy_mlp <- ml_evaluate(
+  ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = "accuracy"),
+  preds_mlp
+)
+print(paste("MLP Test Accuracy:", round(accuracy_mlp, 4)))
 
 # clusterization
 cluster_data <- model_data %>%
@@ -940,7 +895,8 @@ print("--- Cluster Structure - Scenario 2 (k=5) ---")
 print(cluster_structure_s2)
 
 print("=== DBSCAN CLUSTERING ===")
-select(total_cost, user_order_count, user_cancelled_count, user_avg_cost, trader_type) %>%
+local_data_dbscan <- cluster_data %>%
+  select(total_cost, user_order_count, user_cancelled_count, user_avg_cost, trader_type) %>%
   sdf_sample(fraction = 0.05, replacement = FALSE, seed = 42) %>%
   collect()
 
