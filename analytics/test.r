@@ -7,7 +7,6 @@
 # install.packages("sparkxgb")
 # install.packages("xgboost")
 # install.packages("rmarkdown")
-# install.packages("dbscan")
 
 path <- "file:///C:/Users/MiliBovan/Desktop/master/hyperledger-commerce-chain/analytics/data-generator"
 
@@ -106,7 +105,18 @@ ggplot(missing_summary, aes(x = reorder(paste(Entity, Column, sep = "."), Pct_Mi
        x = "Entity.Column", y = "% NA") +
   theme_minimal()
 
+# ---------------------------------------------------------------------------
 # Cleaning data
+#
+# CHANGE: columns whose missingness is *informative* / tied to the outcome
+# (lead_days, expected_fulfillment_date, cancelled_date, cancelled_by,
+# expiry_date) are now protected from the generic drop/median-fill logic.
+# Dropping rows based on lead_days used to silently delete a disproportionate
+# share of CANCELLED/PENDING orders (their missingness is directly caused by
+# status in the generator), which quietly worsened class imbalance and
+# biased the training set. These columns now get explicit, non-destructive
+# handling and rows are never dropped because of them.
+# ---------------------------------------------------------------------------
 clean_data <- function(spark_df, df_name) {
   na_table <- spark_df %>%
     summarise(across(everything(), ~sum(as.integer(is.na(.))))) %>%
@@ -121,11 +131,14 @@ clean_data <- function(spark_df, df_name) {
     Pct_Missing = round(100 * as.numeric(na_table[1,]) / total_rows, 2)
   )
 
+  protected_cols <- c("lead_days", "expected_fulfillment_date",
+                       "cancelled_date", "cancelled_by", "expiry_date")
+
   cols_to_drop <- na_summary %>%
-    filter(Pct_Missing > 0 & Pct_Missing < 15) %>%
+    filter(Pct_Missing > 0 & Pct_Missing < 15 & !(Column %in% protected_cols)) %>%
     pull(Column)
   cols_to_fill <- na_summary %>%
-    filter(Pct_Missing >= 15) %>%
+    filter(Pct_Missing >= 15 & !(Column %in% protected_cols)) %>%
     pull(Column)
 
   cleaned_df <- spark_df
@@ -140,15 +153,11 @@ clean_data <- function(spark_df, df_name) {
   if (length(cols_to_fill) > 0) {
     for (col in cols_to_fill) {
       col_type <- col_types[[col]]$type
-      if (col %in% c("cancelled_date", "cancelled_by")) {
-        cleaned_df <- cleaned_df %>%
-          mutate(!!sym(col) := ifelse(is.na(!!sym(col)), "Not Cancelled", as.character(!!sym(col))))
-      } else if (col == "expiry_date") {
-        cleaned_df <- cleaned_df %>%
-          mutate(!!sym(col) := ifelse(is.na(!!sym(col)), "No Expiry Date", as.character(!!sym(col))))
-      } else if (col_type %in% c("DoubleType", "IntegerType", "LongType", "FloatType")) {
+      if (col_type %in% c("DoubleType", "IntegerType", "LongType", "FloatType")) {
         med_val <- cleaned_df %>%
-          summarise(m = percentile_approx(!!sym(col), 0.5, na.rm = TRUE)) %>%
+          filter(!is.na(!!sym(col))) %>%
+          summarise(m = percentile_approx(!!sym(col), 0.5)) %>%
+          collect() %>%
           pull(m)
         cleaned_df <- cleaned_df %>%
           mutate(!!sym(col) := ifelse(is.na(!!sym(col)), med_val, !!sym(col)))
@@ -159,6 +168,43 @@ clean_data <- function(spark_df, df_name) {
           mutate(!!sym(col) := ifelse(is.na(!!sym(col)), "Unknown", !!sym(col)))
       }
     }
+  }
+
+  # Protected columns: explicit handling, never row-dropped
+  if ("cancelled_date" %in% colnames(cleaned_df)) {
+    cleaned_df <- cleaned_df %>%
+      mutate(cancelled_date = ifelse(is.na(cancelled_date), "Not Cancelled", as.character(cancelled_date)))
+  }
+  if ("cancelled_by" %in% colnames(cleaned_df)) {
+    cleaned_df <- cleaned_df %>%
+      mutate(cancelled_by = ifelse(is.na(cancelled_by), "Not Cancelled", as.character(cancelled_by)))
+  }
+  if ("expiry_date" %in% colnames(cleaned_df)) {
+    cleaned_df <- cleaned_df %>%
+      mutate(expiry_date = ifelse(is.na(expiry_date), "No Expiry Date", as.character(expiry_date)))
+  }
+  if ("lead_days" %in% colnames(cleaned_df) && "trader_type" %in% colnames(cleaned_df)) {
+    # Median lead time computed PER trader_type (fulfillment time is
+    # inherently trader-type dependent - a CARDEALER order and a GROCERY
+    # order don't share a sensible global median), rather than one
+    # dataset-wide median.
+    # NOTE: percentile_approx isn't a function dbplyr recognizes as a true
+    # aggregate. Left lazy, dbplyr's query-simplification can merge this
+    # group_by/summarise into the outer join/mutate and drop the GROUP BY
+    # entirely, producing "grouping expressions sequence is empty". Forcing
+    # collect() here (only ~a handful of trader_type rows) materializes the
+    # medians locally first, then copies that tiny table back to Spark for
+    # the join - avoiding the ambiguous lazy-SQL nesting altogether.
+    trader_type_medians <- cleaned_df %>%
+      filter(!is.na(lead_days)) %>%
+      group_by(trader_type) %>%
+      summarise(lead_days_median = percentile_approx(lead_days, 0.5)) %>%
+      collect()
+
+    cleaned_df <- cleaned_df %>%
+      left_join(trader_type_medians, by = "trader_type", copy = TRUE) %>%
+      mutate(lead_days = ifelse(is.na(lead_days), lead_days_median, lead_days)) %>%
+      select(-lead_days_median)
   }
 
   sdf_persist(cleaned_df, storage.level = "MEMORY_AND_DISK")
@@ -297,30 +343,6 @@ trader_products_cleaned <- clean_data(trader_products, "trader_products") %>%
 #   }
 #
 #   invisible(list(cardinality = cardinality, top_n = top_n_df))
-# }
-#
-# analyze_numeric <- function(spark_df, col_name) {
-#   minimum <- spark_df %>%
-#     summarise(min_value = min(!!sym(col_name), na.rm = TRUE)) %>%
-#     collect()
-#
-#   maximum <- spark_df %>%
-#     summarise(max_value = max(!!sym(col_name), na.rm = TRUE)) %>%
-#     collect()
-#
-#   median <- spark_df %>%
-#     summarise(mean_value = mean(!!sym(col_name), na.rm = TRUE)) %>%
-#     collect()
-#
-#   average <- spark_df %>%
-#     summarise(avg_value = average(!!sym(col_name), na.rm = TRUE)) %>%
-#     collect()
-#
-#   quantile <- spark_df %>%
-#     summarise(qua_value = quantile(!!sym(col_name), na.rm = TRUE)) %>%
-#     collect()
-#
-#   print(minimum, maximum, median, average, quantile)
 # }
 #
 # analyze_numeric <- function(spark_df, col_name) {
@@ -572,128 +594,95 @@ trader_products_cleaned <- clean_data(trader_products, "trader_products") %>%
 # analyze_num_products_status(orders_cleaned)
 # analyze_trader_total_cost(orders_cleaned)
 
-# Classification
-user_window <- orders_cleaned %>%
-  sdf_repartition(partitions = 32) %>%
-  arrange(user_id, created_date) %>%
-  group_by(user_id) %>%
-  mutate(
-    user_order_count = row_number() - 1,
-    user_avg_cost = (cumsum(total_cost) - total_cost) / pmax(row_number() - 1, 1),
-    user_cancelled_count = cumsum(ifelse(status == "CANCELLED", 1, 0)) -
-      ifelse(status == "CANCELLED", 1, 0)
-  ) %>%
-  ungroup() %>%
-  sdf_persist(storage.level = "MEMORY_AND_DISK")
+# ===========================================================================
+# CLASSIFICATION
+# ===========================================================================
+#
+# orders_cleaned has no trader_id (only trader_type) - a specific trader is
+# only assigned at receipt time - so "per-trader" running stats can only be
+# computed per trader_type here. Renamed to traderType_* below so the name
+# doesn't imply per-individual-trader granularity it doesn't have.
+#
+# lead_days / expected_fulfillment_date are intentionally EXCLUDED from the
+# feature set. In generate_data.mjs, missingFulfillment is decided AFTER
+# status is chosen and specifically only for CANCELLED/PENDING orders - so
+# "is lead_days missing" is partly a disguised copy of the label. Even after
+# imputing lead_days (done in clean_data above so the column is still usable
+# for descriptive analysis/EDA), using it as a training feature would let
+# the model exploit that hidden leakage rather than learn genuine patterns.
+# If you fix the generator to decide fulfillment timing independently of the
+# status outcome, lead_days can safely be added back as a feature.
 
-trader_window <- user_window %>%
-  sdf_repartition(partitions = 32) %>%
-  arrange(trader_type, created_date) %>%
-  group_by(trader_type) %>%
-  mutate(
-    trader_order_count = row_number() - 1,
-    trader_avg_cost = (cumsum(total_cost) - total_cost) / pmax(row_number() - 1, 1)
-  ) %>%
-  ungroup() %>%
-  sdf_persist(storage.level = "MEMORY_AND_DISK")
-
-# receipts_by_order <- receipts_cleaned %>%
-#   group_by(order_id) %>%
-#   summarise(
-#     receipt_count = n(),
-#     receipt_total_cost = sum(total_cost, na.rm = TRUE),
-#     receipt_avg_cost = mean(total_cost, na.rm = TRUE),
-#     receipt_cancelled_count = sum(ifelse(status == "CANCELLED", 1, 0)),
-#     receipt_completed_count = sum(ifelse(status == "COMPLETED", 1, 0)),
-#     has_receipt = 1L
+# user_window <- orders_cleaned %>%
+#   sdf_repartition(partitions = 32) %>%
+#   arrange(user_id, created_date) %>%
+#   group_by(user_id) %>%
+#   mutate(
+#     user_order_count = row_number() - 1,
+#     user_avg_cost = (cumsum(total_cost) - total_cost) / pmax(row_number() - 1, 1),
+#     user_cancelled_count = cumsum(ifelse(status == "CANCELLED", 1, 0)) -
+#       ifelse(status == "CANCELLED", 1, 0)
 #   ) %>%
-#   ungroup()
-
-orders_features <- trader_window %>%
-  mutate(
-    user_order_count = ifelse(is.na(user_order_count), 0, user_order_count),
-    user_avg_cost = ifelse(is.na(user_avg_cost), 0, user_avg_cost),
-    user_cancelled_count = ifelse(is.na(user_cancelled_count), 0, user_cancelled_count),
-    trader_order_count = ifelse(is.na(trader_order_count), 0, trader_order_count),
-    trader_avg_cost = ifelse(is.na(trader_avg_cost), 0, trader_avg_cost)
-  )
-
-model_data <- orders_features %>%
-  ft_string_indexer(input_col = "trader_type", output_col = "trader_type_idx") %>%
-  ft_one_hot_encoder(input_col = "trader_type_idx", output_col = "trader_type_oh") %>%
-  ft_string_indexer(input_col = "day_of_week", output_col = "day_of_week_idx") %>%
-  ft_one_hot_encoder(input_col = "day_of_week_idx", output_col = "day_of_week_oh") %>%
-  ft_string_indexer(input_col = "status", output_col = "label")
-
-model_data <- model_data %>%
-  ft_vector_assembler(
-    input_cols = c("total_cost", "num_products", "lead_days",
-                   "user_order_count", "user_avg_cost", "user_cancelled_count",
-                   "trader_order_count", "trader_avg_cost"),
-    output_col = "numeric_features"
-  ) %>%
-  ft_standard_scaler(
-    input_col = "numeric_features",
-    output_col = "numeric_features_scaled"
-  )
-
-feature_cols <- c(
-  "trader_type_oh", "day_of_week_oh",
-  "numeric_features_scaled"
-)
-
-model_data <- model_data %>%
-  ft_vector_assembler(input_cols = feature_cols, output_col = "features")
-
-model_data <- model_data %>% sdf_persist(storage.level = "MEMORY_AND_DISK")
-
-class_balance <- model_data %>% count(status) %>% collect()
-print(class_balance)
-
-set.seed(42)
-train_list <- list()
-test_list <- list()
-
-class_balance <- orders_features %>% count(status) %>% collect()
-print(class_balance)
-
-statuses <- orders_features %>%
-  distinct(status) %>%
-  collect() %>%
-  pull(status)
-
-train_list <- list()
-test_list <- list()
-
-for (s in statuses) {
-  subset <- orders_features %>% filter(status == s)
-  sp <- sdf_random_split(subset, train = 0.8, test = 0.2, seed = 42)
-  train_list[[s]] <- sp$train
-  test_list[[s]] <- sp$test
-}
-
-train <- sdf_bind_rows(train_list) %>%
-  sdf_repartition(partitions = 32) %>%
-  sdf_persist(storage.level = "MEMORY_AND_DISK")
-
-test <- sdf_bind_rows(test_list) %>%
-  sdf_repartition(partitions = 32) %>%
-  sdf_persist(storage.level = "MEMORY_AND_DISK")
-
-train <- sdf_repartition(train, partitions = 1)
-test <- sdf_repartition(test, partitions = 1)
-
-feature_cols <- c(
-  "trader_type_oh", "day_of_week_oh",
-  "numeric_features_scaled"
-)
-
-numeric_cols <- c("total_cost", "num_products", "lead_days",
-                  "user_order_count", "user_avg_cost", "user_cancelled_count",
-                  "trader_order_count", "trader_avg_cost")
-
-metrics <- c("f1", "accuracy", "weightedPrecision", "weightedRecall")
-evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = "f1")
+#   ungroup() %>%
+#   sdf_persist(storage.level = "MEMORY_AND_DISK")
+#
+# traderType_window <- user_window %>%
+#   sdf_repartition(partitions = 32) %>%
+#   arrange(trader_type, created_date) %>%
+#   group_by(trader_type) %>%
+#   mutate(
+#     traderType_order_count = row_number() - 1,
+#     traderType_avg_cost = (cumsum(total_cost) - total_cost) / pmax(row_number() - 1, 1)
+#   ) %>%
+#   ungroup() %>%
+#   sdf_persist(storage.level = "MEMORY_AND_DISK")
+#
+# orders_features <- traderType_window %>%
+#   mutate(
+#     user_order_count = ifelse(is.na(user_order_count), 0, user_order_count),
+#     user_avg_cost = ifelse(is.na(user_avg_cost), 0, user_avg_cost),
+#     user_cancelled_count = ifelse(is.na(user_cancelled_count), 0, user_cancelled_count),
+#     traderType_order_count = ifelse(is.na(traderType_order_count), 0, traderType_order_count),
+#     traderType_avg_cost = ifelse(is.na(traderType_avg_cost), 0, traderType_avg_cost)
+#   ) %>%
+#   sdf_persist(storage.level = "MEMORY_AND_DISK")
+#
+# class_balance <- orders_features %>% count(status) %>% collect()
+# print(class_balance)
+#
+# statuses <- orders_features %>%
+#   distinct(status) %>%
+#   collect() %>%
+#   pull(status)
+#
+# set.seed(42)
+# train_list <- list()
+# test_list <- list()
+#
+# for (s in statuses) {
+#   subset <- orders_features %>% filter(status == s)
+#   sp <- sdf_random_split(subset, train = 0.8, test = 0.2, seed = 42)
+#   train_list[[s]] <- sp$train
+#   test_list[[s]] <- sp$test
+# }
+#
+# train <- sdf_bind_rows(train_list) %>%
+#   sdf_repartition(partitions = 32) %>%
+#   sdf_persist(storage.level = "MEMORY_AND_DISK")
+#
+# test <- sdf_bind_rows(test_list) %>%
+#   sdf_repartition(partitions = 32) %>%
+#   sdf_persist(storage.level = "MEMORY_AND_DISK")
+#
+# train <- sdf_repartition(train, partitions = 1)
+# test <- sdf_repartition(test, partitions = 1)
+#
+# numeric_cols <- c("total_cost", "num_products",
+#                   "user_order_count", "user_avg_cost", "user_cancelled_count",
+#                   "traderType_order_count", "traderType_avg_cost")
+#
+# metrics <- c("f1", "accuracy", "weightedPrecision", "weightedRecall")
+# evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = "f1")
 
 # # logistic_regression
 # lr_pipeline <- ml_pipeline(sc) %>%
@@ -704,7 +693,8 @@ evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", met
 #   ft_string_indexer(input_col = "status", output_col = "label") %>%
 #   ft_vector_assembler(input_cols = numeric_cols, output_col = "numeric_features") %>%
 #   ft_standard_scaler(input_col = "numeric_features", output_col = "numeric_features_scaled") %>%
-#   ft_vector_assembler(input_cols = feature_cols, output_col = "features") %>%
+#   ft_vector_assembler(input_cols = c("trader_type_oh", "day_of_week_oh", "numeric_features_scaled"),
+#                        output_col = "features") %>%
 #   ml_logistic_regression(features_col = "features", label_col = "label")
 #
 # lr_grid <- list(
@@ -748,7 +738,8 @@ evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", met
 #   ft_string_indexer(input_col = "status", output_col = "label") %>%
 #   ft_vector_assembler(input_cols = numeric_cols, output_col = "numeric_features") %>%
 #   ft_standard_scaler(input_col = "numeric_features", output_col = "numeric_features_scaled") %>%
-#   ft_vector_assembler(input_cols = feature_cols, output_col = "features") %>%
+#   ft_vector_assembler(input_cols = c("trader_type_oh", "day_of_week_oh", "numeric_features_scaled"),
+#                        output_col = "features") %>%
 #   ml_random_forest_classifier(
 #     features_col = "features",
 #     label_col = "label",
@@ -793,218 +784,206 @@ evaluator <- ml_multiclass_classification_evaluator(sc, label_col = "label", met
 # print("RF Test metrics:")
 # print(test_metrics_rf)
 
+# ---------------------------------------------------------------------------
 # mlp_classifier
-si_trader <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
-si_dow <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
-si_label <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+#
+# CHANGE (the main bug): trader_type_idx / day_of_week_idx are STRING-INDEXER
+# CODES (0,1,2,3...), not one-hot vectors. Feeding those raw integer codes
+# straight into the numeric feature vector tells the network e.g. that
+# CARDEALER (idx 3) is "3x more" than SUPERMARKET (idx 0) - a false ordinal
+# relationship for a categorical variable. The fix adds explicit
+# ft_one_hot_encoder steps and assembles the ONE-HOT columns into the final
+# feature vector instead of the raw indices.
+# ---------------------------------------------------------------------------
+# si_trader  <- ft_string_indexer(sc, input_col = "trader_type", output_col = "trader_type_idx")
+# ohe_trader <- ft_one_hot_encoder(sc, input_col = "trader_type_idx", output_col = "trader_type_oh")
+# si_dow     <- ft_string_indexer(sc, input_col = "day_of_week", output_col = "day_of_week_idx")
+# ohe_dow    <- ft_one_hot_encoder(sc, input_col = "day_of_week_idx", output_col = "day_of_week_oh")
+# si_label   <- ft_string_indexer(sc, input_col = "status", output_col = "label")
+#
+# va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
+# scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
+#
+# mlp_feature_cols <- c("trader_type_oh", "day_of_week_oh", "numeric_features_scaled")
+# va_final <- ft_vector_assembler(sc, input_cols = mlp_feature_cols, output_col = "features")
+#
+# # n_features must match the length of the ASSEMBLED vector, not the raw
+# # column count. Spark's OneHotEncoder drops the last category by default
+# # (dropLast = TRUE), so each one-hot column contributes (n_categories - 1)
+# # dimensions, not n_categories.
+# n_trader_types <- orders_features %>% distinct(trader_type) %>% count() %>% pull(n)
+# n_days <- orders_features %>% distinct(day_of_week) %>% count() %>% pull(n)
+# n_features <- (n_trader_types - 1) + (n_days - 1) + length(numeric_cols)
+#
+# num_classes <- train %>%
+#   distinct(status) %>%
+#   count() %>%
+#   pull(n)
+#
+# mlp <- ml_multilayer_perceptron_classifier(sc,
+#                                            features_col = "features",
+#                                            label_col = "label",
+#                                            layers = c(n_features, 64, 32, num_classes),
+#                                            max_iter = 100,
+#                                            seed = 123
+# )
+#
+# pipeline_mlp <- ml_pipeline(si_trader, ohe_trader, si_dow, ohe_dow, si_label,
+#                              va_numeric, scaler, va_final, mlp)
+# model_mlp <- ml_fit(pipeline_mlp, train)
+# preds_mlp <- ml_transform(model_mlp, test)
+#
+# test_metrics_mlp <- lapply(metrics, function(m) {
+#   ev <- ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = m)
+#   ml_evaluate(ev, preds_mlp)
+# })
+# names(test_metrics_mlp) <- metrics
+#
+# print("MLP Test metrics:")
+# print(test_metrics_mlp)
+#
+# # Per-class breakdown - the overall (weighted) F1/accuracy above can look
+# # fine while a minority class like CANCELLED is barely being predicted at
+# # all, because it contributes little to a weighted average. A confusion
+# # matrix makes that visible.
+# confusion_matrix <- preds_mlp %>%
+#   count(label, prediction) %>%
+#   collect() %>%
+#   arrange(label, prediction)
+#
+# print("--- MLP Confusion Matrix (label x prediction) ---")
+# print(confusion_matrix)
 
-va_numeric <- ft_vector_assembler(sc, input_cols = numeric_cols, output_col = "numeric_features")
-scaler <- ft_standard_scaler(sc, input_col = "numeric_features", output_col = "numeric_features_scaled")
 
-xgb_feature_cols <- c("trader_type_idx", "day_of_week_idx", "numeric_features_scaled")
+# ===========================================================================
+# CLUSTERING (K-Means only)
+# ===========================================================================
+#
+# Two problems were fixed here:
+#
+# 1. The clustering features (total_cost, user_order_count,
+#    user_cancelled_count) were never scaled before being assembled. Since
+#    total_cost is on a scale of hundreds/thousands while the order/cancel
+#    counts are small integers, Euclidean-distance-based K-Means was
+#    effectively clustering on total_cost alone - this was the main reason
+#    clustering "didn't work" (meaningless silhouette scores, no real
+#    separation on the other variables).
+#
+# 2. The old cluster_data had one row PER ORDER (with a running cumulative
+#    total for that user), so the same user showed up many times with
+#    different values. That's not customer segmentation - it's clustering
+#    order-events, and heavy users get disproportionate weight simply by
+#    having more rows. Rebuilt below as one row PER USER with lifetime
+#    aggregates, which is what "cluster users by behavior" actually needs.
+#
+# DBSCAN removed: it isn't distributed in Spark, so it required collecting a
+# 5% sample to the driver, which defeats the point of doing this at scale;
+# K-Means runs natively and distributedly on the full dataset and is kept as
+# the single clustering method per request.
 
-va_final <- ft_vector_assembler(sc, input_cols = xgb_feature_cols, output_col = "features")
-
-n_features <- length(c("trader_type_idx", "day_of_week_idx", numeric_cols))
-num_classes <- train %>%
-  distinct(status) %>%
-  count() %>%
-  pull(n)
-
-mlp <- ml_multilayer_perceptron_classifier(sc,
-                                           features_col = "features",
-                                           label_col = "label",
-                                           layers = c(n_features, 64, 32, num_classes),
-                                           max_iter = 100,
-                                           seed = 123
-)
-
-pipeline_mlp <- ml_pipeline(si_trader, si_dow, si_label, va_numeric, scaler, va_final, mlp)
-model_mlp <- ml_fit(pipeline_mlp, train)
-preds_mlp <- ml_transform(model_mlp, test)
-
-accuracy_mlp <- ml_evaluate(
-  ml_multiclass_classification_evaluator(sc, label_col = "label", metric_name = "accuracy"),
-  preds_mlp
-)
-print(paste("MLP Test Accuracy:", round(accuracy_mlp, 4)))
-
-# clusterization
-cluster_data <- model_data %>%
-  ft_vector_assembler(
-    input_cols = c("total_cost", "user_order_count", "user_cancelled_count"),
-    output_col = "cluster_features"
+user_features <- orders_cleaned %>%
+  group_by(user_id) %>%
+  summarise(
+    total_orders      = n(),
+    total_spend       = sum(total_cost, na.rm = TRUE),
+    avg_order_value   = mean(total_cost, na.rm = TRUE),
+    cancelled_orders  = sum(as.integer(status == "CANCELLED")),
+    avg_num_products  = mean(num_products, na.rm = TRUE)
   ) %>%
+  mutate(cancellation_rate = cancelled_orders / total_orders) %>%
+  ungroup() %>%
   sdf_persist(storage.level = "MEMORY_AND_DISK")
 
-cluster_evaluator <- ml_clustering_evaluator(sc, metric_name = "silhouette")
+cluster_input_cols <- c("total_spend", "avg_order_value", "total_orders",
+                         "cancellation_rate", "avg_num_products")
+
+cluster_data <- user_features %>%
+  ft_vector_assembler(input_cols = cluster_input_cols, output_col = "raw_features") %>%
+  ft_standard_scaler(input_col = "raw_features", output_col = "cluster_features") %>%
+  sdf_persist(storage.level = "MEMORY_AND_DISK")
 
 print("=== K-MEANS CLUSTERING ===")
 
-kmeans_s1 <- ml_kmeans(cluster_data, features_col = "cluster_features", k = 3, seed = 42)
-predictions_kmeans_s1 <- ml_predict(kmeans_s1, cluster_data)
-silhouette_kmeans_s1 <- ml_evaluate(kmeans_s1, cluster_data)$silhouette()
+cluster_evaluator <- ml_clustering_evaluator(sc, features_col = "cluster_features",
+                                              metric_name = "silhouette")
 
-kmeans_s2 <- ml_kmeans(cluster_data, features_col = "cluster_features", k = 5, seed = 42)
-predictions_kmeans_s2 <- ml_predict(kmeans_s2, cluster_data)
-silhouette_kmeans_s2 <- ml_evaluate(kmeans_s2, cluster_data)$silhouette()
+k_values <- 2:8
+silhouette_scores <- sapply(k_values, function(k) {
+  m <- ml_kmeans(cluster_data, features_col = "cluster_features", k = k, seed = 42)
+  preds <- ml_predict(m, cluster_data)
+  ml_evaluate(cluster_evaluator, preds)
+})
 
-print(paste("K-Means Silhouette - Scenario 1 (k=3):", round(silhouette_kmeans_s1, 4)))
-print(paste("K-Means Silhouette - Scenario 2 (k=5):", round(silhouette_kmeans_s2, 4)))
+k_selection <- data.frame(k = k_values, silhouette = silhouette_scores)
+print("--- Silhouette by k ---")
+print(k_selection)
 
-print("--- Cluster Centers - Scenario 1 (k=3) ---")
-print(kmeans_s1$centers)
+p_k <- ggplot(k_selection, aes(x = k, y = silhouette)) +
+  geom_line(color = "steelblue") +
+  geom_point(color = "steelblue", size = 2) +
+  labs(title = "K-Means: Silhouette Score by k",
+       x = "Number of clusters (k)", y = "Silhouette score") +
+  theme_minimal()
+print(p_k)
 
-print("--- Cluster Centers - Scenario 2 (k=5) ---")
-print(kmeans_s2$centers)
+best_k <- k_selection$k[which.max(k_selection$silhouette)]
+cat("Best k by silhouette:", best_k, "\n")
 
-print("--- Cluster Sizes - Scenario 1 (k=3) ---")
-print(kmeans_s1$summary$cluster_sizes())
+kmeans_final <- ml_kmeans(cluster_data, features_col = "cluster_features", k = best_k, seed = 42)
+predictions_kmeans <- ml_predict(kmeans_final, cluster_data)
+silhouette_final <- ml_evaluate(cluster_evaluator, predictions_kmeans)
 
-print("--- Cluster Sizes - Scenario 2 (k=5) ---")
-print(kmeans_s2$summary$cluster_sizes())
+print(paste("K-Means Silhouette (k =", best_k, "):", round(silhouette_final, 4)))
 
-cluster_structure_s1 <- predictions_kmeans_s1 %>%
+print("--- Cluster Centers (scaled feature space) ---")
+print(kmeans_final$centers)
+
+print("--- Cluster Sizes ---")
+print(kmeans_final$summary$cluster_sizes())
+
+# Profile clusters using RAW (unscaled) values - much easier to interpret
+# than the standardized cluster centers above.
+cluster_structure <- predictions_kmeans %>%
   group_by(prediction) %>%
   summarise(
-    mean_total_cost = mean(total_cost, na.rm = TRUE),
-    mean_order_count = mean(user_order_count, na.rm = TRUE),
-    mean_cancelled_count = mean(user_cancelled_count, na.rm = TRUE),
-    mean_avg_cost = mean(user_avg_cost, na.rm = TRUE),
-    record_count = n()
+    mean_total_spend       = mean(total_spend, na.rm = TRUE),
+    mean_avg_order_value   = mean(avg_order_value, na.rm = TRUE),
+    mean_total_orders      = mean(total_orders, na.rm = TRUE),
+    mean_cancellation_rate = mean(cancellation_rate, na.rm = TRUE),
+    mean_num_products      = mean(avg_num_products, na.rm = TRUE),
+    record_count           = n()
   ) %>%
   arrange(prediction) %>%
   collect()
 
-print("--- Cluster Structure - Scenario 1 (k=3) ---")
-print(cluster_structure_s1)
+print("--- Cluster Structure (raw feature means) ---")
+print(cluster_structure)
 
-cluster_structure_s2 <- predictions_kmeans_s2 %>%
-  group_by(prediction) %>%
-  summarise(
-    mean_total_cost = mean(total_cost, na.rm = TRUE),
-    mean_order_count = mean(user_order_count, na.rm = TRUE),
-    mean_cancelled_count = mean(user_cancelled_count, na.rm = TRUE),
-    mean_avg_cost = mean(user_avg_cost, na.rm = TRUE),
-    record_count = n()
-  ) %>%
-  arrange(prediction) %>%
-  collect()
-
-print("--- Cluster Structure - Scenario 2 (k=5) ---")
-print(cluster_structure_s2)
-
-print("=== DBSCAN CLUSTERING ===")
-local_data_dbscan <- cluster_data %>%
-  select(total_cost, user_order_count, user_cancelled_count, user_avg_cost, trader_type) %>%
+local_kmeans <- predictions_kmeans %>%
   sdf_sample(fraction = 0.05, replacement = FALSE, seed = 42) %>%
   collect()
+local_kmeans$prediction <- as.factor(local_kmeans$prediction)
 
-library(dbscan)
-
-scaled_data <- scale(local_data_dbscan[, c("total_cost", "user_order_count",
-                                           "user_cancelled_count", "user_avg_cost")])
-
-dbscan_s1 <- dbscan(scaled_data, eps = 0.5, minPts = 5)
-local_data_dbscan$cluster_s1 <- as.factor(dbscan_s1$cluster)
-
-print("--- DBSCAN Scenario 1 (eps=0.5, minPts=5) ---")
-print(table(dbscan_s1$cluster))
-print(paste("Number of clusters (excl. noise):",
-            length(unique(dbscan_s1$cluster[dbscan_s1$cluster != 0]))))
-print(paste("Noise points (cluster=0):",
-            sum(dbscan_s1$cluster == 0)))
-
-dbscan_s2 <- dbscan(scaled_data, eps = 1.0, minPts = 10)
-local_data_dbscan$cluster_s2 <- as.factor(dbscan_s2$cluster)
-
-print("--- DBSCAN Scenario 2 (eps=1.0, minPts=10) ---")
-print(table(dbscan_s2$cluster))
-print(paste("Number of clusters (excl. noise):",
-            length(unique(dbscan_s2$cluster[dbscan_s2$cluster != 0]))))
-print(paste("Noise points (cluster=0):",
-            sum(dbscan_s2$cluster == 0)))
-
-dbscan_structure_s1 <- local_data_dbscan %>%
-  group_by(cluster_s1) %>%
-  summarise(
-    mean_total_cost = mean(total_cost, na.rm = TRUE),
-    mean_order_count = mean(user_order_count, na.rm = TRUE),
-    mean_cancelled_count = mean(user_cancelled_count, na.rm = TRUE),
-    mean_avg_cost = mean(user_avg_cost, na.rm = TRUE),
-    record_count = n()
-  ) %>%
-  arrange(cluster_s1)
-
-print("--- DBSCAN Cluster Structure - Scenario 1 ---")
-print(dbscan_structure_s1)
-
-dbscan_structure_s2 <- local_data_dbscan %>%
-  group_by(cluster_s2) %>%
-  summarise(
-    mean_total_cost = mean(total_cost, na.rm = TRUE),
-    mean_order_count = mean(user_order_count, na.rm = TRUE),
-    mean_cancelled_count = mean(user_cancelled_count, na.rm = TRUE),
-    mean_avg_cost = mean(user_avg_cost, na.rm = TRUE),
-    record_count = n()
-  ) %>%
-  arrange(cluster_s2)
-
-print("--- DBSCAN Cluster Structure - Scenario 2 ---")
-print(dbscan_structure_s2)
-
-local_kmeans_s1 <- predictions_kmeans_s1 %>%
-  sdf_sample(fraction = 0.05, replacement = FALSE, seed = 42) %>%
-  collect()
-local_kmeans_s1$prediction <- as.factor(local_kmeans_s1$prediction)
-
-local_kmeans_s2 <- predictions_kmeans_s2 %>%
-  sdf_sample(fraction = 0.05, replacement = FALSE, seed = 42) %>%
-  collect()
-local_kmeans_s2$prediction <- as.factor(local_kmeans_s2$prediction)
-
-p1 <- ggplot(local_kmeans_s1, aes(x = total_cost, y = user_order_count, color = prediction)) +
+p1 <- ggplot(local_kmeans, aes(x = total_spend, y = total_orders, color = prediction)) +
   geom_point(alpha = 0.5, size = 1) +
   labs(
-    title = "K-Means (k=3): Total Cost vs Order Count",
-    x = "Total Cost",
-    y = "User Order Count",
+    title = paste0("K-Means (k=", best_k, "): Total Spend vs Total Orders"),
+    x = "Total Spend",
+    y = "Total Orders",
     color = "Cluster"
   ) +
   theme_minimal()
 print(p1)
 
-p2 <- ggplot(local_kmeans_s2, aes(x = total_cost, y = user_cancelled_count, color = prediction)) +
+p2 <- ggplot(local_kmeans, aes(x = total_spend, y = cancellation_rate, color = prediction)) +
   geom_point(alpha = 0.5, size = 1) +
   labs(
-    title = "K-Means (k=5): Total Cost vs Cancelled Count",
-    x = "Total Cost",
-    y = "User Cancelled Count",
+    title = paste0("K-Means (k=", best_k, "): Total Spend vs Cancellation Rate"),
+    x = "Total Spend",
+    y = "Cancellation Rate",
     color = "Cluster"
   ) +
   theme_minimal()
 print(p2)
-
-p3 <- ggplot(local_data_dbscan, aes(x = total_cost, y = user_order_count, color = cluster_s1)) +
-  geom_point(alpha = 0.5, size = 1) +
-  labs(
-    title = "DBSCAN (eps=0.5, minPts=5): Total Cost vs Order Count",
-    x = "Total Cost",
-    y = "User Order Count",
-    color = "Cluster (0 = noise)"
-  ) +
-  theme_minimal()
-print(p3)
-
-p4 <- ggplot(local_data_dbscan, aes(x = total_cost, y = user_cancelled_count, color = cluster_s2)) +
-  geom_point(alpha = 0.5, size = 1) +
-  labs(
-    title = "DBSCAN (eps=1.0, minPts=10): Total Cost vs Cancelled Count",
-    x = "Total Cost",
-    y = "User Cancelled Count",
-    color = "Cluster (0 = noise)"
-  ) +
-  theme_minimal()
-print(p4)
 
 # spark_disconnect(sc)
