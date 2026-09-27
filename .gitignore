@@ -102,3 +102,4 @@ plan
 *.parquet
 vault-keys.json
 vault-data/
+*.csv
