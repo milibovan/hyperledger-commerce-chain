@@ -4,7 +4,6 @@ networks:
 
   hdfs_asvsp:
     name: hdfs_asvsp
-    external: true
 
 services:
   kafka1:
@@ -19,7 +18,8 @@ services:
       KAFKA_BROKER_ID: 1
       KAFKA_PROCESS_ROLES: "broker,controller"
       KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka1:9093,2@kafka2:9093,3@kafka3:9093"
-      KAFKA_LISTENERS: "PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTRO\
+      KAFKA_LISTENERS:
+        "PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://0.0.0.0:29092,CONTRO\
         LLER://kafka1:9093"
       KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:9092"
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT"
